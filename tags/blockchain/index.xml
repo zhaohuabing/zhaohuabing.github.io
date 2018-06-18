@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Blockchain on Huabing Blog</title>
-    <link>https://hugoblog.zhaohuabing.com/tags/blockchain/</link>
+    <link>https://zhaohuabing.com/tags/blockchain/</link>
     <description>Recent content in Blockchain on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 03 Jun 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://hugoblog.zhaohuabing.com/tags/blockchain/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://zhaohuabing.com/tags/blockchain/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Bitcoin Script</title>
-      <link>https://hugoblog.zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</link>
+      <link>https://zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</link>
       <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</guid>
+      <guid>https://zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</guid>
       <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
  Bitcoin Script is using to transfer coins instead of just signature and public key address, which allows more flexibilities for Bitcoin transactions.
 A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she received from a previous transaction, this is how the procedure looks like. * Alice receives some coins from a previous transaction.</description>
@@ -24,10 +24,10 @@ A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she r
     
     <item>
       <title>Distributed Consensus</title>
-      <link>https://hugoblog.zhaohuabing.com/2018/05/26/cryptocurrency_week2_distributed_consenus/</link>
+      <link>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_distributed_consenus/</link>
       <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/2018/05/26/cryptocurrency_week2_distributed_consenus/</guid>
+      <guid>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_distributed_consenus/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
 &lt;/p&gt;</description>
@@ -35,10 +35,10 @@ A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she r
     
     <item>
       <title>Incentives and Proof of Work</title>
-      <link>https://hugoblog.zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/</link>
+      <link>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/</link>
       <pubDate>Sat, 26 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/</guid>
+      <guid>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/</guid>
       <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
  Incentive The mechanism to motivate nodes join the Bitcoin network and create blocks.
 Incentive 1: Block Reward Creator of block gets to * include special coin-creation transaction in the block * choose reciptient address of this transaction (Of course, it is the miner&amp;rsquo;s address)
@@ -47,10 +47,10 @@ Explanation: Because the coin-creation transaction is just like other transactio
     
     <item>
       <title>Digital Signature and Public Key as Identities</title>
-      <link>https://hugoblog.zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/</link>
+      <link>https://zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/</link>
       <pubDate>Tue, 15 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/</guid>
+      <guid>https://zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
 &lt;/p&gt;</description>
@@ -58,10 +58,10 @@ Explanation: Because the coin-creation transaction is just like other transactio
     
     <item>
       <title>Hash Pointers and Data Structures</title>
-      <link>https://hugoblog.zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/</link>
+      <link>https://zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/</link>
       <pubDate>Sat, 12 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/</guid>
+      <guid>https://zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -78,10 +78,10 @@ The pointer can be used to get the information, the hash can be used to verify t
     
     <item>
       <title>Cryptographic Hash Function</title>
-      <link>https://hugoblog.zhaohuabing.com/2018/05/07/cryptocurrency_week1_cryptographic_hash_function/</link>
+      <link>https://zhaohuabing.com/2018/05/07/cryptocurrency_week1_cryptographic_hash_function/</link>
       <pubDate>Wed, 09 May 2018 22:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/2018/05/07/cryptocurrency_week1_cryptographic_hash_function/</guid>
+      <guid>https://zhaohuabing.com/2018/05/07/cryptocurrency_week1_cryptographic_hash_function/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -97,10 +97,10 @@ The pointer can be used to get the information, the hash can be used to verify t
     
     <item>
       <title>Introduction to crypto and cryptocurrencies</title>
-      <link>https://hugoblog.zhaohuabing.com/2018/05/06/cryptocurrency_week1/</link>
+      <link>https://zhaohuabing.com/2018/05/06/cryptocurrency_week1/</link>
       <pubDate>Sun, 06 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://hugoblog.zhaohuabing.com/2018/05/06/cryptocurrency_week1/</guid>
+      <guid>https://zhaohuabing.com/2018/05/06/cryptocurrency_week1/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
