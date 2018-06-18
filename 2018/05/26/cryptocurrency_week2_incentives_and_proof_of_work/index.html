@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="How bitcoin system implements the mechanism to motivate the participants and how the participants prove their work?">
+    
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="https://hugoblog.zhaohuabing.com/img/favicon.ico">
+
+    <title>Incentives and Proof of Work-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="https://hugoblog.zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/">
+
+	<link rel="stylesheet" href="/css/iDisqus.min.css" />
+	
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/syntax.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/jquery.min.js"></script>
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/bootstrap.min.js"></script>
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://hugoblog.zhaohuabing.com//">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://hugoblog.zhaohuabing.com//">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/life">Life</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/note">Note</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">Tech</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tips">Tips</a>
+                    </li>
+                    
+
+                    
+		            <li>
+		             <a href="https://hugoblog.zhaohuabing.com/search/"><img src="\img\search.png" height="15" style="cursor: pointer;"></a>
+		            </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://img.zhaohuabing.com/in-post/2018-05-06-cryptocurrency_week1/bitcoin_mining.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/cryptocurrency" title="Cryptocurrency">
+                           Cryptocurrency
+                        </a>
+                        
+                       <a class="tag" href="/tags/blockchain" title="Blockchain">
+                           Blockchain
+                        </a>
+                        
+                       <a class="tag" href="/tags/bitcoin" title="Bitcoin">
+                           Bitcoin
+                        </a>
+                        
+                       <a class="tag" href="/tags/digital-signature" title="Digital Signature">
+                           Digital Signature
+                        </a>
+                        
+                    </div>
+                    <h1>Incentives and Proof of Work</h1>
+                    <h2 class="subheading">Bitcoin and Cryptocurrency Technologies-Week 2</h2>
+                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Saturday, May 26, 2018
+                        ", 
+                        <span id="/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#incentive">Incentive</a>
+<ul>
+<li><a href="#incentive-1-block-reward">Incentive 1: Block Reward</a></li>
+<li><a href="#incentive-2-transaction-fees">Incentive 2: Transaction Fees</a></li>
+</ul></li>
+<li><a href="#proof-of-work">Proof of Work</a>
+<ul>
+<li><a href="#why-bitcoin-network-needs-proof-of-work">Why Bitcoin network needs proof of work?</a></li>
+<li><a href="#how-to-prove-the-work">How to prove the work?</a></li>
+<li><a href="#pow-properties">PoW properties</a></li>
+</ul></li>
+<li><a href="#key-security-assumption">Key Security Assumption</a></li>
+</ul></li>
+</ul>
+</nav>
+		
+		
+
+<blockquote>
+<p>This series of articles are my notes of &ldquo;Bitcoin and Cryptocurrency Technologies&rdquo; online course.</p>
+</blockquote>
+
+<h2 id="incentive">Incentive</h2>
+
+<p>The mechanism to motivate nodes join the Bitcoin network and create blocks.</p>
+
+<h3 id="incentive-1-block-reward">Incentive 1: Block Reward</h3>
+
+<p>Creator of block gets to
+* include special coin-creation transaction in the block
+* choose reciptient address of this transaction (Of course, it is the miner&rsquo;s address)</p>
+
+<p>Explanation: Because the coin-creation transaction is just like other transaction in that block, it will only be valid if the created block ends up in the consensus chain, it&rsquo;s the incentive which encourages the nodes to be honest, otherwise they can&rsquo;t get their rewards.</p>
+
+<p>The value of the created coin is fixed in a period of 4 years, and it halves every 4 years.<br />
+The reward of the first block(the Genesis block) was 50 BTC. Because the Genesis was created on 03/Jan/2009, now 9 years past, so the reward halved twice, the current reward is 12.5 BTC.<br />
+The total number of BTC is 21 million, at the current rate, all the BTC will be mined out around 2140.</p>
+
+<p>I would have the chance be a miner if I started this lesson in 2009, what a shame! :-(</p>
+
+<p><img src="http://img.zhaohuabing.com/in-post/2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work/block_reward.png" alt="Bitcoin and Block Reward" /></p>
+
+<p><a href="https://en.bitcoin.it/wiki/Genesis_block">Genesis Block</a><br />
+<a href="https://www.bitcoinblockhalf.com/">Bitcoin Block Reward Halving Countdown</a></p>
+
+<h3 id="incentive-2-transaction-fees">Incentive 2: Transaction Fees</h3>
+
+<ul>
+<li>Transaction creator can choose to make the output value less than the input value</li>
+<li>Remainder is a transaction fee and it goes to the block creator
+Right now it&rsquo;s purely voluntary, like a tip. But after all the Bitcoins are mined out after 2140, it might become mandatory.</li>
+</ul>
+
+<h2 id="proof-of-work">Proof of Work</h2>
+
+<h3 id="why-bitcoin-network-needs-proof-of-work">Why Bitcoin network needs proof of work?</h3>
+
+<p>To select node who gets to propose the block based on their computing power(the proportion of computing power in the whole Bitcoin network), so the adversary can&rsquo;t simply create a lot of civil nodes to try to get more rewards.</p>
+
+<h3 id="how-to-prove-the-work">How to prove the work?</h3>
+
+<p>A hash puzzle needs computing power to solve: find a nonce to get a hash output falling into a small target space.</p>
+
+<p><img src="http://img.zhaohuabing.com/in-post/2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work/hash-puzzle.png" alt="Hash Puzzle" /></p>
+
+<h3 id="pow-properties">PoW properties</h3>
+
+<ul>
+<li>Difficult to Compute<br />
+In Aug 2014, a node needs to try about 10^20 times to find a hash in the target space.<br /></li>
+<li>parameterizable cost<br />
+Nodes automatically re-calculate the target every 2 weeks to keep the average time between blocks = 10 minutes.<br />
+It means if a miner invests a fixed amount of hardware into Bitcoin mining, as time goes by, the BTC he can find during a certain period will be less because the mining ecosystem is growing, his proportion of computing power is decreasing.<br />
+<strong>probability(Alice wins the next block) = fraction of global hash power she controls</strong><br />
+Why keep the time as 10 minutes: for efficiency, this allows to keep a certain number of transactions into one block</li>
+</ul>
+
+<h2 id="key-security-assumption">Key Security Assumption</h2>
+
+<p>Attacks are infeasible if the majority of the miners weighted by hash power follows the protocol because the competition of hash power can ensure the probability of the next block proposing by an honest node is higher than 50%.</p>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/05/26/cryptocurrency_week2_distributed_consenus/" data-toggle="tooltip" data-placement="top" title="Distributed Consensus">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/05/24/set_up_my_ubuntu_desktop/" data-toggle="tooltip" data-placement="top" title="Everything about Setting Up My Ubuntu Desktop">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                            <a href="/tags/bitcoin" title="Bitcoin">
+                                Bitcoin
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/blockchain" title="Blockchain">
+                                Blockchain
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/cryptocurrency" title="Cryptocurrency">
+                                Cryptocurrency
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/digital-signature" title="Digital Signature">
+                                Digital Signature
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/istio" title="Istio">
+                                Istio
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="Kubernetes">
+                                Kubernetes
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/microservice" title="Microservice">
+                                Microservice
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/security" title="Security">
+                                Security
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/tips" title="Tips">
+                                Tips
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://zhaohuabing.com/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog , 2018
+                    <br>
+                    Hugo Theme by <a href="https://zhaohuabing.com">Huabing</a> 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

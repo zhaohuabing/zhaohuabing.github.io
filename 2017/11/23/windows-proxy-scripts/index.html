@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="使用Visual Basic Script脚本和Windows定时任务自动设置windows HTTP 代理服务器。">
+    
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="https://hugoblog.zhaohuabing.com/img/favicon.ico">
+
+    <title>使用脚本和定时任务自动设置windows HTTP 代理服务器-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="https://hugoblog.zhaohuabing.com/2017/11/23/windows-proxy-scripts/">
+
+	<link rel="stylesheet" href="/css/iDisqus.min.css" />
+	
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/syntax.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/jquery.min.js"></script>
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/bootstrap.min.js"></script>
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://hugoblog.zhaohuabing.com//">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://hugoblog.zhaohuabing.com//">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/life">Life</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/note">Note</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">Tech</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tips">Tips</a>
+                    </li>
+                    
+
+                    
+		            <li>
+		             <a href="https://hugoblog.zhaohuabing.com/search/"><img src="\img\search.png" height="15" style="cursor: pointer;"></a>
+		            </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg-jeep.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/tips" title="Tips">
+                           Tips
+                        </a>
+                        
+                    </div>
+                    <h1>使用脚本和定时任务自动设置windows HTTP 代理服务器</h1>
+                    <h2 class="subheading"></h2>
+                    <span  class="meta">Posted by 赵化冰 on Thursday, November 23, 2017
+                        ", 
+                        <span id="/2017/11/23/windows-proxy-scripts/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#问题">问题</a></li>
+<li><a href="#思路">思路</a></li>
+<li><a href="#脚本">脚本</a></li>
+<li><a href="#采用windows-计划任务触发">采用windows 计划任务触发</a></li>
+</ul></li>
+</ul>
+</nav>
+		
+		<h2 id="问题">问题</h2>
+
+<p>我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。
+
+由于工作需要，我回家也会经常带着笔记本，以在晚上开会和处理一些工作上的事情（是的，悲催的加班狗），因此笔记本的网络会在家里和办公室网络之间切换。在公司网络上要设置浏览器HTTP代理为公司代理，回到家后又需要把代理服务器设置修改回来。虽然步骤不多，但是每天都至少要重复两次。有时候打开笔记想要上网处理一些事情，首先要修改代理服务器，很是影响思维的流畅性。因此希望可以实现在笔记本连上网络时直接根据所连接的网络自动修改代理服务器设置，以避免影响使用笔记本进行事务处理的连续性。</p>
+
+<h2 id="思路">思路</h2>
+
+<p>根据要解决的问题：“笔记本连上网络时直接根据所连接的网络自动修改代理服务器” ，需要一个修改代理服务器的脚本和一个触发脚本的机制。可以通过windows vbs脚本来修改代理服务器，vbs是visual basic的脚本版，语法和visual basic类似，可以直接在windows上执行，并可以操作windows中的设置，因此可以用来修改代理服务器。有了脚本后，为了避免每次手动执行脚本，可以使用windows定时任务来自动触发脚本执行。</p>
+
+<h2 id="脚本">脚本</h2>
+
+<p>注意需要将下面脚本中的proxy_server的值改为你网络环境中的代理服务器的IP和端口。
+该脚本根据IP地址的范围来判断是否处于办公环境，如果IP为10.*的网络，则认为在办公环境中，设置代理服务器；否则就认为是在家里的网络中，删除代理服务器。如果你的IP范围不同，可以根据实际情况修改。将脚本保存为setproxy.vbs。</p>
+
+<pre><code>Const proxy_server=&quot;http://your_proxy_server:port&quot;
+Const ip_prefix=&quot;10&quot;
+
+If isIPInCompany() then
+  setProxy()
+else
+  clearProxy()
+End If
+WScript.Quit
+
+Function isIPInCompany()
+    Set NicList = GetObject(&quot;winmgmts:&quot;).InstancesOf(&quot;Win32_NetworkAdapterConfiguration&quot;)
+    For Each Nic in NicList
+        If Nic.IPEnabled then
+            StrIP = Nic.IPAddress(i)
+            if Left(StrIP,2) = ip_prefix then
+                isIPInCompany = true
+                Exit Function
+            else
+                isIPInCompany = false
+            End If
+        End If
+    Next
+End Function
+
+Sub setProxy()
+  Set objShell = WScript.CreateObject(&quot;WScript.Shell&quot;)
+  RegLocate = &quot;HKEY_CURRENT_USER/Software/Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer&quot;
+  objShell.RegWrite RegLocate,proxy_server,&quot;REG_SZ&quot;
+  RegLocate = &quot;HKEY_CURRENT_USER/Software/Microsoft\Windows\CurrentVersion\Internet Settings\ProxyEnable&quot;
+  objShell.RegWrite RegLocate,&quot;1&quot;,&quot;REG_DWORD&quot;
+  MsgBox &quot;HTTP Proxy is enabled&quot;
+End Sub
+
+Sub clearProxy()
+  Set objShell = WScript.CreateObject(&quot;WScript.Shell&quot;)
+  RegLocate = &quot;HKEY_CURRENT_USER/Software/Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer&quot;
+  objShell.RegWrite RegLocate,&quot;0.0.0.0:80&quot;,&quot;REG_SZ&quot;
+  RegLocate = &quot;HKEY_CURRENT_USER/Software/Microsoft\Windows\CurrentVersion\Internet Settings\ProxyEnable&quot;
+  objShell.RegWrite RegLocate,&quot;0&quot;,&quot;REG_DWORD&quot;
+  MsgBox &quot;HTTP Proxy is disabled&quot;
+End Sub
+</code></pre>
+
+<h2 id="采用windows-计划任务触发">采用windows 计划任务触发</h2>
+
+<p>windows任务可以通过事件触发，因此通过连接到网络的事件来触发设置代理的脚本执行，这样当笔记本电脑一连上网络，代理服务器就会自动设置好了。
+任务的触发条件需要选择:
+Log: Microsoft-Windows-NetworkProfile/Operational
+Source: NetworkProfile
+Event ID: 10000</p>
+
+<p>执行动作选择刚才创建的脚本就可以了。</p>
+
+<p><img src="http://img.zhaohuabing.com/in-post/windows-proxy-script/windows-task-trigger.PNG" alt="Windows任务触发条件" /></p>
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/11/28/access-application-from-outside/" data-toggle="tooltip" data-placement="top" title="如何从外部访问Kubernetes集群中的应用？">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                            <a href="/tags/bitcoin" title="Bitcoin">
+                                Bitcoin
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/blockchain" title="Blockchain">
+                                Blockchain
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/cryptocurrency" title="Cryptocurrency">
+                                Cryptocurrency
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/digital-signature" title="Digital Signature">
+                                Digital Signature
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/istio" title="Istio">
+                                Istio
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="Kubernetes">
+                                Kubernetes
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/microservice" title="Microservice">
+                                Microservice
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/security" title="Security">
+                                Security
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/tips" title="Tips">
+                                Tips
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://zhaohuabing.com/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog , 2017
+                    <br>
+                    Hugo Theme by <a href="https://zhaohuabing.com">Huabing</a> 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：">
+    
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="https://hugoblog.zhaohuabing.com/img/favicon.ico">
+
+    <title>Istio 0.8 Release发布-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="https://hugoblog.zhaohuabing.com/2018/06/02/istio08/">
+
+	<link rel="stylesheet" href="/css/iDisqus.min.css" />
+	
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="https://hugoblog.zhaohuabing.com/css/syntax.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/jquery.min.js"></script>
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/bootstrap.min.js"></script>
+    
+    
+    <script src="https://hugoblog.zhaohuabing.com/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://hugoblog.zhaohuabing.com//">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://hugoblog.zhaohuabing.com//">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/life">Life</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/note">Note</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">Tech</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tips">Tips</a>
+                    </li>
+                    
+
+                    
+		            <li>
+		             <a href="https://hugoblog.zhaohuabing.com/search/"><img src="\img\search.png" height="15" style="cursor: pointer;"></a>
+		            </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://img.zhaohuabing.com/in-post/2018-06-02-istio08/background.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/istio" title="Istio">
+                           Istio
+                        </a>
+                        
+                    </div>
+                    <h1>Istio 0.8 Release发布</h1>
+                    <h2 class="subheading">来自Istio的儿童节礼物</h2>
+                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Saturday, June 2, 2018
+                        ", 
+                        <span id="/2018/06/02/istio08/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#networking">Networking</a>
+<ul>
+<li><a href="#改进的流量管理模型">改进的流量管理模型</a>
+<ul>
+<li><a href="#gateway">Gateway</a></li>
+<li><a href="#virtualservice">VirtualService</a></li>
+</ul></li>
+<li><a href="#envoy-v2">Envoy V2</a></li>
+<li><a href="#用gateway代替-ingress-engress">用Gateway代替 Ingress/Engress</a></li>
+<li><a href="#对入站端口进行限制">对入站端口进行限制</a></li>
+</ul></li>
+<li><a href="#security">Security</a>
+<ul>
+<li><a href="#安全组件citadel">安全组件Citadel</a></li>
+<li><a href="#跨集群支持">跨集群支持</a></li>
+<li><a href="#认证策略">认证策略</a></li>
+</ul></li>
+<li><a href="#遥测">遥测</a></li>
+<li><a href="#安装">安装</a></li>
+<li><a href="#mixer">Mixer</a></li>
+<li><a href="#已知故障">已知故障：</a></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+		
+		<blockquote>
+<p>在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：
+</p>
+
+<h2 id="networking">Networking</h2>
+</blockquote>
+
+<h3 id="改进的流量管理模型">改进的流量管理模型</h3>
+
+<p>0.8版本采用了新的流量管理配置模型<a href="https://istio.io/blog/2018/v1alpha3-routing/">v1alpha3 Route API</a>。新版本的模型添加了一些新的特性，并改善了之前版本模型中的可用性问题。主要的改动包括：</p>
+
+<h4 id="gateway">Gateway</h4>
+
+<p>新版本中不再使用K8s中的Ingress，转而采用Gateway来统一配置Service Mesh中的各个HTTP/TCP负载均衡器。Gateway可以是处理入口流量的Ingress Gateway，负责Service Mesh内部各个服务间通信的Sidecar Proxy，也可以是负责出口流量的Egress Gateway。</p>
+
+<p>Mesh中涉及到的三类Gateway:<br />
+<img src="http://img.zhaohuabing.com/in-post/2018-06-02-istio08/gateways.svg" alt="Gateway" /></p>
+
+<p>该变化的原因是K8s中的Ingress对象功能过于简单，不能满足Istio灵活的路由规则需求。在0.8版本中，L4-L6的配置和L7的配置被分别处理，Gateway中只配置L4-L6的功能，例如暴露的端口，TLS设置。然后用户可以采用VirtualService来配置标准的Istio规则，并和Gateway进行绑定。</p>
+
+<h4 id="virtualservice">VirtualService</h4>
+
+<p>采用VirtualService代替了alpha2模型中的RouteRule。采用VirtualService有两个优势：</p>
+
+<p><strong>可以把一个服务相关的规则放在一起管理</strong></p>
+
+<p>例如下面的路由规则，发向reviews的请求流量缺省destination为v1，如果user为jason则路由到v2。在v1模型中需要采用两条规则来实现，采用VirtualService后放到一个规则下就可以实现。</p>
+
+<pre><code>apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: reviews
+spec:
+  hosts:
+    - reviews
+  http:
+  - match:
+    - headers:
+        cookie:
+          regex: &quot;^(.*?;)?(user=jason)(;.*)?$&quot;
+    route:
+    - destination:
+        host: reviews
+        subset: v2
+  - route:
+    - destination:
+        host: reviews
+        subset: v1
+</code></pre>
+
+<p><strong>可以对外暴露一个并不存在的“虚拟服务”，然后将该“虚拟服务”映射到Istio中的Service上</strong></p>
+
+<p>下面规则中的bookinfo.com是对外暴露的“虚拟服务”，bookinfo.com/reviews被映射到了reviews服务，bookinfo.com/ratings被映射到了ratings服务。通过采用VirtualService，极大地增强了Istio路由规则的灵活性，有利于Legacy系统和Istio的集成。</p>
+
+<pre><code>apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+    - bookinfo.com
+  http:
+  - match:
+    - uri:
+        prefix: /reviews
+    route:
+    - destination:
+        host: reviews
+  - match:
+    - uri:
+        prefix: /ratings
+    route:
+    - destination:
+        host: ratings
+  ...
+</code></pre>
+
+<h3 id="envoy-v2">Envoy V2</h3>
+
+<p>控制面和数据面标准接口支持Envoy</p>
+
+<h3 id="用gateway代替-ingress-engress">用Gateway代替 Ingress/Engress</h3>
+
+<p>前面已经介绍到，新的版本中不再支持将Kubernetes的Ingress和Istio路由规则一起使用。Istio 0.8支持平台无关的 Ingress/Egress Gateway,可以在Kubernetes，Cloud Foundry中和Istio路由规则无缝集成。</p>
+
+<h3 id="对入站端口进行限制">对入站端口进行限制</h3>
+
+<p>0.8版本只允许访问Pod内已声明端口的入站流量。</p>
+
+<h2 id="security">Security</h2>
+
+<h3 id="安全组件citadel">安全组件Citadel</h3>
+
+<p>将Istio的安全组件Istio-Auth/Istio-CA正式命名为Citadel（堡垒）。</p>
+
+<h3 id="跨集群支持">跨集群支持</h3>
+
+<p>部署在多个Cluster中的Citadel可以共享同一Root Certificate，以支持不同Cluster内的服务可以跨Cluster进行认证。</p>
+
+<h3 id="认证策略">认证策略</h3>
+
+<p>认证策略既支持Service-to-Service认证，也支持对终端用户进行认证。</p>
+
+<h2 id="遥测">遥测</h2>
+
+<p>Mixer和Pilot将上报自身的遥测数据，其上报的流程和Mesh中的普通服务相同。</p>
+
+<h2 id="安装">安装</h2>
+
+<p>按需安装部分组件：支持只安装所需的组件，如果只需要使用Istio的路由规则，可以选择只安装Pilot，而不安装Mixer和Citadel。</p>
+
+<h2 id="mixer">Mixer</h2>
+
+<p>CloudWatch：增加了一个CloudWatch插件，可以向AWS CloudWatch上报度量数据。</p>
+
+<h2 id="已知故障">已知故障：</h2>
+
+<ul>
+<li>如果Gateway绑定的VirtualService指向的是headless service，则该规则不能正常工作。</li>
+<li>0.8版本和Kubernetes1.10.2存在兼容问题，目前建议采用1.9版本。</li>
+<li>convert-networking-config工具存在故障，一个其它的namespace可能会被修改为istio-system namespace。可以在允许转换工具后手动修改文件来避免。</li>
+</ul>
+
+<h2 id="总结">总结</h2>
+
+<p>0.8版本带来的最大变化是流量配置模型的重构，重构后的模型整合了外部Gateway和内部Sidecar Proxy的路由配置。同时VirtualService的引入使路由规则的配置更为集中和灵活。</p>
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/06/03/cryptocurrency_week3_bitcoin_script/" data-toggle="tooltip" data-placement="top" title="Bitcoin Script">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/05/26/cryptocurrency_week2_distributed_consenus/" data-toggle="tooltip" data-placement="top" title="Distributed Consensus">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                            <a href="/tags/bitcoin" title="Bitcoin">
+                                Bitcoin
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/blockchain" title="Blockchain">
+                                Blockchain
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/cryptocurrency" title="Cryptocurrency">
+                                Cryptocurrency
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/digital-signature" title="Digital Signature">
+                                Digital Signature
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/istio" title="Istio">
+                                Istio
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="Kubernetes">
+                                Kubernetes
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/microservice" title="Microservice">
+                                Microservice
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/security" title="Security">
+                                Security
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/tips" title="Tips">
+                                Tips
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://zhaohuabing.com/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog , 2018
+                    <br>
+                    Hugo Theme by <a href="https://zhaohuabing.com">Huabing</a> 
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>
