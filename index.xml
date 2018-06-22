@@ -32,6 +32,15 @@ A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she r
     </item>
     
     <item>
+      <title>How service mesh can help during the ONAP Microservice journey</title>
+      <link>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</link>
+      <pubDate>Sat, 02 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://www.onap.org/announcement/2018/06/12/onap-announces-availability-of-beijing-release-enabling-a-deployment-ready-platform-for-network-automation-and-orchestration&#34;&gt;ONAP Beijing is available now&lt;/a&gt;!&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio 0.8 Release发布</title>
       <link>https://zhaohuabing.com/2018/06/02/istio08/</link>
       <pubDate>Sat, 02 Jun 2018 00:00:00 +0000</pubDate>

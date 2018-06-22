@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="https://media.licdn.com/media/gcrc/dms/image/C5612AQGxADrUDCsbLg/article-cover_image-shrink_720_1280/0?e=2128896000&amp;v=beta&amp;t=sI_cpNncTX_zgG6yiGSEs5zIaIllthOzf_8_Blsul6M">
+    
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="https://zhaohuabing.com/img/favicon.ico">
+
+    <title>How service mesh can help during the ONAP Microservice journey-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/">
+
+	<link rel="stylesheet" href="/css/iDisqus.min.css" />
+	
+    
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://zhaohuabing.com/js/jquery.min.js"></script>
+    
+    
+    <script src="https://zhaohuabing.com/js/bootstrap.min.js"></script>
+    
+    
+    <script src="https://zhaohuabing.com/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://zhaohuabing.com//">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://zhaohuabing.com//">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/life">Life</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/note">Note</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">Tech</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tips">Tips</a>
+                    </li>
+                    
+
+                    
+		            <li>
+		             <a href="https://zhaohuabing.com/search/">SEARCH <img src="\img\search.png" height="15" style="cursor: pointer;"></a>
+		            </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://zhaohuabing.com/img/home-bg-jeep.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/istio" title="Istio">
+                           Istio
+                        </a>
+                        
+                       <a class="tag" href="/tags/onap" title="ONAP">
+                           ONAP
+                        </a>
+                        
+                       <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                           Service Mesh
+                        </a>
+                        
+                    </div>
+                    <h1>How service mesh can help during the ONAP Microservice journey</h1>
+                    <h2 class="subheading"></h2>
+                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Saturday, June 2, 2018
+                        ", 
+                        <span id="/post/2018-06-22-onap-with-service-mesh/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                
+		
+		<p><a href="https://www.onap.org/announcement/2018/06/12/onap-announces-availability-of-beijing-release-enabling-a-deployment-ready-platform-for-network-automation-and-orchestration">ONAP Beijing is available now</a>!</p>
+
+<p>ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform.
+
+While it&rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a whole, users may just want to pick some modules, integrate these modules with their existing system to get a customized ONAP solution. Actually, this is a very usual usage scenario in open source world. So it should be easy to tailor ONAP to suit the different scenarios and purposes for various users.</p>
+
+<p>To reflect these requirements, According to ONAP Casablanca Developer Event this week in Beijing, China, ONAP is planning enhancements for Casablanca release towards a more mature architecture, which will be modular, mode-drive, and microservice-based. A loose-coupled, microservice based ONAP system can make it much easier for ONAP to address the current customized deployability requirement, also to accelerate the platform maturity.</p>
+
+<p>Microservice based architecture is not a new topic brought for Casablanca. A bunch of ONAP projects have already done great jobs to decompose their applications to microservices during Amsterdam and Beijing. Microservices Bus(MSB) has helped ONAP projects evolve towards the microservice direction in the last two release by providing service registration/discovery, external API gateway, internal API gateway, Java SDK and swagger SDK.</p>
+
+<p>In Casablanca, MSB project will introduce Istio service mesh to provide a reliable, secure and flexible service communication infrastructure layer for ONAP microservices. Service mesh approach uses a sidecar proxy to decouple the service communication and other service infrastructure logic(Telemetry collection, Policy enforcement, etc,) from the business logic of microservices. So the developer can focus the business logic and drop the burden of microservice infrastructure.</p>
+
+<p>There are a couple of service mesh projects on the table, so what&rsquo;s the reasoning behind the choice of Istio?</p>
+
+<p>The main advantage of Istio is introducing a centralized Control Plane to manage the distributed sidecars across the mesh, Control plane is a set of centralized management utilities including:</p>
+
+<ul>
+<li>Pilot: routing tables, service discovery, and load balancing pools</li>
+<li>Mixer: Policy enforcement and telemetry collection</li>
+<li>Citadel: TLS mutual service authentication and fine-grained RBAC</li>
+</ul>
+
+<p>The other beauty of Istio is its well-designed, highly extendable architecture.</p>
+
+<ul>
+<li>Multiple adapters can be plugged into Pilot to populate the services: Kubernetes, Consul, Mesos&hellip;</li>
+<li>Different backends can be connected to Mixer without modification at the application side: Prometheus, Heapster,AWS CloudWatch&hellip;</li>
+<li>Standard API between Pilot and data plane for service discovery, LB pool and routing tables which decouples the sidecar implementation and Pilot: Envoy, Linkerd, Nginmesh are all support Istio now and can work along with Istio as sidecar</li>
+</ul>
+
+<p>We know that even Istio is powerful and promises many benefits, now it&rsquo;s not mature enough for production, so we&rsquo;d like to take baby steps, we are going to start with a seed project, prove it works, and then roll out to the whole ONAP, it will also be optional. What we&rsquo;re doing is to try to make sure ONAP can work with Istio and leverage the awesome advantages it brings in, but it&rsquo;s the users who make the decision to deploy ONAP with Istio or not.</p>
+
+<p>To minimize the impact to each microservice, we will make the service mesh approach compatible with the existing service-to-service communication approaches. Thanks to the well-designed, highly-extendable architecture of Istio, MSB registry can be plugged into Pilot to populate the ONAP services, and we can use Istio rules to make the requests through MSB API gateway compatible with Envoy sidecar. By this approach, the service mesh is transparent to ONAP microservices, there&rsquo;s no difference in terms of service communication from the service point of view.</p>
+
+<p>Learn more about the plan of ONAP Istio integration by reading the <a href="https://wiki.onap.org/display/DW/Casablanca+Release+Developers+Forum+Session+Proposals?preview=/25434845/35521830/MSB%20Plan%20to%20Support%20Microservices-Based%20Architecture%20with%20Istio%20Service%20Mesh.pdf">slides deck</a> and welcome to <a href="https://wiki.onap.org/display/DW/Microservices+Bus+Project">join us</a> in this exciting journey.</p>
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/06/03/cryptocurrency_week3_bitcoin_script/" data-toggle="tooltip" data-placement="top" title="Bitcoin Script">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/06/02/istio08/" data-toggle="tooltip" data-placement="top" title="Istio 0.8 Release发布">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                            <a href="/tags/bitcoin" title="Bitcoin">
+                                Bitcoin
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/blockchain" title="Blockchain">
+                                Blockchain
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/cryptocurrency" title="Cryptocurrency">
+                                Cryptocurrency
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/digital-signature" title="Digital Signature">
+                                Digital Signature
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/istio" title="Istio">
+                                Istio
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="Kubernetes">
+                                Kubernetes
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/microservice" title="Microservice">
+                                Microservice
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/security" title="Security">
+                                Security
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/service-mesh" title="Service Mesh">
+                                Service Mesh
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/tips" title="Tips">
+                                Tips
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://zhaohuabing.com/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog , 2018
+                    <br>
+                    <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

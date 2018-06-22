@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ONAP on Huabing Blog</title>
+    <link>https://zhaohuabing.com/tags/onap/</link>
+    <description>Recent content in ONAP on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 02 Jun 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/tags/onap/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How service mesh can help during the ONAP Microservice journey</title>
+      <link>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</link>
+      <pubDate>Sat, 02 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://www.onap.org/announcement/2018/06/12/onap-announces-availability-of-beijing-release-enabling-a-deployment-ready-platform-for-network-automation-and-orchestration&#34;&gt;ONAP Beijing is available now&lt;/a&gt;!&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
