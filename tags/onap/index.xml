@@ -6,10 +6,20 @@
     <description>Recent content in ONAP on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Jun 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 01 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/onap/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Manage ONAP Microservices with Istio Service Mesh</title>
+      <link>https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/</link>
+      <pubDate>Wed, 01 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/</guid>
+      <description>In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts from ONAP Gerrit:
+git clone https://gerrit.onap.org/r/msb/service-mesh  Kubernetes Master We need Kubernetes 1.</description>
+    </item>
     
     <item>
       <title>How service mesh can help during the ONAP Microservice journey</title>
