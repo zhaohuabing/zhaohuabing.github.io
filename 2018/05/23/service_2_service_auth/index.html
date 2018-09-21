@@ -328,11 +328,14 @@ $(function() {
 		
 		<h2 id="服务间认证与鉴权">服务间认证与鉴权</h2>
 
-<p>除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问，包括下述场景：
-* 用户间接触发的微服务之间的相互访问<BR>
-  例如在一个网上商店应用中，用户访问购物车微服务进行结算时，购物车微服务可能需要访问用户评级微服务获取用户的会员级别，以得到用户可以享受购物折扣。
-* 非用户触发的微服务之间的相互访问<BR>
-  例如数据同步或者后台定时任务导致的微服务之间的相互访问。</p>
+<p>除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问，包括下述场景：</p>
+
+<ul>
+<li>用户间接触发的微服务之间的相互访问<BR>
+例如在一个网上商店应用中，用户访问购物车微服务进行结算时，购物车微服务可能需要访问用户评级微服务获取用户的会员级别，以得到用户可以享受购物折扣。</li>
+<li>非用户触发的微服务之间的相互访问<BR>
+例如数据同步或者后台定时任务导致的微服务之间的相互访问。</li>
+</ul>
 
 <p>根据应用系统的数据敏感程度的不同，对于系统内微服务的相互访问可能有不同的安全要求。
 </p>
@@ -349,10 +352,13 @@ $(function() {
 
 <h4 id="spifee标准">SPIFEE标准</h4>
 
-<p><a href="https://spiffe.io/">Secure Production Identity Framework For Everyone (SPIFFE)</a>是一套服务之间相互进行身份识别的标准，主要包含以下内容：
-* SPIFFE ID标准，SPIFFE ID是服务的唯一标识，实现为统一资源标识&rdquo;Uniform Resource Identifier (URI)”符。
-* SVID(SPIFFE Verifiable Identity Document)标准,将SPIFFE ID编码到一个加密的可验证文档中。
-* 颁发/撤销 SVID的一套API标准。</p>
+<p><a href="https://spiffe.io/">Secure Production Identity Framework For Everyone (SPIFFE)</a>是一套服务之间相互进行身份识别的标准，主要包含以下内容：</p>
+
+<ul>
+<li>SPIFFE ID标准，SPIFFE ID是服务的唯一标识，实现为统一资源标识&rdquo;Uniform Resource Identifier (URI)”符。</li>
+<li>SVID(SPIFFE Verifiable Identity Document)标准,将SPIFFE ID编码到一个加密的可验证文档中。</li>
+<li>颁发/撤销 SVID的一套API标准。</li>
+</ul>
 
 <p>SPIFFE SVID目前支持的实现方式是X.509数字证书，在x.509 SVID中，采用X.509数字证书的SAN(Subject Alternative Name)扩展字段来保存SPIFFE ID。</p>
 
@@ -361,10 +367,13 @@ $(function() {
 <p>Istio服务网格项目的Auth组件实现了SPIFFE标准，可以为网格中服务颁发符合SPIFFE SVID标准的证书，并为服务提供身份认证，细粒度的操作鉴权以及通信加密。Istio的架构如下图所示：
 <img src="http://img.zhaohuabing.com/in-post/2018-05-23-service_2_service_auth/auth.png" alt="" /></p>
 
-<p>Istio Auth采用了Kubernetes的service account来作为服务标识，其SPIFFE ID的格式为spiffe://&lt;domain&gt;/ns/&lt;namespace&gt;/sa/&lt;serviceaccount&gt;，其中各组成部分如下：
-* domain 域名
-* namspace kubernetes service account所在的Namespace
-* serviceaccout kubernetes中定义的service account名</p>
+<p>Istio Auth采用了Kubernetes的service account来作为服务标识，其SPIFFE ID的格式为spiffe://&lt;domain&gt;/ns/&lt;namespace&gt;/sa/&lt;serviceaccount&gt;，其中各组成部分如下：</p>
+
+<ul>
+<li>domain 域名</li>
+<li>namspace kubernetes service account所在的Namespace</li>
+<li>serviceaccout kubernetes中定义的service account名</li>
+</ul>
 
 <p>Istio Auth提供了一个用于颁发证书的CA。在服务部署时，CA监听Kubernetes API Server, 为集群中的每一个Service Account创建一对密钥和证书。当Pod创建时，Kubernetes根据该Pod关联的Service Account将密钥和证书以Kubernetes Secrets资源的方式加载为Pod的Volume，以供Envoy使用。</p>
 
