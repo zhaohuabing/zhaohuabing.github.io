@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 25 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio流量管理实现机制深度解析</title>
+      <link>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</link>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</guid>
+      <description>前言 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的</description>
+    </item>
     
     <item>
       <title>English Practice Topic: Smart Phone Addiction</title>

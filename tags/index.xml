@@ -75,6 +75,15 @@
     </item>
     
     <item>
+      <title>Envoy</title>
+      <link>https://zhaohuabing.com/tags/envoy/</link>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/envoy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Helm</title>
       <link>https://zhaohuabing.com/tags/helm/</link>
       <pubDate>Mon, 16 Apr 2018 15:00:00 +0000</pubDate>
@@ -86,7 +95,7 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
       <description></description>
@@ -129,6 +138,15 @@
     </item>
     
     <item>
+      <title>Pilot</title>
+      <link>https://zhaohuabing.com/tags/pilot/</link>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/pilot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Security</title>
       <link>https://zhaohuabing.com/tags/security/</link>
       <pubDate>Wed, 23 May 2018 18:00:00 +0000</pubDate>
@@ -140,7 +158,7 @@
     <item>
       <title>Service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
@@ -149,7 +167,7 @@
     <item>
       <title>Service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
