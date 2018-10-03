@@ -29,6 +29,9 @@
     <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
 
     
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/zanshang.css">
+
+    
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     
     
@@ -300,11 +303,11 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-		
-                <header>
-                <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
+        		
+                        <header>
+                        <h2>TOC</h2>
+                        </header>
+                        <nav id="TableOfContents">
 <ul>
 <li><a href="#开始之前">开始之前</a></li>
 <li><a href="#基于权重的版本路由">基于权重的版本路由</a></li>
@@ -313,8 +316,8 @@ $(function() {
 <li><a href="#进阶阅读">进阶阅读</a></li>
 </ul>
 </nav>
-		
-		<p>关于Istio的更多内容请参考<a href="http://istio.doczh.cn/">istio中文文档</a>。</p>
+        		
+        		<p>关于Istio的更多内容请参考<a href="http://istio.doczh.cn/">istio中文文档</a>。</p>
 
 <p>原文参见<a href="https://istio.io/docs/tasks/traffic-management/traffic-shifting.html">Traffic Shifting</a>。</p>
 
@@ -411,23 +414,60 @@ $(function() {
 <ul>
 <li>更多的内容请参见<a href="http://istio.doczh.cn/docs/concepts/traffic-management/rules-configuration.html">请求路由</a>。</li>
 </ul>
+        
+                
+                    
+<div class="entry-shang text-center">
+	<p>「真诚赞赏，手留余香」</p>
+	<button class="zs show-zs btn btn-bred">赞赏</button>
+</div>
+<div class="zs-modal-bg"></div>
+<div class="zs-modal-box">
+	<div class="zs-modal-head">
+		<button type="button" class="close">×</button>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="https://zhaohuabing.com/img/favicon.png" />Huabing Blog</a></span>
+		<p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
 
-                <hr>
+	</div>
+	<div class="zs-modal-body">
+		<div class="zs-modal-btns">
+			<button class="btn btn-blink" data-num="2">2元</button>
+			<button class="btn btn-blink" data-num="5">5元</button>
+			<button class="btn btn-blink" data-num="10">10元</button>
+			<button class="btn btn-blink" data-num="50">50元</button>
+			<button class="btn btn-blink" data-num="100">100元</button>
+			<button class="btn btn-blink" data-num="1">任意金额</button>
+		</div>
+		<div class="zs-modal-pay">
+			<button class="btn btn-bred" id="pay-text">2元</button>
+			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
+			<img src="https://zhaohuabing.com/img/zanshang/alipay-2.png"  id="pay-image"/>
+		</div>
+	</div>
+	<div class="zs-modal-footer">
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="https://zhaohuabing.com/img/zanshang/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="https://zhaohuabing.com/img/zanshang/alipay-btn.png"/></span></label>
+	</div>
+</div>
+<script type="text/javascript" src="https://zhaohuabing.com/js/zanshang.js"></script>
 
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2017/11/04/istio-install_and_example/" data-toggle="tooltip" data-placement="top" title="Istio及Bookinfo示例程序安装试用笔记">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-            
+                
+        
+              <hr>
+              <ul class="pager">
+                  
+                  <li class="previous">
+                      <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">&larr; Previous Post</a>
+                  </li>
+                  
+                  
+                  <li class="next">
+                      <a href="/2017/11/04/istio-install_and_example/" data-toggle="tooltip" data-placement="top" title="Istio及Bookinfo示例程序安装试用笔记">Next Post &rarr;</a>
+                  </li>
+                  
+              </ul>
+  
+              
 <div id="disqus-comment"></div>
 
 <script src="https://zhaohuabing.com/js/iDisqus.js"></script>

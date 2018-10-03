@@ -29,6 +29,9 @@
     <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
 
     
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/zanshang.css">
+
+    
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     
     
@@ -304,11 +307,11 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-		
-                <header>
-                <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
+        		
+                        <header>
+                        <h2>TOC</h2>
+                        </header>
+                        <nav id="TableOfContents">
 <ul>
 <li>
 <ul>
@@ -325,8 +328,8 @@ $(function() {
 </ul></li>
 </ul>
 </nav>
-		
-		<h2 id="服务间认证与鉴权">服务间认证与鉴权</h2>
+        		
+        		<h2 id="服务间认证与鉴权">服务间认证与鉴权</h2>
 
 <p>除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问，包括下述场景：</p>
 
@@ -388,23 +391,60 @@ $(function() {
 <p>解决方案是将用户信息从用户直接访问的第一个微服务向后传递到调用链上的每一个微服务，调用链上的每一个微服务都使用该用户信息对用户能访问的资源进行判断。在一个大型的微服务系统中，一个调用链可能会非常长，导致该方案的实现比较复杂。</p>
 
 <p>我们需要根据应用的使用场景，每个微服务中数据的敏感程度来决定选择哪一种服务间安全的实施方式。</p>
+        
+                
+                    
+<div class="entry-shang text-center">
+	<p>「真诚赞赏，手留余香」</p>
+	<button class="zs show-zs btn btn-bred">赞赏</button>
+</div>
+<div class="zs-modal-bg"></div>
+<div class="zs-modal-box">
+	<div class="zs-modal-head">
+		<button type="button" class="close">×</button>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="https://zhaohuabing.com/img/favicon.png" />Huabing Blog</a></span>
+		<p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
 
-                <hr>
+	</div>
+	<div class="zs-modal-body">
+		<div class="zs-modal-btns">
+			<button class="btn btn-blink" data-num="2">2元</button>
+			<button class="btn btn-blink" data-num="5">5元</button>
+			<button class="btn btn-blink" data-num="10">10元</button>
+			<button class="btn btn-blink" data-num="50">50元</button>
+			<button class="btn btn-blink" data-num="100">100元</button>
+			<button class="btn btn-blink" data-num="1">任意金额</button>
+		</div>
+		<div class="zs-modal-pay">
+			<button class="btn btn-bred" id="pay-text">2元</button>
+			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
+			<img src="https://zhaohuabing.com/img/zanshang/alipay-2.png"  id="pay-image"/>
+		</div>
+	</div>
+	<div class="zs-modal-footer">
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="https://zhaohuabing.com/img/zanshang/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="https://zhaohuabing.com/img/zanshang/alipay-btn.png"/></span></label>
+	</div>
+</div>
+<script type="text/javascript" src="https://zhaohuabing.com/js/zanshang.js"></script>
 
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2018/05/23/external_system_auth/" data-toggle="tooltip" data-placement="top" title="微服务安全沉思录之三">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2018/05/22/user_authentication_authorization" data-toggle="tooltip" data-placement="top" title="微服务安全沉思录之一">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-            
+                
+        
+              <hr>
+              <ul class="pager">
+                  
+                  <li class="previous">
+                      <a href="/2018/05/23/external_system_auth/" data-toggle="tooltip" data-placement="top" title="微服务安全沉思录之三">&larr; Previous Post</a>
+                  </li>
+                  
+                  
+                  <li class="next">
+                      <a href="/2018/05/22/user_authentication_authorization" data-toggle="tooltip" data-placement="top" title="微服务安全沉思录之一">Next Post &rarr;</a>
+                  </li>
+                  
+              </ul>
+  
+              
 <div id="disqus-comment"></div>
 
 <script src="https://zhaohuabing.com/js/iDisqus.js"></script>

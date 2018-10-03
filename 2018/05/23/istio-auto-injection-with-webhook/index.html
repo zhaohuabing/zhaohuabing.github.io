@@ -29,6 +29,9 @@
     <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
 
     
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/zanshang.css">
+
+    
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     
     
@@ -304,11 +307,11 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-		
-                <header>
-                <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
+        		
+                        <header>
+                        <h2>TOC</h2>
+                        </header>
+                        <nav id="TableOfContents">
 <ul>
 <li>
 <ul>
@@ -327,8 +330,8 @@ $(function() {
 </ul></li>
 </ul>
 </nav>
-		
-		<h2 id="前言">前言</h2>
+        		
+        		<h2 id="前言">前言</h2>
 
 <hr />
 
@@ -431,23 +434,60 @@ kube-system    Active    1h<br />
 <li><a href="https://kubernetes.io/blog/2018/01/extensible-admission-is-beta">Extensible Admission is Beta</a></li>
 <li><a href="https://istio.io/docs/setup/kubernetes/sidecar-injection.html">Installing the Istio Sidecar</a></li>
 </ul>
+        
+                
+                    
+<div class="entry-shang text-center">
+	<p>「真诚赞赏，手留余香」</p>
+	<button class="zs show-zs btn btn-bred">赞赏</button>
+</div>
+<div class="zs-modal-bg"></div>
+<div class="zs-modal-box">
+	<div class="zs-modal-head">
+		<button type="button" class="close">×</button>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="https://zhaohuabing.com/img/favicon.png" />Huabing Blog</a></span>
+		<p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
 
-                <hr>
+	</div>
+	<div class="zs-modal-body">
+		<div class="zs-modal-btns">
+			<button class="btn btn-blink" data-num="2">2元</button>
+			<button class="btn btn-blink" data-num="5">5元</button>
+			<button class="btn btn-blink" data-num="10">10元</button>
+			<button class="btn btn-blink" data-num="50">50元</button>
+			<button class="btn btn-blink" data-num="100">100元</button>
+			<button class="btn btn-blink" data-num="1">任意金额</button>
+		</div>
+		<div class="zs-modal-pay">
+			<button class="btn btn-bred" id="pay-text">2元</button>
+			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
+			<img src="https://zhaohuabing.com/img/zanshang/alipay-2.png"  id="pay-image"/>
+		</div>
+	</div>
+	<div class="zs-modal-footer">
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="https://zhaohuabing.com/img/zanshang/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="https://zhaohuabing.com/img/zanshang/alipay-btn.png"/></span></label>
+	</div>
+</div>
+<script type="text/javascript" src="https://zhaohuabing.com/js/zanshang.js"></script>
 
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2018/05/22/user_authentication_authorization" data-toggle="tooltip" data-placement="top" title="微服务安全沉思录之一">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2018/05/20/cryptocurrency_week1_scroogecoin/" data-toggle="tooltip" data-placement="top" title="Programming Assignment: Scrooge Coin">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-            
+                
+        
+              <hr>
+              <ul class="pager">
+                  
+                  <li class="previous">
+                      <a href="/2018/05/22/user_authentication_authorization" data-toggle="tooltip" data-placement="top" title="微服务安全沉思录之一">&larr; Previous Post</a>
+                  </li>
+                  
+                  
+                  <li class="next">
+                      <a href="/2018/05/20/cryptocurrency_week1_scroogecoin/" data-toggle="tooltip" data-placement="top" title="Programming Assignment: Scrooge Coin">Next Post &rarr;</a>
+                  </li>
+                  
+              </ul>
+  
+              
 <div id="disqus-comment"></div>
 
 <script src="https://zhaohuabing.com/js/iDisqus.js"></script>

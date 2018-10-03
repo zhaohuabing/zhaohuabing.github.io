@@ -29,6 +29,9 @@
     <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
 
     
+    <link rel="stylesheet" href="https://zhaohuabing.com/css/zanshang.css">
+
+    
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     
     
@@ -300,11 +303,11 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-		
-                <header>
-                <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
+        		
+                        <header>
+                        <h2>TOC</h2>
+                        </header>
+                        <nav id="TableOfContents">
 <ul>
 <li>
 <ul>
@@ -315,8 +318,8 @@ $(function() {
 </ul></li>
 </ul>
 </nav>
-		
-		<h2 id="问题">问题</h2>
+        		
+        		<h2 id="问题">问题</h2>
 
 <p>我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。
 
@@ -386,23 +389,60 @@ Event ID: 10000</p>
 <p>执行动作选择刚才创建的脚本就可以了。</p>
 
 <p><img src="http://img.zhaohuabing.com/in-post/windows-proxy-script/windows-task-trigger.PNG" alt="Windows任务触发条件" /></p>
+        
+                
+                    
+<div class="entry-shang text-center">
+	<p>「真诚赞赏，手留余香」</p>
+	<button class="zs show-zs btn btn-bred">赞赏</button>
+</div>
+<div class="zs-modal-bg"></div>
+<div class="zs-modal-box">
+	<div class="zs-modal-head">
+		<button type="button" class="close">×</button>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="https://zhaohuabing.com/img/favicon.png" />Huabing Blog</a></span>
+		<p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
 
-                <hr>
+	</div>
+	<div class="zs-modal-body">
+		<div class="zs-modal-btns">
+			<button class="btn btn-blink" data-num="2">2元</button>
+			<button class="btn btn-blink" data-num="5">5元</button>
+			<button class="btn btn-blink" data-num="10">10元</button>
+			<button class="btn btn-blink" data-num="50">50元</button>
+			<button class="btn btn-blink" data-num="100">100元</button>
+			<button class="btn btn-blink" data-num="1">任意金额</button>
+		</div>
+		<div class="zs-modal-pay">
+			<button class="btn btn-bred" id="pay-text">2元</button>
+			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
+			<img src="https://zhaohuabing.com/img/zanshang/alipay-2.png"  id="pay-image"/>
+		</div>
+	</div>
+	<div class="zs-modal-footer">
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="https://zhaohuabing.com/img/zanshang/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="https://zhaohuabing.com/img/zanshang/alipay-btn.png"/></span></label>
+	</div>
+</div>
+<script type="text/javascript" src="https://zhaohuabing.com/js/zanshang.js"></script>
 
-                <ul class="pager">
-                    
-                    <li class="previous">
-                        <a href="/2017/11/28/access-application-from-outside/" data-toggle="tooltip" data-placement="top" title="如何从外部访问Kubernetes集群中的应用？">&larr; Previous Post</a>
-                    </li>
-                    
-                    
-                    <li class="next">
-                        <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">Next Post &rarr;</a>
-                    </li>
-                    
-                </ul>
-
-            
+                
+        
+              <hr>
+              <ul class="pager">
+                  
+                  <li class="previous">
+                      <a href="/2017/11/28/access-application-from-outside/" data-toggle="tooltip" data-placement="top" title="如何从外部访问Kubernetes集群中的应用？">&larr; Previous Post</a>
+                  </li>
+                  
+                  
+                  <li class="next">
+                      <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">Next Post &rarr;</a>
+                  </li>
+                  
+              </ul>
+  
+              
 <div id="disqus-comment"></div>
 
 <script src="https://zhaohuabing.com/js/iDisqus.js"></script>
