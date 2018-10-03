@@ -8,14 +8,14 @@
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <meta name="description" content="Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。">
+    <meta name="description" content="微服务架构的引入为软件应用带来了诸多好处：包括小开发团队，缩短开发周期，语言选择灵活性，增强服务伸缩能力等。与此同时，也引入了分布式系统的诸多复杂问题。其中一个挑战就是如何在微服务架构中实现一个灵活，安全，高效的认证和鉴权方案。本文将尝试就此问题进行一次比较完整的探讨。">
     
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="https://zhaohuabing.com/img/favicon.ico">
 
-    <title>Nginx开源Service Mesh组件Nginmesh安装指南-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>如何构建安全的微服务应用？-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="https://zhaohuabing.com/2018/01/02/nginmesh-install/">
+    <link rel="canonical" href="https://zhaohuabing.com/2018/02/03/authentication&amp;authorization-of-microservice/">
 
     <link rel="stylesheet" href="https://zhaohuabing.com/css/iDisqus.min.css"/>
 	
@@ -130,7 +130,7 @@
 
 <style type="text/css">
     header.intro-header{
-        background-image: url('https://zhaohuabing.com/img/post-bg-2015.jpg')
+        background-image: url('https://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/AuthenticationTrack.jpeg')
     }
 </style>
 <header class="intro-header" >
@@ -140,24 +140,20 @@
                 <div class="post-heading">
                     <div class="tags">
                        
-                       <a class="tag" href="/tags/istio" title="Istio">
-                           Istio
+                       <a class="tag" href="/tags/microservice" title="Microservice">
+                           Microservice
                         </a>
                         
-                       <a class="tag" href="/tags/service-mesh" title="service Mesh">
-                           service Mesh
-                        </a>
-                        
-                       <a class="tag" href="/tags/nginmesh" title="nginmesh">
-                           nginmesh
+                       <a class="tag" href="/tags/security" title="Security">
+                           Security
                         </a>
                         
                     </div>
-                    <h1>Nginx开源Service Mesh组件Nginmesh安装指南</h1>
-                    <h2 class="subheading"></h2>
-                    <span  class="meta">Posted by 赵化冰 on Tuesday, January 2, 2018
+                    <h1>如何构建安全的微服务应用？</h1>
+                    <h2 class="subheading">微服务架构下的认证和鉴权方案探讨</h2>
+                    <span  class="meta">Posted by 赵化冰 on Saturday, February 3, 2018
                         
-                        <span id="/2018/01/02/nginmesh-install/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                        <span id="/2018/02/03/authentication&amp;authorization-of-microservice/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -320,388 +316,236 @@ $(function() {
 <li>
 <ul>
 <li><a href="#前言">前言</a></li>
-<li><a href="#安装kubernetes-cluster">安装Kubernetes Cluster</a></li>
-<li><a href="#安装istio控制面和bookinfo">安装Istio控制面和Bookinfo</a></li>
-<li><a href="#查看自动注入的sidecar">查看自动注入的sidecar</a></li>
-<li><a href="#关联阅读">关联阅读</a></li>
+<li><a href="#单体应用的实现方式">单体应用的实现方式</a></li>
+<li><a href="#微服务认证和鉴权面临的问题">微服务认证和鉴权面临的问题</a></li>
+<li><a href="#微服务认证和鉴权的技术方案">微服务认证和鉴权的技术方案</a>
+<ul>
+<li><a href="#用户身份认证">用户身份认证</a></li>
+<li><a href="#用户状态保持">用户状态保持</a></li>
+<li><a href="#实现单点登录">实现单点登录</a></li>
+<li><a href="#用户权限控制">用户权限控制</a>
+<ul>
+<li><a href="#api-gateway处进行统一的权限控制">API Gateway处进行统一的权限控制</a></li>
+<li><a href="#由各个微服务单独进行权限控制">由各个微服务单独进行权限控制</a></li>
+</ul></li>
+<li><a href="#第三方应用接入">第三方应用接入</a>
+<ul>
+<li><a href="#api-token">API Token</a></li>
+<li><a href="#oauth">OAuth</a></li>
+</ul></li>
+<li><a href="#微服务之间的认证">微服务之间的认证</a></li>
+</ul></li>
 <li><a href="#参考">参考</a></li>
 </ul></li>
 </ul>
 </nav>
         		
-        		<h2 id="前言">前言</h2>
+        		
 
-<p>Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。
+<h2 id="前言">前言</h2>
 
-<img src="https://raw.githubusercontent.com/nginmesh/nginmesh/master/images/nginx_sidecar.png" alt="Nginmesh sidecar proxy" /></p>
+<p>微服务架构的引入为软件应用带来了诸多好处：包括小开发团队，缩短开发周期，语言选择灵活性，增强服务伸缩能力等。与此同时，也引入了分布式系统的诸多复杂问题。其中一个挑战就是如何在微服务架构中实现一个灵活，安全，高效的认证和鉴权方案。本文将尝试就此问题进行一次比较完整的探讨。</p>
 
-<blockquote>
-<p>备注：本文安装指南基于Ubuntu 16.04，在Centos上某些安装步骤的命令可能需要稍作改动。</p>
-</blockquote>
+<h2 id="单体应用的实现方式">单体应用的实现方式</h2>
 
-<h2 id="安装kubernetes-cluster">安装Kubernetes Cluster</h2>
+<p>在单体架构下，整个应用是一个进程，在应用中，一般会用一个安全模块来实现用户认证和鉴权。</p>
 
-<p>Kubernetes Cluster包含etcd, api server, scheduler，controller manager等多个组件，组件之间的配置较为复杂，如果要手动去逐个安装及配置各个组件，需要了解kubernetes，操作系统及网络等多方面的知识，对安装人员的能力要求较高。kubeadm提供了一个简便，快速安装Kubernetes Cluster的方式，并且可以通过安装配置文件提供较高的灵活性，因此我们采用kubeadm安装kubernetes cluster。</p>
+<p>用户登录时，应用的安全模块对用户身份进行验证，验证用户身份合法后，为该用户生成一个会话(Session)，并为该Session关联一个唯一的编号(Session Id)。Session是应用中的一小块内存结构，其中保存了登录用户的信息，如User name, Role, Permission等。服务器把该Session的Session Id返回给客户端，客户端将Session Id以cookie或者URL重写的方式记录下来，并在后续请求中发送给应用，这样应用在接收到客户端访问请求时可以使用Session Id验证用户身份，不用每次请求时都输入用户名和密码进行身份验证。
+&gt; 备注：为了避免Session Id被第三者截取和盗用，客户端和应用之前应使用TLS加密通信，session也会设置有过期时间。</p>
 
-<p>首先参照<a href="https://kubernetes.io/docs/setup/independent/install-kubeadm">kubeadm的说明文档</a>在计划部署kubernetes cluster的每个节点上安装docker，kubeadm, kubelet 和 kubectl。</p>
+<p><img src="http://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/monolith-user-login.png" alt="单体应用用户登录认证序列图" />
+<center>单体应用用户登录认证序列图</center></p>
 
-<p>安装docker</p>
+<p>客户端访问应用时，Session Id随着HTTP请求发送到应用，客户端请求一般会通过一个拦截器处理所有收到的客户端请求。拦截器首先判断Session Id是否存在，如果该Session Id存在，就知道该用户已经登录。然后再通过查询用户权限判断用户能否执行该此请求，以实现操作鉴权。
+<img src="http://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/monolith-user-request.png" alt="单体应用用户操作鉴权序列图" />
+<center>单体应用用户操作鉴权序列图</center></p>
 
-<pre><code>apt-get update
-apt-get install -y docker.io
+<h2 id="微服务认证和鉴权面临的问题">微服务认证和鉴权面临的问题</h2>
+
+<p>在微服务架构下，一个应用被拆分为多个微服务进程，每个微服务实现原来单体应用中一个模块的业务功能。应用拆分后，对每个微服务的访问请求都需要进行认证和鉴权。如果参考单体应用的实现方式会遇到下述问题：
+* 认证和鉴权逻辑需要在每个微服务中进行处理，需要在各个微服务中重复实现这部分公共逻辑。虽然我们可以使用代码库复用部分代码，但这又会导致所有微服务对特定代码库及其版本存在依赖，影响微服务语言/框架选择的灵活性。
+* 微服务应遵循单一职责原理，一个微服务只处理单一的业务逻辑。认证和鉴权的公共逻辑不应该放到微服务实现中。
+* 为了充分利用微服务架构的好处，实现微服务的水平扩展(Scalability)和弹性(Resiliency),微服务最好是无状态的。因此不建议使用session这种有状态的方案。
+* 微服务架构下的认证和鉴权涉及到场景更为复杂，涉及到用户访问微服务应用，第三方应用访问微服务应用，应用内多个微服务之间相互访问等多种场景，每种场景下的认证和鉴权方案都需要考虑到，以保证应用程序的安全性。
+<img src="http://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/auth-scenarios.png" alt="微服务认证和鉴权涉及到的三种场景" />
+<center>微服务认证和鉴权涉及到的三种场景</center></p>
+
+<h2 id="微服务认证和鉴权的技术方案">微服务认证和鉴权的技术方案</h2>
+
+<h3 id="用户身份认证">用户身份认证</h3>
+
+<p>一个完整的微服务应用是由多个相互独立的微服务进程组成的，对每个微服务的访问都需要进行用户认证。如果将用户认证的工作放到每个微服务中，应用的认证逻辑将会非常复杂。因此需要考虑一个SSO（单点登录）的方案，即用户只需要登录一次，就可以访问所有微服务提供的服务。 由于在微服务架构中以API Gateway作为对外提供服务的入口，因此可以考虑在API Gateway处提供统一的用户认证。</p>
+
+<h3 id="用户状态保持">用户状态保持</h3>
+
+<p>HTTP是一个无状态的协议，对服务器来说，用户的每次HTTP请求是相互独立的。互联网是一个巨大的分布式系统，HTTP协议作为互联网上的一个重要协议，要考虑到大量应用访问的效率问题。无状态意味着服务端可以把客户端的请求根据需要发送到集群中的任何一个节点，HTTP的无状态设计对负载均衡有明显的好处，由于没有状态，用户请求可以被分发到任意一个服务器，应用也可以在靠近用户的网络边缘部署缓存服务器。对于不需要身份认证的服务，例如浏览新闻网页等，这是没有任何问题的。但很多服务如网络购物，企业管理系统等都需要对用户的身份进行认证，因此需要在HTTP协议基础上采用一种方式保存用户的登录状态，避免用户每发起一次请求都需要进行验证。</p>
+
+<p>传统方式是在服务器端采用Cookie来保存用户状态，由于在服务器是有状态的，对服务器的水平扩展有影响。在微服务架构下建议采用Token来记录用户登录状态。</p>
+
+<p>Token和Seesion主要的不同点是存储的地方不同。Session是集中存储在服务器中的；而Token是用户自己持有的，一般以cookie的形式存储在浏览器中。Token中保存了用户的身份信息，每次请求都会发送给服务器，服务器因此可以判断访问者的身份，并判断其对请求的资源有没有访问权限。</p>
+
+<p>Token用于表明用户身份，因此需要对其内容进行加密，避免被请求方或者第三者篡改。<a href="https://jwt.io">JWT(Json Web Token)</a>是一个定义Token格式的开放标准(RFC 7519),定义了Token的内容，加密方式，并提供了各种语言的lib。</p>
+
+<p>JWT Token的结构非常简单，包括三部分：
+* Header<BR>
+头部包含类型,为固定值JWT。然后是JWT使用的Hash算法。</p>
+
+<pre><code>{
+  &quot;alg&quot;: &quot;HS256&quot;,
+  &quot;typ&quot;: &quot;JWT&quot;
+}
 </code></pre>
-
-<p>使用google的源安装kubelet kubeadm和kubectl</p>
-
-<pre><code>apt-get update &amp;&amp; apt-get install -y apt-transport-https
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-cat &lt;&lt;EOF &gt;/etc/apt/sources.list.d/kubernetes.list
-deb http://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-apt-get update
-apt-get install -y kubelet kubeadm kubectl
-</code></pre>
-
-<p>使用kubeadmin安装kubernetes cluster</p>
-
-<p>Nginmesh使用Kubernetes的<a href="https://kubernetes.io/docs/admin/extensible-admission-controllers/#initializers">Initializer机制</a>来实现sidecar的自动注入。Initializer目前是kubernetes的一个Alpha feature，缺省是未启用的，需要<a href="https://kubernetes.io/docs/admin/extensible-admission-controllers/#enable-initializers-alpha-feature">通过api server的参数</a>打开。因此我们先创建一个kubeadm-conf配置文件，用于配置api server的启动参数</p>
-
-<pre><code>apiVersion: kubeadm.k8s.io/v1alpha1
-kind: MasterConfiguration
-apiServerExtraArgs:
-  admission-control: Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ValidatingAdmissionWebhook,ResourceQuota,DefaultTolerationSeconds,MutatingAdmissionWebhook
-  runtime-config: admissionregistration.k8s.io/v1alpha1
-</code></pre>
-
-<p>使用kubeadmin init命令创建kubernetes master节点。
-可以先试用&ndash;dry-run参数验证一下配置文件。</p>
-
-<pre><code>kubeadm init --config kubeadm-conf --dry-run
-</code></pre>
-
-<p>如果一切正常，kubeadm将提示：Finished dry-running successfully. Above are the resources that would be created.</p>
-
-<p>下面再实际执行创建命令</p>
-
-<pre><code>kubeadm init --config kubeadm-conf
-</code></pre>
-
-<p>kubeadm会花一点时间拉取docker image，命令完成后，会提示如何将一个work node加入cluster。如下所示：</p>
-
-<pre><code> kubeadm join --token fffbf6.13bcb3563428cf23 10.12.5.15:6443 --discovery-token-ca-cert-hash sha256:27ad08b4cd9f02e522334979deaf09e3fae80507afde63acf88892c8b72f143f
-</code></pre>
-
-<blockquote>
-<p>备注：目前kubeadm只能支持在一个节点上安装master，支持高可用的安装将在后续版本实现。kubernetes官方给出的workaround建议是定期备份 etcd 数据<a href="https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#limitations">kubeadm limitations</a>。</p>
-</blockquote>
-
-<p>Kubeadm并不会安装Pod需要的网络，因此需要手动安装一个Pod网络，这里采用的是Calico</p>
-
-<pre><code>kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
-</code></pre>
-
-<p>使用kubectl 命令检查master节点安装结果</p>
-
-<pre><code>ubuntu@kube-1:~$ kubectl get all
-NAME             TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-svc/kubernetes   ClusterIP   10.96.0.1    &lt;none&gt;        443/TCP   12m
-</code></pre>
-
-<p>在每台工作节点上执行上述kubeadm join命令，即可把工作节点加入集群中。使用kubectl 命令检查cluster中的节点情况。</p>
-
-<pre><code> ubuntu@kube-1:~$ kubectl get nodes
-NAME      STATUS    ROLES     AGE       VERSION
-kube-1    Ready     master    21m       v1.9.0
-kube-2    Ready     &lt;none&gt;    47s       v1.9.0
-</code></pre>
-
-<h2 id="安装istio控制面和bookinfo">安装Istio控制面和Bookinfo</h2>
-
-<p>参考<a href="https://github.com/nginmesh/nginmesh">Nginmesh文档</a>安装Istio控制面和Bookinfo
-该文档的步骤清晰明确，这里不再赘述。</p>
-
-<p>需要注意的是，在Niginmesh文档中，建议通过Ingress的External IP访问bookinfo应用程序。但<a href="https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer">Loadbalancer只在支持的云环境中才会生效</a>，并且还需要进行一定的配置。如我在Openstack环境中创建的cluster，则需要参照<a href="https://docs.openstack.org/magnum/ocata/dev/kubernetes-load-balancer.html">该文档</a>对Openstack进行配置后，Openstack才能够支持kubernetes的Loadbalancer service。如未进行配置，通过命令查看Ingress External IP一直显示为pending状态。</p>
-
-<pre><code>NAME            TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                                                            AGE
-istio-ingress   LoadBalancer   10.111.158.10   &lt;pending&gt;     80:32765/TCP,443:31969/TCP                                         11m
-istio-mixer     ClusterIP      10.107.135.31   &lt;none&gt;        9091/TCP,15004/TCP,9093/TCP,9094/TCP,9102/TCP,9125/UDP,42422/TCP   11m
-istio-pilot     ClusterIP      10.111.110.65   &lt;none&gt;        15003/TCP,443/TCP                                                  11m
-</code></pre>
-
-<p>如不能配置云环境提供Loadbalancer特性, 我们可以直接使用集群中的一个节点IP:Nodeport访问Bookinfo应用程序。</p>
-
-<pre><code>http://10.12.5.31:32765/productpage
-</code></pre>
-
-<p>想要了解更多关于如何从集群外部进行访问的内容，可以参考<a href="http://zhaohuabing.com/2017/11/28/access-application-from-outside/">如何从外部访问Kubernetes集群中的应用？</a></p>
-
-<h2 id="查看自动注入的sidecar">查看自动注入的sidecar</h2>
-
-<p>使用 kubectl get pod reviews-v3-5fff595d9b-zsb2q -o yaml 命令查看Bookinfo应用的reviews服务的Pod。</p>
-
-<pre><code>apiVersion: v1
-kind: Pod
-metadata:
-  annotations:
-    sidecar.istio.io/status: injected-version-0.2.12
-  creationTimestamp: 2018-01-02T02:33:36Z
-  generateName: reviews-v3-5fff595d9b-
-  labels:
-    app: reviews
-    pod-template-hash: &quot;1999151856&quot;
-    version: v3
-  name: reviews-v3-5fff595d9b-zsb2q
-  namespace: default
-  ownerReferences:
-  - apiVersion: extensions/v1beta1
-    blockOwnerDeletion: true
-    controller: true
-    kind: ReplicaSet
-    name: reviews-v3-5fff595d9b
-    uid: 5599688c-ef65-11e7-8be6-fa163e160c7d
-  resourceVersion: &quot;3757&quot;
-  selfLink: /api/v1/namespaces/default/pods/reviews-v3-5fff595d9b-zsb2q
-  uid: 559d8c6f-ef65-11e7-8be6-fa163e160c7d
-spec:
-  containers:
-  - image: istio/examples-bookinfo-reviews-v3:0.2.3
-    imagePullPolicy: IfNotPresent
-    name: reviews
-    ports:
-    - containerPort: 9080
-      protocol: TCP
-    resources: {}
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: default-token-48vxx
-      readOnly: true
-  - args:
-    - proxy
-    - sidecar
-    - -v
-    - &quot;2&quot;
-    - --configPath
-    - /etc/istio/proxy
-    - --binaryPath
-    - /usr/local/bin/envoy
-    - --serviceCluster
-    - reviews
-    - --drainDuration
-    - 45s
-    - --parentShutdownDuration
-    - 1m0s
-    - --discoveryAddress
-    - istio-pilot.istio-system:15003
-    - --discoveryRefreshDelay
-    - 1s
-    - --zipkinAddress
-    - zipkin.istio-system:9411
-    - --connectTimeout
-    - 10s
-    - --statsdUdpAddress
-    - istio-mixer.istio-system:9125
-    - --proxyAdminPort
-    - &quot;15000&quot;
-    - --controlPlaneAuthPolicy
-    - NONE
-    env:
-    - name: POD_NAME
-      valueFrom:
-        fieldRef:
-          apiVersion: v1
-          fieldPath: metadata.name
-    - name: POD_NAMESPACE
-      valueFrom:
-        fieldRef:
-          apiVersion: v1
-          fieldPath: metadata.namespace
-    - name: INSTANCE_IP
-      valueFrom:
-        fieldRef:
-          apiVersion: v1
-          fieldPath: status.podIP
-    image: nginmesh/proxy_debug:0.2.12
-    imagePullPolicy: Always
-    name: istio-proxy
-    resources: {}
-    securityContext:
-      privileged: true
-      readOnlyRootFilesystem: false
-      runAsUser: 1337
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /etc/istio/proxy
-      name: istio-envoy
-    - mountPath: /etc/certs/
-      name: istio-certs
-      readOnly: true
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: default-token-48vxx
-      readOnly: true
-  dnsPolicy: ClusterFirst
-  initContainers:
-  - args:
-    - -p
-    - &quot;15001&quot;
-    - -u
-    - &quot;1337&quot;
-    image: nginmesh/proxy_init:0.2.12
-    imagePullPolicy: Always
-    name: istio-init
-    resources: {}
-    securityContext:
-      capabilities:
-        add:
-        - NET_ADMIN
-      privileged: true
-    terminationMessagePath: /dev/termination-log
-    terminationMessagePolicy: File
-    volumeMounts:
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: default-token-48vxx
-      readOnly: true
-  nodeName: kube-2
-  restartPolicy: Always
-  schedulerName: default-scheduler
-  securityContext: {}
-  serviceAccount: default
-  serviceAccountName: default
-  terminationGracePeriodSeconds: 30
-  tolerations:
-  - effect: NoExecute
-    key: node.kubernetes.io/not-ready
-    operator: Exists
-    tolerationSeconds: 300
-  - effect: NoExecute
-    key: node.kubernetes.io/unreachable
-    operator: Exists
-    tolerationSeconds: 300
-  volumes:
-  - emptyDir:
-      medium: Memory
-    name: istio-envoy
-  - name: istio-certs
-    secret:
-      defaultMode: 420
-      optional: true
-      secretName: istio.default
-  - name: default-token-48vxx
-    secret:
-      defaultMode: 420
-      secretName: default-token-48vxx
-status:
-  conditions:
-  - lastProbeTime: null
-    lastTransitionTime: 2018-01-02T02:33:54Z
-    status: &quot;True&quot;
-    type: Initialized
-  - lastProbeTime: null
-    lastTransitionTime: 2018-01-02T02:36:06Z
-    status: &quot;True&quot;
-    type: Ready
-  - lastProbeTime: null
-    lastTransitionTime: 2018-01-02T02:33:36Z
-    status: &quot;True&quot;
-    type: PodScheduled
-  containerStatuses:
-  - containerID: docker://5d0c189b9dde8e14af4c8065ee5cf007508c0bb2b3c9535598d99dc49f531370
-    image: nginmesh/proxy_debug:0.2.12
-    imageID: docker-pullable://nginmesh/proxy_debug@sha256:6275934ea3a1ce5592e728717c4973ac704237b06b78966a1d50de3bc9319c71
-    lastState: {}
-    name: istio-proxy
-    ready: true
-    restartCount: 0
-    state:
-      running:
-        startedAt: 2018-01-02T02:36:05Z
-  - containerID: docker://aba3e114ac1aa87c75e969dcc1b0725696de78d3407c5341691d9db579429f28
-    image: istio/examples-bookinfo-reviews-v3:0.2.3
-    imageID: docker-pullable://istio/examples-bookinfo-reviews-v3@sha256:6e100e4805a8c10c47040ea7b66f10ad619c7e0068696032546ad3e35ad46570
-    lastState: {}
-    name: reviews
-    ready: true
-    restartCount: 0
-    state:
-      running:
-        startedAt: 2018-01-02T02:35:47Z
-  hostIP: 10.12.5.31
-  initContainerStatuses:
-  - containerID: docker://b55108625832a3205a265e8b45e5487df10276d5ae35af572ea4f30583933c1f
-    image: nginmesh/proxy_init:0.2.12
-    imageID: docker-pullable://nginmesh/proxy_init@sha256:f73b68839f6ac1596d6286ca498e4478b8fcfa834e4884418d23f9f625cbe5f5
-    lastState: {}
-    name: istio-init
-    ready: true
-    restartCount: 0
-    state:
-      terminated:
-        containerID: docker://b55108625832a3205a265e8b45e5487df10276d5ae35af572ea4f30583933c1f
-        exitCode: 0
-        finishedAt: 2018-01-02T02:33:53Z
-        reason: Completed
-        startedAt: 2018-01-02T02:33:53Z
-  phase: Running
-  podIP: 192.168.79.138
-  qosClass: BestEffort
-  startTime: 2018-01-02T02:33:39Z
-
-</code></pre>
-
-<p>该命令行输出的内容相当长，我们可以看到Pod中注入了一个 nginmesh/proxy_debug container,还增加了一个initContainer nginmesh/proxy_init。这两个容器是通过kubernetes initializer自动注入到pod中的。这两个container分别有什么作用呢？让我们看一下<a href="https://github.com/nginmesh/nginmesh/tree/49cd69a61d7d330685ef39ccd63fac06421c3da2/istio/agent">Nginmesh源代码中的说明</a>：</p>
 
 <ul>
-<li><p>proxy_debug, which comes with the agent and NGINX.</p></li>
-
-<li><p>proxy_init, which is used for configuring iptables rules for transparently injecting an NGINX proxy from the proxy_debug image into an application pod.</p></li>
+<li>Payload<BR>
+包含发布者，过期时间，用户名等标准信息，也可以添加用户角色，用户自定义的信息。
+<code>
+{
+&quot;sub&quot;: &quot;1234567890&quot;,
+&quot;name&quot;: &quot;John Doe&quot;,
+&quot;admin&quot;: true
+}
+</code></li>
+<li>Signature<BR>
+Token颁发方的签名，用于客户端验证Token颁发方的身份，也用于服务器防止Token被篡改。
+签名算法
+<code>
+HMACSHA256(
+base64UrlEncode(header) + &quot;.&quot; +
+base64UrlEncode(payload),
+secret)
+</code></li>
 </ul>
 
-<p>proxy_debug就是sidecar代理，proxy_init则用于配置iptable 规则，以将应用的流量导入到sidecar代理中。</p>
+<p>这三部分使用Base64编码后组合在一起，成为最终返回给客户端的Token串，每部分之间采用&rdquo;.&ldquo;分隔。下图是上面例子最终形成的Token
+<img src="https://cdn.auth0.com/content/jwt/encoded-jwt3.png" alt="" />
+采用Token进行用户认证，服务器端不再保存用户状态，客户端每次请求时都需要将Token发送到服务器端进行身份验证。Token发送的方式<a href="https://tools.ietf.org/html/rfc6750">rfc6750</a>进行了规定，采用一个 Authorization: Bearer HHTP Header进行发送。</p>
 
-<p>查看proxy_init的Dockerfile文件，可以看到proxy_init其实是调用了<a href="https://github.com/nginmesh/nginmesh/blob/49cd69a61d7d330685ef39ccd63fac06421c3da2/istio/agent/docker-init/prepare_proxy.sh">prepare_proxy.sh</a>这个脚本来创建iptable规则。</p>
-
-<p>proxy_debug Dockerfile</p>
-
-<pre><code>FROM debian:stretch-slim
-RUN apt-get update &amp;&amp; apt-get install -y iptables
-ADD prepare_proxy.sh /
-ENTRYPOINT [&quot;/prepare_proxy.sh&quot;]
+<pre><code>Authorization: Bearer mF_9.B5f-4.1JqM
 </code></pre>
 
-<p>prepare_proxy.sh节选</p>
+<p>采用Token方式进行用户认证的基本流程如下图所示：
+1. 用户输入用户名,密码等验证信息，向服务器发起登录请求
+1. 服务器端验证用户登录信息，生成JWT token
+1. 服务器端将Token返回给客户端，客户端保存在本地（一般以Cookie的方式保存）
+1. 客户端向服务器端发送访问请求，请求中携带之前颁发的Token
+1. 服务器端验证Token，确认用户的身份和对资源的访问权限，并进行相应的处理（拒绝或者允许访问）
+<img src="https://cdn.auth0.com/content/jwt/jwt-diagram.png" alt="" />
+<center>采用Token进行用户认证的流程图</center></p>
 
-<pre><code>...omitted for brevity 
+<h3 id="实现单点登录">实现单点登录</h3>
 
-# Create a new chain for redirecting inbound and outbound traffic to
-# the common Envoy port.
-iptables -t nat -N ISTIO_REDIRECT                                             -m comment --comment &quot;istio/redirect-common-chain&quot;
-iptables -t nat -A ISTIO_REDIRECT -p tcp -j REDIRECT --to-port ${ENVOY_PORT}  -m comment --comment &quot;istio/redirect-to-envoy-port&quot;
+<p>单点登录的理念很简单，即用户只需要登录应用一次，就可以访问应用中所有的微服务。API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用实现一个单点登录方案。</p>
 
-# Redirect all inbound traffic to Envoy.
-iptables -t nat -A PREROUTING -j ISTIO_REDIRECT                               -m comment --comment &quot;istio/install-istio-prerouting&quot;
+<p>用户的认证流程和采用Token方式认证的基本流程类似，不同之处是加入了API Gateway作为外部请求的入口。</p>
 
-# Create a new chain for selectively redirecting outbound packets to
-# Envoy.
-iptables -t nat -N ISTIO_OUTPUT                                               -m comment --comment &quot;istio/common-output-chain&quot;
+<p>用户登录
+1. 客户端发送登录请求到API Gateway
+2. API Gateway将登录请求转发到Security Service
+3. Security Service验证用户身份，并颁发Token</p>
 
-...omitted for brevity
+<p>用户请求
+1. 客户端请求发送到API Gateway
+1. API Gateway调用的Security Service对请求中的Token进行验证，检查用户的身份
+2. 如果请求中没有Token，Token过期或者Token验证非法，则拒绝用户请求。
+3. Security Service检查用户是否具有该操作权
+4. 如果用户具有该操作权限，则把请求发送到后端的Business Service，否则拒绝用户请求
+<img src="http://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/api-gateway-sso.png" alt="采用API Gateway实现微服务应用的SSO" />
+<center>采用API Gateway和Token实现微服务应用的单点登录</center></p>
+
+<h3 id="用户权限控制">用户权限控制</h3>
+
+<p>用户权限控制有两种做法，在API Gateway处统一处理，或者在各个微服务中单独处理。</p>
+
+<h4 id="api-gateway处进行统一的权限控制">API Gateway处进行统一的权限控制</h4>
+
+<p>客户端发送的HTTP请求中包含有请求的Resource及HTTP Method。如果系统遵循REST规范，以URI资源方式对访问对象进行建模，则API Gateway可以从请求中直接截取到访问的资源及需要进行的操作，然后调用Security Service进行权限判断，根据判断结果决定用户是否有权限对该资源进行操作，并转发到后端的Business Service。这种实现方式API Gateway处统一处理鉴权逻辑，各个微服务不需要考虑用户鉴权，只需要处理业务逻辑，简化了各微服务的实现。</p>
+
+<h4 id="由各个微服务单独进行权限控制">由各个微服务单独进行权限控制</h4>
+
+<p>如果微服务未严格遵循REST规范对访问对象进行建模，或者应用需要进行定制化的权限控制，则需要在微服务中单独对用户权限进行判断和处理。这种情况下微服务的权限控制更为灵活，但各个微服务需要单独维护用户的授权数据，实现更复杂一些。</p>
+
+<h3 id="第三方应用接入">第三方应用接入</h3>
+
+<p>对于第三方应用接入的访问控制，有两种实现方式：</p>
+
+<h4 id="api-token">API Token</h4>
+
+<p>第三方使用一个应用颁发的API Token对应用的数据进行访问。该Token由用户在应用中生成，并提供给第三方应用使用。在这种情况下，一般只允许第三方应用访问该Token所属用户自身的数据，而不能访问其他用户的敏感私有数据。</p>
+
+<p>例如Github就提供了Personal API Token功能，用户可以在<a href="https://github.com/settings/tokens">Github的开发者设置界面</a>中创建Token，然后使用该Token来访问Github的API。在创建Token时，可以设置该Token可以访问用户的哪些数据，如查看Repo信息，删除Repo，查看用户信息，更新用户信息等。</p>
+
+<p>使用API Token来访问Github API</p>
+
+<pre><code>curl -u zhaohuabing:fbdf8e8862252ed0f3ba9dba4e328c01ac93aeec https://api.github.com/user
+
 </code></pre>
 
-<h2 id="关联阅读">关联阅读</h2>
+<p>使用API Token而不是直接使用用户名/密码来访问API的好处是降低了用户密码暴露的风险，并且可以随时收回Token的权限而不用修改密码。</p>
 
-<p><a href="http://zhaohuabing.com/2017/11/04/istio-install_and_example/">Istio及Bookinfo示例程序安装试用笔记</a></p>
+<p>由于API Token只能访问指定用户的数据，因此适合于用户自己开发一些脚本或小程序对应用中自己的数据进行操作。</p>
+
+<h4 id="oauth">OAuth</h4>
+
+<p>某些第三方应用需要访问不同用户的数据，或者对多个用户的数据进行整合处理，则可以考虑采用OAuth。采用OAuth，当第三方应用访问服务时，应用会提示用户授权第三方应用相应的访问权限，根据用户的授权操作结果生成用于访问的Token，以对第三方应用的操作请求进行访问控制。</p>
+
+<p>同样以Github为例，一些第三方应用如Travis CI，GitBook等就是通过OAuth和Github进行集成的。
+OAuth针对不同场景有不同的认证流程，一个典型的认证流程如下图所示：
+* 用户向OAuth客户端程序发起一个请求，OAuth客户端程序在处理该请求时发现需要访问用户在资源服务器中的数据。
+* 客户端程序将用户请求重定向到认证服务器，该请求中包含一个callback的URL。
+* 认证服务器返回授权页面，要求用户对OAuth客户端的资源请求进行授权。
+* 用户对该操作进行授权后，认证服务器将请求重定向到客户端程序的callback url，将授权码返回给客户端程序。
+* 客户端程序将授权码发送给认证服务器，请求token。
+* 认证服务器验证授权码后将token颁发给客户端程序。
+* 客户端程序采用颁发的token访问资源，完成用户请求。</p>
+
+<blockquote>
+<p>备注：
+1. OAuth中按照功能区分了资源服务器和认证服务器这两个角色，在实现时这两个角色常常是同一个应用。将该流程图中的各个角色对应到Github的例子中，资源服务器和认证服务器都是Github，客户端程序是Travis CI或者GitBook，用户则是使用Travis CI或者GitBook的直接用户。</p>
+
+<ol>
+<li>有人可能会疑惑在该流程中为何要使用一个授权码(Authorization Code)来申请Token，而不是由认证服务器直接返回Token给客户端。OAuth这样设计的原因是在重定向到客户端Callback URL的过程中会经过用户代理（浏览器），如果直接传递Token存在被窃取的风险。采用授权码的方式，申请Token时客户端直接和认证服务器进行交互，并且认证服务期在处理客户端的Token申请请求时还会对客户端进行身份认证，避免其他人伪造客户端身份来使用认证码申请Token。
+下面是一个客户端程序采用Authorization Code来申请Token的示例，client_id和client_secret被用来验证客户端的身份。</li>
+</ol>
+
+<pre><code>POST /oauth/token HTTP/1.1
+Host: authorization-server.com
+          
+grant_type=authorization_code
+&amp;code=xxxxxxxxxxx
+&amp;redirect_uri=https://example-app.com/redirect
+&amp;client_id=xxxxxxxxxx
+&amp;client_secret=xxxxxxxxxx
+</code></pre>
+</blockquote>
+
+<p><img src="http://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/oauth_web_server_flow.png" alt="OAuth认证流程" />
+<center>OAuth认证流程</center></p>
+
+<p>另外在谈及OAuth时，我们需要注意微服务应用作为OAuth客户端和OAuth服务器的两种不同场景:</p>
+
+<p>在实现微服务自身的用户认证时，也可以采用OAuth将微服务的用户认证委托给一个第三方的认证服务提供商，例如很多应用都将用户登录和微信或者QQ的OAuth服务进行了集成。</p>
+
+<p>第三方应用接入和微服务自身用户认证采用OAuth的目的是不同的，前者是为了将微服务中用户的私有数据访问权限授权给第三方应用，微服务在OAuth架构中是认证和资源服务器的角色；而后者的目的是集成并利用知名认证提供服务商提供的OAuth认证服务，简化繁琐的注册操作，微服务在OAuth架构中是客户端的角色。</p>
+
+<p>因此在我们需要区分这两种不同的场景，以免造成误解。</p>
+
+<h3 id="微服务之间的认证">微服务之间的认证</h3>
+
+<p>除了来自用户和第三方的北向流量外，微服务之间还有大量的东西向流量，这些流量可能在同一个局域网中，也可能跨越不同的数据中心,这些服务间的流量存在被第三方的嗅探和攻击的危险，因此也需要进行安全控制。</p>
+
+<p>通过双向SSL可以实现服务之间的相互身份认证，并通过TLS加密服务间的数据传输。需要为每个服务生成一个证书，服务之间通过彼此的证书进行身份验证。在微服务运行环境中，可能存在大量的微服务实例，并且微服务实例经常会动态变化，例如随着水平扩展增加服务实例。在这种情况下，为每个服务创建并分发证书变得非常困难。我们可以通过创建一个私有的证书中心(Internal PKI/CA)来为各个微服务提供证书管理如颁发、撤销、更新等。</p>
 
 <h2 id="参考">参考</h2>
 
 <ul>
-<li><p><a href="https://github.com/nginmesh/nginmesh/">Service Mesh with Istio and NGINX</a></p></li>
-
-<li><p><a href="https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#14-installing-kubeadm-on-your-hosts">Using kubeadm to Create a Cluster</a></p></li>
-
-<li><p><a href="https://kubernetes.io/docs/admin/extensible-admission-controllers/#enable-initializers-alpha-feature">Kubernetes Reference Documentation-Dynamic Admission Control</a></p></li>
+<li><a href="https://initiate.andela.com/how-we-solved-authentication-and-authorization-in-our-microservice-architecture-994539d1b6e6">How We Solved Authentication and Authorization in Our Microservice Architecture</a></li>
+<li><a href="https://blog.cloudflare.com/how-to-build-your-own-public-key-infrastructure/">How to build your own public key infrastructure</a></li>
+<li><a href="https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/">OAuth 2.0 Authorization Code Request</a></li>
+<li><a href="https://www.jianshu.com/p/c65fa3af1c01">PKI/CA工作原理及架构</a></li>
+<li><a href="http://www.primeton.com/read.php?id=2390">深入聊聊微服务架构的身份认证问题</a></li>
 </ul>
+
         
                 
                     
@@ -745,12 +589,12 @@ iptables -t nat -N ISTIO_OUTPUT                                               -m
               <ul class="pager">
                   
                   <li class="previous">
-                      <a href="/2018/02/03/authentication&amp;authorization-of-microservice/" data-toggle="tooltip" data-placement="top" title="如何构建安全的微服务应用？">&larr; Previous Post</a>
+                      <a href="/2018/02/09/docker-without-sudo/" data-toggle="tooltip" data-placement="top" title="如何使用非root用户执行docker命令">&larr; Previous Post</a>
                   </li>
                   
                   
                   <li class="next">
-                      <a href="/2017/11/28/access-application-from-outside/" data-toggle="tooltip" data-placement="top" title="如何从外部访问Kubernetes集群中的应用？">Next Post &rarr;</a>
+                      <a href="/2018/01/02/nginmesh-install/" data-toggle="tooltip" data-placement="top" title="Nginx开源Service Mesh组件Nginmesh安装指南">Next Post &rarr;</a>
                   </li>
                   
               </ul>

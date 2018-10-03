@@ -52,10 +52,10 @@
     
     <item>
       <title>如何构建安全的微服务应用？</title>
-      <link>https://zhaohuabing.com/2018/02/03/authentication-and-authorization-of-microservice/</link>
+      <link>https://zhaohuabing.com/2018/02/03/authenticationauthorization-of-microservice/</link>
       <pubDate>Sat, 03 Feb 2018 12:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/2018/02/03/authentication-and-authorization-of-microservice/</guid>
+      <guid>https://zhaohuabing.com/2018/02/03/authenticationauthorization-of-microservice/</guid>
       <description>前言 微服务架构的引入为软件应用带来了诸多好处：包括小开发团队，缩短开发周期，语言选择灵活性，增强服务伸缩能力等。与此同时，也引入了分布式系统</description>
     </item>
     
