@@ -6,10 +6,19 @@
     <description>Recent content on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 18 Oct 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 29 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio实战系列-Envoy Proxy构建分析</title>
+      <link>https://zhaohuabing.com/post/2018-10-29-envoy-build/</link>
+      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-10-29-envoy-build/</guid>
+      <description>Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微</description>
+    </item>
     
     <item>
       <title>Istio微服务平台集成实践</title>
