@@ -192,6 +192,10 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/top/about/</loc>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/tags/api-gateway/</loc>
     <lastmod>2018-04-11T09:32:00+00:00</lastmod>
     <priority>0</priority>
@@ -366,6 +370,11 @@
   <url>
     <loc>https://zhaohuabing.com/categories/tips/</loc>
     <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/top/</loc>
     <priority>0</priority>
   </url>
   
