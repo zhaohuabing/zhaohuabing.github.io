@@ -11,37 +11,37 @@
     <meta name="description" content="作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性,本文介绍了Service Mesh模式如何应对微服务架构的这些挑战，以及Service Mesh的明星开源项目Istio。">
     
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
-    <link rel="shortcut icon" href="https://zhaohuabing.com/img/favicon.ico">
+    <link rel="shortcut icon" href="/img/favicon.ico">
 
     <title>谈谈微服务架构中的基础设施：Service Mesh与Istio-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/">
+    <link rel="canonical" href="/2018/03/29/what-is-service-mesh-and-istio/">
 
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/iDisqus.min.css"/>
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/hux-blog.min.css">
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
 
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
+    <link rel="stylesheet" href="/css/syntax.css">
 
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/zanshang.css">
+    <link rel="stylesheet" href="/css/zanshang.css">
 
     
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     
     
-    <script src="https://zhaohuabing.com/js/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     
     
-    <script src="https://zhaohuabing.com/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     
     
-    <script src="https://zhaohuabing.com/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.min.js"></script>
 </head>
 </head>
 
@@ -86,7 +86,7 @@
 
                     
 		            <li>
-                        <a href="https://zhaohuabing.com/search">SEARCH <img src="https://zhaohuabing.com/img/search.png" height="15" style="cursor: pointer;"></a>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;"></a>
 		            </li>
                     
                 </ul>
@@ -659,7 +659,7 @@ Envoy收集一个端到端调用中的各个分段的数据，并将这些调用
 <div class="zs-modal-box">
 	<div class="zs-modal-head">
 		<button type="button" class="close">×</button>
-		<span class="author"><a href="https://zhaohuabing.com"><img src="https://zhaohuabing.com/img/favicon.png" />Huabing Blog</a></span>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="/img/favicon.png" />Huabing Blog</a></span>
         
 	        <p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
 		
@@ -677,15 +677,15 @@ Envoy收集一个端到端调用中的各个分段的数据，并将这些调用
 		<div class="zs-modal-pay">
 			<button class="btn btn-bred" id="pay-text">2元</button>
 			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
-			<img src="https://zhaohuabing.com/img/reward/wechat-2.png"  id="pay-image"/>
+			<img src="/img/reward/wechat-2.png"  id="pay-image"/>
 		</div>
 	</div>
 	<div class="zs-modal-footer">
-		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="https://zhaohuabing.com/img/reward/wechat-btn.png"/></span></label>
-		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="https://zhaohuabing.com/img/reward/alipay-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="/img/reward/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="/img/reward/alipay-btn.png"/></span></label>
 	</div>
 </div>
-<script type="text/javascript" src="https://zhaohuabing.com/js/reward.js"></script>
+<script type="text/javascript" src="/js/reward.js"></script>
 
                 
         
@@ -706,7 +706,7 @@ Envoy收集一个端到端调用中的各个分段的数据，并将这些调用
               
 <div id="disqus-comment"></div>
 
-<script src="https://zhaohuabing.com/js/iDisqus.js"></script>
+<script src="/js/iDisqus.js"></script>
 <script>
 var disq = new iDisqus('disqus-comment', {
     forum: 'zhaohuabings-blog',
@@ -884,7 +884,7 @@ var disq = new iDisqus('disqus-comment', {
 		    
                     
                     <li>
-                        <a target="_blank" href="https://zhaohuabing.com/img/wechat_qrcode.jpg">
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
                             <span class="fa-stack fa-lg">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>

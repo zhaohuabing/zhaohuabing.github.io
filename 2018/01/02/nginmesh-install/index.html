@@ -11,37 +11,37 @@
     <meta name="description" content="Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。">
     
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
-    <link rel="shortcut icon" href="https://zhaohuabing.com/img/favicon.ico">
+    <link rel="shortcut icon" href="/img/favicon.ico">
 
     <title>Nginx开源Service Mesh组件Nginmesh安装指南-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="https://zhaohuabing.com/2018/01/02/nginmesh-install/">
+    <link rel="canonical" href="/2018/01/02/nginmesh-install/">
 
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/iDisqus.min.css"/>
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/hux-blog.min.css">
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
 
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/syntax.css">
+    <link rel="stylesheet" href="/css/syntax.css">
 
     
-    <link rel="stylesheet" href="https://zhaohuabing.com/css/zanshang.css">
+    <link rel="stylesheet" href="/css/zanshang.css">
 
     
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     
     
-    <script src="https://zhaohuabing.com/js/jquery.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     
     
-    <script src="https://zhaohuabing.com/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     
     
-    <script src="https://zhaohuabing.com/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.min.js"></script>
 </head>
 </head>
 
@@ -86,7 +86,7 @@
 
                     
 		            <li>
-                        <a href="https://zhaohuabing.com/search">SEARCH <img src="https://zhaohuabing.com/img/search.png" height="15" style="cursor: pointer;"></a>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;"></a>
 		            </li>
                     
                 </ul>
@@ -130,7 +130,7 @@
 
 <style type="text/css">
     header.intro-header{
-        background-image: url('https://zhaohuabing.com/img/post-bg-2015.jpg')
+        background-image: url('/img/post-bg-2015.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -715,7 +715,7 @@ iptables -t nat -N ISTIO_OUTPUT                                               -m
 <div class="zs-modal-box">
 	<div class="zs-modal-head">
 		<button type="button" class="close">×</button>
-		<span class="author"><a href="https://zhaohuabing.com"><img src="https://zhaohuabing.com/img/favicon.png" />Huabing Blog</a></span>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="/img/favicon.png" />Huabing Blog</a></span>
         
 	        <p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
 		
@@ -733,15 +733,15 @@ iptables -t nat -N ISTIO_OUTPUT                                               -m
 		<div class="zs-modal-pay">
 			<button class="btn btn-bred" id="pay-text">2元</button>
 			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
-			<img src="https://zhaohuabing.com/img/reward/wechat-2.png"  id="pay-image"/>
+			<img src="/img/reward/wechat-2.png"  id="pay-image"/>
 		</div>
 	</div>
 	<div class="zs-modal-footer">
-		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="https://zhaohuabing.com/img/reward/wechat-btn.png"/></span></label>
-		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="https://zhaohuabing.com/img/reward/alipay-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="/img/reward/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="/img/reward/alipay-btn.png"/></span></label>
 	</div>
 </div>
-<script type="text/javascript" src="https://zhaohuabing.com/js/reward.js"></script>
+<script type="text/javascript" src="/js/reward.js"></script>
 
                 
         
@@ -762,7 +762,7 @@ iptables -t nat -N ISTIO_OUTPUT                                               -m
               
 <div id="disqus-comment"></div>
 
-<script src="https://zhaohuabing.com/js/iDisqus.js"></script>
+<script src="/js/iDisqus.js"></script>
 <script>
 var disq = new iDisqus('disqus-comment', {
     forum: 'zhaohuabings-blog',
@@ -940,7 +940,7 @@ var disq = new iDisqus('disqus-comment', {
 		    
                     
                     <li>
-                        <a target="_blank" href="https://zhaohuabing.com/img/wechat_qrcode.jpg">
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
                             <span class="fa-stack fa-lg">
                                 <i class="fa fa-circle fa-stack-2x"></i>
                                 <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
