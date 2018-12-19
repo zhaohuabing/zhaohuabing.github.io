@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/</loc>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-10-29-envoy-build/</loc>
     <lastmod>2018-10-29T00:00:00+00:00</lastmod>
   </url>
@@ -256,19 +261,25 @@
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/knitter/</loc>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
-    <lastmod>2018-05-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -287,6 +298,12 @@
   <url>
     <loc>https://zhaohuabing.com/tags/mixer/</loc>
     <lastmod>2018-10-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/nfv/</loc>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -322,7 +339,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -339,7 +356,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -357,19 +374,19 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/tech/</loc>
-    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/tips/</loc>
-    <lastmod>2018-03-13T18:00:00+00:00</lastmod>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/categories/tips/</loc>
     <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/tips/</loc>
+    <lastmod>2018-03-13T18:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
