@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://zhaohuabing.com/post/2018-12-24-machine-learningp-introduction/</loc>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/</loc>
     <lastmod>2018-12-19T00:00:00+00:00</lastmod>
   </url>
@@ -261,7 +266,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -286,6 +291,12 @@
   <url>
     <loc>https://zhaohuabing.com/categories/life/</loc>
     <lastmod>2018-05-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/machine-learning/</loc>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -315,7 +326,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/note/</loc>
-    <lastmod>2018-08-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -339,7 +350,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
