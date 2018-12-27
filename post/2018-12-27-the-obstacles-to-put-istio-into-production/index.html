@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.">
+    
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>The obstacles to put Istio into production and how we solve them-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/life">Life</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/note">Note</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">Tech</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tips">Tips</a>
+                    </li>
+                    
+
+                    
+		     <li>
+                        <a href="/top/about/">ABOUT</a>
+		    </li>
+                    
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/2018-12-27-the-obstacles-to-put-istio-into-production/background.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                           Service Mesh
+                        </a>
+                        
+                       <a class="tag" href="/tags/istio" title="Istio">
+                           Istio
+                        </a>
+                        
+                       <a class="tag" href="/tags/consul" title="Consul">
+                           Consul
+                        </a>
+                        
+                       <a class="tag" href="/tags/nfv" title="NFV">
+                           NFV
+                        </a>
+                        
+                    </div>
+                    <h1>The obstacles to put Istio into production and how we solve them</h1>
+                    <h2 class="subheading"></h2>
+                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Thursday, December 27, 2018
+                        
+                        <span id="/post/2018-12-27-the-obstacles-to-put-istio-into-production/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+        		
+                        <header>
+                        <h2>TOC</h2>
+                        </header>
+                        <nav id="TableOfContents">
+<ul>
+<li><a href="#hybrid-service-mesh">Hybrid Service Mesh</a>
+<ul>
+<li><a href="#not-only-microservice-in-the-real-world">Not only microservice in the real world</a></li>
+<li><a href="#a-hybrid-service-mesh-for-all-kinds-of-services">A hybrid service mesh for all kinds of services</a></li>
+</ul></li>
+<li><a href="#support-multiple-network-interfaces">Support multiple network interfaces</a>
+<ul>
+<li><a href="#why-we-need-multiple-network-interfaces">Why we need multiple network interfaces</a></li>
+<li><a href="#what-s-the-problem">What’s the problem</a></li>
+<li><a href="#how-to-support-multiple-interfaces">How to support multiple interfaces</a></li>
+</ul></li>
+<li><a href="#service-mesh-and-api-gateway">Service Mesh and API Gateway</a>
+<ul>
+<li><a href="#kubernetes-ingress">Kubernetes Ingress</a></li>
+<li><a href="#istio-gateway">Istio Gateway</a></li>
+<li><a href="#api-gateway">API Gateway</a></li>
+<li><a href="#service-mesh-and-api-gateway-should-work-together">Service mesh and API Gateway should work together</a></li>
+</ul></li>
+<li><a href="#the-missing-part-async-communication">The missing part: async communication</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</nav>
+        		
+        		
+
+<blockquote>
+<p><B>What is service mesh?</B>
+<BR><BR>
+Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services.
+<BR><BR>
+<B>What is Istio?</B>
+<BR><BR>
+Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an open platform, Istio lets you connect, secure, control, and observe services.</p>
+</blockquote>
+
+<p>I have been following the Istio project from its early stage. Over time, it turned out Istio has a good architecture, an active community, promising features and also strong support from big companies. So, after its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.</p>
+
+<h1 id="hybrid-service-mesh">Hybrid Service Mesh</h1>
+
+<h2 id="not-only-microservice-in-the-real-world">Not only microservice in the real world</h2>
+
+<p>Even microservice Architecture has been widely adopted in the past few years, we have to face the reality that there are still quite a few systems which have not built in Microservice yet, or, some of them may never be built as microservice. The reason is that Microservice is not a silver bullet to solve all the problems, like other Architecture styles, microservice has its own strength and cost. We should make the architecture choice which makes sense based on the business scenarios.</p>
+
+<p>Kubernetes and Istio assume that one container/progress is a service. While this assumption is reasonable with “pure” microservices architecture, it does have problems supporting “coarse-grained” services such as the services in SOA architecture.</p>
+
+<h2 id="a-hybrid-service-mesh-for-all-kinds-of-services">A hybrid service mesh for all kinds of services</h2>
+
+<p>In our company, we have some legacy systems which are not microservices-based. Instead, they’re more like SOA services. So there are probably multiple “services” inside one progress. These systems are doing well right now, so we are happy with them and don’t have the incentive to rewrite them to microservices. However, we’d like to put these services into service mesh as well, so they can benefit from all the advantages the Istio provides such as reliable communications, traffic routing, telemetry collection, distributed tracing, policy checking, etc.
+<img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/microservices.png" alt="" />
+<center>A software system consisting of both “fine-grained” and “coarse-grained” services</center></p>
+
+<p>To achieve this goal, we created our own service registry (which is based on Consul). All the services are still deployed in Kubernetes cluster, but we integrate our own service registry, instead of Kubernetes, into Pilot instead of Kubernetes. All the “fine-grained” and “coarse-grained” services are registered to this service registry, then these services are pushed to Pilot via a customized Pilot service registry adapter.</p>
+
+<p>With this approach, both the Microservice applications and SOA applications can be managed in the service mesh and interconnect with each other. An additional benefit is that we can even build a hybrid service mesh across Kubernetes clusters and VM/BearMetals, allowing more legacy systems integrated into service mesh without significant changes to their existing software architecture and deployment model.
+<img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/hybrid-service-mesh.png" alt="" />
+<center>Hybrid Service Mesh for all kind of service</center></p>
+
+<h1 id="support-multiple-network-interfaces">Support multiple network interfaces</h1>
+
+<h2 id="why-we-need-multiple-network-interfaces">Why we need multiple network interfaces</h2>
+
+<p>Istio has been highly integrated with Kubernetes, therefore, it’s not surprising that Istio now only allows one network interface for each node in the mesh. This is because in Kubernetes each pod only has one network interface (apart from a loopback).</p>
+
+<p>In some cases, we, however, may have multiple network interfaces for a node in the mesh. For example, for NFV(Network Function Virtualization) use case, it is required to provide multiple network interfaces to the virtualized operating environment of the VNF. The main reasons are as follows:</p>
+
+<ul>
+<li>Functional separation of control and data network planes</li>
+<li>Link aggregation/bonding for redundancy of the network</li>
+<li>Support for implementation of different network SLAs</li>
+<li>Network segregation and Security</li>
+</ul>
+
+<p>Besides, as an open platform, Istio also supports service registries other than Kubernetes, such as Consul or customized service registry, so the services may have been deployed in virtual machines or bare metals, where a node with multiple network interfaces is very common.</p>
+
+<h2 id="what-s-the-problem">What’s the problem</h2>
+
+<p>The current Pilot implementation to build inbound listeners has a problem. It is using the IP address reported by Envoy proxy to build the inbound listeners(The IP address is conveyed by the id in the node structure of the xDS request, such as sidecar~192.168.206.23~productpage-v1–54b8b9f55-bx2dq.default~default.svc.cluster.local).</p>
+
+<p>In case that there is more than one IP Address in the pod, only the IP address of the first network interface has been sent to Pilot. When services in the pod are registered via the IP address of the second network interface, the Pilot doesn’t know these services are located in the same pod with the proxy and then doesn’t build inbound listeners for them, causing an infinite loop when the envoy receives a request and results in envoy crash because of running out of file descriptors.
+<img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/multi-network-issue.png" alt="" />
+<center>Envoy crash caused by incorrect listeners</center></p>
+
+<h2 id="how-to-support-multiple-interfaces">How to support multiple interfaces</h2>
+
+<p>All the IPs of the node should be sent to Pilot with the discovery request. So Pilot can use all the IP addresses to tell which services are located with the proxy and build correct inbound listeners for that proxy.
+<img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/multi-network-solution.png" alt="" />
+<center>The solution for multiple network interfaces</center>
+A pull request has already been submitted to fix it. Multiple network interfaces support will be available in Istio release 1.1.</p>
+
+<p>RP: <a href="https://github.com/istio/istio/pull/9688">https://github.com/istio/istio/pull/9688</a></p>
+
+<p>Issue: <a href="https://github.com/istio/istio/issues/9441">https://github.com/istio/istio/issues/9441</a></p>
+
+<h1 id="service-mesh-and-api-gateway">Service Mesh and API Gateway</h1>
+
+<h2 id="kubernetes-ingress">Kubernetes Ingress</h2>
+
+<p>In the early stage, Istio just uses the Kubernetes Ingress to expose the services to the outside world. The main problem of using Kubernetes Ingress lies in the fact that it can’t be managed by Istio control plane, so Istio features like routing rules, distributed tracing, Telemetry and policy check are not available at the ingress. This may cause something wrong with some promised advanced use cases of Istio such as A/B testing and canary deployment.</p>
+
+<h2 id="istio-gateway">Istio Gateway</h2>
+
+<p>Istio team realized the problem and introduced gateway resource in the v1alpha3 routing API. A VirtualService can be bound to a gateway to control the forwarding of traffic arriving at a particular host or gateway port. By this means, now Istio can control the traffic both inside the mesh and at the gateway in a unified manner. All the Istio promised features can also be applied to the gateway traffic.</p>
+
+<h2 id="api-gateway">API Gateway</h2>
+
+<p>As a type of traffic entrance, API Gateway does have some overlapped features with K8S Ingress and Istio Gateway, such as virtual hosting, SSL termination, service discovery and load balancing. However, the key objective of using API Gateway is to expose your services as managed APIs. So, the API Gateway layer mainly serves some specific API management functionalities such as Authentication &amp; Authorization, Transformation &amp; Transportation, API Lifecycle Management, Billing and Rate limiting, etc.
+<img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/ingress-comparation.png" alt="" />
+<center>Functionalities of Kubernetes ingress, Istio gateway and API gateway</center></p>
+
+<h2 id="service-mesh-and-api-gateway-should-work-together">Service mesh and API Gateway should work together</h2>
+
+<p>As we discussed above, neither Istio Gateway nor API gateway could finish the jobs on their own. So it’s better to have them work together to provide a comprehensive, full-functional traffic entrance for the service mesh.</p>
+
+<p>The below figure illustrates how API Gateway and mesh sidecar can coexist. API Gateway offloads the service discovery and traffic management features to the sidecar and focuses on the API management features. It’s a much clearer picture, the two components now are serving two fundamentally different requirements.</p>
+
+<p><img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/api-gateway-and-envoy.png" alt="" />
+<center>How API gateway and service mesh works together</center></p>
+
+<h1 id="the-missing-part-async-communication">The missing part: async communication</h1>
+
+<p>There are two inter-service communication styles for microservices - sync RPC (Remote Procedure Call) and async messaging. However, Istio only addressed one of them, async communication support is totally missed right now. If you are serious about leveraging Istio in production, this is one thing you have to consider.</p>
+
+<p>For us, one important use case is canary deployment. Both the REST requests and Kafka messages should be split between old and new versions when implementing a canary deployment, but Istio can only deal with REST traffic.</p>
+
+<p>To solve this problem, we build a Kafka message filter mechanism on the consumer side to receive traffic rules from the control plane and help split the messages. It would be helpful if Istio could consider support Kafka message routing in the future release.
+<img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/async.png" alt="" />
+<center>Async messaging splitting between services</center></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Istio provides an infrastructure layer to facilitate the communication and management for microservice. Istio doesn&rsquo;t eliminate the complexity brought by microservice architecture, but it can shift the complexity from individual microservice to an abstract layer in a unified manner to make it more manageable.</p>
+
+<p>If you have any thoughts, please leave a message under the article or contact me by <a href="mailto:zhaohuabing@gmail.com">email</a>.</p>
+
+        
+                
+                    
+<div class="entry-shang text-center">
+    
+	    <p>「真诚赞赏，手留余香」</p>
+	
+	<button class="zs show-zs btn btn-bred">赞赏支持</button>
+</div>
+<div class="zs-modal-bg"></div>
+<div class="zs-modal-box">
+	<div class="zs-modal-head">
+		<button type="button" class="close">×</button>
+		<span class="author"><a href="https://zhaohuabing.com"><img src="/img/favicon.png" />Huabing Blog</a></span>
+        
+	        <p class="tip"><i></i><span>真诚赞赏，手留余香</span></p>
+		
+ 
+	</div>
+	<div class="zs-modal-body">
+		<div class="zs-modal-btns">
+			<button class="btn btn-blink" data-num="2">2元</button>
+			<button class="btn btn-blink" data-num="5">5元</button>
+			<button class="btn btn-blink" data-num="10">10元</button>
+			<button class="btn btn-blink" data-num="50">50元</button>
+			<button class="btn btn-blink" data-num="100">100元</button>
+			<button class="btn btn-blink" data-num="1">任意金额</button>
+		</div>
+		<div class="zs-modal-pay">
+			<button class="btn btn-bred" id="pay-text">2元</button>
+			<p>使用<span id="pay-type">微信</span>扫描二维码完成支付</p>
+			<img src="/img/reward/wechat-2.png"  id="pay-image"/>
+		</div>
+	</div>
+	<div class="zs-modal-footer">
+		<label><input type="radio" name="zs-type" value="wechat" class="zs-type" checked="checked"><span ><span class="zs-wechat"><img src="/img/reward/wechat-btn.png"/></span></label>
+		<label><input type="radio" name="zs-type" value="alipay" class="zs-type" class="zs-alipay"><img src="/img/reward/alipay-btn.png"/></span></label>
+	</div>
+</div>
+<script type="text/javascript" src="/js/reward.js"></script>
+
+                
+        
+              <hr>
+              <ul class="pager">
+                  
+                  
+                  <li class="next">
+                      <a href="/post/2018-12-24-machine-learningp-introduction/" data-toggle="tooltip" data-placement="top" title="Machine Learning Introduction">Next Post &rarr;</a>
+                  </li>
+                  
+              </ul>
+  
+              
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="Bitcoin">
+                        Bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="Blockchain">
+                        Blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="Cryptocurrency">
+                        Cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="Digital Signature">
+                        Digital Signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="Envoy">
+                        Envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="Istio">
+                        Istio
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="Kubernetes">
+                        Kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="Microservice">
+                        Microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="ONAP">
+                        ONAP
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/security" title="Security">
+                        Security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="Service Mesh">
+                        Service Mesh
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/tips" title="Tips">
+                        Tips
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog , 2018
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script>
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

@@ -6,10 +6,19 @@
     <description>Recent content in NFV on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 19 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 27 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/nfv/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>The obstacles to put Istio into production and how we solve them</title>
+      <link>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</guid>
+      <description>What is service mesh?  Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services.  What is Istio?  Istio is an open-source service mesh project lead by Google, IBM and Lyft.</description>
+    </item>
     
     <item>
       <title>拥抱NFV，Istio 1.1 将支持多网络平面</title>

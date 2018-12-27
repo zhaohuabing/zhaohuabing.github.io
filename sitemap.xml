@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</loc>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-12-24-machine-learningp-introduction/</loc>
     <lastmod>2018-12-24T00:00:00+00:00</lastmod>
   </url>
@@ -229,6 +234,12 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/consul/</loc>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/tags/cryptocurrency/</loc>
     <lastmod>2018-06-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -266,13 +277,13 @@
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -314,7 +325,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/nfv/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -350,7 +361,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -373,7 +384,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -385,7 +396,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/tech/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
