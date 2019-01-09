@@ -83,7 +83,9 @@
                         <a href="/categories/tips">Tips</a>
                     </li>
                     
-
+                    <li>
+                     <a href="/top/books/">BOOKS</a>
+                    </li>
                     
 		     <li>
                         <a href="/top/about/">ABOUT</a>
@@ -134,27 +136,33 @@
 
 
 <style type="text/css">
-    header.intro-header{
+    header.intro-header {
         background-image: url('https://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/background.jpg')
     }
 </style>
-<header class="intro-header" >
+<header class="intro-header">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
                     <div class="tags">
-                       
-                       <a class="tag" href="/tags/istio" title="Istio">
-                           Istio
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
                         </a>
                         
                     </div>
                     <h1>Istio v1aplha3 routing API介绍(译文）</h1>
                     <h2 class="subheading"></h2>
-                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Monday, June 4, 2018
+                    <span class="meta">
+			Posted by 
+			
+			        &#34;赵化冰&#34;
+			 
+			on 
+			Monday, June 4, 2018
                         
-                        <span id="/2018/06/04/introducing-the-istio-v1alpha3-routing-api/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/2018/06/04/introducing-the-istio-v1alpha3-routing-api/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -308,11 +316,11 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-        		
-                        <header>
-                        <h2>TOC</h2>
-                        </header>
-                        <nav id="TableOfContents">
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
 <ul>
 <li>
 <ul>
@@ -331,8 +339,8 @@ $(function() {
 </ul></li>
 </ul>
 </nav>
-        		
-        		<p>到目前为止，Istio提供了一个简单的API来进行流量管理，该API包括了四种资源：RouteRule，DestinationPolicy，EgressRule和Ingress（直接使用了Kubernets的Ingress资源）。借助此API，用户可以轻松管理Istio服务网格中的流量。该API允许用户将请求路由到特定版本的服务，为弹性测试注入延迟和失败，添加超时和断路器等等，所有这些功能都不必更改应用程序本身的代码。</p>
+                
+                <p>到目前为止，Istio提供了一个简单的API来进行流量管理，该API包括了四种资源：RouteRule，DestinationPolicy，EgressRule和Ingress（直接使用了Kubernets的Ingress资源）。借助此API，用户可以轻松管理Istio服务网格中的流量。该API允许用户将请求路由到特定版本的服务，为弹性测试注入延迟和失败，添加超时和断路器等等，所有这些功能都不必更改应用程序本身的代码。</p>
 
 <p>
 虽然目前API的功能已被证明是Istio非常引人注目的一部分，但用户的反馈也表明，这个API确实有一些缺点，尤其是在使用它来管理包含数千个服务的非常大的应用程序，以及使用HTTP以外的协议时。 此外，使用Kubernetes Ingress资源来配置外部流量的方式已被证明不能满足需求。</p>
@@ -652,9 +660,9 @@ spec:
 <ul>
 <li><a href="https://kubernetes.io/blog/2018/01/extensible-admission-is-beta">Introducing the Istio v1alpha3 routing API</a></li>
 </ul>
-        
+
                 
-                    
+                
 <div class="entry-shang text-center">
     
 	    <p>「真诚赞赏，手留余香」</p>
@@ -694,22 +702,24 @@ spec:
 <script type="text/javascript" src="/js/reward.js"></script>
 
                 
-        
-              <hr>
-              <ul class="pager">
-                  
-                  <li class="previous">
-                      <a href="/post/2018-06-22-onap-with-service-mesh/" data-toggle="tooltip" data-placement="top" title="How service mesh can help during the ONAP Microservice journey">&larr; Previous Post</a>
-                  </li>
-                  
-                  
-                  <li class="next">
-                      <a href="/2018/06/03/cryptocurrency_week3_bitcoin_script/" data-toggle="tooltip" data-placement="top" title="Bitcoin Script">Next Post &rarr;</a>
-                  </li>
-                  
-              </ul>
-  
-              
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/06/03/cryptocurrency_week3_bitcoin_script/" data-toggle="tooltip" data-placement="top" title="Bitcoin Script">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2018-06-22-onap-with-service-mesh/" data-toggle="tooltip" data-placement="top" title="How service mesh can help during the ONAP Microservice journey">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
 <div id="disqus-comment"></div>
 
 <script src="/js/iDisqus.js"></script>
@@ -745,13 +755,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/bitcoin" title="Bitcoin">
-                        Bitcoin
+                            Bitcoin
                         </a>
                         
                         
                         
                         <a href="/tags/blockchain" title="Blockchain">
-                        Blockchain
+                            Blockchain
                         </a>
                         
                         
@@ -759,13 +769,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/cryptocurrency" title="Cryptocurrency">
-                        Cryptocurrency
+                            Cryptocurrency
                         </a>
                         
                         
                         
                         <a href="/tags/digital-signature" title="Digital Signature">
-                        Digital Signature
+                            Digital Signature
                         </a>
                         
                         
@@ -775,7 +785,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/envoy" title="Envoy">
-                        Envoy
+                            Envoy
                         </a>
                         
                         
@@ -783,7 +793,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/istio" title="Istio">
-                        Istio
+                            Istio
                         </a>
                         
                         
@@ -791,7 +801,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/kubernetes" title="Kubernetes">
-                        Kubernetes
+                            Kubernetes
                         </a>
                         
                         
@@ -799,7 +809,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/microservice" title="Microservice">
-                        Microservice
+                            Microservice
                         </a>
                         
                         
@@ -809,7 +819,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/onap" title="ONAP">
-                        ONAP
+                            ONAP
                         </a>
                         
                         
@@ -819,19 +829,19 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/security" title="Security">
-                        Security
+                            Security
                         </a>
                         
                         
                         
                         <a href="/tags/service-mesh" title="Service Mesh">
-                        Service Mesh
+                            Service Mesh
                         </a>
                         
                         
                         
                         <a href="/tags/tips" title="Tips">
-                        Tips
+                            Tips
                         </a>
                         
                         

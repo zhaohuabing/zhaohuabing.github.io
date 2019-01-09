@@ -83,7 +83,9 @@
                         <a href="/categories/tips">Tips</a>
                     </li>
                     
-
+                    <li>
+                     <a href="/top/books/">BOOKS</a>
+                    </li>
                     
 		     <li>
                         <a href="/top/about/">ABOUT</a>
@@ -134,35 +136,41 @@
 
 
 <style type="text/css">
-    header.intro-header{
+    header.intro-header {
         background-image: url('/img/2018-10-29-envoy-build/background.jpg')
     }
 </style>
-<header class="intro-header" >
+<header class="intro-header">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
                     <div class="tags">
-                       
-                       <a class="tag" href="/tags/istio" title="Istio">
-                           Istio
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
                         </a>
                         
-                       <a class="tag" href="/tags/envoy" title="Envoy">
-                           Envoy
+                        <a class="tag" href="/tags/envoy" title="Envoy">
+                            Envoy
                         </a>
                         
-                       <a class="tag" href="/tags/service-mesh" title="Service Mesh">
-                           Service Mesh
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
                         </a>
                         
                     </div>
                     <h1>Istio实战系列-Envoy Proxy构建分析</h1>
                     <h2 class="subheading"></h2>
-                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Monday, October 29, 2018
+                    <span class="meta">
+			Posted by 
+			
+			        &#34;赵化冰&#34;
+			 
+			on 
+			Monday, October 29, 2018
                         
-                        <span id="/post/2018-10-29-envoy-build/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2018-10-29-envoy-build/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -316,19 +324,19 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-        		
-                        <header>
-                        <h2>TOC</h2>
-                        </header>
-                        <nav id="TableOfContents">
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
 <ul>
 <li><a href="#编译工具">编译工具</a></li>
 <li><a href="#编译envoy">编译Envoy</a></li>
 <li><a href="#编译过程分析">编译过程分析</a></li>
 </ul>
 </nav>
-        		
-        		
+                
+                
 
 <p>Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微服务之间的调用流量进行转发。今天我们来分析一下Istio 使用到的Envoy构建流程。</p>
 
@@ -457,9 +465,9 @@ http_archive(
 
 <p><img src="/img/2018-10-29-envoy-build/envoy-build.png" alt="" /></p>
 
-        
+
                 
-                    
+                
 <div class="entry-shang text-center">
     
 	    <p>「真诚赞赏，手留余香」</p>
@@ -499,22 +507,24 @@ http_archive(
 <script type="text/javascript" src="/js/reward.js"></script>
 
                 
-        
-              <hr>
-              <ul class="pager">
-                  
-                  <li class="previous">
-                      <a href="/post/2018-12-19-multi-network-interfaces-for-istio/" data-toggle="tooltip" data-placement="top" title="拥抱NFV，Istio 1.1 将支持多网络平面">&larr; Previous Post</a>
-                  </li>
-                  
-                  
-                  <li class="next">
-                      <a href="/post/2018-10-18-istio-paas-integration/" data-toggle="tooltip" data-placement="top" title="Istio微服务平台集成实践">Next Post &rarr;</a>
-                  </li>
-                  
-              </ul>
-  
-              
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2018-10-18-istio-paas-integration/" data-toggle="tooltip" data-placement="top" title="Istio微服务平台集成实践">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2018-12-19-multi-network-interfaces-for-istio/" data-toggle="tooltip" data-placement="top" title="拥抱NFV，Istio 1.1 将支持多网络平面">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
 <div id="disqus-comment"></div>
 
 <script src="/js/iDisqus.js"></script>
@@ -550,13 +560,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/bitcoin" title="Bitcoin">
-                        Bitcoin
+                            Bitcoin
                         </a>
                         
                         
                         
                         <a href="/tags/blockchain" title="Blockchain">
-                        Blockchain
+                            Blockchain
                         </a>
                         
                         
@@ -564,13 +574,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/cryptocurrency" title="Cryptocurrency">
-                        Cryptocurrency
+                            Cryptocurrency
                         </a>
                         
                         
                         
                         <a href="/tags/digital-signature" title="Digital Signature">
-                        Digital Signature
+                            Digital Signature
                         </a>
                         
                         
@@ -580,7 +590,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/envoy" title="Envoy">
-                        Envoy
+                            Envoy
                         </a>
                         
                         
@@ -588,7 +598,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/istio" title="Istio">
-                        Istio
+                            Istio
                         </a>
                         
                         
@@ -596,7 +606,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/kubernetes" title="Kubernetes">
-                        Kubernetes
+                            Kubernetes
                         </a>
                         
                         
@@ -604,7 +614,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/microservice" title="Microservice">
-                        Microservice
+                            Microservice
                         </a>
                         
                         
@@ -614,7 +624,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/onap" title="ONAP">
-                        ONAP
+                            ONAP
                         </a>
                         
                         
@@ -624,19 +634,19 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/security" title="Security">
-                        Security
+                            Security
                         </a>
                         
                         
                         
                         <a href="/tags/service-mesh" title="Service Mesh">
-                        Service Mesh
+                            Service Mesh
                         </a>
                         
                         
                         
                         <a href="/tags/tips" title="Tips">
-                        Tips
+                            Tips
                         </a>
                         
                         

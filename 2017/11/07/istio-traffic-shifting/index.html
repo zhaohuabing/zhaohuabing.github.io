@@ -83,7 +83,9 @@
                         <a href="/categories/tips">Tips</a>
                     </li>
                     
-
+                    <li>
+                     <a href="/top/books/">BOOKS</a>
+                    </li>
                     
 		     <li>
                         <a href="/top/about/">ABOUT</a>
@@ -134,27 +136,33 @@
 
 
 <style type="text/css">
-    header.intro-header{
+    header.intro-header {
         background-image: url('https://img.zhaohuabing.com/in-post/istio-traffic-shifting/crossroads.png')
     }
 </style>
-<header class="intro-header" >
+<header class="intro-header">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
                     <div class="tags">
-                       
-                       <a class="tag" href="/tags/istio" title="Istio">
-                           Istio
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
                         </a>
                         
                     </div>
                     <h1>使用Istio实现应用流量转移</h1>
                     <h2 class="subheading">  &#34;本文翻译自istio官方文档&#34;</h2>
-                    <span  class="meta">Posted by     &#34;赵化冰&#34; on Tuesday, November 7, 2017
+                    <span class="meta">
+			Posted by 
+			
+			        &#34;赵化冰&#34;
+			 
+			on 
+			Tuesday, November 7, 2017
                         
-                        <span id="/2017/11/07/istio-traffic-shifting/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/2017/11/07/istio-traffic-shifting/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -308,11 +316,11 @@ $(function() {
                 col-md-10 col-md-offset-1
                 post-container">
 
-        		
-                        <header>
-                        <h2>TOC</h2>
-                        </header>
-                        <nav id="TableOfContents">
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
 <ul>
 <li><a href="#开始之前">开始之前</a></li>
 <li><a href="#基于权重的版本路由">基于权重的版本路由</a></li>
@@ -321,8 +329,8 @@ $(function() {
 <li><a href="#进阶阅读">进阶阅读</a></li>
 </ul>
 </nav>
-        		
-        		<p>关于Istio的更多内容请参考<a href="http://istio.doczh.cn/">istio中文文档</a>。</p>
+                
+                <p>关于Istio的更多内容请参考<a href="http://istio.doczh.cn/">istio中文文档</a>。</p>
 
 <p>原文参见<a href="https://istio.io/docs/tasks/traffic-management/traffic-shifting.html">Traffic Shifting</a>。</p>
 
@@ -419,9 +427,9 @@ $(function() {
 <ul>
 <li>更多的内容请参见<a href="http://istio.doczh.cn/docs/concepts/traffic-management/rules-configuration.html">请求路由</a>。</li>
 </ul>
-        
+
                 
-                    
+                
 <div class="entry-shang text-center">
     
 	    <p>「真诚赞赏，手留余香」</p>
@@ -461,22 +469,24 @@ $(function() {
 <script type="text/javascript" src="/js/reward.js"></script>
 
                 
-        
-              <hr>
-              <ul class="pager">
-                  
-                  <li class="previous">
-                      <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">&larr; Previous Post</a>
-                  </li>
-                  
-                  
-                  <li class="next">
-                      <a href="/2017/11/04/istio-install_and_example/" data-toggle="tooltip" data-placement="top" title="Istio及Bookinfo示例程序安装试用笔记">Next Post &rarr;</a>
-                  </li>
-                  
-              </ul>
-  
-              
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/11/04/istio-install_and_example/" data-toggle="tooltip" data-placement="top" title="Istio及Bookinfo示例程序安装试用笔记">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/11/08/istio-canary-release/" data-toggle="tooltip" data-placement="top" title="采用Istio实现灰度发布(金丝雀发布)">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
 <div id="disqus-comment"></div>
 
 <script src="/js/iDisqus.js"></script>
@@ -512,13 +522,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/bitcoin" title="Bitcoin">
-                        Bitcoin
+                            Bitcoin
                         </a>
                         
                         
                         
                         <a href="/tags/blockchain" title="Blockchain">
-                        Blockchain
+                            Blockchain
                         </a>
                         
                         
@@ -526,13 +536,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/cryptocurrency" title="Cryptocurrency">
-                        Cryptocurrency
+                            Cryptocurrency
                         </a>
                         
                         
                         
                         <a href="/tags/digital-signature" title="Digital Signature">
-                        Digital Signature
+                            Digital Signature
                         </a>
                         
                         
@@ -542,7 +552,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/envoy" title="Envoy">
-                        Envoy
+                            Envoy
                         </a>
                         
                         
@@ -550,7 +560,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/istio" title="Istio">
-                        Istio
+                            Istio
                         </a>
                         
                         
@@ -558,7 +568,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/kubernetes" title="Kubernetes">
-                        Kubernetes
+                            Kubernetes
                         </a>
                         
                         
@@ -566,7 +576,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/microservice" title="Microservice">
-                        Microservice
+                            Microservice
                         </a>
                         
                         
@@ -576,7 +586,7 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/onap" title="ONAP">
-                        ONAP
+                            ONAP
                         </a>
                         
                         
@@ -586,19 +596,19 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         <a href="/tags/security" title="Security">
-                        Security
+                            Security
                         </a>
                         
                         
                         
                         <a href="/tags/service-mesh" title="Service Mesh">
-                        Service Mesh
+                            Service Mesh
                         </a>
                         
                         
                         
                         <a href="/tags/tips" title="Tips">
-                        Tips
+                            Tips
                         </a>
                         
                         
