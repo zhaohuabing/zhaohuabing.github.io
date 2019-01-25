@@ -336,6 +336,7 @@ $(function() {
 <li><a href="#git-reset-实现原理">Git reset 实现原理</a></li>
 </ul></li>
 <li><a href="#git-object存储方式-1">Git object存储方式</a></li>
+<li><a href="#总结">总结</a></li>
 </ul></li>
 <li><a href="#参考">参考</a></li>
 </ul>
@@ -846,6 +847,18 @@ what is up, doc?
 </code></pre>
 
 <p>可以看到，可以通过git cat-file文件读取该文件内容，因此该文件是一个合法的git object，和通过git 命令写入的文件格式相同。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>Git围绕三种Object来实现了版本控制以及Branch，Tag等机制。</p>
+
+<ul>
+<li>Commit: Commit可以看作Git中一个Version的所有目录和文件的Snapshot，可以通过git checkout 查看任意一个commit中的内容。</li>
+<li>Tree: 目录对象，内部包含目录和文件</li>
+<li>Blob: 文件对象，对应一个文件</li>
+</ul>
+
+<p>理解了Git object的存储机制，就可以理解Git的各个命令的实现原理，更好地使用Git来实现源代码管理。</p>
 
 <h1 id="参考">参考</h1>
 
