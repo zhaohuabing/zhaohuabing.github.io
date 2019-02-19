@@ -1,0 +1,97 @@
+@startuml
+skinparam handwritten true	
+skinparam monochrome true	
+skinparam packageStyle rect	
+skinparam defaultFontName FG Virgil	
+skinparam shadowing false
+
+class model_ServiceInstance {
+  +NetworkEndpoint Endpoint  
+  +*Service  Service
+  +Labels Labels
+  +string ServiceAccount
+  +string GetLocality()
+}
+class model_Service {
+  +Hostname Hostname
+  +String Address
+  +map[string]string ClusterVIPs
+  +PortList Ports
+  +[]string ServiceAccounts
+  +bool MeshExternal
+  +Resolution Resolution 
+  +Time CreationTime
+  +ServiceAttributes Attributes  
+  +bool External()
+  +string GetServiceAddressForProxy()
+  +string K()
+}
+class model_NetworkEndpoint  {   
+  +AddressFamily Family  
+  +string Address 
+  +int Port                                                                                           
+  +*Port ServicePort  
+  +string UID 
+  +string Network
+  +string Locality 
+  +uint32 LbWeight 
+}      
+
+class aggregate_Registry  {
+  +string Name      
+  +string ClusterID 
+  +model_Controller
+  +model_ServiceDiscovery
+  +model.ServiceAccounts
+}
+
+class model_Controller  {
+  +AppendServiceHandler()
+  +AppendInstanceHandler()
+  +Run()
+}
+
+class model_ServiceDiscovery  {
+  +Services()
+  +GetService()
+  +InstancesByPort()
+  +GetProxyServiceInstances()
+  +GetProxyLocality()
+  +ManagementPorts()
+  +WorkloadHealthCheckInfo()
+}
+
+class aggregate_Controller{
+}
+
+class consul_Controller{
+}
+
+class kube_Controller{
+}
+            
+model_ServiceInstance *-- model_Service
+model_ServiceInstance *-- model_NetworkEndpoint
+
+aggregate_Registry *-- model_Controller
+aggregate_Registry *-- model_ServiceDiscovery
+
+model_ServiceDiscovery ..> model_Service
+model_ServiceDiscovery ..> model_ServiceInstance
+
+model_Controller <|-- aggregate_Controller 
+model_Controller <|-- consul_Controller
+model_Controller <|-- kube_Controller
+
+model_ServiceDiscovery <|-- aggregate_Controller 
+model_ServiceDiscovery <|-- consul_Controller
+model_ServiceDiscovery <|-- kube_Controller
+model_ServiceDiscovery <|-- memory_ServiceDiscovery
+
+aggregate_Controller ..>  consul_Controller
+aggregate_Controller ..>  kube_Controller
+aggregate_Controller ..>  memory_ServiceDiscovery
+
+aggregate_Controller o--  aggregate_Registry1
+aggregate_Controller o--  aggregate_Registry2
+@enduml

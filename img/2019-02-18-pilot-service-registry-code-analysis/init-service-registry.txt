@@ -1,0 +1,37 @@
+@startuml
+skinparam handwritten true	
+skinparam monochrome true	
+skinparam packageStyle rect	
+skinparam defaultFontName FG Virgil	
+skinparam shadowing false
+
+activate "pilot-discovery.main"
+"pilot-discovery.main" -> bootstrap.Server: NewServer 
+
+activate bootstrap.Server
+bootstrap.Server -> bootstrap.Server: initServiceControllers
+
+activate bootstrap.Server
+bootstrap.Server -> serviceregistry.aggregate.Controller: NewController
+
+bootstrap.Server -> bootstrap.Server: initMemoryRegistry
+activate bootstrap.Server
+bootstrap.Server ->serviceregistry.aggregate.Controller: AddRegistry
+deactivate bootstrap.Server
+
+bootstrap.Server -> bootstrap.Server: createK8sServiceControllers
+activate bootstrap.Server
+bootstrap.Server ->serviceregistry.kube.Controller: NewController
+bootstrap.Server ->serviceregistry.aggregate.Controller: AddRegistry
+deactivate bootstrap.Server
+
+bootstrap.Server -> bootstrap.Server: initConsulRegistry
+activate bootstrap.Server
+bootstrap.Server -> serviceregistry.consul.Controller: NewController
+bootstrap.Server ->serviceregistry.aggregate.Controller: AddRegistry
+deactivate bootstrap.Server
+
+deactivate bootstrap.Server
+deactivate bootstrap.Server
+deactivate "pilot-discovery.main"
+@enduml

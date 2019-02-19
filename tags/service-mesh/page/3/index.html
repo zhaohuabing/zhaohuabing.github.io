@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head>
-	<meta name="generator" content="Hugo 0.41" /><head>
+<head><head>
     <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
     <meta name="baidu-site-verification" content="LRrmH41lz7" />
     <meta charset="utf-8">
@@ -14,9 +13,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Huabing Blog-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Service Mesh-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/">
+    <link rel="canonical" href="/tags/service-mesh/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -170,98 +169,23 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
+    <a href="https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/">
         <h2 class="post-title">
-            Istio 服务注册插件机制代码解析
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            本文将从代码出发，对Pilot的服务注册插件机制进行分析。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Monday, February 18, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-01-21-git/">
-        <h2 class="post-title">
-            Git内部存储原理
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Monday, January 21, 2019
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
-        <h2 class="post-title">
-            The obstacles to put Istio into production and how we solve them
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Thursday, December 27, 2018
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-24-machine-learningp-introduction/">
-        <h2 class="post-title">
-            Machine Learning Introduction
+            谈谈微服务架构中的基础设施：Service Mesh与Istio
         </h2>
 	
         <h3 class="post-subtitle">
-            Machine Learning-Week 1
+            Service Mesh模式及Istio开源项目介绍
         </h3>
 	
         <div class="post-content-preview">
 	
-            What is machine learning? Two definitions of machine learning are offered.
-Arthur Samuel version:  A field of study that gives computers the ability to learn without being explicitly programmed.
-Tom Mitchell version:  A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E.
-Example: playing checkers.
-       
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Monday, December 24, 2018
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/">
-        <h2 class="post-title">
-            拥抱NFV，Istio 1.1 将支持多网络平面
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Istio1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。而在电信NFV场景中，多网络平面是一个常见的场景，随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。
+            作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性,本文介绍了Service Mesh模式如何应对微服务架构的这些挑战，以及Service Mesh的明星开源项目Istio。
         
         </div>
     </a>
     <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Wednesday, December 19, 2018
+    Posted by 赵化冰 Thursday, March 29, 2018
     </p>
 </div>
 <hr>
@@ -272,10 +196,10 @@ Example: playing checkers.
 
 <ul class="pager">
     
-    
-    <li class="next">
-        <a href="/page/2/">Older Posts &rarr;</a>
+    <li class="previous">
+        <a href="/tags/service-mesh/page/2/">&larr; Newer Posts</a>
     </li>
+    
     
 </ul>
 
@@ -424,7 +348,7 @@ Example: playing checkers.
            <ul class="list-inline"> 
                
                <li>
-                   <a href="https://zhaohuabing.com/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                   <a href="https://zhaohuabing.com/tags/service-mesh/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                        <span class="fa-stack fa-lg">
                            <i class="fa fa-circle fa-stack-2x"></i>
                            <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -530,7 +454,7 @@ Example: playing checkers.
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href="https://zhaohuabing.com/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                       <a href="https://zhaohuabing.com/tags/service-mesh/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -598,7 +522,7 @@ Example: playing checkers.
             
                 </ul>
 		<p class="copyright text-muted">
-                    Copyright &copy; Huabing Blog , 2019
+                    Copyright &copy; Huabing Blog , 2018
                     <br>
                     <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
                     <iframe

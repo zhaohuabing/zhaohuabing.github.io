@@ -6,10 +6,19 @@
     <description>Recent content in Tech on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Jan 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/categories/tech/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio 服务注册插件机制代码解析</title>
+      <link>https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/</link>
+      <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/</guid>
+      <description>Istio服务注册插件机制 在Istio架构中，Pilot组件负责维护网格中的标准服务模型，该标准服务模型独立于各种底层平台，Pilot通过适</description>
+    </item>
     
     <item>
       <title>Git内部存储原理</title>
