@@ -1,15 +1,39 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head><head>
+<head>
     <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
     <meta name="baidu-site-verification" content="LRrmH41lz7" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="Git内部存储原理" />
+    <meta property="og:title" content="Git内部存储原理" />
+    <meta property="twitter:title" content="Git内部存储原理" />
+    
+
     
     <meta name="description" content="Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。">
+    <meta property="og:description" content="Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。" />
+    <meta property="twitter:description" content="Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。" />
     
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
@@ -48,7 +72,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
 </head>
-</head>
+
 
 <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
     <div class="container-fluid">
@@ -97,7 +121,7 @@
 
                     
 		    <li>
-                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;"></a>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
 		    </li>
                     
                 </ul>

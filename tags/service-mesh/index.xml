@@ -6,22 +6,116 @@
     <description>Recent content in Service Mesh on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Jan 2018 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Nginx开源Service Mesh组件Nginmesh安装指南</title>
-      <link>https://zhaohuabing.com/2018/01/02/nginmesh-install/</link>
-      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
+      <title>Istio 服务注册插件机制代码解析</title>
+      <link>https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/</link>
+      <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/2018/01/02/nginmesh-install/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+      <guid>https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/</guid>
+      <description>Istio服务注册插件机制 在Istio架构中，Pilot组件负责维护网格中的标准服务模型，该标准服务模型独立于各种底层平台，Pilot通过适</description>
+    </item>
+    
+    <item>
+      <title>The obstacles to put Istio into production and how we solve them</title>
+      <link>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</guid>
+      <description>What is service mesh?  Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services.  What is Istio?  Istio is an open-source service mesh project lead by Google, IBM and Lyft.</description>
+    </item>
+    
+    <item>
+      <title>拥抱NFV，Istio 1.1 将支持多网络平面</title>
+      <link>https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/</link>
+      <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/</guid>
+      <description>Istio 1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。虽然在架构设计上是开放的，但从目前的代码来看，Istio的内部实现还是</description>
+    </item>
+    
+    <item>
+      <title>Istio实战系列-Envoy Proxy构建分析</title>
+      <link>https://zhaohuabing.com/post/2018-10-29-envoy-build/</link>
+      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-10-29-envoy-build/</guid>
+      <description>Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微</description>
+    </item>
+    
+    <item>
+      <title>Istio微服务平台集成实践</title>
+      <link>https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/</guid>
+      <description>前言 Istio发布1.0版本后，其服务发现和路由规则功能已基本具备production能力，我们也开始了Istio和公司内部微服务平台的集成</description>
+    </item>
+    
+    <item>
+      <title>Istio流量管理实现机制深度解析</title>
+      <link>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</link>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</guid>
+      <description>前言 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的</description>
+    </item>
+    
+    <item>
+      <title>Secure ONAP Microservices with Istio Mutual TLS Authentication and RBAC</title>
+      <link>https://zhaohuabing.com/post/2018-08-15-manage-onap-with-istio-auth-enabled/</link>
+      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-08-15-manage-onap-with-istio-auth-enabled/</guid>
+      <description>In the previous post Manage ONAP Microservices with Istio Service Mesh, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’s worth with the benefits brought by it. Installation Download installation scripts from ONAP Gerrit:</description>
+    </item>
+    
+    <item>
+      <title>Manage ONAP Microservices with Istio Service Mesh</title>
+      <link>https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/</link>
+      <pubDate>Wed, 01 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/</guid>
+      <description>In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts from ONAP Gerrit:
+git clone https://gerrit.onap.org/r/msb/service-mesh  Kubernetes Master We need Kubernetes 1.</description>
+    </item>
+    
+    <item>
+      <title>How service mesh can help during the ONAP Microservice journey</title>
+      <link>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</link>
+      <pubDate>Fri, 22 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</guid>
+      <description>ONAP Beijing is available now!
+ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&amp;rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a whole, users may just want to pick some modules, integrate these modules with their existing system to get a customized ONAP solution.</description>
+    </item>
+    
+    <item>
+      <title>Service Mesh 和 API Gateway的关系探讨（译文）</title>
+      <link>https://zhaohuabing.com/2018/04/11/service-mesh-vs-api-gateway/</link>
+      <pubDate>Wed, 11 Apr 2018 09:32:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/2018/04/11/service-mesh-vs-api-gateway/</guid>
+      <description>Service Mesh vs API Gateway 在前一篇关于Service Mesh的文章中,我提到了几个关于Service Mesh和API Gateway之间关系的问题，在本篇文章</description>
+    </item>
+    
+    <item>
+      <title>谈谈微服务架构中的基础设施：Service Mesh与Istio</title>
+      <link>https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/</link>
+      <pubDate>Thu, 29 Mar 2018 12:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/</guid>
+      <description>&lt;h2 id=&#34;微服务架构的演进&#34;&gt;微服务架构的演进&lt;/h2&gt;
 
-&lt;p&gt;Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。
+&lt;p&gt;作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。&lt;/p&gt;
 
-&lt;img src=&#34;https://raw.githubusercontent.com/nginmesh/nginmesh/master/images/nginx_sidecar.png&#34; alt=&#34;Nginmesh sidecar proxy&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。
+ 
+&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/microservice.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>
