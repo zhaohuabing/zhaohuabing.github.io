@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-	<meta name="generator" content="Hugo 0.41" />
+	<meta name="generator" content="Hugo 0.54.0" />
     <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
     <meta name="baidu-site-verification" content="LRrmH41lz7" />
     <meta charset="utf-8">
@@ -194,6 +194,28 @@
             
 
 <div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/">
+        <h2 class="post-title">
+            如何为服务网格选择入口网关？
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes Ingress, Istio Ingress Gateway还是API Gateway？
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            在启用了Istio服务网格的Kubernetes集群中，部署的服务在缺省配置下只能在Kubernetes 网络中被访问到，要如何才能从外部网络访问网格中提供的服务呢？Kubernetes和Istio提供了NodePort，LoadBalancer，Kubernetes Ingress，Istio Gateway等多种外部流量入口的方式，面对这么多种方式，我们在产品部署中应该如何选择？
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by     &#34;赵化冰&#34; Friday, March 29, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
         <h2 class="post-title">
             Istio 服务注册插件机制代码解析
@@ -259,33 +281,12 @@
 	
         <div class="post-content-preview">
 	
-            What is machine learning? Two definitions of machine learning are offered.
-Arthur Samuel version:  A field of study that gives computers the ability to learn without being explicitly programmed.
-Tom Mitchell version:  A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E.
-Example: playing checkers.
+            What is machine learning? Two definitions of machine learning are offered. Arthur Samuel version: A field of study that gives computers the ability to learn without being explicitly programmed. Tom Mitchell version: A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E. Example: playing checkers. E
        
         </div>
     </a>
     <p class="post-meta">
     Posted by     &#34;赵化冰&#34; Monday, December 24, 2018
-    </p>
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/">
-        <h2 class="post-title">
-            拥抱NFV，Istio 1.1 将支持多网络平面
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Istio1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。而在电信NFV场景中，多网络平面是一个常见的场景，随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Wednesday, December 19, 2018
     </p>
 </div>
 <hr>
@@ -365,6 +366,8 @@ Example: playing checkers.
                 
             
                 
+            
+                
                     <a href="/tags/istio" title="Istio">
                         Istio
                     </a>
@@ -381,9 +384,13 @@ Example: playing checkers.
                 
             
                 
+            
+                
                     <a href="/tags/microservice" title="Microservice">
                         Microservice
                     </a>
+                
+            
                 
             
                 
@@ -714,7 +721,7 @@ Example: playing checkers.
 
 
 
-<script>
+<script type="application/javascript">
 var doNotTrack = false;
 if (!doNotTrack) {
 	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -723,7 +730,7 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-<script async src='//www.google-analytics.com/analytics.js'></script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 

@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 11 Apr 2018 09:32:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 29 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>API Gateway</title>
       <link>https://zhaohuabing.com/tags/api-gateway/</link>
-      <pubDate>Wed, 11 Apr 2018 09:32:00 +0000</pubDate>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/api-gateway/</guid>
       <description></description>
@@ -111,9 +111,18 @@
     </item>
     
     <item>
+      <title>Ingreww</title>
+      <link>https://zhaohuabing.com/tags/ingreww/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/ingreww/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
       <description></description>
@@ -131,9 +140,18 @@
     <item>
       <title>Kubernetes</title>
       <link>https://zhaohuabing.com/tags/kubernetes/</link>
-      <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>LoadBalancer</title>
+      <link>https://zhaohuabing.com/tags/loadbalancer/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/loadbalancer/</guid>
       <description></description>
     </item>
     
@@ -174,11 +192,11 @@
     </item>
     
     <item>
-      <title>Nginmesh</title>
-      <link>https://zhaohuabing.com/tags/nginmesh/</link>
-      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
+      <title>NodePort</title>
+      <link>https://zhaohuabing.com/tags/nodeport/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/nginmesh/</guid>
+      <guid>https://zhaohuabing.com/tags/nodeport/</guid>
       <description></description>
     </item>
     
@@ -221,16 +239,7 @@
     <item>
       <title>Service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Service Mesh</title>
-      <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
@@ -264,20 +273,38 @@
     </item>
     
     <item>
-      <title>Ubuntu</title>
-      <link>https://zhaohuabing.com/tags/ubuntu/</link>
-      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/ubuntu/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Vim</title>
       <link>https://zhaohuabing.com/tags/vim/</link>
       <pubDate>Fri, 09 Feb 2018 11:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/vim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nginmesh</title>
+      <link>https://zhaohuabing.com/tags/nginmesh/</link>
+      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/nginmesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>service Mesh</title>
+      <link>https://zhaohuabing.com/tags/service-mesh/</link>
+      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ubuntu</title>
+      <link>https://zhaohuabing.com/tags/ubuntu/</link>
+      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/ubuntu/</guid>
       <description></description>
     </item>
     

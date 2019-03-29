@@ -393,9 +393,9 @@ $(function() {
 
 <p>作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。</p>
 
-<p>另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。
- 
-<img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/microservice.PNG" alt="" /></p>
+<p>另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。</p>
+
+<p><img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/microservice.PNG" alt="" /></p>
 
 <p>该变化带来了分布式系统的一系列问题，例如：
 * 如何找到服务的提供方？
@@ -821,6 +821,8 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/istio" title="Istio">
                             Istio
                         </a>
@@ -837,9 +839,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="Microservice">
                             Microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -1075,7 +1081,7 @@ var disq = new iDisqus('disqus-comment', {
 
 
 
-<script>
+<script type="application/javascript">
 var doNotTrack = false;
 if (!doNotTrack) {
 	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -1084,7 +1090,7 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-<script async src='//www.google-analytics.com/analytics.js'></script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 

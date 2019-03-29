@@ -6,10 +6,19 @@
     <description>Recent content in Kubernetes on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 19 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 29 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何为服务网格选择入口网关？</title>
+      <link>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</guid>
+      <description>在启用了Istio服务网格的Kubernetes集群中，部署的服务在缺省配置下只能在Kubernetes 网络中被访问到，要如何才能从外部网络</description>
+    </item>
     
     <item>
       <title>拥抱NFV，Istio 1.1 将支持多网络平面</title>
@@ -34,8 +43,7 @@
 
 &lt;p&gt;使用webhook的优势是不需要对API Server的源码进行修改和重新编译就可以扩展其功能。插入的逻辑实现为一个独立的web进程，通过参数方式传入到kubernets中，由kubernets在进行自身逻辑处理时对扩展逻辑进行回调。&lt;/p&gt;
 
-&lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
-&lt;/p&gt;</description>
+&lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -53,7 +61,9 @@
       <pubDate>Tue, 28 Nov 2017 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/28/access-application-from-outside/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;</description>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。&lt;/p&gt;</description>
     </item>
     
   </channel>

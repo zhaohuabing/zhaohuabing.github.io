@@ -16,7 +16,9 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/top/about/</guid>
-      <description>Huabing Zhao is an ICT veteran with a passion for open source. He has a solid experience in the telecommunication and information technology industry for more than 17 years. Throughout his career, he has built a number of large-scale, cross-country OSS/BSS platforms/systems and operation tools, most of them are still running in productions. He loves open source and has been contributing to a variety of open source projects, including Istio(Service</description>
+      <description>Huabing Zhao is an ICT veteran with a passion for open source. He has a solid experience in the telecommunication and information technology industry for more than 17 years.
+Throughout his career, he has built a number of large-scale, cross-country OSS/BSS platforms/systems and operation tools, most of them are still running in productions.
+He loves open source and has been contributing to a variety of open source projects, including Istio(Service Mesh https://istio.</description>
     </item>
     
     <item>
@@ -25,7 +27,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/top/books/</guid>
-      <description>Istio深度解析与项目实践 深度解析服务网格开源项目Istio的基本原理，实现机制，以及如何在产品项目中使用Istio进行微服务治理和管控。</description>
+      <description>Istio深度解析与项目实践 深度解析服务网格开源项目Istio的基本原理，实现机制，以及如何在产品项目中使用Istio进行微服务治理和管控。
+Machine learning学习笔记 Coursera 在线课程 Machine learning 笔记 讲师: 吴恩达(Andrew Ng)  课程地址：https://www.coursera.org/learn/machine-learning</description>
     </item>
     
   </channel>

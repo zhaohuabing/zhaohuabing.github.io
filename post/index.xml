@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 29 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何为服务网格选择入口网关？</title>
+      <link>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</guid>
+      <description>在启用了Istio服务网格的Kubernetes集群中，部署的服务在缺省配置下只能在Kubernetes 网络中被访问到，要如何才能从外部网络</description>
+    </item>
     
     <item>
       <title>Istio 服务注册插件机制代码解析</title>
@@ -35,7 +44,7 @@
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</guid>
-      <description>What is service mesh?  Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services.  What is Istio?  Istio is an open-source service mesh project lead by Google, IBM and Lyft.</description>
+      <description>What is service mesh? Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services. What is Istio? Istio</description>
     </item>
     
     <item>
@@ -44,10 +53,7 @@
       <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-12-24-machine-learningp-introduction/</guid>
-      <description>What is machine learning? Two definitions of machine learning are offered.
-Arthur Samuel version:  A field of study that gives computers the ability to learn without being explicitly programmed.
-Tom Mitchell version:  A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E.
-Example: playing checkers.</description>
+      <description>What is machine learning? Two definitions of machine learning are offered. Arthur Samuel version: A field of study that gives computers the ability to learn without being explicitly programmed. Tom Mitchell version: A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E. Example: playing checkers. E</description>
     </item>
     
     <item>
@@ -92,9 +98,7 @@ Example: playing checkers.</description>
       <pubDate>Sat, 25 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-08-28-english-topic-smart-phone/</guid>
-      <description>Smart phones are significantly changing the way we live and work. I heavily depend on my Android phone in my daily life, I use it to schedule my meetings, receive emails, remind me important dates, learning English, etc.
-What‘s your opinions about smart phone? Are you addicted to your smart phone? Do you think it&amp;rsquo;s a great invention, or a devil tool of commercial? Let&amp;rsquo;s talk about it.
-Questions  What type of phone are you using?</description>
+      <description>Smart phones are significantly changing the way we live and work. I heavily depend on my Android phone in my daily life, I use it to schedule my meetings, receive emails, remind me important dates, learning English, etc. What‘s your opinions about smart phone? Are you addicted to your smart phone? Do you think it&amp;rsquo;s a great invention, or a devil tool of commercial? Let&amp;rsquo;s</description>
     </item>
     
     <item>
@@ -103,7 +107,7 @@ Questions  What type of phone are you using?</description>
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-08-15-manage-onap-with-istio-auth-enabled/</guid>
-      <description>In the previous post Manage ONAP Microservices with Istio Service Mesh, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’s worth with the benefits brought by it. Installation Download installation scripts from ONAP Gerrit:</description>
+      <description>In the previous post Manage ONAP Microservices with Istio Service Mesh, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’</description>
     </item>
     
     <item>
@@ -112,8 +116,7 @@ Questions  What type of phone are you using?</description>
       <pubDate>Wed, 01 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/</guid>
-      <description>In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts from ONAP Gerrit:
-git clone https://gerrit.onap.org/r/msb/service-mesh  Kubernetes Master We need Kubernetes 1.</description>
+      <description>In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts</description>
     </item>
     
     <item>
@@ -122,8 +125,7 @@ git clone https://gerrit.onap.org/r/msb/service-mesh  Kubernetes Master We need 
       <pubDate>Fri, 22 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</guid>
-      <description>ONAP Beijing is available now!
-ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&amp;rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a whole, users may just want to pick some modules, integrate these modules with their existing system to get a customized ONAP solution.</description>
+      <description>ONAP Beijing is available now! ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&amp;rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a</description>
     </item>
     
     <item>
@@ -141,9 +143,7 @@ ONAP, as part of LF Networking, now accounts for more than 65% of global subscri
       <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</guid>
-      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
- Bitcoin Script is using to transfer coins instead of just signature and public key address, which allows more flexibilities for Bitcoin transactions.
-A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she received from a previous transaction, this is how the procedure looks like. * Alice receives some coins from a previous transaction.</description>
+      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course. Bitcoin Script is using to transfer coins instead of just signature and public key address, which allows more flexibilities for Bitcoin transactions. A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she received from a previous transaction, this is how the procedure looks like. * Alice receives some coins from a previous transaction. One</description>
     </item>
     
     <item>
@@ -153,8 +153,8 @@ A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she r
       
       <guid>https://zhaohuabing.com/2018/06/02/istio08/</guid>
       <description>&lt;blockquote&gt;
-&lt;p&gt;在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：
-&lt;/p&gt;</description>
+&lt;p&gt;在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：&lt;/p&gt;
+&lt;/blockquote&gt;</description>
     </item>
     
     <item>
@@ -164,8 +164,8 @@ A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she r
       
       <guid>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_distributed_consenus/</guid>
       <description>&lt;blockquote&gt;
-&lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
-&lt;/p&gt;</description>
+&lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
+&lt;/blockquote&gt;</description>
     </item>
     
     <item>
@@ -174,10 +174,7 @@ A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she r
       <pubDate>Sat, 26 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/</guid>
-      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
- Incentive The mechanism to motivate nodes join the Bitcoin network and create blocks.
-Incentive 1: Block Reward Creator of block gets to * include special coin-creation transaction in the block * choose reciptient address of this transaction (Of course, it is the miner&amp;rsquo;s address)
-Explanation: Because the coin-creation transaction is just like other transaction in that block, it will only be valid if the created block ends up in the consensus chain, it&amp;rsquo;s the incentive which encourages the nodes to be honest, otherwise they can&amp;rsquo;t get their rewards.</description>
+      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course. Incentive The mechanism to motivate nodes join the Bitcoin network and create blocks. Incentive 1: Block Reward Creator of block gets to * include special coin-creation transaction in the block * choose reciptient address of this transaction (Of course, it is the miner&amp;rsquo;s address) Explanation: Because the coin-creation transaction is just like other transaction in that</description>
     </item>
     
     <item>
@@ -186,11 +183,7 @@ Explanation: Because the coin-creation transaction is just like other transactio
       <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/24/set_up_my_ubuntu_desktop/</guid>
-      <description>Generate SSH Key Pair ssh-keygen -C &amp;quot;zhaohuabing@gmail.com&amp;quot;  Shadowsocks Install shadowsokcs
-sudo apt-get install python3-pip sudo pip3 install shadowsocks  Create config at config/shadowsocks.json, with the following content:
-{ &amp;quot;server&amp;quot;:&amp;quot;remote-shadowsocks-server-ip-addr&amp;quot;, &amp;quot;server_port&amp;quot;:443, &amp;quot;local_address&amp;quot;:&amp;quot;127.0.0.1&amp;quot;, &amp;quot;local_port&amp;quot;:1080, &amp;quot;password&amp;quot;:&amp;quot;your-passwd&amp;quot;, &amp;quot;timeout&amp;quot;:300, &amp;quot;method&amp;quot;:&amp;quot;aes-256-cfb&amp;quot;, &amp;quot;fast_open&amp;quot;:false, &amp;quot;workers&amp;quot;:1 }  Start a local socks proxy
-sudo sslocal -c config/shadowsocks.json -d start  In case there is an openssl error, modify shadowsocks source file.
-sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s/cleanup/reset/gc  Convert shadowsocks socks proxy to http proxy</description>
+      <description>Generate SSH Key Pair ssh-keygen -C &amp;quot;zhaohuabing@gmail.com&amp;quot; Shadowsocks Install shadowsokcs sudo apt-get install python3-pip sudo pip3 install shadowsocks Create config at config/shadowsocks.json, with the following content: { &amp;quot;server&amp;quot;:&amp;quot;remote-shadowsocks-server-ip-addr&amp;quot;, &amp;quot;server_port&amp;quot;:443, &amp;quot;local_address&amp;quot;:&amp;quot;127.0.0.1&amp;quot;, &amp;quot;local_port&amp;quot;:1080, &amp;quot;password&amp;quot;:&amp;quot;your-passwd&amp;quot;, &amp;quot;timeout&amp;quot;:300, &amp;quot;method&amp;quot;:&amp;quot;aes-256-cfb&amp;quot;, &amp;quot;fast_open&amp;quot;:false, &amp;quot;workers&amp;quot;:1 } Start a local socks proxy sudo sslocal -c config/shadowsocks.json -d start In case there is an openssl error, modify shadowsocks source file. sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s/cleanup/reset/gc Convert shadowsocks socks proxy to http proxy</description>
     </item>
     
     <item>
@@ -219,8 +212,7 @@ sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s
 例如数据同步或者后台定时任务导致的微服务之间的相互访问。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;根据应用系统的数据敏感程度的不同，对于系统内微服务的相互访问可能有不同的安全要求。
-&lt;/p&gt;</description>
+&lt;p&gt;根据应用系统的数据敏感程度的不同，对于系统内微服务的相互访问可能有不同的安全要求。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -246,8 +238,7 @@ sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s
 
 &lt;p&gt;使用webhook的优势是不需要对API Server的源码进行修改和重新编译就可以扩展其功能。插入的逻辑实现为一个独立的web进程，通过参数方式传入到kubernets中，由kubernets在进行自身逻辑处理时对扩展逻辑进行回调。&lt;/p&gt;
 
-&lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
-&lt;/p&gt;</description>
+&lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -258,7 +249,9 @@ sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s
       <guid>https://zhaohuabing.com/2018/05/20/cryptocurrency_week1_scroogecoin/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
-&lt;/blockquote&gt;</description>
+&lt;/blockquote&gt;
+
+&lt;p&gt;Finally, I got to the most exciting part of week 1 lectures-the programming assignment!&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -268,8 +261,8 @@ sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s
       
       <guid>https://zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/</guid>
       <description>&lt;blockquote&gt;
-&lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.
-&lt;/p&gt;</description>
+&lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
+&lt;/blockquote&gt;</description>
     </item>
     
     <item>
@@ -288,8 +281,7 @@ sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s
 * Pointer to where some information is stored
 * Cryptographic hash of that information&lt;br /&gt;
 The pointer can be used to get the information, the hash can be used to verify that information hasn&amp;rsquo;t been changed&lt;br /&gt;
-&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png&#34; alt=&#34;hashpointer&#34; /&gt;
-&lt;/p&gt;</description>
+&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png&#34; alt=&#34;hashpointer&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -307,8 +299,7 @@ The pointer can be used to get the information, the hash can be used to verify t
 &lt;p&gt;Hash function is a mathematical function:&lt;em&gt;H(X)=Y&lt;/em&gt;
 * H:  A hash function which takes an input value and calculates an output value
 * X: Input of the hash function, it could be any data of any length
-* Y: Output of the hash function: a fix-size bit(, it can be 256, 384, 516 &amp;hellip;, Bitcoin uses 256)
-&lt;/p&gt;</description>
+* Y: Output of the hash function: a fix-size bit(, it can be 256, 384, 516 &amp;hellip;, Bitcoin uses 256)&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -323,8 +314,7 @@ The pointer can be used to get the information, the hash can be used to verify t
 
 &lt;h2 id=&#34;how-did-i-get-into-this&#34;&gt;How did I get into this?&lt;/h2&gt;
 
-&lt;p&gt;I have noticed the buzzwords “Bitcoin” and “Blockchain” for a while. There are lots of articles, news, and talks around them. It seems that many people believe that cryptocurrency is the future of online payment, some even claim that blockchain would become the fundamental technology of the next generation of the Internet.
-&lt;/p&gt;</description>
+&lt;p&gt;I have noticed the buzzwords “Bitcoin” and “Blockchain” for a while. There are lots of articles, news, and talks around them. It seems that many people believe that cryptocurrency is the future of online payment, some even claim that blockchain would become the fundamental technology of the next generation of the Internet.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -367,9 +357,7 @@ The pointer can be used to get the information, the hash can be used to verify t
 
 &lt;p&gt;作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。&lt;/p&gt;
 
-&lt;p&gt;另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。
- 
-&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/microservice.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -388,9 +376,7 @@ export http_proxy=&amp;quot;http://127.0.0.1:3128/&amp;quot;
 export https_proxy=&amp;quot;http://127.0.0.1:3128/&amp;quot;
 export HTTP_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
 export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -401,8 +387,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <guid>https://zhaohuabing.com/2018/02/09/vim-tips/</guid>
       <description>&lt;h2 id=&#34;vim-graphical-cheat-sheet&#34;&gt;vim graphical cheat sheet&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://zhaohuabing.com/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg&#34; alt=&#34;&#34; /&gt;
-&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://zhaohuabing.com/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -411,9 +396,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Fri, 09 Feb 2018 10:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/02/09/docker-without-sudo/</guid>
-      <description> Add the docker group if it doesn&amp;rsquo;t already exist: sudo groupadd docker
-Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker
-Either do a newgrp docker or log out/in to activate the changes to groups. </description>
+      <description>Add the docker group if it doesn&amp;rsquo;t already exist: sudo groupadd docker Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker Either do a newgrp docker or log out/in to activate the changes to groups.</description>
     </item>
     
     <item>
@@ -433,9 +416,7 @@ Either do a newgrp docker or log out/in to activate the changes to groups. </des
       <guid>https://zhaohuabing.com/2018/01/02/nginmesh-install/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 
-&lt;p&gt;Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。
-
-&lt;img src=&#34;https://raw.githubusercontent.com/nginmesh/nginmesh/master/images/nginx_sidecar.png&#34; alt=&#34;Nginmesh sidecar proxy&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -444,7 +425,9 @@ Either do a newgrp docker or log out/in to activate the changes to groups. </des
       <pubDate>Tue, 28 Nov 2017 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/28/access-application-from-outside/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;</description>
+      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -453,7 +436,9 @@ Either do a newgrp docker or log out/in to activate the changes to groups. </des
       <pubDate>Thu, 23 Nov 2017 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/23/windows-proxy-scripts/</guid>
-      <description>&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;</description>
+      <description>&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+
+&lt;p&gt;我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -475,9 +460,7 @@ Either do a newgrp docker or log out/in to activate the changes to groups. </des
 
 &lt;p&gt;原文参见&lt;a href=&#34;https://istio.io/docs/tasks/traffic-management/traffic-shifting.html&#34;&gt;Traffic Shifting&lt;/a&gt;。&lt;/p&gt;
 
-&lt;p&gt;本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
-
-为简单起见，本任务将采用两步将流量从&lt;code&gt;reviews:v1&lt;/code&gt; 迁移到 &lt;code&gt;reviews:v3&lt;/code&gt;，权重分别为50%，100%。&lt;/p&gt;</description>
+&lt;p&gt;本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -499,8 +482,7 @@ Either do a newgrp docker or log out/in to activate the changes to groups. </des
       <pubDate>Sat, 04 Nov 2017 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/03/hello-world/</guid>
-      <description>  “Yeah It&amp;rsquo;s on. ”
- Hello World! </description>
+      <description>“Yeah It&amp;rsquo;s on. ” Hello World!</description>
     </item>
     
   </channel>

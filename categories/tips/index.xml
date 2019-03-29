@@ -17,11 +17,7 @@
       <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/24/set_up_my_ubuntu_desktop/</guid>
-      <description>Generate SSH Key Pair ssh-keygen -C &amp;quot;zhaohuabing@gmail.com&amp;quot;  Shadowsocks Install shadowsokcs
-sudo apt-get install python3-pip sudo pip3 install shadowsocks  Create config at config/shadowsocks.json, with the following content:
-{ &amp;quot;server&amp;quot;:&amp;quot;remote-shadowsocks-server-ip-addr&amp;quot;, &amp;quot;server_port&amp;quot;:443, &amp;quot;local_address&amp;quot;:&amp;quot;127.0.0.1&amp;quot;, &amp;quot;local_port&amp;quot;:1080, &amp;quot;password&amp;quot;:&amp;quot;your-passwd&amp;quot;, &amp;quot;timeout&amp;quot;:300, &amp;quot;method&amp;quot;:&amp;quot;aes-256-cfb&amp;quot;, &amp;quot;fast_open&amp;quot;:false, &amp;quot;workers&amp;quot;:1 }  Start a local socks proxy
-sudo sslocal -c config/shadowsocks.json -d start  In case there is an openssl error, modify shadowsocks source file.
-sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s/cleanup/reset/gc  Convert shadowsocks socks proxy to http proxy</description>
+      <description>Generate SSH Key Pair ssh-keygen -C &amp;quot;zhaohuabing@gmail.com&amp;quot; Shadowsocks Install shadowsokcs sudo apt-get install python3-pip sudo pip3 install shadowsocks Create config at config/shadowsocks.json, with the following content: { &amp;quot;server&amp;quot;:&amp;quot;remote-shadowsocks-server-ip-addr&amp;quot;, &amp;quot;server_port&amp;quot;:443, &amp;quot;local_address&amp;quot;:&amp;quot;127.0.0.1&amp;quot;, &amp;quot;local_port&amp;quot;:1080, &amp;quot;password&amp;quot;:&amp;quot;your-passwd&amp;quot;, &amp;quot;timeout&amp;quot;:300, &amp;quot;method&amp;quot;:&amp;quot;aes-256-cfb&amp;quot;, &amp;quot;fast_open&amp;quot;:false, &amp;quot;workers&amp;quot;:1 } Start a local socks proxy sudo sslocal -c config/shadowsocks.json -d start In case there is an openssl error, modify shadowsocks source file. sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py :%s/cleanup/reset/gc Convert shadowsocks socks proxy to http proxy</description>
     </item>
     
     <item>
@@ -40,9 +36,7 @@ export http_proxy=&amp;quot;http://127.0.0.1:3128/&amp;quot;
 export https_proxy=&amp;quot;http://127.0.0.1:3128/&amp;quot;
 export HTTP_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
 export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -53,8 +47,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <guid>https://zhaohuabing.com/2018/02/09/vim-tips/</guid>
       <description>&lt;h2 id=&#34;vim-graphical-cheat-sheet&#34;&gt;vim graphical cheat sheet&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&#34;https://zhaohuabing.com/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg&#34; alt=&#34;&#34; /&gt;
-&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://zhaohuabing.com/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -63,9 +56,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Fri, 09 Feb 2018 10:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/02/09/docker-without-sudo/</guid>
-      <description> Add the docker group if it doesn&amp;rsquo;t already exist: sudo groupadd docker
-Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker
-Either do a newgrp docker or log out/in to activate the changes to groups. </description>
+      <description>Add the docker group if it doesn&amp;rsquo;t already exist: sudo groupadd docker Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker Either do a newgrp docker or log out/in to activate the changes to groups.</description>
     </item>
     
     <item>
@@ -74,7 +65,9 @@ Either do a newgrp docker or log out/in to activate the changes to groups. </des
       <pubDate>Thu, 23 Nov 2017 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/23/windows-proxy-scripts/</guid>
-      <description>&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;</description>
+      <description>&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
+
+&lt;p&gt;我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。&lt;/p&gt;</description>
     </item>
     
   </channel>

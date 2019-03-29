@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>NodePort on Huabing Blog</title>
+    <link>https://zhaohuabing.com/tags/nodeport/</link>
+    <description>Recent content in NodePort on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 29 Mar 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/tags/nodeport/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>如何为服务网格选择入口网关？</title>
+      <link>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</guid>
+      <description>在启用了Istio服务网格的Kubernetes集群中，部署的服务在缺省配置下只能在Kubernetes 网络中被访问到，要如何才能从外部网络</description>
+    </item>
+    
+  </channel>
+</rss>

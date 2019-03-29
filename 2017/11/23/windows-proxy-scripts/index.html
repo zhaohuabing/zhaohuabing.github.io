@@ -362,9 +362,9 @@ $(function() {
                 
                 <h2 id="问题">问题</h2>
 
-<p>我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。
+<p>我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。</p>
 
-由于工作需要，我回家也会经常带着笔记本，以在晚上开会和处理一些工作上的事情（是的，悲催的加班狗），因此笔记本的网络会在家里和办公室网络之间切换。在公司网络上要设置浏览器HTTP代理为公司代理，回到家后又需要把代理服务器设置修改回来。虽然步骤不多，但是每天都至少要重复两次。有时候打开笔记想要上网处理一些事情，首先要修改代理服务器，很是影响思维的流畅性。因此希望可以实现在笔记本连上网络时直接根据所连接的网络自动修改代理服务器设置，以避免影响使用笔记本进行事务处理的连续性。</p>
+<p>由于工作需要，我回家也会经常带着笔记本，以在晚上开会和处理一些工作上的事情（是的，悲催的加班狗），因此笔记本的网络会在家里和办公室网络之间切换。在公司网络上要设置浏览器HTTP代理为公司代理，回到家后又需要把代理服务器设置修改回来。虽然步骤不多，但是每天都至少要重复两次。有时候打开笔记想要上网处理一些事情，首先要修改代理服务器，很是影响思维的流畅性。因此希望可以实现在笔记本连上网络时直接根据所连接的网络自动修改代理服务器设置，以避免影响使用笔记本进行事务处理的连续性。</p>
 
 <h2 id="思路">思路</h2>
 
@@ -564,6 +564,8 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/istio" title="Istio">
                             Istio
                         </a>
@@ -580,9 +582,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="Microservice">
                             Microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -818,7 +824,7 @@ var disq = new iDisqus('disqus-comment', {
 
 
 
-<script>
+<script type="application/javascript">
 var doNotTrack = false;
 if (!doNotTrack) {
 	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -827,7 +833,7 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-<script async src='//www.google-analytics.com/analytics.js'></script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 

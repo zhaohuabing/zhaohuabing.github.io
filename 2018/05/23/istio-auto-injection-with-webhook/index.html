@@ -380,8 +380,7 @@ $(function() {
 
 <p>使用webhook的优势是不需要对API Server的源码进行修改和重新编译就可以扩展其功能。插入的逻辑实现为一个独立的web进程，通过参数方式传入到kubernets中，由kubernets在进行自身逻辑处理时对扩展逻辑进行回调。</p>
 
-<p>Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
-</p>
+<p>Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。</p>
 
 <h2 id="什么是admission">什么是Admission</h2>
 
@@ -609,6 +608,8 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/istio" title="Istio">
                             Istio
                         </a>
@@ -625,9 +626,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="Microservice">
                             Microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -863,7 +868,7 @@ var disq = new iDisqus('disqus-comment', {
 
 
 
-<script>
+<script type="application/javascript">
 var doNotTrack = false;
 if (!doNotTrack) {
 	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
@@ -872,7 +877,7 @@ if (!doNotTrack) {
 	ga('send', 'pageview');
 }
 </script>
-<script async src='//www.google-analytics.com/analytics.js'></script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
 
 
 

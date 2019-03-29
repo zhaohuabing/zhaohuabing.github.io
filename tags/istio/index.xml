@@ -6,10 +6,19 @@
     <description>Recent content in Istio on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 29 Mar 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何为服务网格选择入口网关？</title>
+      <link>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</guid>
+      <description>在启用了Istio服务网格的Kubernetes集群中，部署的服务在缺省配置下只能在Kubernetes 网络中被访问到，要如何才能从外部网络</description>
+    </item>
     
     <item>
       <title>Istio 服务注册插件机制代码解析</title>
@@ -26,7 +35,7 @@
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</guid>
-      <description>What is service mesh?  Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services.  What is Istio?  Istio is an open-source service mesh project lead by Google, IBM and Lyft.</description>
+      <description>What is service mesh? Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services. What is Istio? Istio</description>
     </item>
     
     <item>
@@ -71,7 +80,7 @@
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-08-15-manage-onap-with-istio-auth-enabled/</guid>
-      <description>In the previous post Manage ONAP Microservices with Istio Service Mesh, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’s worth with the benefits brought by it. Installation Download installation scripts from ONAP Gerrit:</description>
+      <description>In the previous post Manage ONAP Microservices with Istio Service Mesh, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’</description>
     </item>
     
     <item>
@@ -80,8 +89,7 @@
       <pubDate>Wed, 01 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/</guid>
-      <description>In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts from ONAP Gerrit:
-git clone https://gerrit.onap.org/r/msb/service-mesh  Kubernetes Master We need Kubernetes 1.</description>
+      <description>In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts</description>
     </item>
     
     <item>
@@ -90,8 +98,7 @@ git clone https://gerrit.onap.org/r/msb/service-mesh  Kubernetes Master We need 
       <pubDate>Fri, 22 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</guid>
-      <description>ONAP Beijing is available now!
-ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&amp;rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a whole, users may just want to pick some modules, integrate these modules with their existing system to get a customized ONAP solution.</description>
+      <description>ONAP Beijing is available now! ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&amp;rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a</description>
     </item>
     
     <item>
@@ -110,8 +117,8 @@ ONAP, as part of LF Networking, now accounts for more than 65% of global subscri
       
       <guid>https://zhaohuabing.com/2018/06/02/istio08/</guid>
       <description>&lt;blockquote&gt;
-&lt;p&gt;在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：
-&lt;/p&gt;</description>
+&lt;p&gt;在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：&lt;/p&gt;
+&lt;/blockquote&gt;</description>
     </item>
     
     <item>
@@ -128,8 +135,7 @@ ONAP, as part of LF Networking, now accounts for more than 65% of global subscri
 
 &lt;p&gt;使用webhook的优势是不需要对API Server的源码进行修改和重新编译就可以扩展其功能。插入的逻辑实现为一个独立的web进程，通过参数方式传入到kubernets中，由kubernets在进行自身逻辑处理时对扩展逻辑进行回调。&lt;/p&gt;
 
-&lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
-&lt;/p&gt;</description>
+&lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -142,9 +148,7 @@ ONAP, as part of LF Networking, now accounts for more than 65% of global subscri
 
 &lt;p&gt;作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。&lt;/p&gt;
 
-&lt;p&gt;另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。
- 
-&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/microservice.PNG&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -155,9 +159,7 @@ ONAP, as part of LF Networking, now accounts for more than 65% of global subscri
       <guid>https://zhaohuabing.com/2018/01/02/nginmesh-install/</guid>
       <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
 
-&lt;p&gt;Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。
-
-&lt;img src=&#34;https://raw.githubusercontent.com/nginmesh/nginmesh/master/images/nginx_sidecar.png&#34; alt=&#34;Nginmesh sidecar proxy&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -179,9 +181,7 @@ ONAP, as part of LF Networking, now accounts for more than 65% of global subscri
 
 &lt;p&gt;原文参见&lt;a href=&#34;https://istio.io/docs/tasks/traffic-management/traffic-shifting.html&#34;&gt;Traffic Shifting&lt;/a&gt;。&lt;/p&gt;
 
-&lt;p&gt;本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
-
-为简单起见，本任务将采用两步将流量从&lt;code&gt;reviews:v1&lt;/code&gt; 迁移到 &lt;code&gt;reviews:v3&lt;/code&gt;，权重分别为50%，100%。&lt;/p&gt;</description>
+&lt;p&gt;本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。&lt;/p&gt;</description>
     </item>
     
     <item>
