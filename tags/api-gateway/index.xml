@@ -12,12 +12,12 @@
     
     
     <item>
-      <title>如何为服务网格选择入口网关？</title>
+      <title>如何为服务网格部署入口网关？</title>
       <link>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</link>
       <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</guid>
-      <description>在启用了Istio服务网格的Kubernetes集群中，部署的服务在缺省配置下只能在Kubernetes 网络中被访问到，要如何才能从外部网络</description>
+      <description>在启用了Istio服务网格的Kubernetes集群中，缺省配置下只能在Kubernetes 网络访问到网格内部的服务，要如何才能从外部网络访</description>
     </item>
     
     <item>
