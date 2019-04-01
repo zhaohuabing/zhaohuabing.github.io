@@ -546,10 +546,10 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment &quot;default/weba
 <li>通过一个主机节点作为网络入口，在网络流量较大时存在性能瓶颈。</li>
 </ul>
 
-<p>为了解决这些问题，Kubernetes提供了LoadBalancer。通过将Service定义为LoadBalancer类型，Kubernetes在主机节点的NodePort前提供了一个四层的负载均衡器。该四层负载均衡器负责将外部网络流量分发到后面的多个节点的NodePort端口上。</p>
+<p>为了解决这些问题，kubernetes支持将Service定义为LoadBalancer类型。 Cloud Provider Controller监听Service的变化消息，当LoadBalancer类型的Service创建后，Cloud Provider Controller会将配置下发到Cloud Provider网络中的一个四层负载均衡器，该四层负载均衡器负责将外部网络流量分发到后面的多个节点的NodePort端口上。</p>
 
 <p>下图展示了Kubernetes如何通过LoadBalancer方式对外提供流量入口，图中LoadBalancer后面接入了两个主机节点上的NodePort，后端部署了三个Pod提供服务。根据集群的规模，可以在LoadBalancer后面可以接入更多的主机节点，以进行负荷分担。
-<img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Load-Balancer.png" alt="" />
+<img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Load-Balancer.jpg" alt="" />
 <center>NodeBalancer</center></p>
 
 <blockquote>
