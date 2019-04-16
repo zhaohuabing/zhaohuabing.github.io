@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 29 Mar 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 16 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>API Gateway</title>
       <link>https://zhaohuabing.com/tags/api-gateway/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/api-gateway/</guid>
       <description></description>
@@ -113,7 +113,7 @@
     <item>
       <title>Ingress</title>
       <link>https://zhaohuabing.com/tags/ingress/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/ingress/</guid>
       <description></description>
@@ -122,7 +122,7 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
       <description></description>
@@ -140,7 +140,7 @@
     <item>
       <title>Kubernetes</title>
       <link>https://zhaohuabing.com/tags/kubernetes/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/kubernetes/</guid>
       <description></description>
@@ -149,7 +149,7 @@
     <item>
       <title>LoadBalancer</title>
       <link>https://zhaohuabing.com/tags/loadbalancer/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/loadbalancer/</guid>
       <description></description>
@@ -194,7 +194,7 @@
     <item>
       <title>NodePort</title>
       <link>https://zhaohuabing.com/tags/nodeport/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/nodeport/</guid>
       <description></description>
@@ -239,7 +239,7 @@
     <item>
       <title>Service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>

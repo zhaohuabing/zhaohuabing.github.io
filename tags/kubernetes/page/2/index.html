@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Microservice-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Kubernetes-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/tags/microservice/">
+    <link rel="canonical" href="/tags/kubernetes/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -190,23 +190,19 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/02/03/authentication-and-authorization-of-microservice/">
+    <a href="https://zhaohuabing.com/2017/11/28/access-application-from-outside/">
         <h2 class="post-title">
-            如何构建安全的微服务应用？
+            如何从外部访问Kubernetes集群中的应用？
         </h2>
-	
-        <h3 class="post-subtitle">
-            微服务架构下的认证和鉴权方案探讨
-        </h3>
 	
         <div class="post-content-preview">
 	
-            微服务架构的引入为软件应用带来了诸多好处：包括小开发团队，缩短开发周期，语言选择灵活性，增强服务伸缩能力等。与此同时，也引入了分布式系统的诸多复杂问题。其中一个挑战就是如何在微服务架构中实现一个灵活，安全，高效的认证和鉴权方案。本文将尝试就此问题进行一次比较完整的探讨。
+            我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。
         
         </div>
     </a>
     <p class="post-meta">
-    Posted by 赵化冰 Saturday, February 3, 2018
+    Posted by 赵化冰 Tuesday, November 28, 2017
     </p>
 </div>
 <hr>
@@ -218,7 +214,7 @@
 <ul class="pager">
     
     <li class="previous">
-        <a href="/tags/microservice/">&larr; Newer Posts</a>
+        <a href="/tags/kubernetes/">&larr; Newer Posts</a>
     </li>
     
     
@@ -382,7 +378,7 @@
            <ul class="list-inline"> 
                
                <li>
-                   <a href="https://zhaohuabing.com/tags/microservice/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                   <a href="https://zhaohuabing.com/tags/kubernetes/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                        <span class="fa-stack fa-lg">
                            <i class="fa fa-circle fa-stack-2x"></i>
                            <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -481,7 +477,7 @@
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href="https://zhaohuabing.com/tags/microservice/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                       <a href="https://zhaohuabing.com/tags/kubernetes/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>

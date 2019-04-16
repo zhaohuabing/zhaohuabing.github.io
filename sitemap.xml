@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://zhaohuabing.com/post/2019-04-16-how-to-choose-ingress-for-service-mesh-english/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/</loc>
     <lastmod>2019-03-29T00:00:00+00:00</lastmod>
   </url>
@@ -231,7 +236,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/api-gateway/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -302,19 +307,19 @@
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/ingress/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -326,7 +331,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -338,7 +343,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/loadbalancer/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -368,7 +373,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/nodeport/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -398,7 +403,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -415,7 +420,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -427,13 +432,13 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/categories/tech/</loc>
-    <lastmod>2019-03-29T00:00:00+00:00</lastmod>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
