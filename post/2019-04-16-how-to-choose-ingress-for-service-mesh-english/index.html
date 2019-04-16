@@ -15,9 +15,9 @@
     
 
     
-    <meta name="title" content="Which one is the right choice for the ingress gateway of your service mesh?" />
-    <meta property="og:title" content="Which one is the right choice for the ingress gateway of your service mesh?" />
-    <meta property="twitter:title" content="Which one is the right choice for the ingress gateway of your service mesh?" />
+    <meta name="title" content="Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?" />
+    <meta property="og:title" content="Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?" />
+    <meta property="twitter:title" content="Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?" />
     
 
     
@@ -34,7 +34,7 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Which one is the right choice for the ingress gateway of your service mesh?-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?-赵化冰的博客 | Zhaohuabing Blog</title>
 
     <link rel="canonical" href="/post/2019-04-16-how-to-choose-ingress-for-service-mesh-english/">
 
@@ -201,7 +201,7 @@
                         </a>
                         
                     </div>
-                    <h1>Which one is the right choice for the ingress gateway of your service mesh?</h1>
+                    <h1>Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?</h1>
                     <h2 class="subheading">Kubernetes Ingress, Istio Gateway or API Gateway?</h2>
                     <span class="meta">
 			Posted by 
@@ -400,7 +400,7 @@ $(function() {
                 
                 
 
-<p>By default, in a Kubernetes cluster with the Istio service mesh enabled, services can only be accessed inside the cluster. However, some of the services may need to be exposed to the external network as well. Kubernetes and Istio provide a variety of means to get external traffic into your cluster including NodePort, LoadBalancer, Kubernetes Ingress and Istio Gateway. With all these options, which one should be the right choice for your service mesh running in production?</p>
+<p>By default, in a Kubernetes cluster with the Istio service mesh enabled, services can only be accessed inside the cluster. However, some of the services may need to be exposed to external networks as well. Kubernetes and Istio provide a variety of means to get external traffic into your cluster including NodePort, LoadBalancer, Kubernetes Ingress and Istio Gateway. With all these options, which one should be the right choice for your service mesh running in production?</p>
 
 <p>I will compare all the available options, dig into the technical details, and provide a workable solution at the end of this article. Hopefully, it could be useful for your service mesh production.</p>
 
@@ -418,7 +418,7 @@ $(function() {
 
 <p>To solve this problem, Kubernetes uses Service as an abstraction for a group of backend Pods. A Service is bound to a ClusterIP, which is a virtual IP address, and no matter what happens to the backend Pods, the ClusterIP never changes, so a client can always send requests to the ClusterIP of the Service. There is a Kube-proxy which is responsible for routing client requests to a chosen backend Pod in every node.</p>
 
-<p>Kube-proxy is a go application working in three modes:</p>
+<p>Kube-proxy is a go application which can work in three modes:</p>
 
 <h3 id="userspace">userspace</h3>
 
