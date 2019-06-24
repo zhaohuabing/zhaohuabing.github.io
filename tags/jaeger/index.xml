@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jaeger on Huabing Blog</title>
+    <link>https://zhaohuabing.com/tags/jaeger/</link>
+    <description>Recent content in Jaeger on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 22 Jun 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/tags/jaeger/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>洞若观火：使用OpenTracing增强Istio的调用链跟踪</title>
+      <link>https://zhaohuabing.com/post/2019-06-22-using-opentracing-with-istio/</link>
+      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-06-22-using-opentracing-with-istio/</guid>
+      <description>分布式调用跟踪和Opentracing规范 什么是分布式调用跟踪？ 相比传统的“巨石”应用，微服务的一个主要变化是将应用中的不同模块拆分为了独立</description>
+    </item>
+    
+  </channel>
+</rss>

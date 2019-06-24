@@ -122,9 +122,18 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jaeger</title>
+      <link>https://zhaohuabing.com/tags/jaeger/</link>
+      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/jaeger/</guid>
       <description></description>
     </item>
     
@@ -210,6 +219,15 @@
     </item>
     
     <item>
+      <title>Opentracing</title>
+      <link>https://zhaohuabing.com/tags/opentracing/</link>
+      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/opentracing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>PaaS</title>
       <link>https://zhaohuabing.com/tags/paas/</link>
       <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
@@ -239,7 +257,7 @@
     <item>
       <title>Service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
