@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现。包括利用Opentracing代替硬编码来实现跨进程边界的分布式调用上下文传递；以及使用Opentracing在Istio/Envoy生成的分布式调用跟踪上进行增强，实现方法级的细粒度调用跟踪。">
-    <meta property="og:description" content="本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现。包括利用Opentracing代替硬编码来实现跨进程边界的分布式调用上下文传递；以及使用Opentracing在Istio/Envoy生成的分布式调用跟踪上进行增强，实现方法级的细粒度调用跟踪。" />
-    <meta property="twitter:description" content="本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现。包括利用Opentracing代替硬编码来实现跨进程边界的分布式调用上下文传递；以及使用Opentracing在Istio/Envoy生成的分布式调用跟踪上进行增强，实现方法级的细粒度调用跟踪。" />
+    <meta name="description" content="本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现：如何利用Opentracing来实现跨进程边界的分布式调用上下文传递；以及在Istio/Envoy生成的分布式调用跟踪基础上实现方法级的细粒度调用跟踪。">
+    <meta property="og:description" content="本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现：如何利用Opentracing来实现跨进程边界的分布式调用上下文传递；以及在Istio/Envoy生成的分布式调用跟踪基础上实现方法级的细粒度调用跟踪。" />
+    <meta property="twitter:description" content="本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现：如何利用Opentracing来实现跨进程边界的分布式调用上下文传递；以及在Istio/Envoy生成的分布式调用跟踪基础上实现方法级的细粒度调用跟踪。" />
     
 
     
@@ -198,7 +198,7 @@
                         
                     </div>
                     <h1>洞若观火：使用OpenTracing增强Istio的调用链跟踪</h1>
-                    <h2 class="subheading"></h2>
+                    <h2 class="subheading">第一篇：如何利用Opentracing实现方法级的细粒度跟踪</h2>
                     <span class="meta">
 			Posted by 
 			
@@ -675,7 +675,7 @@ public class BankTransaction {
 
 <h1 id="下一步">下一步</h1>
 
-<p>除了同步调用之外，异步消息也是微服务架构中常见的一种通信方式。在下一篇文章中，我们将继续完善eshop demo程序，探讨如何通过Opentracing将Kafka异步消息也纳入到Istio的分布式调用跟踪中。</p>
+<p>除了同步调用之外，异步消息也是微服务架构中常见的一种通信方式。在下一篇文章中，我将继续利用eshop demo程序来探讨如何通过Opentracing将Kafka异步消息也纳入到Istio的分布式调用跟踪中。</p>
 
 <h1 id="参考资料">参考资料</h1>
 
