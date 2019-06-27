@@ -6,10 +6,19 @@
     <description>Recent content on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 22 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Jun 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>开源，社区与朋友们</title>
+      <link>https://zhaohuabing.com/post/2019-06-25-kubecon-cncf-oss-2019/</link>
+      <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-06-25-kubecon-cncf-oss-2019/</guid>
+      <description>大会背景介绍 2019年6月24-26日，KubeCon + CloudNativeCon + Open Source Summit大会在上海世博中心举行。本次大会是由CNCF的LC3和Linux</description>
+    </item>
     
     <item>
       <title>洞若观火：使用OpenTracing增强Istio的调用链跟踪</title>
