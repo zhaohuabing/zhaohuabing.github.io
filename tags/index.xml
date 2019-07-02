@@ -122,7 +122,7 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
       <description></description>
@@ -131,9 +131,18 @@
     <item>
       <title>Jaeger</title>
       <link>https://zhaohuabing.com/tags/jaeger/</link>
-      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/jaeger/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kafka</title>
+      <link>https://zhaohuabing.com/tags/kafka/</link>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/kafka/</guid>
       <description></description>
     </item>
     
@@ -221,7 +230,7 @@
     <item>
       <title>Opentracing</title>
       <link>https://zhaohuabing.com/tags/opentracing/</link>
-      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/opentracing/</guid>
       <description></description>
@@ -257,7 +266,7 @@
     <item>
       <title>Service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Sat, 22 Jun 2019 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
