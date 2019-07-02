@@ -502,7 +502,7 @@ metadata:
 
 <h1 id="将调用跟踪上下文从kafka传递到rest服务">将调用跟踪上下文从Kafka传递到REST服务</h1>
 
-<p>现在eshop代码中已经加入了REST和Kafka的Opentracing Instrumentation，可以在进行REST调用和发送Kafka消息时生成调用跟踪信息。但如果需要从Kafka的消息消费者的处理方法中调用一个REST接口呢？我们会发现缺省生成的调用链里面并不会把Kafka消费者的Span和其发起的REST请求的Span关联在一个Trace中。</p>
+<p>现在eshop代码中已经加入了REST和Kafka的Opentracing Instrumentation，可以在进行REST调用和发送Kafka消息时生成调用跟踪信息。但如果需要从Kafka的消息消费者的处理方法中调用一个REST接口呢？我们会发现在eshop示例程序中，缺省生成的调用链里面并不会把Kafka消费者的Span和其发起的调用notification服务的REST请求的Span关联在同一个Trace中。</p>
 
 <p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
 
