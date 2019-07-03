@@ -407,50 +407,49 @@ git checkout kafka-tracking
 
 <p>首先需要将spring kafka和Opentracing kafka的依赖加入到两个目录下的pom文件中。</p>
 
-<pre><code class="language-xml">        &lt;dependency&gt;
-            &lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-kafka&lt;/artifactId&gt;
-        &lt;/dependency&gt;
-
-        &lt;dependency&gt;
-            &lt;groupId&gt;io.opentracing.contrib&lt;/groupId&gt;
-            &lt;artifactId&gt;opentracing-kafka-client&lt;/artifactId&gt;
-            &lt;version&gt;${version.opentracing.kafka-client}&lt;/version&gt;
-        &lt;/dependency&gt;
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-kafka&lt;/artifactId&gt;
+&lt;/dependency&gt;
+ &lt;dependency&gt;
+    &lt;groupId&gt;io.opentracing.contrib&lt;/groupId&gt;
+    &lt;artifactId&gt;opentracing-kafka-client&lt;/artifactId&gt;
+    &lt;version&gt;${version.opentracing.kafka-client}&lt;/version&gt;
+&lt;/dependency&gt;
 </code></pre>
 
-<p>在rest-service目录中的KafkaConfig.java中配置消息Producer端的Opentracing Instrument。</p>
+<p>在rest-service目录中的KafkaConfig.java中配置消息Producer端的Opentracing Instrument。TracingProducerInterceptor会在发送Kafka消息时生成发送端的Span。</p>
 
-<pre><code class="language-java">    @Bean
-    public ProducerFactory&lt;String, String&gt; producerFactory() {
-        Map&lt;String, Object&gt; configProps = new HashMap&lt;&gt;();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingProducerInterceptor.class.getName());
-        return new DefaultKafkaProducerFactory&lt;&gt;(configProps);
-    }
+<pre><code class="language-java">@Bean
+public ProducerFactory&lt;String, String&gt; producerFactory() {
+    Map&lt;String, Object&gt; configProps = new HashMap&lt;&gt;();
+    configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configProps.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingProducerInterceptor.class.getName());
+    return new DefaultKafkaProducerFactory&lt;&gt;(configProps);
+}
 </code></pre>
 
-<p>在kafka-consumer目录中的KafkaConfig.java中配置消息Consumer端的Opentracing Instrument。</p>
+<p>在kafka-consumer目录中的KafkaConfig.java中配置消息Consumer端的Opentracing Instrument。TracingConsumerInterceptor会在接收到Kafka消息是生成接收端的Span。</p>
 
-<pre><code class="language-java">    @Bean
-    public ConsumerFactory&lt;String, String&gt; consumerFactory() {
-        Map&lt;String, Object&gt; props = new HashMap&lt;&gt;();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingConsumerInterceptor.class.getName());
-        return new DefaultKafkaConsumerFactory&lt;&gt;(props);
-    }
+<pre><code class="language-java">@Bean
+public ConsumerFactory&lt;String, String&gt; consumerFactory() {
+    Map&lt;String, Object&gt; props = new HashMap&lt;&gt;();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingConsumerInterceptor.class.getName());
+    return new DefaultKafkaConsumerFactory&lt;&gt;(props);
+}
 </code></pre>
 
 <p>只需要这两步即可完成Spring程序的Kafka Opentracing代码植入。下面安装并运行示例程序查看效果。</p>
 
 <h2 id="安装kafka集群">安装Kafka集群</h2>
 
-<p>示例程序中使用到了Kafka消息，因此需要部署一个Kafka集。，可以参照 <a href="https://kafka.apache.org/quickstart">Kafka Quickstart</a> 在Kubernetes集群外部署Kafka；也可以使用 <a href="https://github.com/strimzi/strimzi-kafka-operator">Kafka Operator</a> 直接将Kafka部署在Kubernetes集群中。</p>
+<p>示例程序中使用到了Kafka消息，因此需要部署一个Kafka集群。可以参照 <a href="https://kafka.apache.org/quickstart">Kafka Quickstart</a> 在Kubernetes集群外部署Kafka；也可以使用 <a href="https://github.com/strimzi/strimzi-kafka-operator">Kafka Operator</a> 直接将Kafka部署在Kubernetes集群中。</p>
 
 <h2 id="部署demo应用">部署demo应用</h2>
 
@@ -506,6 +505,36 @@ metadata:
 
 <p>我们会发现在eshop示例程序中，缺省生成的调用链里面并不会把Kafka消费者的Span和其发起的调用notification服务的REST请求的Span关联在同一个Trace中。</p>
 
+<p>要分析导致该问题的原因，我们首先需要了解<a href="https://opentracing.io/docs/overview/scopes-and-threading/">“Active Span”</a>的概念。在Opentracing中，一个线程可以有一个Active Span，该Active Span代表了目前该线程正在执行的工作。在调用Tracer.buildSpan()方法创建新的Span时，如果Tracer目前存在一个Active Span，则会将该Active Span缺省作为新创建的Span的Parent Span。</p>
+
+<p>Tracer.buildSpan 方法的说明如下：</p>
+
+<pre><code>Tracer.SpanBuilder buildSpan(String operationName)
+Return a new SpanBuilder for a Span with the given `operationName`.
+You can override the operationName later via BaseSpan.setOperationName(String).
+
+A contrived example:
+
+
+   Tracer tracer = ...
+
+   // Note: if there is a `tracer.activeSpan()`, it will be used as the target of an implicit CHILD_OF
+   // Reference for &quot;workSpan&quot; when `startActive()` is invoked.
+   // 如果存在active span，则其创建的新Span会隐式地创建一个 CHILD_OF 引用到该active span
+   try (ActiveSpan workSpan = tracer.buildSpan(&quot;DoWork&quot;).startActive()) {
+       workSpan.setTag(&quot;...&quot;, &quot;...&quot;);
+       // etc, etc
+   }
+
+   // 也可以通过asChildOf方法指定新创建的Span的Parent Span
+   // It's also possible to create Spans manually, bypassing the ActiveSpanSource activation.
+   Span http = tracer.buildSpan(&quot;HandleHTTPRequest&quot;)
+                     .asChildOf(rpcSpanContext)  // an explicit parent
+                     .withTag(&quot;user_agent&quot;, req.UserAgent)
+                     .withTag(&quot;lucky_number&quot;, 42)
+                     .startManual();
+</code></pre>
+
 <p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
 
 <pre><code class="language-java">public static &lt;K, V&gt; void buildAndFinishChildSpan(ConsumerRecord&lt;K, V&gt; record, Tracer tracer,
@@ -534,31 +563,29 @@ metadata:
   }
 </code></pre>
 
-<p>此时TracingConsumerInterceptor已经将当前Span放到了Kafka消息的header中，因此从Kafka消息头中取出当前Span，作为REST调用的Parent Span即可。</p>
+<p>此时TracingConsumerInterceptor已经将Kafka消费者的Span放到了Kafka消息的header中，因此从Kafka消息头中取出该Span，显示地将Kafka消费者的Span作为REST调用的Parent Span即可。</p>
 
 <p>为MessageConsumer.java使用的RestTemplate设置一个TracingKafka2RestTemplateInterceptor。</p>
 
-<pre><code class="language-java">    @KafkaListener(topics = &quot;eshop-topic&quot;)
-    public void receiveMessage(ConsumerRecord&lt;String, String&gt; record) {
-        restTemplate
-                .setInterceptors(Collections.singletonList(new TracingKafka2RestTemplateInterceptor(record.headers())));
-        restTemplate.getForEntity(&quot;http://notification:8080/sendEmail&quot;, String.class);
-    }
+<pre><code class="language-java">@KafkaListener(topics = &quot;eshop-topic&quot;)
+public void receiveMessage(ConsumerRecord&lt;String, String&gt; record) {
+    restTemplate
+            .setInterceptors(Collections.singletonList(new TracingKafka2RestTemplateInterceptor(record.headers())));
+    restTemplate.getForEntity(&quot;http://notification:8080/sendEmail&quot;, String.class);
+}
 </code></pre>
 
 <p>TracingKafka2RestTemplateInterceptor是基于Spring Opentracing Instrumentation的TracingRestTemplateInterceptor修改的，将从Kafka header中取出的Span设置为出向请求的Span的Parent Span。</p>
 
-<pre><code class="language-java">    @Override
-    public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution execution)
-            throws IOException {
-        ClientHttpResponse httpResponse;
-
-        SpanContext parentSpanContext = TracingKafkaUtils.extractSpanContext(headers, tracer);
-
-        Span span = tracer.buildSpan(httpRequest.getMethod().toString()).asChildOf(parentSpanContext)
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
-        ......
-    }
+<pre><code class="language-java">@Override
+public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution xecution)
+        throws IOException {
+    ClientHttpResponse httpResponse;
+    SpanContext parentSpanContext = TracingKafkaUtils.extractSpanContext(headers, tracer);
+    Span span = tracer.buildSpan(httpRequest.getMethod().toString()).asChildOf(parentSpanContext)
+            .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
+    ......
+}
 </code></pre>
 
 <p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
@@ -571,9 +598,9 @@ metadata:
 
 <h1 id="总结">总结</h1>
 
-<p>Istio服务网格通过分布式调用跟踪来提高微服务应用的可见性。我们可以使用Opentracing Instrumentation来代替应用编码传递分布式跟踪的相关http header；将方法级的调用跟踪和Kafka消息的调用跟踪加入到Istio生成的调用跟踪链中。</p>
+<p>Istio服务网格通过分布式调用跟踪来提高微服务应用的可见性。我们可以使用Opentracing Instrumentation来代替应用编码传递分布式跟踪的相关http header；还可以将方法级的调用跟踪和Kafka消息的调用跟踪加入到Istio生成的调用跟踪链中，以提供更细粒度的调用跟踪信息。</p>
 
-<p>该方案可以达到分布式调用跟踪的目的，但需要在代码框架层进行一定的改动，以植入调用跟踪的相关代码。理想的方案是由服务网格基础设施层来完成所有调用跟踪的数据收集和生成，这样应用代码只需关注业务逻辑，而不用处理调用跟踪信息的生成。理论上应该可以在Envoy中加入插件来为Kafka消息生成调用跟踪信息，但目前看来服务网格还没有很好的办法在上下游服务之前传递调用跟踪上下文。</p>
+<p>该方案可以达到分布式调用跟踪的目的，但需要在代码框架层进行一定的改动，以植入调用跟踪的相关代码。理想的方案是由服务网格基础设施层来完成所有调用跟踪的数据收集和生成，这样应用代码只需关注业务逻辑，而不用处理调用跟踪信息的生成。可以在Envoy中加入插件来为Kafka消息生成调用跟踪信息，但目前看来服务网格还没有很好的办法在上下游服务之前传递调用跟踪上下文。</p>
 
 <h1 id="参考资料">参考资料</h1>
 
