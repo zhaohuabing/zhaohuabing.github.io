@@ -523,7 +523,9 @@ private HttpHeaders passTracingHeader(HttpHeaders headers) {
 </ul>
 
 <pre><code class="language-bash">git clone https://github.com/zhaohuabing/istio-opentracing-demo.git
-kubectl apply -f istio-opentracing-demo/k8s/eshop.yaml
+cd istio-opentracing-demo
+git checkout without-opentracing
+kubectl apply -f k8s/eshop.yaml
 </code></pre>
 
 <ul>
@@ -656,6 +658,12 @@ public class BankTransaction {
         }
     }
 }
+</code></pre>
+
+<p>demo程序的master branch已经加入了方法级代码跟踪，可以直接部署。</p>
+
+<pre><code class="language-bash">git checkout master
+kubectl apply -f k8s/eshop.yaml
 </code></pre>
 
 <p>效果如下图所示，可以看到trace中增加了transfer和save2db两个方法级的Span。
