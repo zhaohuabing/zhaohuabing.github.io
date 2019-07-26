@@ -48,12 +48,16 @@
 
     
     <link rel="stylesheet" href="/css/syntax.css">
-
+    
     
     <link rel="stylesheet" href="/css/zanshang.css">
-
+    
     
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
     
     
     <script src="/js/jquery.min.js"></script>
@@ -63,15 +67,19 @@
     
     
     <script src="/js/hux-blog.min.js"></script>
-	
+
+    
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    
     
 
 </head>
+
 
 
 <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
@@ -97,19 +105,19 @@
                     </li>
                     
                     <li>
-                        <a href="/categories/life">Life</a>
+                        <a href="/categories/life">life</a>
                     </li>
                     
                     <li>
-                        <a href="/categories/note">Note</a>
+                        <a href="/categories/note">note</a>
                     </li>
                     
                     <li>
-                        <a href="/categories/tech">Tech</a>
+                        <a href="/categories/tech">tech</a>
                     </li>
                     
                     <li>
-                        <a href="/categories/tips">Tips</a>
+                        <a href="/categories/tips">tips</a>
                     </li>
                     
                     
@@ -183,12 +191,12 @@
                     <h1>Istio v1aplha3 routing API介绍(译文）</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
-			Posted by 
-			
-			        &#34;赵化冰&#34;
-			 
-			on 
-			Monday, June 4, 2018
+                        Posted by 
+                        
+                                &#34;赵化冰&#34;
+                         
+                        on 
+                        Monday, June 4, 2018
                         
                             <span id="/2018/06/04/introducing-the-istio-v1alpha3-routing-api/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
@@ -323,6 +331,8 @@ $(function() {
 });
 </script>
 
+                        
+                        
                         
                     </span>
                 </div>
@@ -568,33 +578,34 @@ spec:
 
 <ol>
 <li><a href="https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule">DestinationRule</a>的<code>host</code>可以包含通配符前缀，以允许单个规则应用于多个服务。</li>
-<li><code>DestinationRule</code>定义了目的host的子集<code>subsets</code> （例如：命名版本）。 这些subset用于｀VirtualService｀的路由规则设置中，可以将流量导向服务的某些特定版本。 通过这种方式为版本命名后，可以在不同的virtual service中明确地引用这些命名版本的ubset，简化Istio代理发出的统计数据，并可以将subsets编码到SNI头中。
-为reviews服务配置策略和subsets的<code>DestinationRule</code>可能如下所示：</li>
-</ol>
+
+<li><p><code>DestinationRule</code>定义了目的host的子集<code>subsets</code> （例如：命名版本）。 这些subset用于｀VirtualService｀的路由规则设置中，可以将流量导向服务的某些特定版本。 通过这种方式为版本命名后，可以在不同的virtual service中明确地引用这些命名版本的ubset，简化Istio代理发出的统计数据，并可以将subsets编码到SNI头中。
+为reviews服务配置策略和subsets的<code>DestinationRule</code>可能如下所示：</p>
 
 <pre><code class="language-yaml">apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: reviews
+name: reviews
 spec:
-  host: reviews
-  trafficPolicy:
-    loadBalancer:
-      simple: RANDOM
-  subsets:
-  - name: v1
-    labels:
-      version: v1
-  - name: v2
-    labels:
-      version: v2
-    trafficPolicy:
-      loadBalancer:
-        simple: ROUND_ROBIN
-  - name: v3
-    labels:
-      version: v3
-</code></pre>
+host: reviews
+trafficPolicy:
+loadBalancer:
+  simple: RANDOM
+subsets:
+- name: v1
+labels:
+  version: v1
+- name: v2
+labels:
+  version: v2
+trafficPolicy:
+  loadBalancer:
+    simple: ROUND_ROBIN
+- name: v3
+labels:
+  version: v3
+</code></pre></li>
+</ol>
 
 <p>注意，与<code>DestinationPolicy</code>不同的是，可在单个<code>DestinationRule</code>中指定多个策略（例如上面实例中的缺省策略和v2版本特定的策略）。</p>
 
@@ -779,44 +790,34 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
-                        <a href="/tags/api-gateway" title="API Gateway">
-                            API Gateway
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
                         </a>
                         
                         
                         
-                        <a href="/tags/bitcoin" title="Bitcoin">
-                            Bitcoin
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
                         </a>
                         
                         
                         
-                        <a href="/tags/blockchain" title="Blockchain">
-                            Blockchain
-                        </a>
-                        
-                        
-                        
-                        
-                        
-                        <a href="/tags/cryptocurrency" title="Cryptocurrency">
-                            Cryptocurrency
-                        </a>
-                        
-                        
-                        
-                        <a href="/tags/digital-signature" title="Digital Signature">
-                            Digital Signature
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
                         </a>
                         
                         
                         
                         
                         
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
                         
                         
-                        <a href="/tags/envoy" title="Envoy">
-                            Envoy
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
                         </a>
                         
                         
@@ -825,10 +826,8 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
-                        
-                        
-                        <a href="/tags/istio" title="Istio">
-                            Istio
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
                         </a>
                         
                         
@@ -839,18 +838,8 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
-                        <a href="/tags/kubernetes" title="Kubernetes">
-                            Kubernetes
-                        </a>
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <a href="/tags/microservice" title="Microservice">
-                            Microservice
+                        <a href="/tags/istio" title="istio">
+                            istio
                         </a>
                         
                         
@@ -861,8 +850,18 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
-                        <a href="/tags/onap" title="ONAP">
-                            ONAP
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
                         </a>
                         
                         
@@ -873,27 +872,37 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
-                        <a href="/tags/security" title="Security">
-                            Security
-                        </a>
                         
                         
-                        
-                        <a href="/tags/service-mesh" title="Service Mesh">
-                            Service Mesh
-                        </a>
-                        
-                        
-                        
-                        
-                        
-                        <a href="/tags/tips" title="Tips">
-                            Tips
+                        <a href="/tags/onap" title="onap">
+                            onap
                         </a>
                         
                         
                         
                         
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/tips" title="tips">
+                            tips
+                        </a>
                         
                         
                         
@@ -933,7 +942,7 @@ var disq = new iDisqus('disqus-comment', {
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href="" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -951,7 +960,7 @@ var disq = new iDisqus('disqus-comment', {
                         </a>
                     </li>
 		    
-
+                    
                     
                     
                     
@@ -980,6 +989,8 @@ var disq = new iDisqus('disqus-comment', {
                     </li>
 		    
                     
+                    
+                    
                     <li>
                         <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
                             <span class="fa-stack fa-lg">
@@ -999,6 +1010,19 @@ var disq = new iDisqus('disqus-comment', {
                         </a>
                     </li>
             
+                    
+                    <li>
+                        <a target="_blank" href="https://stackoverflow.com/users/2306565/huabing-zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
                 </ul>
 		<p class="copyright text-muted">
                     Copyright &copy; Huabing Blog 2019
@@ -1101,7 +1125,6 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-
 
 
 

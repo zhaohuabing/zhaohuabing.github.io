@@ -48,12 +48,16 @@
 
     
     <link rel="stylesheet" href="/css/syntax.css">
-
+    
     
     <link rel="stylesheet" href="/css/zanshang.css">
-
+    
     
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
     
     
     <script src="/js/jquery.min.js"></script>
@@ -63,15 +67,19 @@
     
     
     <script src="/js/hux-blog.min.js"></script>
-	
+
+    
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    
     
 
 </head>
+
 
 
 <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
@@ -97,19 +105,19 @@
                     </li>
                     
                     <li>
-                        <a href="/categories/life">Life</a>
+                        <a href="/categories/life">life</a>
                     </li>
                     
                     <li>
-                        <a href="/categories/note">Note</a>
+                        <a href="/categories/note">note</a>
                     </li>
                     
                     <li>
-                        <a href="/categories/tech">Tech</a>
+                        <a href="/categories/tech">tech</a>
                     </li>
                     
                     <li>
-                        <a href="/categories/tips">Tips</a>
+                        <a href="/categories/tips">tips</a>
                     </li>
                     
                     
@@ -193,26 +201,138 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/01/02/nginmesh-install/">
+    <a href="https://zhaohuabing.com/post/2019-07-02-using-opentracing-with-istio/">
         <h2 class="post-title">
-            Nginx开源Service Mesh组件Nginmesh安装指南
+            洞若观火：使用OpenTracing增强Istio的调用链跟踪
         </h2>
+	
+        <h3 class="post-subtitle">
+            第二篇：如何利用Opentracing实现Kafka消息的调用跟踪
+        </h3>
 	
         <div class="post-content-preview">
 	
-            Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。
+            本文将接着上一篇继续介绍如何利用OpenTracing来对Kafka异步消息进行跟踪，并将异步消息的跟踪信息加入Istio/Envoy生成的分布式调用跟踪链中进行统一呈现。
         
         </div>
     </a>
     <p class="post-meta">
-    Posted by 赵化冰 Tuesday, January 2, 2018
+    Posted by     &#34;赵化冰&#34; Tuesday, July 2, 2019
+    
+    
     </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-06-22-using-opentracing-with-istio/">
+        <h2 class="post-title">
+            洞若观火：使用OpenTracing增强Istio的调用链跟踪
+        </h2>
+	
+        <h3 class="post-subtitle">
+            第一篇：如何利用Opentracing实现方法级的细粒度跟踪
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现：如何利用Opentracing来实现跨进程边界的分布式调用上下文传递；以及在Istio/Envoy生成的分布式调用跟踪基础上实现方法级的细粒度调用跟踪。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by     &#34;赵化冰&#34; Saturday, June 22, 2019
+    
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-04-16-how-to-choose-ingress-for-service-mesh-english/">
+        <h2 class="post-title">
+            Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes Ingress, Istio Gateway or API Gateway?
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            By default, in a Kubernetes cluster with the Istio service mesh enabled, services can only be accessed inside the cluster. However, some of the services may need to be exposed to the external network as well. Kubernetes and Istio provide a variety of means to get external traffic into your cluster including NodePort, LoadBalancer, Kubernetes Ingress and Istio Gateway. With all these options, which one should be the right choice for your service mesh running in production?
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by     &#34;赵化冰&#34; Tuesday, April 16, 2019
+    
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/">
+        <h2 class="post-title">
+            如何为服务网格选择入口网关？
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes Ingress, Istio Gateway还是API Gateway？
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            在启用了Istio服务网格的Kubernetes集群中，缺省情况下只能在集群内部访问网格中的服务，要如何才能从外部网络访问这些服务呢？ Kubernetes和Istio提供了NodePort，LoadBalancer，Kubernetes Ingress，Istio Gateway等多种外部流量入口的方式，面对这么多种方式，我们在产品部署中应该如何选择？
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by     &#34;赵化冰&#34; Friday, March 29, 2019
+    
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
+        <h2 class="post-title">
+            Istio 服务注册插件机制代码解析
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            本文将从代码出发，对Pilot的服务注册插件机制进行分析。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    Posted by     &#34;赵化冰&#34; Monday, February 18, 2019
+    
+    
+    </p>
+
 </div>
 <hr>
 
 
             
 
+
+<ul class="pager">
+    
+    
+    <li class="next">
+        <a href="/tags/service-mesh/page/2/">Older Posts &rarr;</a>
+    </li>
+    
+</ul>
 
 
        	</div>
@@ -234,44 +354,34 @@
              
             
                 
-                    <a href="/tags/api-gateway" title="API Gateway">
-                        API Gateway
+                    <a href="/tags/api-gateway" title="api-gateway">
+                        api-gateway
                     </a>
                 
             
                 
-                    <a href="/tags/bitcoin" title="Bitcoin">
-                        Bitcoin
+                    <a href="/tags/bitcoin" title="bitcoin">
+                        bitcoin
                     </a>
                 
             
                 
-                    <a href="/tags/blockchain" title="Blockchain">
-                        Blockchain
-                    </a>
-                
-            
-                
-            
-                
-                    <a href="/tags/cryptocurrency" title="Cryptocurrency">
-                        Cryptocurrency
-                    </a>
-                
-            
-                
-                    <a href="/tags/digital-signature" title="Digital Signature">
-                        Digital Signature
+                    <a href="/tags/blockchain" title="blockchain">
+                        blockchain
                     </a>
                 
             
                 
             
                 
+                    <a href="/tags/cryptocurrency" title="cryptocurrency">
+                        cryptocurrency
+                    </a>
+                
             
                 
-                    <a href="/tags/envoy" title="Envoy">
-                        Envoy
+                    <a href="/tags/digital-signature" title="digital-signature">
+                        digital-signature
                     </a>
                 
             
@@ -280,10 +390,8 @@
                 
             
                 
-            
-                
-                    <a href="/tags/istio" title="Istio">
-                        Istio
+                    <a href="/tags/envoy" title="envoy">
+                        envoy
                     </a>
                 
             
@@ -294,18 +402,8 @@
                 
             
                 
-                    <a href="/tags/kubernetes" title="Kubernetes">
-                        Kubernetes
-                    </a>
-                
-            
-                
-            
-                
-            
-                
-                    <a href="/tags/microservice" title="Microservice">
-                        Microservice
+                    <a href="/tags/istio" title="istio">
+                        istio
                     </a>
                 
             
@@ -316,8 +414,18 @@
                 
             
                 
-                    <a href="/tags/onap" title="ONAP">
-                        ONAP
+                    <a href="/tags/kubernetes" title="kubernetes">
+                        kubernetes
+                    </a>
+                
+            
+                
+            
+                
+            
+                
+                    <a href="/tags/microservice" title="microservice">
+                        microservice
                     </a>
                 
             
@@ -328,27 +436,37 @@
                 
             
                 
-                    <a href="/tags/security" title="Security">
-                        Security
-                    </a>
-                
             
                 
-                    <a href="/tags/service-mesh" title="Service Mesh">
-                        Service Mesh
-                    </a>
-                
-            
-                
-            
-                
-                    <a href="/tags/tips" title="Tips">
-                        Tips
+                    <a href="/tags/onap" title="onap">
+                        onap
                     </a>
                 
             
                 
             
+                
+            
+                
+            
+                
+                    <a href="/tags/security" title="security">
+                        security
+                    </a>
+                
+            
+                
+                    <a href="/tags/service-mesh" title="service-mesh">
+                        service-mesh
+                    </a>
+                
+            
+                
+            
+                
+                    <a href="/tags/tips" title="tips">
+                        tips
+                    </a>
                 
             
                 
@@ -378,7 +496,7 @@
            <ul class="list-inline"> 
                
                <li>
-                   <a href="https://zhaohuabing.com/tags/service-mesh/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                   <a href='/tags/service-mesh/index.xml' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                        <span class="fa-stack fa-lg">
                            <i class="fa fa-circle fa-stack-2x"></i>
                            <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -411,6 +529,8 @@
                </li>
                
                
+               
+               
                <li>
                    <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
                        <span class="fa-stack fa-lg">
@@ -429,6 +549,19 @@
                             </span>
                    </a>
                </li>
+               
+               
+                    <li>
+                        <a target="_blank" href="https://stackoverflow.com/users/2306565/huabing-zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+            
+            
                
                 </ul>
             </div>
@@ -477,7 +610,7 @@
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href="https://zhaohuabing.com/tags/service-mesh/index.xml" rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                       <a href='/tags/service-mesh/index.xml' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -495,7 +628,7 @@
                         </a>
                     </li>
 		    
-
+                    
                     
                     
                     
@@ -524,6 +657,8 @@
                     </li>
 		    
                     
+                    
+                    
                     <li>
                         <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
                             <span class="fa-stack fa-lg">
@@ -543,6 +678,19 @@
                         </a>
                     </li>
             
+                    
+                    <li>
+                        <a target="_blank" href="https://stackoverflow.com/users/2306565/huabing-zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
                 </ul>
 		<p class="copyright text-muted">
                     Copyright &copy; Huabing Blog 2019
@@ -645,7 +793,6 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
-
 
 
 

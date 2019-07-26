@@ -6,16 +6,17 @@
     <description>Recent content in Categories on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <lastBuildDate>Tue, 02 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Life</title>
-      <link>https://zhaohuabing.com/categories/life/</link>
-      <pubDate>Tue, 01 May 2018 00:00:00 +0000</pubDate>
+      <title>Tech</title>
+      <link>https://zhaohuabing.com/categories/tech/</link>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/categories/life/</guid>
+      <guid>https://zhaohuabing.com/categories/tech/</guid>
       <description></description>
     </item>
     
@@ -29,20 +30,20 @@
     </item>
     
     <item>
-      <title>Tech</title>
-      <link>https://zhaohuabing.com/categories/tech/</link>
-      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/categories/tech/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Tips</title>
       <link>https://zhaohuabing.com/categories/tips/</link>
       <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/categories/tips/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Life</title>
+      <link>https://zhaohuabing.com/categories/life/</link>
+      <pubDate>Tue, 01 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/categories/life/</guid>
       <description></description>
     </item>
     

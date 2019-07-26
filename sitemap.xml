@@ -3,6 +3,66 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://zhaohuabing.com/categories/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/istio/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/jaeger/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/kafka/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/opentracing/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
+    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2019-07-02-using-opentracing-with-istio/</loc>
     <lastmod>2019-07-02T00:00:00+00:00</lastmod>
   </url>
@@ -15,6 +75,36 @@
   <url>
     <loc>https://zhaohuabing.com/post/2019-06-22-using-opentracing-with-istio/</loc>
     <lastmod>2019-06-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/api-gateway/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/ingress/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/loadbalancer/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/nodeport/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -33,8 +123,26 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/git/</loc>
+    <lastmod>2019-01-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2019-01-21-git/</loc>
     <lastmod>2019-01-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/consul/</loc>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/nfv/</loc>
+    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -43,13 +151,43 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/machine-learning/</loc>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-12-24-machine-learningp-introduction/</loc>
     <lastmod>2018-12-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/categories/note/</loc>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/supervised-learning/</loc>
+    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/knitter/</loc>
+    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/</loc>
     <lastmod>2018-12-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/envoy/</loc>
+    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -63,13 +201,43 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/mixer/</loc>
+    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/paas/</loc>
+    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/pilot/</loc>
+    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</loc>
     <lastmod>2018-09-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/english/</loc>
+    <lastmod>2018-08-25T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2018-08-28-english-topic-smart-phone/</loc>
     <lastmod>2018-08-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/onap/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -93,8 +261,32 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/bitcoin/</loc>
+    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</loc>
     <lastmod>2018-06-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/blockchain/</loc>
+    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/cryptocurrency/</loc>
+    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/digital-signature/</loc>
+    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -115,6 +307,30 @@
   <url>
     <loc>https://zhaohuabing.com/2018/05/24/set_up_my_ubuntu_desktop/</loc>
     <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/categories/tips/</loc>
+    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/ubuntu/</loc>
+    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/microservice/</loc>
+    <lastmod>2018-05-23T18:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/security/</loc>
+    <lastmod>2018-05-23T18:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -163,8 +379,26 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/categories/life/</loc>
+    <lastmod>2018-05-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/travel/</loc>
+    <lastmod>2018-05-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/2018/05/01/may-day-jiulonghu/</loc>
     <lastmod>2018-05-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/helm/</loc>
+    <lastmod>2018-04-16T15:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -183,8 +417,26 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/docker/</loc>
+    <lastmod>2018-03-13T18:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/tips/</loc>
+    <lastmod>2018-03-13T18:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/2018/03/13/use-docker-behind-http-proxy/</loc>
     <lastmod>2018-03-13T18:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/vim/</loc>
+    <lastmod>2018-02-09T11:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -205,6 +457,12 @@
   <url>
     <loc>https://zhaohuabing.com/2018/01/02/nginmesh-install/</loc>
     <lastmod>2018-01-02T12:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/nginmesh/</loc>
+    <lastmod>2018-01-02T12:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -239,204 +497,16 @@
   
   <url>
     <loc>https://zhaohuabing.com/search/placeholder/</loc>
+    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/top/about/</loc>
+    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/top/books/</loc>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/api-gateway/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/bitcoin/</loc>
-    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/blockchain/</loc>
-    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/consul/</loc>
-    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/cryptocurrency/</loc>
-    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/digital-signature/</loc>
-    <lastmod>2018-06-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/docker/</loc>
-    <lastmod>2018-03-13T18:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/english/</loc>
-    <lastmod>2018-08-25T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/envoy/</loc>
-    <lastmod>2018-10-29T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/git/</loc>
-    <lastmod>2019-01-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/helm/</loc>
-    <lastmod>2018-04-16T15:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/ingress/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/jaeger/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/kafka/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/knitter/</loc>
-    <lastmod>2018-12-19T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/life/</loc>
-    <lastmod>2018-05-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/loadbalancer/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/machine-learning/</loc>
-    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/microservice/</loc>
-    <lastmod>2018-05-23T18:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/mixer/</loc>
-    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/nfv/</loc>
-    <lastmod>2018-12-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/nodeport/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/note/</loc>
-    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/onap/</loc>
-    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/opentracing/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/paas/</loc>
-    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/pilot/</loc>
-    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -446,79 +516,7 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/tags/security/</loc>
-    <lastmod>2018-05-23T18:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/supervised-learning/</loc>
-    <lastmod>2018-12-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/tech/</loc>
-    <lastmod>2019-07-02T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/tips/</loc>
-    <lastmod>2018-03-13T18:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/tips/</loc>
-    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://zhaohuabing.com/top/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/travel/</loc>
-    <lastmod>2018-05-01T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/vim/</loc>
-    <lastmod>2018-02-09T11:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/nginmesh/</loc>
-    <lastmod>2018-01-02T12:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2018-01-02T12:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/ubuntu/</loc>
-    <lastmod>2018-05-24T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

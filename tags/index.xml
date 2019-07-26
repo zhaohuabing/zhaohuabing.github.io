@@ -6,118 +6,10 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 16 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>API Gateway</title>
-      <link>https://zhaohuabing.com/tags/api-gateway/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/api-gateway/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Bitcoin</title>
-      <link>https://zhaohuabing.com/tags/bitcoin/</link>
-      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/bitcoin/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Blockchain</title>
-      <link>https://zhaohuabing.com/tags/blockchain/</link>
-      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/blockchain/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Consul</title>
-      <link>https://zhaohuabing.com/tags/consul/</link>
-      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/consul/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Cryptocurrency</title>
-      <link>https://zhaohuabing.com/tags/cryptocurrency/</link>
-      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/cryptocurrency/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Digital Signature</title>
-      <link>https://zhaohuabing.com/tags/digital-signature/</link>
-      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/digital-signature/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Docker</title>
-      <link>https://zhaohuabing.com/tags/docker/</link>
-      <pubDate>Tue, 13 Mar 2018 18:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/docker/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>English</title>
-      <link>https://zhaohuabing.com/tags/english/</link>
-      <pubDate>Sat, 25 Aug 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/english/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Envoy</title>
-      <link>https://zhaohuabing.com/tags/envoy/</link>
-      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/envoy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Git</title>
-      <link>https://zhaohuabing.com/tags/git/</link>
-      <pubDate>Mon, 21 Jan 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/git/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Helm</title>
-      <link>https://zhaohuabing.com/tags/helm/</link>
-      <pubDate>Mon, 16 Apr 2018 15:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/helm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ingress</title>
-      <link>https://zhaohuabing.com/tags/ingress/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/ingress/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>Istio</title>
@@ -147,11 +39,38 @@
     </item>
     
     <item>
-      <title>Knitter</title>
-      <link>https://zhaohuabing.com/tags/knitter/</link>
-      <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
+      <title>Opentracing</title>
+      <link>https://zhaohuabing.com/tags/opentracing/</link>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/knitter/</guid>
+      <guid>https://zhaohuabing.com/tags/opentracing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>service Mesh</title>
+      <link>https://zhaohuabing.com/tags/service-mesh/</link>
+      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>API Gateway</title>
+      <link>https://zhaohuabing.com/tags/api-gateway/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/api-gateway/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ingress</title>
+      <link>https://zhaohuabing.com/tags/ingress/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/ingress/</guid>
       <description></description>
     </item>
     
@@ -174,29 +93,29 @@
     </item>
     
     <item>
-      <title>Machine Learning</title>
-      <link>https://zhaohuabing.com/tags/machine-learning/</link>
-      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
+      <title>NodePort</title>
+      <link>https://zhaohuabing.com/tags/nodeport/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/machine-learning/</guid>
+      <guid>https://zhaohuabing.com/tags/nodeport/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Microservice</title>
-      <link>https://zhaohuabing.com/tags/microservice/</link>
-      <pubDate>Wed, 23 May 2018 18:00:00 +0000</pubDate>
+      <title>Git</title>
+      <link>https://zhaohuabing.com/tags/git/</link>
+      <pubDate>Mon, 21 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/microservice/</guid>
+      <guid>https://zhaohuabing.com/tags/git/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Mixer</title>
-      <link>https://zhaohuabing.com/tags/mixer/</link>
-      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      <title>Consul</title>
+      <link>https://zhaohuabing.com/tags/consul/</link>
+      <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/mixer/</guid>
+      <guid>https://zhaohuabing.com/tags/consul/</guid>
       <description></description>
     </item>
     
@@ -210,29 +129,47 @@
     </item>
     
     <item>
-      <title>NodePort</title>
-      <link>https://zhaohuabing.com/tags/nodeport/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      <title>Machine Learning</title>
+      <link>https://zhaohuabing.com/tags/machine-learning/</link>
+      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/nodeport/</guid>
+      <guid>https://zhaohuabing.com/tags/machine-learning/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>ONAP</title>
-      <link>https://zhaohuabing.com/tags/onap/</link>
-      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      <title>Supervised learning</title>
+      <link>https://zhaohuabing.com/tags/supervised-learning/</link>
+      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/onap/</guid>
+      <guid>https://zhaohuabing.com/tags/supervised-learning/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Opentracing</title>
-      <link>https://zhaohuabing.com/tags/opentracing/</link>
-      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
+      <title>Knitter</title>
+      <link>https://zhaohuabing.com/tags/knitter/</link>
+      <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/opentracing/</guid>
+      <guid>https://zhaohuabing.com/tags/knitter/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Envoy</title>
+      <link>https://zhaohuabing.com/tags/envoy/</link>
+      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/envoy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mixer</title>
+      <link>https://zhaohuabing.com/tags/mixer/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/mixer/</guid>
       <description></description>
     </item>
     
@@ -255,6 +192,78 @@
     </item>
     
     <item>
+      <title>English</title>
+      <link>https://zhaohuabing.com/tags/english/</link>
+      <pubDate>Sat, 25 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/english/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ONAP</title>
+      <link>https://zhaohuabing.com/tags/onap/</link>
+      <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/onap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bitcoin</title>
+      <link>https://zhaohuabing.com/tags/bitcoin/</link>
+      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/bitcoin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Blockchain</title>
+      <link>https://zhaohuabing.com/tags/blockchain/</link>
+      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/blockchain/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cryptocurrency</title>
+      <link>https://zhaohuabing.com/tags/cryptocurrency/</link>
+      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/cryptocurrency/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Digital Signature</title>
+      <link>https://zhaohuabing.com/tags/digital-signature/</link>
+      <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/digital-signature/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ubuntu</title>
+      <link>https://zhaohuabing.com/tags/ubuntu/</link>
+      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/ubuntu/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Microservice</title>
+      <link>https://zhaohuabing.com/tags/microservice/</link>
+      <pubDate>Wed, 23 May 2018 18:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/microservice/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Security</title>
       <link>https://zhaohuabing.com/tags/security/</link>
       <pubDate>Wed, 23 May 2018 18:00:00 +0000</pubDate>
@@ -264,20 +273,29 @@
     </item>
     
     <item>
-      <title>Service Mesh</title>
-      <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Tue, 02 Jul 2019 00:00:00 +0000</pubDate>
+      <title>Travel</title>
+      <link>https://zhaohuabing.com/tags/travel/</link>
+      <pubDate>Tue, 01 May 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
+      <guid>https://zhaohuabing.com/tags/travel/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Supervised learning</title>
-      <link>https://zhaohuabing.com/tags/supervised-learning/</link>
-      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
+      <title>Helm</title>
+      <link>https://zhaohuabing.com/tags/helm/</link>
+      <pubDate>Mon, 16 Apr 2018 15:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/supervised-learning/</guid>
+      <guid>https://zhaohuabing.com/tags/helm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker</title>
+      <link>https://zhaohuabing.com/tags/docker/</link>
+      <pubDate>Tue, 13 Mar 2018 18:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/docker/</guid>
       <description></description>
     </item>
     
@@ -287,15 +305,6 @@
       <pubDate>Tue, 13 Mar 2018 18:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/tips/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Travel</title>
-      <link>https://zhaohuabing.com/tags/travel/</link>
-      <pubDate>Tue, 01 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/travel/</guid>
       <description></description>
     </item>
     
@@ -314,24 +323,6 @@
       <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/nginmesh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>service Mesh</title>
-      <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ubuntu</title>
-      <link>https://zhaohuabing.com/tags/ubuntu/</link>
-      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/ubuntu/</guid>
       <description></description>
     </item>
     
