@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Hash Pointers and Data Structures" />
-    <meta property="og:title" content="Hash Pointers and Data Structures" />
-    <meta property="twitter:title" content="Hash Pointers and Data Structures" />
+    <meta name="title" content="Enhance Istio Distributed Tracing with OpenTracing" />
+    <meta property="og:title" content="Enhance Istio Distributed Tracing with OpenTracing" />
+    <meta property="twitter:title" content="Enhance Istio Distributed Tracing with OpenTracing" />
     
 
     
-    <meta name="description" content="Hash pointer is used to bulid some key data structures in cryptocurrency, such as Block chain and Merkel tree.">
-    <meta property="og:description" content="Hash pointer is used to bulid some key data structures in cryptocurrency, such as Block chain and Merkel tree." />
-    <meta property="twitter:description" content="Hash pointer is used to bulid some key data structures in cryptocurrency, such as Block chain and Merkel tree." />
+    <meta name="description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。">
+    <meta property="og:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    <meta property="twitter:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Hash Pointers and Data Structures-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Enhance Istio Distributed Tracing with OpenTracing-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/">
+    <link rel="canonical" href="/post/2019-06-22-using-opentracing-with-istio-english/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -173,7 +173,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://img.zhaohuabing.com/in-post/2018-05-06-cryptocurrency_week1/blockchain.png')
+        background-image: url('/img/2019-06-22-using-opentracing-with-istio/background.jpg')
     }
 </style>
 <header class="intro-header">
@@ -183,30 +183,34 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/cryptocurrency" title="Cryptocurrency">
-                            Cryptocurrency
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
                         </a>
                         
-                        <a class="tag" href="/tags/blockchain" title="Blockchain">
-                            Blockchain
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
                         </a>
                         
-                        <a class="tag" href="/tags/bitcoin" title="Bitcoin">
-                            Bitcoin
+                        <a class="tag" href="/tags/opentracing" title="Opentracing">
+                            Opentracing
+                        </a>
+                        
+                        <a class="tag" href="/tags/jaeger" title="Jaeger">
+                            Jaeger
                         </a>
                         
                     </div>
-                    <h1>Hash Pointers and Data Structures</h1>
-                    <h2 class="subheading">Bitcoin and Cryptocurrency Technologies-Week 1</h2>
+                    <h1>Enhance Istio Distributed Tracing with OpenTracing</h1>
+                    <h2 class="subheading">Part 1: Implement fine-grained tracing with OpenTracing</h2>
                     <span class="meta">
                         Posted by 
                         
-                            赵化冰
+                                &#34;赵化冰&#34;
                          
                         on 
-                        Saturday, May 12, 2018
+                        Saturday, August 24, 2019
                         
-                            <span id="/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2019-06-22-using-opentracing-with-istio-english/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -368,72 +372,247 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li>
-<ul>
-<li><a href="#hash-pointer">Hash Pointer</a></li>
-<li><a href="#data-structures-built-with-hash-pointers">Data Structures Built with Hash Pointers</a>
-<ul>
-<li><a href="#blockchain">Blockchain</a></li>
-<li><a href="#merkle-tree">Merkle Tree</a></li>
-</ul></li>
-<li><a href="#example-codes-on-github">Example Codes on GitHub</a></li>
-</ul></li>
+<li><a href="#distributed-tracing-with-istio">Distributed Tracing with Istio</a></li>
+<li><a href="#using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</a></li>
+<li><a href="#adding-method-level-tracing-to-istio">Adding Method-Level Tracing to Istio</a></li>
+<li><a href="#wrapping-up">Wrapping up</a></li>
+<li><a href="#what-s-next">What’s next</a></li>
+<li><a href="#references">References</a></li>
 </ul>
 </nav>
                 
-                <blockquote>
-<p>This series of articles are my notes of &ldquo;Bitcoin and Cryptocurrency Technologies&rdquo; online course.</p>
-</blockquote>
+                
 
-<h2 id="hash-pointer">Hash Pointer</h2>
+<p>While evolving towards a microservices architecture, the biggest change is that the monolith application has been divided into multiple independent processes(or services), as a result, a method call between software modules now becomes a remote procedure call go through multiple services.</p>
 
-<p>Hash Pointer is comprised of two parts:
-* Pointer to where some information is stored
-* Cryptographic hash of that information<br />
-The pointer can be used to get the information, the hash can be used to verify that information hasn&rsquo;t been changed<br />
-<img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png" alt="hashpointer" /></p>
+<p>A client request usually goes through a couple of or even a dozen of services in a complex microservices system, which makes it really hard to figure out what’s going on when a request fails or becomes slow.</p>
 
-<h2 id="data-structures-built-with-hash-pointers">Data Structures Built with Hash Pointers</h2>
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/monolith-microserivce.jpg" alt="" />
+Basically, in order to get the overall view of a client request, we need to collect all the related information of service invocations in the path of that request, including start time, end time, URL, errors, etc., and associate all the collected data within a single trace. This process is normally called distributed tracing.</p>
 
-<h3 id="blockchain">Blockchain</h3>
+<h1 id="distributed-tracing-with-istio">Distributed Tracing with Istio</h1>
 
-<p>Hash pointers can be used to build a linked list, which is also called a blockchain.<br />
-<img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/blockchian.png" alt="blockchain" /></p>
+<p>Istio/Envoy provides out-of-the-box distributed tracing for microservices. Envoy can intercept the incoming and outgoing requests of the service in the same pod and automatically generates tracing data for them. By connecting the mesh with a tracing infrastructure backend such as Zipkin or Jaeger, you can get the trace details of a distributed request, such as which services a request went through, which REST APIs were called, and the latency of each span, etc.</p>
 
-<p>We should Note that the hash stored in the hash pointer is the hash of the whole data of the previous block, which also includes the hash pointer to the block before that one. This makes it&rsquo;s impossible to tamper a block in the blockchain without letting others know.</p>
+<p>It should be noted that although Istio/Envoy has done most of the work in this process, it still requires a small amount of modification to the application code: the application code needs to propagate the tracing header in the upstream HTTP requests to its downstream services. This part of the code can’t be handled directly by Envoy because Envoy just doesn&rsquo;t understand the business logic of the service co-located with it, and therefore it can’t infer the affiliation of incoming requests with the outgoing requests correctly. Although the modification is a minor change, it needs to be added manually to every piece of code where a request is forwarding to a downstream service, which is annoying.</p>
 
-<p><strong>Tamper Evident Property of Blockchain</strong><br />
-We only need to keep the hash pointer to the last block of the blockchain. Then when somebody shows the whole blockchain later and claim the data in it is not modified, we can tell if any block in the chain is tampered by traversing the blocks backwards and verifying the hashes one by one.</p>
+<p>Let’s use a simple online shop demo to show how Istio provides distributed tracing. The demo consists of several services: eshop, inventory, billing, and delivery. The structure of the application is shown in the following figure:</p>
 
-<p><strong>Explanation</strong><br />
-* An attacker wants to tamper with one block of the chain, let&rsquo;s say, block 1.
-* The attacker changed the content of block 1, because of &ldquo;collision free&rdquo; property of the hash function, he is not able to find another data which has the same hash with the old one. So now the hash of this modified block is also changed.
-* To avoid others noticing the inconsistency, he also needs to change the hash pointer of that block in the next block, which is block 2.
-* Now the content of block 2 is changed, so to make this story consistent, the hash pointer in block3 must be changed.
-* Finally, the attacker goes to the hash pointer to the last block of the blockchain, which is a roadblock for him, because we keep and remember that hash pointer.</p>
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/eshop-demo.jpg" alt="" />
+eshop service accepts requests from the client sides, then it calls the REST APIs of inventory, billing, delivery services to accomplish the checkout user request.</p>
 
-<p><img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/tamper_evident.png" alt="tamper evident" /></p>
+<p>Codes can be downloaded from Github: <a href="https://github.com/zhaohuabing/istio-opentracing-demo.git">https://github.com/zhaohuabing/istio-opentracing-demo.git</a></p>
 
-<h3 id="merkle-tree">Merkle Tree</h3>
+<p>Below is the implementation of the checkout function of eshop Service, as you can see, tracing related HTTP Headers are propagated to downstream services.</p>
 
-<p>Merkle tree is a binary tree building with hash pointers. The leaves are data blocks, nodes further up in the tree are the hashes of their respective children.</p>
+<pre><code class="language-java"> @RequestMapping(value = &quot;/checkout&quot;)
+public String checkout(@RequestHeader HttpHeaders headers) {
+    String result = &quot;&quot;;
+    // Use HTTP GET in this demo. In a real world use case,We should use HTTP POST
+    // instead.
+    // The three services are bundled in one jar for simplicity. To make it work,
+    // define three services in Kubernets.
+    result += restTemplate.exchange(&quot;http://inventory:8080/createOrder&quot;, HttpMethod.GET,
+            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
+    result += &quot;&lt;BR&gt;&quot;;
+    result += restTemplate.exchange(&quot;http://billing:8080/payment&quot;, HttpMethod.GET,
+            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
+    result += &quot;&lt;BR&gt;&quot;;
+    result += restTemplate.exchange(&quot;http://delivery:8080/arrangeDelivery&quot;, HttpMethod.GET,
+            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
+    return result;
+}
+private HttpHeaders passTracingHeader(HttpHeaders headers) {
+    HttpHeaders tracingHeaders = new HttpHeaders();
+    extractHeader(headers, tracingHeaders, &quot;x-request-id&quot;);
+    extractHeader(headers, tracingHeaders, &quot;x-b3-traceid&quot;);
+    extractHeader(headers, tracingHeaders, &quot;x-b3-spanid&quot;);
+    extractHeader(headers, tracingHeaders, &quot;x-b3-parentspanid&quot;);
+    extractHeader(headers, tracingHeaders, &quot;x-b3-sampled&quot;);
+    extractHeader(headers, tracingHeaders, &quot;x-b3-flags&quot;);
+    extractHeader(headers, tracingHeaders, &quot;x-ot-span-context&quot;);
+    return tracingHeaders;
+}
 
-<p><img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/merkel_tree.png" alt="merkel tree" /></p>
+</code></pre>
 
-<p><strong>Features</strong>
-* <strong>Tamper evident</strong><br />
-Just like blockchain, we only need to remember the hash pointer in the root (top-level node), then we can traverse down to any leaf data block to check if a node is in the tree or has it been tampered with.
-* <strong>Traversal efficiency</strong><br />
-To verify a data block, we only need to traverse the path from the top to the leaf where the data is. So the complexity is O(log n), which is much more efficient compared with O(n) of a linked list blockchain.
-* <strong>None-membership proof</strong><br />
-If Merkel tree is sorted, we can prove a given data is not in the tree: if the data before and after the given data are both in the tree and they&rsquo;re consecutive, so there&rsquo;s no space between them, this proves that the given data is not in three.</p>
-
-<h2 id="example-codes-on-github">Example Codes on GitHub</h2>
+<p>Then let’s deploy the demo in a Kubernetes cluster along with Istio.</p>
 
 <ul>
-<li><a href="https://github.com/zhaohuabing/blockchain">Blockchain Implementation in Java</a></li>
-<li><a href="https://github.com/zhaohuabing/merkle-tree">Merkle Tree Implementation in Java</a></li>
+<li>First, we need a Kubernetes cluster with Webhook enabled</li>
+<li>Deploy Istio in the Kubernetes cluster, and enable sidecar auto-injection for the default namespace</li>
+
+<li><p>Deploy eshop application</p>
+
+<pre><code class="language-bash">git clone https://github.com/zhaohuabing/istio-opentracing-demo.git
+cd istio-opentracing-demo
+git checkout without-opentracing
+kubectl apply -f k8s/eshop.yaml
+</code></pre></li>
+
+<li><p>Open this URL in your browser to invoke eshop checkout REST API: http://${NODE_IP}:31380/checkout</p></li>
+
+<li><p>Open Jaeger UI to see the trace: http://${NODE_IP}:30088</p></li>
 </ul>
+
+<p>Note: In order to access Jaeger UI from outside of the Kubernetes Cluster, you may want to modify Istio install scripts to add a NodePort for Jaeger service:</p>
+
+<pre><code class="language-yaml">apiVersion: v1
+  kind: Service
+  metadata:
+    name: jaeger-query
+    namespace: istio-system
+    annotations:
+    labels:
+      app: jaeger
+      jaeger-infra: jaeger-service
+      chart: tracing
+      heritage: Tiller
+      release: istio
+  spec:
+    ports:
+      - name: query-http
+        port: 16686
+        protocol: TCP
+        targetPort: 16686
+        nodePort: 30088
+    type: NodePort
+    selector:
+      app: jaeger
+</code></pre>
+
+<p>As you can see, Istio/Envoy automatically generates a trace for the client request. The trace is comprised of several spans, and each span corresponds a REST method of a service in the chain of services invoked by the client request.</p>
+
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing.jpg" alt="" /></p>
+
+<h1 id="using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</h1>
+
+<p>Instead of explicitly passing the HTTP headers, we can use Opentracing instrumentation for trace Context propagation. It’s pretty simple：</p>
+
+<ul>
+<li>Add Opentracing Spring Cloud Starter and Jaeger dependency in the maven POM file.</li>
+
+<li><p>Declare a tracer bean in the spring application.</p>
+
+<pre><code class="language-java">@Bean
+public Tracer jaegerTracer() {
+	// The following environment variables need to set
+	// JAEGER_ENDPOINT=&quot;http://10.42.126.171:28019/api/traces&quot;
+	// JAEGER_PROPAGATION=&quot;b3&quot;
+	// JAEGER_TRACEID_128BIT=&quot;true&quot; Use 128bit tracer id to be compatible with the
+	// trace id generated by istio/envoy
+	return Configuration.fromEnv(&quot;eshop-opentracing&quot;).getTracer();
+}
+</code></pre></li>
+</ul>
+
+<p>There are two things that we need to pay attention:</p>
+
+<ul>
+<li>By default, the Jaeger tracer uses the uber-trace-id HTTP header format, which is not supported by Istio/Envoy. Therefore, we need to specify the b3 HTTP header format in environment variables to make it compatible with Istio/Envoy.</li>
+<li>The Jaeger tracer uses a 64-bit trace id by default, while Istio/Envoy uses a 128-bit trace id. Therefore, we need to specify the trace id length as 128 bit in environment variables to be compatible with Istio/Envoy.</li>
+</ul>
+
+<p>Deploy the version of the demo application that uses Opentracing for trace context propagation.</p>
+
+<pre><code class="language-bash">git checkout master
+kubectl apply -f k8s/eshop.yaml
+</code></pre>
+
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing.jpg" alt="" /></p>
+
+<p>As you can see from the above figure, one interesting thing is that 7 more spans have been inserted to the trace. These spans are implicitly generated by Opentracing Spring instrumentation. They provide us with more detailed information about the request. From these news spans, we can infer that it only takes about 1 millisecond for Envoy to proxy the request, it’s a very short time and it has nearly no impact on the latency of the client request.</p>
+
+<h1 id="adding-method-level-tracing-to-istio">Adding Method-Level Tracing to Istio</h1>
+
+<p>The distributed tracing capability of Istio/Envoy can only capture the tracing span at the process boundaries, which would be good enough in most cases. However, for some services, we may want more fine-grained trace information for a better understanding of what happened inside a process, such as the latency caused by a method call or SQL insert. To accomplish that, we need to instrument the code where we need to collect tracing data and associate the collected tracing data with the trace created by Envoy, then, we can see all the spans in a single trace on the Jager UI.</p>
+
+<p>AOP and Annotation can be used to simplify the instrumentation code. First, let’s define a Traced annotation and the corresponding AOP implementation logic:</p>
+
+<pre><code class="language-java">@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Documented
+public @interface Traced {
+}
+</code></pre>
+
+<pre><code class="language-java">@Aspect
+@Component
+public class TracingAspect {
+    @Autowired
+    Tracer tracer;
+
+    @Around(&quot;@annotation(com.zhaohuabing.demo.instrument.Traced)&quot;)
+    public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
+        String class_name = jp.getTarget().getClass().getName();
+        String method_name = jp.getSignature().getName();
+        Span span = tracer.buildSpan(class_name + &quot;.&quot; + method_name).withTag(&quot;class&quot;, class_name)
+                .withTag(&quot;method&quot;, method_name).start();
+        Object result = jp.proceed();
+        span.finish();
+        return result;
+    }
+}
+</code></pre>
+
+<p>Then add the Traced annotation to the methods we would like to trace:</p>
+
+<pre><code class="language-java">@Component
+public class DBAccess {
+
+    @Traced
+    public void save2db() {
+        try {
+            Thread.sleep((long) (Math.random() * 100));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<pre><code class="language-java">@Component
+public class BankTransaction {
+    @Traced
+    public void transfer() {
+        try {
+            Thread.sleep((long) (Math.random() * 100));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+
+<p>The output is shown in the figure below. You can see that two methods-level spans (transfer and save2db) have been inserted into the trace.</p>
+
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth.jpg" alt="" />
+You can open the span to view the details of the method call, including the Java class name, the method name, etc. If needed, you can also add other useful information such as the exception stack in the tracing, it can be easily done by just modify TracingAspect code.</p>
+
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth-method.jpg" alt="" /></p>
+
+<h1 id="wrapping-up">Wrapping up</h1>
+
+<p>Istio gives you deep insight into your service mesh by its build-in distribute tracing capabilities. In this blog, we explored how we could leverage Opentracing to propagate tracing header for Istio and how to get more fine-grained tracing by inserted method-level spans into the Istio generated trace.</p>
+
+<h1 id="what-s-next">What’s next</h1>
+
+<p>Async messaging is also a very common mechanism for microservice communication, however, Istio hasn&rsquo;t addressed that for now. In the next post, we’ll take a look at how to trace Kafka messages with the help of Opentracing in an Istio service mesh. Stay tuned!</p>
+
+<h1 id="references">References</h1>
+
+<ol>
+<li><a href="https://github.com/zhaohuabing/istio-opentracing-demo">Source Code</a></li>
+<li><a href="https://opentracing.io/docs/">Opentracing docs</a></li>
+<li><a href="https://github.com/opentracing/specification/blob/master/specification.md">Opentracing specification</a></li>
+<li><a href="https://github.com/opentracing/specification/blob/master/rfc/trace_identifiers.md">Opentracing wire protocols</a></li>
+<li><a href="https://istio.io/docs/tasks/telemetry/distributed-tracing/overview/#trace-context-propagation">Istio Trace context propagation</a></li>
+<li><a href="https://medium.com/jaegertracing/using-opentracing-with-istio-envoy-d8a4246bdc15">Using OpenTracing with Istio/Envoy</a></li>
+<li><a href="https://github.com/apache/incubator-zipkin-b3-propagation">Zipkin-b3-propagation</a></li>
+<li><a href="https://www.infoq.cn/article/pqy*PFPhox9OQQ9iCRTt">Istio 调用链埋点原理剖析—是否真的“零修改”？</a></li>
+<li><a href="https://www.youtube.com/watch?v=ySR_FVNX4bQ&amp;t=184s">OpenTracing Project Deep Dive</a></li>
+</ol>
+
 
                 
                 
@@ -481,15 +660,10 @@ If Merkel tree is sorted, we can prove a given data is not in the tree: if the d
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2018/05/07/cryptocurrency_week1_cryptographic_hash_function" data-toggle="tooltip" data-placement="top" title="Cryptographic Hash Function">&larr;
+                        <a href="/post/2019-07-02-using-opentracing-with-istio/" data-toggle="tooltip" data-placement="top" title="洞若观火：使用OpenTracing增强Istio的调用链跟踪">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2018/05/12/cryptocurrency_week1_digital_signature" data-toggle="tooltip" data-placement="top" title="Digital Signature and Public Key as Identities">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
