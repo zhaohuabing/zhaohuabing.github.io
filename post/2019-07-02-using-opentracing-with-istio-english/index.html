@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。">
-    <meta property="og:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
-    <meta property="twitter:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    <meta name="description" content="In this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing.">
+    <meta property="og:description" content="In this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing." />
+    <meta property="twitter:description" content="In this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing." />
     
 
     
@@ -36,7 +36,7 @@
 
     <title>Enhance Istio Distributed Tracing with OpenTracing-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2019-06-22-using-opentracing-with-istio-english/">
+    <link rel="canonical" href="/post/2019-07-02-using-opentracing-with-istio-english/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -173,7 +173,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/2019-06-22-using-opentracing-with-istio/background.jpg')
+        background-image: url('/img/2019-07-02-using-opentracing-with-istio/background-english.jpg')
     }
 </style>
 <header class="intro-header">
@@ -199,18 +199,22 @@
                             Jaeger
                         </a>
                         
+                        <a class="tag" href="/tags/kafka" title="Kafka">
+                            Kafka
+                        </a>
+                        
                     </div>
                     <h1>Enhance Istio Distributed Tracing with OpenTracing</h1>
-                    <h2 class="subheading">Part 1: Implement Fine-grained Tracing with OpenTracing</h2>
+                    <h2 class="subheading">Part 2: Enable Async Messaging Tracing with OpenTracing</h2>
                     <span class="meta">
                         Posted by 
                         
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Saturday, August 24, 2019
+                        Wednesday, September 11, 2019
                         
-                            <span id="/post/2019-06-22-using-opentracing-with-istio-english/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2019-07-02-using-opentracing-with-istio-english/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -372,245 +376,246 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li><a href="#distributed-tracing-with-istio">Distributed Tracing with Istio</a></li>
-<li><a href="#using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</a></li>
-<li><a href="#adding-method-level-tracing-to-istio">Adding Method-Level Tracing to Istio</a></li>
-<li><a href="#wrapping-up">Wrapping up</a></li>
-<li><a href="#what-s-next">What’s next</a></li>
+<li><a href="#eshop-demo-application">Eshop Demo Application</a></li>
+<li><a href="#kafka-opentracing-instrumentation">Kafka Opentracing Instrumentation</a></li>
+<li><a href="#install-kafka">Install Kafka</a></li>
+<li><a href="#deploy-demo-application">Deploy Demo Application</a></li>
+<li><a href="#propagate-tracing-context-from-kafka-to-rest">Propagate Tracing Context from Kafka to REST</a></li>
+<li><a href="#wrap-up">Wrap Up</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </nav>
                 
                 
 
-<p>While evolving towards a microservices architecture, the biggest change is that the monolith application has been divided into multiple independent processes(or services), as a result, a method call between software modules now becomes a remote procedure call go through multiple services.</p>
+<p>In the previous post, we discussed how to use Opentracing to help Istio Service Mesh to propagate tracing context across process boundaries, and how to enrich Istio/Envoy generated traces with method-level spans to get more fine-grained insights to the services.</p>
 
-<p>A client request usually goes through a couple of or even a dozen of services in a complex microservices system, which makes it really hard to figure out what’s going on when a request fails or becomes slow.</p>
+<p>For now, all that we have been talking is just about synchronous RPC (HTTP/REST), however, we can’t ignore the fact that asynchronous messaging is also widely adopted as an inter-services communication mechanism. So in this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing.</p>
 
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/monolith-microserivce.jpg" alt="" />
-Basically, in order to get the overall view of a client request, we need to collect all the related information of service invocations in the path of that request, including start time, end time, URL, errors, etc., and associate all the collected data within a single trace. This process is normally called distributed tracing.</p>
+<h1 id="eshop-demo-application">Eshop Demo Application</h1>
 
-<h1 id="distributed-tracing-with-istio">Distributed Tracing with Istio</h1>
+<p>As depicted in the below diagram, the demo application has been modified to add asynchronous messages related logic. After calling the inventory, billing, and delivery services, the eshop service sends a message to a Kafka topic. The consumer service is listening on this Kafka topic. Once receiving the message, it calls the notification service to send out an email to notify the user that the transaction is successfully done.</p>
 
-<p>Istio/Envoy provides out-of-the-box distributed tracing for microservices. Envoy can intercept the incoming and outgoing requests of the service in the same pod and automatically generates tracing data for them. By connecting the mesh with a tracing infrastructure backend such as Zipkin or Jaeger, you can get the trace details of a distributed request, such as which services a request went through, which REST APIs were called, and the latency of each span, etc.</p>
+<p><img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt="" /></p>
 
-<p>It should be noted that although Istio/Envoy has done most of the work in this process, it still requires a small amount of modification to the application code: the application code needs to propagate the tracing header in the upstream HTTP requests to its downstream services. This part of the code can’t be handled directly by Envoy because Envoy just doesn&rsquo;t understand the business logic of the service co-located with it, and therefore it can’t infer the affiliation of incoming requests with the outgoing requests correctly. Although the modification is a minor change, it needs to be added manually to every piece of code where a request is forwarding to a downstream service, which is annoying.</p>
+<h1 id="kafka-opentracing-instrumentation">Kafka Opentracing Instrumentation</h1>
 
-<p>Let’s use a simple online shop demo to show how Istio provides distributed tracing. The demo consists of several services: eshop, inventory, billing, and delivery. The structure of the application is shown in the following figure:</p>
+<p>The source code can be downloaded from Github.</p>
 
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/eshop-demo.jpg" alt="" />
-eshop service accepts requests from the client sides, then it calls the REST APIs of inventory, billing, delivery services to accomplish the checkout user request.</p>
-
-<p>Codes can be downloaded from Github: <a href="https://github.com/zhaohuabing/istio-opentracing-demo.git">https://github.com/zhaohuabing/istio-opentracing-demo.git</a></p>
-
-<p>Below is the implementation of the checkout function of eshop Service, as you can see, tracing related HTTP Headers are propagated to downstream services.</p>
-
-<pre><code class="language-java"> @RequestMapping(value = &quot;/checkout&quot;)
-public String checkout(@RequestHeader HttpHeaders headers) {
-    String result = &quot;&quot;;
-    // Use HTTP GET in this demo. In a real world use case,We should use HTTP POST
-    // instead.
-    // The three services are bundled in one jar for simplicity. To make it work,
-    // define three services in Kubernets.
-    result += restTemplate.exchange(&quot;http://inventory:8080/createOrder&quot;, HttpMethod.GET,
-            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
-    result += &quot;&lt;BR&gt;&quot;;
-    result += restTemplate.exchange(&quot;http://billing:8080/payment&quot;, HttpMethod.GET,
-            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
-    result += &quot;&lt;BR&gt;&quot;;
-    result += restTemplate.exchange(&quot;http://delivery:8080/arrangeDelivery&quot;, HttpMethod.GET,
-            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
-    return result;
-}
-private HttpHeaders passTracingHeader(HttpHeaders headers) {
-    HttpHeaders tracingHeaders = new HttpHeaders();
-    extractHeader(headers, tracingHeaders, &quot;x-request-id&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-traceid&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-spanid&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-parentspanid&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-sampled&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-flags&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-ot-span-context&quot;);
-    return tracingHeaders;
-}
-
+<pre><code class="language-bash">git clone git@github.com:zhaohuabing/istio-opentracing-demo.git
+git checkout kafka-tracking
 </code></pre>
 
-<p>Then let’s deploy the demo in a Kubernetes cluster along with Istio.</p>
+<p>There’re two directories in the project root of the source code: rest-service and kafka-consumer. The code of restful services is put under the rest-service directory, while the kafka consumer code is in the kafka-consumer directory.</p>
 
-<ul>
-<li>First, we need a Kubernetes cluster with Webhook enabled</li>
-<li>Deploy Istio in the Kubernetes cluster, and enable sidecar auto-injection for the default namespace</li>
+<p>First, the dependencies for spring-kafka and opentracing-kafka should be included in the project pom file.</p>
 
-<li><p>Deploy eshop application</p>
-
-<pre><code class="language-bash">git clone https://github.com/zhaohuabing/istio-opentracing-demo.git
-cd istio-opentracing-demo
-git checkout without-opentracing
-kubectl apply -f k8s/eshop.yaml
-</code></pre></li>
-
-<li><p>Open this URL in your browser to invoke eshop checkout REST API: http://${NODE_IP}:31380/checkout</p></li>
-
-<li><p>Open Jaeger UI to see the trace: http://${NODE_IP}:30088</p></li>
-</ul>
-
-<p>Note: In order to access Jaeger UI from outside of the Kubernetes Cluster, you may want to modify Istio install scripts to add a NodePort for Jaeger service:</p>
-
-<pre><code class="language-yaml">apiVersion: v1
-  kind: Service
-  metadata:
-    name: jaeger-query
-    namespace: istio-system
-    annotations:
-    labels:
-      app: jaeger
-      jaeger-infra: jaeger-service
-      chart: tracing
-      heritage: Tiller
-      release: istio
-  spec:
-    ports:
-      - name: query-http
-        port: 16686
-        protocol: TCP
-        targetPort: 16686
-        nodePort: 30088
-    type: NodePort
-    selector:
-      app: jaeger
+<pre><code class="language-xml">&lt;dependency&gt;
+	&lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
+	&lt;artifactId&gt;spring-kafka&lt;/artifactId&gt;
+&lt;/dependency&gt;
+ &lt;dependency&gt;
+	&lt;groupId&gt;io.opentracing.contrib&lt;/groupId&gt;
+	&lt;artifactId&gt;opentracing-kafka-client&lt;/artifactId&gt;
+	&lt;version&gt;${version.opentracing.kafka-client}&lt;/version&gt;
+&lt;/dependency&gt;
 </code></pre>
 
-<p>As you can see, Istio/Envoy automatically generates a trace for the client request. The trace is comprised of several spans, and each span corresponds a REST method of a service in the chain of services invoked by the client request.</p>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing.jpg" alt="" /></p>
-
-<h1 id="using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</h1>
-
-<p>Instead of explicitly passing the HTTP headers, we can use Opentracing instrumentation for trace Context propagation. It’s pretty simple：</p>
-
-<ul>
-<li>Add Opentracing Spring Cloud Starter and Jaeger dependency in the maven POM file.</li>
-
-<li><p>Declare a tracer bean in the spring application.</p>
+<p>The next step is configuring the Kafka producer factory to enable Opentracing instrumentation at the producer side.</p>
 
 <pre><code class="language-java">@Bean
-public Tracer jaegerTracer() {
-	// The following environment variables need to set
-	// JAEGER_ENDPOINT=&quot;http://10.42.126.171:28019/api/traces&quot;
-	// JAEGER_PROPAGATION=&quot;b3&quot;
-	// JAEGER_TRACEID_128BIT=&quot;true&quot; Use 128bit tracer id to be compatible with the
-	// trace id generated by istio/envoy
-	return Configuration.fromEnv(&quot;eshop-opentracing&quot;).getTracer();
-}
-</code></pre></li>
-</ul>
-
-<p>There are two things that we need to pay attention:</p>
-
-<ul>
-<li>By default, the Jaeger tracer uses the uber-trace-id HTTP header format, which is not supported by Istio/Envoy. Therefore, we need to specify the b3 HTTP header format in environment variables to make it compatible with Istio/Envoy.</li>
-<li>The Jaeger tracer uses a 64-bit trace id by default, while Istio/Envoy uses a 128-bit trace id. Therefore, we need to specify the trace id length as 128 bit in environment variables to be compatible with Istio/Envoy.</li>
-</ul>
-
-<p>Deploy the version of the demo application that uses Opentracing for trace context propagation.</p>
-
-<pre><code class="language-bash">git checkout master
-kubectl apply -f k8s/eshop.yaml
-</code></pre>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing.jpg" alt="" /></p>
-
-<p>As you can see from the above figure, one interesting thing is that 7 more spans have been inserted to the trace. These spans are implicitly generated by Opentracing Spring instrumentation. They provide us with more detailed information about the request. From these news spans, we can infer that it only takes about 1 millisecond for Envoy to proxy the request, it’s a very short time and it has nearly no impact on the latency of the client request.</p>
-
-<h1 id="adding-method-level-tracing-to-istio">Adding Method-Level Tracing to Istio</h1>
-
-<p>The distributed tracing capability of Istio/Envoy can only capture the tracing span at the process boundaries, which would be good enough in most cases. However, for some services, we may want more fine-grained trace information for a better understanding of what happened inside a process, such as the latency caused by a method call or SQL insert. To accomplish that, we need to instrument the code where we need to collect tracing data and associate the collected tracing data with the trace created by Envoy, then, we can see all the spans in a single trace on the Jager UI.</p>
-
-<p>AOP and Annotation can be used to simplify the instrumentation code. First, let’s define a Traced annotation and the corresponding AOP implementation logic:</p>
-
-<pre><code class="language-java">@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@Documented
-public @interface Traced {
+public ProducerFactory&lt;String, String&gt; producerFactory() {
+    Map&lt;String, Object&gt; configProps = new HashMap&lt;&gt;();
+    configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    configProps.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingProducerInterceptor.class.getName());
+    return new DefaultKafkaProducerFactory&lt;&gt;(configProps);
 }
 </code></pre>
 
-<pre><code class="language-java">@Aspect
-@Component
-public class TracingAspect {
-    @Autowired
-    Tracer tracer;
+<p>You’ll also need to configure instrumentation at the consumer side in a similar way.</p>
 
-    @Around(&quot;@annotation(com.zhaohuabing.demo.instrument.Traced)&quot;)
-    public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
-        String class_name = jp.getTarget().getClass().getName();
-        String method_name = jp.getSignature().getName();
-        Span span = tracer.buildSpan(class_name + &quot;.&quot; + method_name).withTag(&quot;class&quot;, class_name)
-                .withTag(&quot;method&quot;, method_name).start();
-        Object result = jp.proceed();
-        span.finish();
-        return result;
+<pre><code class="language-java">@Bean
+public ConsumerFactory&lt;String, String&gt; consumerFactory() {
+    Map&lt;String, Object&gt; props = new HashMap&lt;&gt;();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingConsumerInterceptor.class.getName());
+    return new DefaultKafkaConsumerFactory&lt;&gt;(props);
+}
+</code></pre>
+
+<p>That’s all for the Kafka Opentracing instrumentation, it’s pretty simple, right? Then, let’s run this example to see the actual tracing output.</p>
+
+<h1 id="install-kafka">Install Kafka</h1>
+
+<p>In order to run the demo application, we’ll need a Kafka cluster installed. You can either deploy Kafka following the guidance in <a href="https://kafka.apache.org/quickstart">Kafka Quickstart</a>, or deploy Kafka in Kubernetes with <a href="https://github.com/strimzi/strimzi-kafka-operator">Kafka Operator</a>.</p>
+
+<h1 id="deploy-demo-application">Deploy Demo Application</h1>
+
+<p>Configure k8s/eshop.yaml with the appropriate Kafka bootstrap server address.</p>
+
+<pre><code class="language-yml">apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: eshop-v1
+  ......
+    spec:
+      containers:
+      - name: eshop
+        image: zhaohuabing/istio-opentracing-demo:kafka-opentracing
+        ports:
+        - containerPort: 8080
+        env:
+          ....
+          //在这里加入Kafka server地址
+          - name: KAFKA_BOOTSTRAP_SERVERS
+            value: &quot;192.168.89.192:9092&quot;
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kafka-consumer-v1
+  ......
+    spec:
+      containers:
+      - name: kafka-consumer
+        image: zhaohuabing/istio-opentracing-demo-kafka-consumer:kafka-opentracing
+        env:
+          ....
+          //在这里加入Kafka server地址
+          - name: KAFKA_BOOTSTRAP_SERVERS
+            value: &quot;192.168.89.192:9092&quot;
+</code></pre>
+
+<p>Then deploy the application in Kubernetes. The docker images are available in docker hub, you could also build the images yourself from source codes.</p>
+
+<pre><code class="language-bash">kubectl apply -f k8s/eshop.yaml
+</code></pre>
+
+<p>Input this URL “http://${NODE_IP}:31380/checkout” in your browser to trigger the Restful API of the application, then you should see the generated trace on the Jaeger UI “http://${NODE_IP}:30088”.</p>
+
+<p><img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt="" /></p>
+
+<p>As the above picture shows, two additional spans have been added to the trace, which represents the message handling at Kafka producer and consumer side respectively. We can see that the reference type between From_eshop_topic Span and To_eshop_topic Span is FOLLOWS_FROM instead of CHILD_OF. That’s because it’s an asynchronous message, so Opentracing uses a FOLLOWS_FROM reference type to indicate there’s no direct dependency between these two Spans.</p>
+
+<h1 id="propagate-tracing-context-from-kafka-to-rest">Propagate Tracing Context from Kafka to REST</h1>
+
+<p>For now, tracing context has been propagated from REST calls to Kafka messages, but what if we call a REST API of another service in the message consumer? It would be quite helpful if we could also pass the tracing context from Kafka to the called service, unfortunately, Opentracing instrumentation doesn’t behave as we expected.</p>
+
+<p>As it shows in the above picture, we can’t see the notification service in the trace of the client request. However, it makes more sense to correlate the REST call to the notification service with the Kafka consumer Span in a single trace because that’s how the client request goes through the system.</p>
+
+<p>We need to know the concept of “Active Span” first to understand what happened. In the context of Opentracing, “Active Span” represents the current work of a running thread. The “Active Span” of a thread will be implicitly set as the parent span of the newly created span if it’s there, as the below Opentracing source code shows:</p>
+
+<pre><code>Tracer.SpanBuilder buildSpan(String operationName)
+Return a new SpanBuilder for a Span with the given `operationName`.
+You can override the operationName later via BaseSpan.setOperationName(String).
+
+A contrived example:
+
+
+   Tracer tracer = ...
+
+   // Note: if there is a `tracer.activeSpan()`, it will be used as the target of an implicit CHILD_OF
+   // Reference for &quot;workSpan&quot; when `startActive()` is invoked.
+   try (ActiveSpan workSpan = tracer.buildSpan(&quot;DoWork&quot;).startActive()) {
+       workSpan.setTag(&quot;...&quot;, &quot;...&quot;);
+       // etc, etc
+   }
+
+    // It's also possible to create Spans manually, bypassing the ActiveSpanSource activation.
+   Span http = tracer.buildSpan(&quot;HandleHTTPRequest&quot;)
+                     .asChildOf(rpcSpanContext)  // an explicit parent
+                     .withTag(&quot;user_agent&quot;, req.UserAgent)
+                     .withTag(&quot;lucky_number&quot;, 42)
+                     .startManual();
+</code></pre>
+
+<p>However, TracingConsumerInterceptor finishes the Span before it hands over the task to Kafka consumer, so no active span in the current thread when the consumer code invokes the REST API of the notification service. That’s exactly the reason why these two spans are not correlated in a single trace.</p>
+
+<pre><code class="language-java">public static &lt;K, V&gt; void buildAndFinishChildSpan(ConsumerRecord&lt;K, V&gt; record, Tracer tracer,
+      BiFunction&lt;String, ConsumerRecord, String&gt; consumerSpanNameProvider) {
+    SpanContext parentContext = TracingKafkaUtils.extractSpanContext(record.headers(), tracer);
+
+    String consumerOper =
+        FROM_PREFIX + record.topic(); // &lt;====== It provides better readability in the UI
+    Tracer.SpanBuilder spanBuilder = tracer
+        .buildSpan(consumerSpanNameProvider.apply(consumerOper, record))
+        .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CONSUMER);
+
+    if (parentContext != null) {
+      spanBuilder.addReference(References.FOLLOWS_FROM, parentContext);
     }
+
+    Span span = spanBuilder.start();
+    SpanDecorator.onResponse(record, span);
+
+    //Span is finished before the consumer logic
+    span.finish();
+
+    TracingKafkaUtils.inject(span.context(), record.headers(), tracer);
+  }
+</code></pre>
+
+<p>This issue can be easily fixed after we figure out the root cause. Given that TracingConsumerInterceptor already put the Kafka Span in the message header, we just need to retrieve that Span from the header, and explicitly set it as the parent Span of the REST call.</p>
+
+<p>Here is the code snippet to fix it:</p>
+
+<p>We use a TracingKafka2RestTemplateInterceptor to extract Kafka consumer Span from the message header and set it as the parent Span for the outgoing REST call.</p>
+
+<pre><code class="language-java">@Override
+public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution xecution)
+        throws IOException {
+    ClientHttpResponse httpResponse;
+    SpanContext parentSpanContext = TracingKafkaUtils.extractSpanContext(headers, tracer);
+    Span span = tracer.buildSpan(httpRequest.getMethod().toString()).asChildOf(parentSpanContext)
+            .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
+    ......
 }
 </code></pre>
 
-<p>Then add the Traced annotation to the methods we would like to trace:</p>
+<p>Configure RestTemplate with the TracingKafka2RestTemplateInterceptor.</p>
 
-<pre><code class="language-java">@Component
-public class DBAccess {
-
-    @Traced
-    public void save2db() {
-        try {
-            Thread.sleep((long) (Math.random() * 100));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+<pre><code class="language-java">@KafkaListener(topics = &quot;eshop-topic&quot;)
+public void receiveMessage(ConsumerRecord&lt;String, String&gt; record) {
+    restTemplate
+            .setInterceptors(Collections.singletonList(new TracingKafka2RestTemplateInterceptor(record.headers())));
+    restTemplate.getForEntity(&quot;http://notification:8080/sendEmail&quot;, String.class);
 }
 </code></pre>
 
-<pre><code class="language-java">@Component
-public class BankTransaction {
-    @Traced
-    public void transfer() {
-        try {
-            Thread.sleep((long) (Math.random() * 100));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
+<p>That’s all! Now open this URL “http://${NODE_IP}:31380/checkout ” in your browser to invoke the eshop service, then you’ll able to see the whole trace in the Jaeger UI “ http://${NODE_IP}:30088”.</p>
 
-<p>The output is shown in the figure below. You can see that two methods-level spans (transfer and save2db) have been inserted into the trace.</p>
+<p>From the below diagram, you can see how the client request goes through all the services, no matter it’s a REST call or a Kafka message. With this very nice global view, it would be easy to figure out what’s the bottleneck if there is an abnormal latency, or which service has a problem if the client gets an error response.</p>
 
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth.jpg" alt="" />
-You can open the span to view the details of the method call, including the Java class name, the method name, etc. If needed, you can also add other useful information such as the exception stack in the tracing, it can be easily done by just modify TracingAspect code.</p>
+<p><img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt="" /></p>
 
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth-method.jpg" alt="" /></p>
+<p>You can also switch between the trace timeline and the trace graph in the Jaeger UI.</p>
 
-<h1 id="wrapping-up">Wrapping up</h1>
+<p><img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt="" /></p>
 
-<p>Istio gives you deep insight into your service mesh by its build-in distribute tracing capabilities. In this blog, we explored how we could leverage Opentracing to propagate tracing header for Istio and how to get more fine-grained tracing by inserted method-level spans into the Istio generated trace.</p>
+<h1 id="wrap-up">Wrap Up</h1>
 
-<h1 id="what-s-next">What’s next</h1>
+<p>Istio gives you insights into your service mesh by its build-in distributed tracing capability, however, it might not be enough for troubleshooting just by tracing REST calls across process boundaries.</p>
 
-<p>Async messaging is also a very common mechanism for microservice communication, however, Istio hasn&rsquo;t addressed that for now. In the next post, we’ll take a look at how to trace Kafka messages with the help of Opentracing in an Istio service mesh. Stay tuned!</p>
+<p>By leveraging Opentracing instrumentation, we could avoid the trivial code for passing HTTP trace header, and include method-level and Kafka message tracing to the Istio generated trace to provide fine-grained tracing information.</p>
+
+<p>An ideal solution should be achieving all these goals at the proxy side rather than instrumenting the application. That’s the purpose the service mesh is created for: to offload all the service communication and governance functionalities such as service interconnections, telemetry, security, etc. to the infrastructure layer and let the application only focus on its business logic.</p>
+
+<p>We’re on the way now, hopefully, we could achieve that ultimate goal soon.</p>
 
 <h1 id="references">References</h1>
 
 <ol>
-<li><a href="https://github.com/zhaohuabing/istio-opentracing-demo">Source Code</a></li>
-<li><a href="https://opentracing.io/docs/">Opentracing docs</a></li>
-<li><a href="https://github.com/opentracing/specification/blob/master/specification.md">Opentracing specification</a></li>
-<li><a href="https://github.com/opentracing/specification/blob/master/rfc/trace_identifiers.md">Opentracing wire protocols</a></li>
-<li><a href="https://istio.io/docs/tasks/telemetry/distributed-tracing/overview/#trace-context-propagation">Istio Trace context propagation</a></li>
-<li><a href="https://medium.com/jaegertracing/using-opentracing-with-istio-envoy-d8a4246bdc15">Using OpenTracing with Istio/Envoy</a></li>
-<li><a href="https://github.com/apache/incubator-zipkin-b3-propagation">Zipkin-b3-propagation</a></li>
-<li><a href="https://www.infoq.cn/article/pqy*PFPhox9OQQ9iCRTt">Istio 调用链埋点原理剖析—是否真的“零修改”？</a></li>
-<li><a href="https://www.youtube.com/watch?v=ySR_FVNX4bQ&amp;t=184s">OpenTracing Project Deep Dive</a></li>
+<li><a href="https://github.com/zhaohuabing/istio-opentracing-demo/tree/kafka-tracking">Eshop demo code on Github</a></li>
+<li><a href="https://objectpartners.com/2019/04/25/distributed-tracing-with-apache-kafka-and-jaeger/">Distributed Tracing with Apache Kafka and Jaeger</a></li>
+<li><a href="https://github.com/opentracing-contrib/java-kafka-client
+TracingRestTemplateInterceptor.java">OpenTracing Apache Kafka Client Instrumentation</a></li>
+<li><a href="https://kafka.apache.org/quickstart">Kafka quick start</a></li>
 </ol>
 
 
@@ -660,15 +665,10 @@ You can open the span to view the details of the method call, including the Java
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2019-07-02-using-opentracing-with-istio/" data-toggle="tooltip" data-placement="top" title="洞若观火：使用OpenTracing增强Istio的调用链跟踪">&larr;
+                        <a href="/post/2019-06-22-using-opentracing-with-istio-english/" data-toggle="tooltip" data-placement="top" title="Enhance Istio Distributed Tracing with OpenTracing">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2019-07-02-using-opentracing-with-istio-english/" data-toggle="tooltip" data-placement="top" title="Enhance Istio Distributed Tracing with OpenTracing">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
