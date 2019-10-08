@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Photograph on Huabing Blog</title>
+    <link>https://zhaohuabing.com/tags/photograph/</link>
+    <description>Recent content in Photograph on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 08 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/tags/photograph/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>阿姆斯特丹掠影</title>
+      <link>https://zhaohuabing.com/post/2019-10-08-amsterdam/</link>
+      <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-10-08-amsterdam/</guid>
+      <description>Bike Bike1 Bike2 Boat in the dawn Central station Delft blue House House1 Old catholic church Rijks museum View from the clouds Windmill Windmill1 Windmill3 Wooden shoes</description>
+    </item>
+    
+  </channel>
+</rss>
