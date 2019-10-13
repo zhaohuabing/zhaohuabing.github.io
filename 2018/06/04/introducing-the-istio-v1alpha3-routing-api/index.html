@@ -113,10 +113,6 @@
                     </li>
                     
                     <li>
-                        <a href="/categories/photo">photo</a>
-                    </li>
-                    
-                    <li>
                         <a href="/categories/tech">tech</a>
                     </li>
                     
@@ -582,34 +578,33 @@ spec:
 
 <ol>
 <li><a href="https://istio.io/docs/reference/config/istio.networking.v1alpha3/#DestinationRule">DestinationRule</a>的<code>host</code>可以包含通配符前缀，以允许单个规则应用于多个服务。</li>
-
-<li><p><code>DestinationRule</code>定义了目的host的子集<code>subsets</code> （例如：命名版本）。 这些subset用于｀VirtualService｀的路由规则设置中，可以将流量导向服务的某些特定版本。 通过这种方式为版本命名后，可以在不同的virtual service中明确地引用这些命名版本的ubset，简化Istio代理发出的统计数据，并可以将subsets编码到SNI头中。
-为reviews服务配置策略和subsets的<code>DestinationRule</code>可能如下所示：</p>
+<li><code>DestinationRule</code>定义了目的host的子集<code>subsets</code> （例如：命名版本）。 这些subset用于｀VirtualService｀的路由规则设置中，可以将流量导向服务的某些特定版本。 通过这种方式为版本命名后，可以在不同的virtual service中明确地引用这些命名版本的ubset，简化Istio代理发出的统计数据，并可以将subsets编码到SNI头中。
+为reviews服务配置策略和subsets的<code>DestinationRule</code>可能如下所示：</li>
+</ol>
 
 <pre><code class="language-yaml">apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-name: reviews
+  name: reviews
 spec:
-host: reviews
-trafficPolicy:
-loadBalancer:
-  simple: RANDOM
-subsets:
-- name: v1
-labels:
-  version: v1
-- name: v2
-labels:
-  version: v2
-trafficPolicy:
-  loadBalancer:
-    simple: ROUND_ROBIN
-- name: v3
-labels:
-  version: v3
-</code></pre></li>
-</ol>
+  host: reviews
+  trafficPolicy:
+    loadBalancer:
+      simple: RANDOM
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
+  - name: v3
+    labels:
+      version: v3
+</code></pre>
 
 <p>注意，与<code>DestinationPolicy</code>不同的是，可在单个<code>DestinationRule</code>中指定多个策略（例如上面实例中的缺省策略和v2版本特定的策略）。</p>
 
@@ -794,8 +789,6 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
-                        
-                        
                         <a href="/tags/api-gateway" title="api-gateway">
                             api-gateway
                         </a>
@@ -893,8 +886,6 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/opentracing" title="opentracing">
                             opentracing
                         </a>
-                        
-                        
                         
                         
                         

@@ -3,55 +3,20 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://zhaohuabing.com/tags/amsterdam/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://zhaohuabing.com/categories/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
+    <lastmod>2019-09-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/photo/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/photograph/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/post/2019-10-08-amsterdam/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/post/2019-07-02-using-opentracing-with-istio-english/</loc>
     <lastmod>2019-09-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/</loc>
+    <lastmod>2019-09-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -79,13 +44,25 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <loc>https://zhaohuabing.com/post/</loc>
     <lastmod>2019-09-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
+    <lastmod>2019-09-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/</loc>
+    <lastmod>2019-09-11T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/categories/tech/</loc>
     <lastmod>2019-09-11T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
