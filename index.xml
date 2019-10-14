@@ -6,10 +6,19 @@
     <description>Recent content on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 11 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>阿姆斯特丹浮光掠影</title>
+      <link>https://zhaohuabing.com/post/2019-10-08-amsterdam/</link>
+      <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-10-08-amsterdam/</guid>
+      <description>Bike Bike1 Bike2 Boat in the dawn Canal Central station Delft blue House House1 House2 Old catholic church Rijks museum View from the clouds Windmill Windmill1 Windmill3 Windmill4 Wooden shoes</description>
+    </item>
     
     <item>
       <title>Enhance Istio Distributed Tracing with OpenTracing</title>
