@@ -17,7 +17,7 @@
       <pubDate>Mon, 21 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2019-10-21-pilot-discovery-code-analysis/</guid>
-      <description>Istio Pilot 组件介绍 Istio是基于微服务架构理念设计的，不同的控制面功能由不同的组件实现，包括Pilot, Mixer, Citadel, Galley等，各个组件可以分开部署</description>
+      <description>Istio Pilot 组件介绍 在Istio架构中，Pilot组件属于最核心的组件，它负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。由于涉及了较多</description>
     </item>
     
     <item>

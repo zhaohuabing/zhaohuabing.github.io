@@ -391,9 +391,9 @@ $(function() {
 
 <h1 id="istio-pilot-组件介绍">Istio Pilot 组件介绍</h1>
 
-<p>Istio是基于微服务架构理念设计的，不同的控制面功能由不同的组件实现，包括Pilot, Mixer, Citadel, Galley等，各个组件可以分开部署，并部署多个实例，以支持负载均衡和高可用。</p>
+<p>在Istio架构中，Pilot组件属于最核心的组件，它负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。由于涉及了较多功能，Pilot内部的代码结构也比较复杂，本文中我们对Pilot的代码进行深入分析，以了解Pilot实现原理。</p>
 
-<p>在Istio架构中，Pilot组件负责服务网格中的流量管理。Pilot将控制面中的服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。目前Pilot的输入包括两部分数据来源：</p>
+<p>Pilot将控制面中的服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。目前Pilot的输入包括两部分数据来源：</p>
 
 <ul>
 <li>服务数据： 来源于各个服务注册表(Service Registry),例如Kubernetes中注册的Service，Consul Catalog中的服务等。</li>
