@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="阿姆斯特丹浮光掠影" />
-    <meta property="og:title" content="阿姆斯特丹浮光掠影" />
-    <meta property="twitter:title" content="阿姆斯特丹浮光掠影" />
+    <meta name="title" content="Istio Pilot代码深度解析" />
+    <meta property="og:title" content="Istio Pilot代码深度解析" />
+    <meta property="twitter:title" content="Istio Pilot代码深度解析" />
     
 
     
-    <meta name="description" content="阿姆斯特丹浮光掠影">
-    <meta property="og:description" content="阿姆斯特丹浮光掠影" />
-    <meta property="twitter:description" content="阿姆斯特丹浮光掠影" />
+    <meta name="description" content="深入理解Istio主要组件Pilot的代码实现和业务流程">
+    <meta property="og:description" content="深入理解Istio主要组件Pilot的代码实现和业务流程" />
+    <meta property="twitter:description" content="深入理解Istio主要组件Pilot的代码实现和业务流程" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>阿姆斯特丹浮光掠影-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Istio Pilot代码深度解析-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2019-10-08-amsterdam/">
+    <link rel="canonical" href="/post/2019-10-21-pilot-discovery-code-analysis/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -177,7 +177,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/2019-10-08-amsterdam/bike.jpg')
+        background-image: url('/img/post-bg-unix-linux.jpg')
     }
 </style>
 <header class="intro-header">
@@ -187,26 +187,26 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/photograph" title="Photograph">
-                            Photograph
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
                         </a>
                         
-                        <a class="tag" href="/tags/amsterdam" title="Amsterdam">
-                            Amsterdam
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
                         </a>
                         
                     </div>
-                    <h1>阿姆斯特丹浮光掠影</h1>
-                    <h2 class="subheading">Three Days in Amsterdam</h2>
+                    <h1>Istio Pilot代码深度解析</h1>
+                    <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
                         
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Tuesday, October 8, 2019
+                        Monday, October 21, 2019
                         
-                            <span id="/post/2019-10-08-amsterdam/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2019-10-21-pilot-discovery-code-analysis/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -363,270 +363,221 @@ $(function() {
                 post-container">
 
                 
-                <p>
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#istio-pilot-组件介绍">Istio Pilot 组件介绍</a></li>
+<li><a href="#pilot-discovery-代码结构">Pilot-Discovery 代码结构</a>
+<ul>
+<li><a href="#config-controller">Config Controller</a></li>
+<li><a href="#service-controller">Service Controller</a></li>
+<li><a href="#discovery-service">Discovery Service</a></li>
+</ul></li>
+<li><a href="#pilot-discovery-业务流程">Pilot-Discovery 业务流程</a>
+<ul>
+<li><a href="#初始化pilot-discovery的各个主要组件">初始化Pilot-Discovery的各个主要组件</a></li>
+<li><a href="#创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</a></li>
+<li><a href="#配置变化后向envoy推送更新">配置变化后向Envoy推送更新</a></li>
+<li><a href="#响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</a></li>
+<li><a href="#完整的业务流程">完整的业务流程</a></li>
+</ul></li>
+<li><a href="#参考阅读">参考阅读</a></li>
+</ul>
+</nav>
+                
+                
+
+<h1 id="istio-pilot-组件介绍">Istio Pilot 组件介绍</h1>
+
+<p>Istio是基于微服务架构理念设计的，不同的控制面功能由不同的组件实现，包括Pilot, Mixer, Citadel, Galley等，各个组件可以分开部署，并部署多个实例，以支持负载均衡和高可用。</p>
+
+<p>在Istio架构中，Pilot组件负责服务网格中的流量管理。Pilot将控制面中的服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。目前Pilot的输入包括两部分数据来源：</p>
+
+<ul>
+<li>服务数据： 来源于各个服务注册表(Service Registry),例如Kubernetes中注册的Service，Consul Catalog中的服务等。</li>
+<li>配置规则： 各种配置规则，包括路由规则及流量管理规则等，通过Kubernetes CRD(Custom resources definition)形式定义并存储在Kubernetes中。</li>
+</ul>
+
+<p>Pilot的输入为符合xDS接口的数据面配置数据，并通过GRPC Streaming接口将配置数据推送到数据面的Envoy中。</p>
+
+<p>备注：Istio代码库在不停变化更新中，本文分析所基于的代码commit为: d539abe00c2599d80c6d64296f78d3bb8ab4b033</p>
+
+<h1 id="pilot-discovery-代码结构">Pilot-Discovery 代码结构</h1>
+
+<p>Istio Pilot的代码分为Pilot-Discovery和Pilot-Agent,其中Pilot-Agent用于在数据面负责Envoy的生命周期管理，Pilot-Discovery才是控制面进行流量管理的组件，本文将重点分析控制面部分，即Pilot-Discovery的代码。</p>
+
+<p>下图是Pilot-Discovery组件代码的主要结构，为了简明起见，图中只包含了关键部分，忽略了一些例如Pilot自身的Metrics收集，Envoy V1的HTTP接口等不太重要的内容。
+
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
-
-<div class="gallery caption-position-bottom caption-effect-slide hover-effect-zoom hover-transition" itemscope itemtype="http://schema.org/ImageGallery">
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//bike-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike-thumb.jpg" alt="Bike" />
-				    </div>
-			      <figcaption>
-		          <p>Bike</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//bike1.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike1.jpg" alt="Bike1" />
-				    </div>
-			      <figcaption>
-		          <p>Bike1</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike1.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//bike2-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike2-thumb.jpg" alt="Bike2" />
-				    </div>
-			      <figcaption>
-		          <p>Bike2</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike2.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//boat-in-the-dawn-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//boat-in-the-dawn-thumb.jpg" alt="Boat in the dawn" />
-				    </div>
-			      <figcaption>
-		          <p>Boat in the dawn</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//boat-in-the-dawn.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//canal-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//canal-thumb.jpg" alt="Canal" />
-				    </div>
-			      <figcaption>
-		          <p>Canal</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//canal.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//central-station-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//central-station-thumb.jpg" alt="Central station" />
-				    </div>
-			      <figcaption>
-		          <p>Central station</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//central-station.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//delft-blue-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//delft-blue-thumb.jpg" alt="Delft blue" />
-				    </div>
-			      <figcaption>
-		          <p>Delft blue</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//delft-blue.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//house-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//house-thumb.jpg" alt="House" />
-				    </div>
-			      <figcaption>
-		          <p>House</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//house.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//house1-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//house1-thumb.jpg" alt="House1" />
-				    </div>
-			      <figcaption>
-		          <p>House1</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//house1.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//house2-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//house2-thumb.jpg" alt="House2" />
-				    </div>
-			      <figcaption>
-		          <p>House2</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//house2.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//old-catholic-church.jpeg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//old-catholic-church.jpeg" alt="Old catholic church" />
-				    </div>
-			      <figcaption>
-		          <p>Old catholic church</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//old-catholic-church.jpeg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//rijks-museum-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//rijks-museum-thumb.jpg" alt="Rijks museum" />
-				    </div>
-			      <figcaption>
-		          <p>Rijks museum</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//rijks-museum.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//view-from-the-clouds-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//view-from-the-clouds-thumb.jpg" alt="View from the clouds" />
-				    </div>
-			      <figcaption>
-		          <p>View from the clouds</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//view-from-the-clouds.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill-thumb.jpg" alt="Windmill" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill1-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill1-thumb.jpg" alt="Windmill1" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill1</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill1.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill3-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill3-thumb.jpg" alt="Windmill3" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill3</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill3.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill4-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill4-thumb.jpg" alt="Windmill4" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill4</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill4.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//wooden-shoes.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//wooden-shoes.jpg" alt="Wooden shoes" />
-				    </div>
-			      <figcaption>
-		          <p>Wooden shoes</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//wooden-shoes.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-</div>
- 
-
-
-
-  
-
-
-<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="/js/load-photoswipe.js"></script>
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe.min.css" integrity="sha256-sCl5PUOGMLfFYctzDW3MtRib0ctyUvI9Qsmq2wXOeBY=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/default-skin/default-skin.min.css" integrity="sha256-BFeI1V+Vh1Rk37wswuOYn5lsTcaU96hGaI7OUVCLjPc=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe.min.js" integrity="sha256-UplRCs9v4KXVJvVY+p+RSo5Q4ilAUXh7kpjyIP5odyc=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe-ui-default.min.js" integrity="sha256-PWHOlUzc96pMc8ThwRIXPn8yH4NOLu42RQ0b9SpnpFk=" crossorigin="anonymous"></script>
-
-
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-<div class="pswp__bg"></div>
-
-<div class="pswp__scroll-wrap">
-    
-    <div class="pswp__container">
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.jpg" alt="Pilot-Discovery代码结构"/>
     </div>
-    
-    <div class="pswp__ui pswp__ui--hidden">
-    <div class="pswp__top-bar">
-      
-      <div class="pswp__counter"></div>
-      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-      <button class="pswp__button pswp__button--share" title="Share"></button>
-      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-      
-      
-      <div class="pswp__preloader">
-        <div class="pswp__preloader__icn">
-          <div class="pswp__preloader__cut">
-            <div class="pswp__preloader__donut"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-      <div class="pswp__share-tooltip"></div>
-    </div>
-    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-    </button>
-    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-    </button>
-    <div class="pswp__caption">
-      <div class="pswp__caption__center"></div>
-    </div>
-    </div>
-    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Pilot-Discovery代码结构</p>
+      </figcaption>
+  </figure>
 </div>
 </p>
+
+<p>Pilot-Discovery的入口函数为：pilot/cmd/pilot-discovery/main.go中的main方法。main方法中创建了Discovery Server，Discovery Server中主要包含三部分逻辑：</p>
+
+<h2 id="config-controller">Config Controller</h2>
+
+<p>Config Controller用于管理各种配置数据，包括用户创建的流量管理规则和策略。Istio目前支持三种类型的Config Controller：</p>
+
+<ul>
+<li>Kubernetes：使用Kubernetes来作为配置数据的存储，该方式的直接依附于Kubernetes强大的CRD机制来存储配置数据，简单方便，是Istio最开始使用的配置存储方案。</li>
+<li>MCP (Mesh Configuration Protocol)：使用Kubernetes来存储配置数据导致了Istio和Kubernetes的耦合，限制了Istio在非Kubernetes环境下的运用。为了解决该耦合，Istio社区提出了MCP，MCP定义了一个向Istio控制面下发配置数据的标准协议，Istio Pilot作为MCP Client，任何实现了MCP协议的Server都可以通过MCP协议向Pilot下发配置，从而解除了Istio和Kubernetes的耦合。如果想要了解更多关于MCP的内容，请参考文后的链接。</li>
+<li>Memory：一个在内存中的Config Controller实现，主要用于测试。</li>
+</ul>
+
+<p>目前Istio的配置包括：</p>
+
+<ul>
+<li>Virtual Service: 定义流量路由规则。</li>
+<li>Destination Rule: 定义和一个服务或者subset相关的流量处理规则，包括负载均衡策略，连接池大小，断路器设置，subset定义等等。</li>
+<li>Gateway: 定义入口网关上对外暴露的服务。</li>
+<li>Service Entry: 通过定义一个Service Entry可以将一个外部服务手动添加到服务网格中。</li>
+<li>Envoy Filter: 通过Pilot在Envoy的配置中添加一个自定义的Filter。</li>
+</ul>
+
+<h2 id="service-controller">Service Controller</h2>
+
+<p>Service Controller用于管理各种Service Registry，提出服务发现数据，目前Istio支持的Service Registry包括：</p>
+
+<ul>
+<li>Kubernetes：对接Kubernetes Registry，可以将Kubernetes中定义的Service和Instance采集到Istio中。</li>
+<li>Consul： 对接Consul Catalog，将Consul中定义的Service采集到Istio中。</li>
+<li>MCP： 和MCP config controller类似，从MCP Server中获取Service和Service Instance。</li>
+<li>Memory： 一个内存中的Service Controller实现，主要用于测试。</li>
+</ul>
+
+<h2 id="discovery-service">Discovery Service</h2>
+
+<p>Discovery Service中主要包含下述逻辑：</p>
+
+<ul>
+<li>启动GRPC Server并接收来自Envoy端的连接请求。</li>
+<li>接收Envoy端的xDS请求，从Config Controller和Service Controller中获取配置和服务信息，生成响应消息发送给Envoy。</li>
+<li>监听来自Config Controller的配置变化消息和来自Service Controller的服务变化消息，并将配置和服务变化内容通过xDS接口推送到Envoy。（备注：目前Pilot未实现增量变化推送，每次变化推送的是全量配置，在网格中服务较多的情况下可能会有性能问题）。</li>
+</ul>
+
+<h1 id="pilot-discovery-业务流程">Pilot-Discovery 业务流程</h1>
+
+<p>Pilot-Disocvery包括以下主要的几个业务流程：</p>
+
+<h2 id="初始化pilot-discovery的各个主要组件">初始化Pilot-Discovery的各个主要组件</h2>
+
+<p>Pilot-Discovery命令的入口为pilot/cmd/pilot-discovery/main.go中的main方法，在该方法中创建Pilot Server,Server代码位于文件pilot/pkg/bootstrap/server.go中。Server主要做了下面一些初始化工作：</p>
+
+<ul>
+<li>创建并初始化Config Controller</li>
+<li>创建并初始化Service Controller</li>
+<li>创建并初始化Discovery Server，Pilot中创建了基于Envoy V1 API的HTTP Discovery Server和基于Envoy V2 API的GPRC Discovery Server。由于V1已经被废弃，本文将主要分析V2 API的GRPC Discovery Server。</li>
+<li>将Discovery Server注册为Config Controller和Service Controller的Event Handler，监听配置和服务变化消息。</li>
+</ul>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-initialization.svg" />
+    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-initialization.svg" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+
+<h2 id="创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</h2>
+
+<p>Pilot Server创建了一个GRPC Server，用于监听和接收来自Envoy的xDS请求。pilot/pkg/proxy/envoy/v2/ads.go 中的 DiscoveryServer.StreamAggregatedResources方法被注册为GRPC Server的服务处理方法。</p>
+
+<p>当GRPC Server收到来自Envoy的连接时，会调用DiscoveryServer.StreamAggregatedResources方法，在该方法中创建一个XdsConnection对象，并开启一个goroutine从该connection中接收客户端的xDS请求并进行处理；如果控制面的配置发生变化，Pilot也会通过该connection把配置变化主动推送到Envoy端。</p>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-receive-connection.svg" />
+    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-receive-connection.svg" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+
+<h2 id="配置变化后向envoy推送更新">配置变化后向Envoy推送更新</h2>
+
+<p>这是Pilot中最复杂的一个业务流程，主要是因为代码中采用了多个channel和queue对变化消息进行合并和转发。该业务流程如下：</p>
+
+<ol>
+<li>Config Controller或者Service Controller在配置或服务发生变化时通过回调方法通知Discovery Server，Discovery Server将变化消息放入到Push Channel中。</li>
+<li>Discovery Server通过一个goroutine从Push Channel中接收变化消息，将一段时间内连续发生的变化消息进行合并。如果超过指定时间没有新的变化消息，则将合并后的消息加入到一个队列Push Queue中。</li>
+<li>另一个goroutine从Push Queue中取出变化消息，根据上下文生成XdsEvent，发送到每个客户端连接的Push Channel中。</li>
+<li>在DiscoveryServer.StreamAggregatedResources方法中从Push Channel中取出XdsEvent，然后通过GRPC的接口推送一个DiscoveryResponse给Envoy端。（GRPC会为每个client连接单独分配一个goroutine来进行处理，因此不同客户端连接的StreamAggregatedResources处理方法是在不同goroutine中处理的）</li>
+</ol>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-push-changes.svg" />
+    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-push-changes.svg" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+
+<h2 id="响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</h2>
+
+<p>Pilot和Envoy之间建立的是一个双向的Streaming GRPC服务调用，因此Pilot可以在配置变化时向Envoy推送，Envoy也可以主动发起xDS调用请求获取配置。Envoy主动发起xDS请求的流程如下：</p>
+
+<ol>
+<li>Envoy通过创建好的GRPC连接发送一个DiscoveryRequest</li>
+<li>Discovery Server通过一个goroutine从XdsConnection中接收来自Envoy的DiscoveryRequest，并将请求发送到ReqChannel中</li>
+<li>Discovery Server的另一个goroutine从ReqChannel中接收DiscoveryRequest，根据上下文生成DiscoveryResponse，然后返回给Envoy。</li>
+</ol>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-client-request.svg" />
+    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-client-request.svg" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+
+<h2 id="完整的业务流程">完整的业务流程</h2>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-sequence.svg" />
+    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-sequence.svg" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+
+<h1 id="参考阅读">参考阅读</h1>
+
+<ul>
+<li><a href="https://docs.google.com/document/d/1o2-V4TLJ8fJACXdlsnxKxDv2Luryo48bAhR8ShxE5-k/">Mesh Configuration Protocol (MCP)</a></li>
+<li><a href="https://docs.google.com/document/d/1S5ygkxR1alNI8cWGG4O4iV8zp8dA6Oc23zQCvFxr83U/">Pilot Decomposition</a></li>
+<li><a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">Istio 服务注册插件机制代码解析</a></li>
+</ul>
 
 
                 
@@ -675,15 +626,10 @@ $(function() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2019-07-02-using-opentracing-with-istio-english/" data-toggle="tooltip" data-placement="top" title="Enhance Istio Distributed Tracing with OpenTracing">&larr;
+                        <a href="/post/2019-10-08-amsterdam/" data-toggle="tooltip" data-placement="top" title="阿姆斯特丹浮光掠影">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2019-10-21-pilot-discovery-code-analysis/" data-toggle="tooltip" data-placement="top" title="Istio Pilot代码深度解析">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 

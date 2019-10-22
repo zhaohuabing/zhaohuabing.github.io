@@ -1,0 +1,159 @@
+
+@startuml
+'skinparam handwritten true
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam defaultFontName FG Virgil
+skinparam shadowing false
+
+queue ReqChannel
+queue PushChannel
+queue PushQueue
+queue XdsConnection.pushChannel
+
+participant "PilotServer"
+participant ConfigController
+participant ServiceController
+participant DiscoveryServer
+participant PushChannel
+participant PushQueue
+participant XdsConnection.pushChannel
+participant XdsConnection
+participant ReqChannel
+participant "GRPC Server"
+participant Envoy
+
+== Initialization ==
+note right of PilotServer
+    pilot/pkg/bootstrap/server.go
+end note
+PilotServer -> ConfigController:Create
+PilotServer -> ServiceController:Create
+PilotServer -> DiscoveryServer:Create
+
+DiscoveryServer -> ConfigController:RegisterEventHandler
+DiscoveryServer -> ServiceController:AppendServiceHandler
+DiscoveryServer -> ServiceController:AppendInstanceHandler
+
+== Receive Connections ==
+PilotServer -> "GRPC Server":Create
+DiscoveryServer -> "GRPC Server":RegisterService
+note left
+    pilot/pkg/proxy/envoy/v2/discovery.go
+    DiscoveryServer.Register
+end note
+...  ...
+Envoy -> "GRPC Server":GRPC
+"GRPC Server" -> DiscoveryServer:callback
+note left
+    pilot/pkg/proxy/envoy/v2/ads.go
+    DiscoveryServer.StreamAggregatedResources
+end note
+DiscoveryServer -> XdsConnection:Create
+
+== Service Change ==
+
+ServiceController --> DiscoveryServer:ConfigUpdate
+activate DiscoveryServer
+DiscoveryServer -> PushChannel:PushRequest(ServiceEntry)
+deactivate DiscoveryServer
+
+== Config Change ==
+ConfigController --> DiscoveryServer:ConfigUpdate
+activate DiscoveryServer
+DiscoveryServer -> PushChannel:PushRequest(Routing Rules, etc.)
+deactivate DiscoveryServer
+
+== debounce  ==
+DiscoveryServer -> PushChannel:GetPushRequest
+note left
+    pilot/pkg/proxy/envoy/v2/discovery.go
+    DiscoveryServer.debounce
+end note
+activate DiscoveryServer
+return PushRequest
+DiscoveryServer -> DiscoveryServer:MergePushRequest
+DiscoveryServer -> PushQueue:Enqueue(XdsConnection,PushRequest)
+deactivate DiscoveryServer
+
+== sendPushes  ==
+DiscoveryServer -> PushQueue:Dequeue
+note left
+    pilot/pkg/proxy/envoy/v2/discovery.go
+    DiscoveryServer.sendPushes
+end note
+activate DiscoveryServer
+return XdsConnection,PushRequest
+DiscoveryServer -> XdsConnection.pushChannel:XdsEvent
+deactivate DiscoveryServer
+
+... ...
+DiscoveryServer -> XdsConnection.pushChannel:GetPushEvent
+note left
+    pilot/pkg/proxy/envoy/v2/ads.go
+    DiscoveryServer.StreamAggregatedResources
+end note
+activate DiscoveryServer
+return PushEvent
+
+DiscoveryServer -> DiscoveryServer:pushConnection(XdsConnection,PushRequest)
+activate DiscoveryServer
+DiscoveryServer -> DiscoveryServer:pushCDS
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+DiscoveryServer -> DiscoveryServer:pushEDS
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+DiscoveryServer -> DiscoveryServer:pushLDS
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+DiscoveryServer -> DiscoveryServer:pushRoute
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+deactivate DiscoveryServer
+deactivate DiscoveryServer
+
+== client Request  ==
+Envoy -> XdsConnection: DiscoveryRequest
+DiscoveryServer -> XdsConnection: Receive
+note left
+    pilot/pkg/proxy/envoy/v2/ads.go
+    receiveThread
+end note
+return DiscoveryRequest
+DiscoveryServer -> ReqChannel: DiscoveryRequest
+... ...
+
+DiscoveryServer -> ReqChannel: GetRequest
+note left
+    pilot/pkg/proxy/envoy/v2/ads.go
+    StreamAggregatedResources
+end note
+activate DiscoveryServer
+return DiscoveryRequest
+
+alt Cluster Type
+DiscoveryServer -> DiscoveryServer:pushCDS
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+else Listener Request
+DiscoveryServer -> DiscoveryServer:pushLDS
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+else Endpoint Request
+DiscoveryServer -> DiscoveryServer:pushEDS
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+
+else Route Request
+DiscoveryServer -> DiscoveryServer:pushRoute
+DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
+XdsConnection -> Envoy:DiscoveryResponse
+end
+deactivate DiscoveryServer
