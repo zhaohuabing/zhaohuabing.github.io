@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="深入理解Istio主要组件Pilot的代码实现和业务流程">
-    <meta property="og:description" content="深入理解Istio主要组件Pilot的代码实现和业务流程" />
-    <meta property="twitter:description" content="深入理解Istio主要组件Pilot的代码实现和业务流程" />
+    <meta name="description" content="在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发,其内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。">
+    <meta property="og:description" content="在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发,其内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。" />
+    <meta property="twitter:description" content="在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发,其内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。" />
     
 
     
@@ -391,9 +391,26 @@ $(function() {
 
 <h1 id="istio-pilot-组件介绍">Istio Pilot 组件介绍</h1>
 
-<p>在Istio架构中，Pilot组件属于最核心的组件，它负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。由于涉及了较多功能，Pilot内部的代码结构也比较复杂，本文中我们对Pilot的代码进行深入分析，以了解Pilot实现原理。</p>
+<p>在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发,其内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。</p>
 
-<p>Pilot将控制面中的服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。目前Pilot的输入包括两部分数据来源：</p>
+<p>首先我们来看一下Pilot在Istio中的功能定位，Pilot将服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。如果把Pilot看成一个处理数据的黑盒，则其有两个输入，一个输出：</p>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-input-output.svg" alt="Pilot的输入与输出"/>
+    </div>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-input-output.svg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Pilot的输入与输出</p>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>目前Pilot的输入包括两部分数据来源：</p>
 
 <ul>
 <li>服务数据： 来源于各个服务注册表(Service Registry),例如Kubernetes中注册的Service，Consul Catalog中的服务等。</li>
@@ -408,15 +425,15 @@ $(function() {
 
 <p>Istio Pilot的代码分为Pilot-Discovery和Pilot-Agent,其中Pilot-Agent用于在数据面负责Envoy的生命周期管理，Pilot-Discovery才是控制面进行流量管理的组件，本文将重点分析控制面部分，即Pilot-Discovery的代码。</p>
 
-<p>下图是Pilot-Discovery组件代码的主要结构，为了简明起见，图中只包含了关键部分，忽略了一些例如Pilot自身的Metrics收集，Envoy V1的HTTP接口等不太重要的内容。
+<p>下图是Pilot-Discovery组件代码的主要结构：
 
-<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+
 <div class="box" >
   <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
     <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.jpg" alt="Pilot-Discovery代码结构"/>
+      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.svg" alt="Pilot-Discovery代码结构"/>
     </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.jpg" itemprop="contentUrl"></a>
+    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.svg" itemprop="contentUrl"></a>
       <figcaption align="center">
           <p>Pilot-Discovery代码结构</p>
       </figcaption>
