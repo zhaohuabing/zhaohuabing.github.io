@@ -381,6 +381,10 @@ $(function() {
 <li><a href="#创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</a></li>
 <li><a href="#配置变化后向envoy推送更新">配置变化后向Envoy推送更新</a></li>
 <li><a href="#响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</a></li>
+<li><a href="#discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</a>
+<ul>
+<li><a href="#处理xds请求和推送的关键代码">处理xDS请求和推送的关键代码</a></li>
+</ul></li>
 <li><a href="#完整的业务流程">完整的业务流程</a></li>
 </ul></li>
 <li><a href="#参考阅读">参考阅读</a></li>
@@ -573,6 +577,60 @@ $(function() {
   </figure>
 </div>
 
+
+<h2 id="discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</h2>
+
+<p>下面是Discovery Server的关键代码片段和对应的业务逻辑注解，为方便阅读，代码中只保留了逻辑主干，去掉了一些不重要的细节。</p>
+
+<h3 id="处理xds请求和推送的关键代码">处理xDS请求和推送的关键代码</h3>
+
+<p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/ads.go</code> 文件的StreamAggregatedResources 方法中。StreamAggregatedResources方法被注册为GRPC Server的handler，对于每一个客户端连接，GRPC Server会启动一个goroutine来进行处理。</p>
+
+<p>代码中主要包含以下业务逻辑：</p>
+
+<ul>
+<li>从GRPC连接中接收来自Envoy的xDS 请求，并放到一个channel reqChannel中</li>
+<li>从reqChannel中接收xDS请求，根据xDS请求的类型构造响应并发送给Envoy</li>
+
+<li><p>从connection的pushChannel中接收Service或者Config变化后的通知，构造xDS响应消息，将变化内容推送到Envoy端</p>
+
+<pre><code class="language-go">// StreamAggregatedResources implements the ADS interface.
+func (s *DiscoveryServer) StreamAggregatedResources(stream ads.AggregatedDiscoveryService_StreamAggregatedResourcesServer) error {
+        
+    ......
+
+   //创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
+   con := newXdsConnection(peerAddr, stream)
+	reqChannel := make(chan *xdsapi.DiscoveryRequest, 1)
+	go receiveThread(con, reqChannel, &amp;receiveError)
+
+   ......
+      
+  for {
+  //从reqChannel接收Envoy端主动发起的xDS请求
+  case discReq, ok := &lt;-reqChannel:
+
+             //根据请求的类型构造相应的xDS Response并发送到Envoy端
+             switch discReq.TypeUrl {
+			case ClusterType:
+                             err := s.pushCds(con, s.globalPushContext(), versionInfo())
+                    case ListenerType:
+                             err := s.pushLds(con, s.globalPushContext(), versionInfo())
+                    case RouteType:
+                             err := s.pushRoute(con, s.globalPushContext(), versionInfo())
+                    case EndpointType:
+                             err := s.pushEds(s.globalPushContext(), con, versionInfo(), nil)
+
+  // 从PushChannel接收Service或者Config变化后的通知
+  case pushEv := &lt;-con.pushChannel:
+
+            //将变化内容推送到Envoy端
+            err := s.pushConnection(con, pushEv)               
+ }
+}
+
+</code></pre></li>
+</ul>
 
 <h2 id="完整的业务流程">完整的业务流程</h2>
 
