@@ -384,6 +384,7 @@ $(function() {
 <li><a href="#discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</a>
 <ul>
 <li><a href="#处理xds请求和推送的关键代码">处理xDS请求和推送的关键代码</a></li>
+<li><a href="#处理服务和配置变化的关键代码">处理服务和配置变化的关键代码</a></li>
 </ul></li>
 <li><a href="#完整的业务流程">完整的业务流程</a></li>
 </ul></li>
@@ -631,6 +632,75 @@ func (s *DiscoveryServer) StreamAggregatedResources(stream ads.AggregatedDiscove
 
 </code></pre></li>
 </ul>
+
+<h3 id="处理服务和配置变化的关键代码">处理服务和配置变化的关键代码</h3>
+
+<p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/discovery.go</code> 文件中，用于监听服务和配置变化消息，并将变化消息合并后发送给前面提到的StreamAggregatedResources方法进行处理，将变化后的配置推送到Envoy。</p>
+
+<p>代码中主要包含以下业务逻辑：</p>
+
+<p>ConfigUpdate是处理服务和配置变化的回调函数，service controller和config controller在发生变化时会调用该方法通知Discovery Server。</p>
+
+<pre><code class="language-go">func (s *DiscoveryServer) ConfigUpdate(req *model.PushRequest) {
+	inboundConfigUpdates.Increment()
+
+	//服务或配置变化后，将一个PushRequest发送到pushChannel中
+	s.pushChannel &lt;- req
+}
+</code></pre>
+
+<p>在debounce方法中将连续发生的PushRequest进行合并，如果一段时间内没有收到新的PushRequest，再发起推送；以避免由于服务和配置频繁变化给系统带来较大压力。</p>
+
+<p>// The debounce helper function is implemented to enable mocking
+func debounce(ch chan *model.PushRequest, stopCh &lt;-chan struct{}, pushFn func(req *model.PushRequest)) {</p>
+
+<pre><code>......
+
+pushWorker := func() {
+    eventDelay := time.Since(startDebounce)
+    quietTime := time.Since(lastConfigUpdateTime)
+
+    // it has been too long or quiet enough
+            //一段时间内没有收到新的PushRequest，再发起推送
+    if eventDelay &gt;= DebounceMax || quietTime &gt;= DebounceAfter {
+        if req != nil {
+            pushCounter++
+            adsLog.Infof(&quot;Push debounce stable[%d] %d: %v since last change, %v since last push, full=%v&quot;,
+                pushCounter, debouncedEvents,
+                quietTime, eventDelay, req.Full)
+
+            free = false
+            go push(req)
+            req = nil
+            debouncedEvents = 0
+        }
+    } else {
+        timeChan = time.After(DebounceAfter - quietTime)
+    }
+}
+   for {
+    select {
+    ......
+    case r := &lt;-ch:
+        lastConfigUpdateTime = time.Now()
+        if debouncedEvents == 0 {
+            timeChan = time.After(DebounceAfter)
+            startDebounce = lastConfigUpdateTime
+        }
+        debouncedEvents++
+        //合并连续发生的多个PushRequest
+        req = req.Merge(r)
+    case &lt;-timeChan:
+        if free {
+            pushWorker()
+        }
+    case &lt;-stopCh:
+        return
+    }
+}
+</code></pre>
+
+<p>}</p>
 
 <h2 id="完整的业务流程">完整的业务流程</h2>
 
