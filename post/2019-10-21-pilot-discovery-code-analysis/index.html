@@ -598,38 +598,38 @@ $(function() {
 <pre><code class="language-go">// StreamAggregatedResources implements the ADS interface.
 func (s *DiscoveryServer) StreamAggregatedResources(stream ads.AggregatedDiscoveryService_StreamAggregatedResourcesServer) error {
         
-    ......
+......
 
-   //创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
-   con := newXdsConnection(peerAddr, stream)
-	reqChannel := make(chan *xdsapi.DiscoveryRequest, 1)
-	go receiveThread(con, reqChannel, &amp;receiveError)
+//创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
+con := newXdsConnection(peerAddr, stream)
+reqChannel := make(chan *xdsapi.DiscoveryRequest, 1)
+go receiveThread(con, reqChannel, &amp;receiveError)
 
-   ......
-      
-  for {
-  //从reqChannel接收Envoy端主动发起的xDS请求
-  case discReq, ok := &lt;-reqChannel:
+ ......
+    
+for {
+    select{
+    //从reqChannel接收Envoy端主动发起的xDS请求
+    case discReq, ok := &lt;-reqChannel:        
+        //根据请求的类型构造相应的xDS Response并发送到Envoy端
+        switch discReq.TypeUrl {
+        case ClusterType:
+            err := s.pushCds(con, s.globalPushContext(), versionInfo())
+        case ListenerType:
+            err := s.pushLds(con, s.globalPushContext(), versionInfo())
+        case RouteType:
+            err := s.pushRoute(con, s.globalPushContext(), versionInfo())
+        case EndpointType:
+            err := s.pushEds(s.globalPushContext(), con, versionInfo(), nil)
+        }
 
-             //根据请求的类型构造相应的xDS Response并发送到Envoy端
-             switch discReq.TypeUrl {
-			case ClusterType:
-                             err := s.pushCds(con, s.globalPushContext(), versionInfo())
-                    case ListenerType:
-                             err := s.pushLds(con, s.globalPushContext(), versionInfo())
-                    case RouteType:
-                             err := s.pushRoute(con, s.globalPushContext(), versionInfo())
-                    case EndpointType:
-                             err := s.pushEds(s.globalPushContext(), con, versionInfo(), nil)
-
-  // 从PushChannel接收Service或者Config变化后的通知
-  case pushEv := &lt;-con.pushChannel:
-
-            //将变化内容推送到Envoy端
-            err := s.pushConnection(con, pushEv)               
- }
+    //从PushChannel接收Service或者Config变化后的通知
+    case pushEv := &lt;-con.pushChannel:
+        //将变化内容推送到Envoy端
+        err := s.pushConnection(con, pushEv)   
+    }            
 }
-
+}
 </code></pre></li>
 </ul>
 
@@ -655,47 +655,48 @@ func debounce(ch chan *model.PushRequest, stopCh &lt;-chan struct{}, pushFn func
     ......
 
     pushWorker := func() {
-		eventDelay := time.Since(startDebounce)
-		quietTime := time.Since(lastConfigUpdateTime)
+        eventDelay := time.Since(startDebounce)
+        quietTime := time.Since(lastConfigUpdateTime)
 
-		// it has been too long or quiet enough
-                //一段时间内没有收到新的PushRequest，再发起推送
-		if eventDelay &gt;= DebounceMax || quietTime &gt;= DebounceAfter {
-			if req != nil {
-				pushCounter++
-				adsLog.Infof(&quot;Push debounce stable[%d] %d: %v since last change, %v since last push, full=%v&quot;,
-					pushCounter, debouncedEvents,
-					quietTime, eventDelay, req.Full)
+        // it has been too long or quiet enough
+        //一段时间内没有收到新的PushRequest，再发起推送
+        if eventDelay &gt;= DebounceMax || quietTime &gt;= DebounceAfter {
+            if req != nil {
+                pushCounter++
+                adsLog.Infof(&quot;Push debounce stable[%d] %d: %v since last change, %v since last push, full=%v&quot;,
+                pushCounter, debouncedEvents,
+                quietTime, eventDelay, req.Full)
 
-				free = false
-				go push(req)
-				req = nil
-				debouncedEvents = 0
-			}
-		} else {
-			timeChan = time.After(DebounceAfter - quietTime)
-		}
-	}
-       for {
-		select {
-		......
-		case r := &lt;-ch:
-			lastConfigUpdateTime = time.Now()
-			if debouncedEvents == 0 {
-				timeChan = time.After(DebounceAfter)
-				startDebounce = lastConfigUpdateTime
-			}
-			debouncedEvents++
-			//合并连续发生的多个PushRequest
-			req = req.Merge(r)
-		case &lt;-timeChan:
-			if free {
-				pushWorker()
-			}
-		case &lt;-stopCh:
-			return
-		}
-	}
+                free = false
+                go push(req)
+                req = nil
+                debouncedEvents = 0
+            }
+        } else {
+           timeChan = time.After(DebounceAfter - quietTime)
+        }
+    }
+    for {
+        select {
+        ......
+
+        case r := &lt;-ch:
+            lastConfigUpdateTime = time.Now()
+            if debouncedEvents == 0 {
+                timeChan = time.After(DebounceAfter)
+                startDebounce = lastConfigUpdateTime
+            }
+            debouncedEvents++
+            //合并连续发生的多个PushRequest
+            req = req.Merge(r)
+        case &lt;-timeChan:
+           if free {
+               pushWorker()
+            }
+        case &lt;-stopCh:
+            return
+    }
+  }
 }
 </code></pre>
 
