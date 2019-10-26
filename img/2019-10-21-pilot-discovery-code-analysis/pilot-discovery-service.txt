@@ -136,7 +136,7 @@ end note
 activate DiscoveryServer
 return DiscoveryRequest
 
-alt Cluster Type
+alt Request Type
 DiscoveryServer -> DiscoveryServer:pushCDS
 DiscoveryServer -> XdsConnection:send(DiscoveryResponse)
 XdsConnection -> Envoy:DiscoveryResponse
