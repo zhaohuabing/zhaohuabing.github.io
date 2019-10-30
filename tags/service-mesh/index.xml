@@ -6,10 +6,19 @@
     <description>Recent content in service Mesh on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 26 Oct 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Service Mesh是下一代SDN吗？</title>
+      <link>https://zhaohuabing.com/post/2019-10-26-what-can-service-mesh-learn-from-sdn/</link>
+      <pubDate>Sat, 26 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-10-26-what-can-service-mesh-learn-from-sdn/</guid>
+      <description>如果你具有通信或者网络背景，那么对SDN(Software Defined Network)一定不会陌生。你也许已经注意到，最近来在微服务领域兴起的Serv</description>
+    </item>
     
     <item>
       <title>Istio Pilot代码深度解析</title>

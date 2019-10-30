@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Istio Pilot代码深度解析" />
-    <meta property="og:title" content="Istio Pilot代码深度解析" />
-    <meta property="twitter:title" content="Istio Pilot代码深度解析" />
+    <meta name="title" content="Service Mesh是下一代SDN吗？" />
+    <meta property="og:title" content="Service Mesh是下一代SDN吗？" />
+    <meta property="twitter:title" content="Service Mesh是下一代SDN吗？" />
     
 
     
-    <meta name="description" content="在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。Pilot内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。">
-    <meta property="og:description" content="在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。Pilot内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。" />
-    <meta property="twitter:description" content="在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。Pilot内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。" />
+    <meta name="description" content="Service Mesh和SDN(Software Defined Network) 的架构非常相似，这两者都采用了软件对网络进行管理和控制，也都包含控制面和数据面的概念。那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。">
+    <meta property="og:description" content="Service Mesh和SDN(Software Defined Network) 的架构非常相似，这两者都采用了软件对网络进行管理和控制，也都包含控制面和数据面的概念。那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。" />
+    <meta property="twitter:description" content="Service Mesh和SDN(Software Defined Network) 的架构非常相似，这两者都采用了软件对网络进行管理和控制，也都包含控制面和数据面的概念。那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Istio Pilot代码深度解析-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Service Mesh是下一代SDN吗？-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2019-10-21-pilot-discovery-code-analysis/">
+    <link rel="canonical" href="/post/2019-10-26-what-can-service-mesh-learn-from-sdn/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -169,7 +169,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/post-bg-unix-linux.jpg')
+        background-image: url('https://images.pexels.com/photos/2093323/pexels-photo-2093323.jpeg')
     }
 </style>
 <header class="intro-header">
@@ -188,17 +188,17 @@
                         </a>
                         
                     </div>
-                    <h1>Istio Pilot代码深度解析</h1>
-                    <h2 class="subheading"></h2>
+                    <h1>Service Mesh是下一代SDN吗？</h1>
+                    <h2 class="subheading">从SDN看Service Mesh的发展</h2>
                     <span class="meta">
                         Posted by 
                         
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Monday, October 21, 2019
+                        Saturday, October 26, 2019
                         
-                            <span id="/post/2019-10-21-pilot-discovery-code-analysis/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2019-10-26-what-can-service-mesh-learn-from-sdn/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -360,359 +360,196 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li><a href="#istio-pilot-组件介绍">Istio Pilot 组件介绍</a></li>
-<li><a href="#pilot-discovery-代码结构">Pilot-Discovery 代码结构</a>
-<ul>
-<li><a href="#config-controller">Config Controller</a></li>
-<li><a href="#service-controller">Service Controller</a></li>
-<li><a href="#discovery-service">Discovery Service</a></li>
-</ul></li>
-<li><a href="#pilot-discovery-业务流程">Pilot-Discovery 业务流程</a>
-<ul>
-<li><a href="#初始化pilot-discovery的各个主要组件">初始化Pilot-Discovery的各个主要组件</a></li>
-<li><a href="#创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</a></li>
-<li><a href="#配置变化后向envoy推送更新">配置变化后向Envoy推送更新</a></li>
-<li><a href="#响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</a></li>
-<li><a href="#discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</a>
-<ul>
-<li><a href="#处理xds请求和推送的关键代码">处理xDS请求和推送的关键代码</a></li>
-<li><a href="#处理服务和配置变化的关键代码">处理服务和配置变化的关键代码</a></li>
-</ul></li>
-<li><a href="#完整的业务流程">完整的业务流程</a></li>
-</ul></li>
-<li><a href="#参考阅读">参考阅读</a></li>
+<li><a href="#传统网络面临的挑战">传统网络面临的挑战</a></li>
+<li><a href="#sdn如何解决传统网络的问题">SDN如何解决传统网络的问题</a></li>
+<li><a href="#微服务面临的问题">微服务面临的问题</a></li>
+<li><a href="#service-mesh是下一代sdn吗">Service Mesh是下一代SDN吗？</a></li>
+<li><a href="#统一管理硬件设备和envoy">统一管理硬件设备和Envoy</a></li>
+<li><a href="#利用控制面接口开发应用">利用控制面接口开发应用</a></li>
 </ul>
 </nav>
                 
                 
 
-<h1 id="istio-pilot-组件介绍">Istio Pilot 组件介绍</h1>
+<p>如果你具有通信或者网络背景，那么对SDN(Software Defined Network)一定不会陌生。你也许已经注意到，最近来在微服务领域兴起的Service Mesh和SDN(Software Defined Network) 非常相似，这两者都采用了软件对网络进行管理和控制，也都采用了包含控制面和数据面的类似架构。</p>
 
-<p>在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。Pilot内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。</p>
+<p>那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。</p>
 
-<p>首先我们来看一下Pilot在Istio中的功能定位，Pilot将服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。如果把Pilot看成一个处理数据的黑盒，则其有两个输入，一个输出：</p>
+<h1 id="传统网络面临的挑战">传统网络面临的挑战</h1>
 
+<p>首先我们来回顾一下SDN的起源。传统的IP网络是一个分布式的无中心架构，各个网络设备包含完整的控制面和数据面，通过网络协议探测网络中其他设备的状态，自主决定如何对流量进行路由。该架构的好处是容错性强，即使网络局部出现故障，整个网络也可以自主恢复，不会影响整个网络的运行。
 
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
 <div class="box" >
   <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
     <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-input-output.svg" alt="Pilot的输入与输出"/>
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/network-devices.svg" alt="在传统的网络架构下，控制面和数据面位于同一设备中"/>
     </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-input-output.svg" itemprop="contentUrl"></a>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/network-devices.svg" itemprop="contentUrl"></a>
       <figcaption align="center">
-          <p>Pilot的输入与输出</p>
-      </figcaption>
-  </figure>
-</div>
-
-
-<p>目前Pilot的输入包括两部分数据来源：</p>
-
-<ul>
-<li>服务数据： 来源于各个服务注册表(Service Registry),例如Kubernetes中注册的Service，Consul Catalog中的服务等。</li>
-<li>配置规则： 各种配置规则，包括路由规则及流量管理规则等，通过Kubernetes CRD(Custom resources definition)形式定义并存储在Kubernetes中。</li>
-</ul>
-
-<p>Pilot的输出为符合xDS接口的数据面配置数据，并通过GRPC Streaming接口将配置数据推送到数据面的Envoy中。</p>
-
-<p>备注：Istio代码库在不停变化更新中，本文分析所基于的代码commit为: d539abe00c2599d80c6d64296f78d3bb8ab4b033</p>
-
-<h1 id="pilot-discovery-代码结构">Pilot-Discovery 代码结构</h1>
-
-<p>Istio Pilot的代码分为Pilot-Discovery和Pilot-Agent,其中Pilot-Agent用于在数据面负责Envoy的生命周期管理，Pilot-Discovery才是控制面进行流量管理的组件，本文将重点分析控制面部分，即Pilot-Discovery的代码。</p>
-
-<p>下图是Pilot-Discovery组件代码的主要结构：
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.svg" alt="Pilot-Discovery代码结构"/>
-    </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery.svg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>Pilot-Discovery代码结构</p>
+          <p>在传统的网络架构下，控制面和数据面位于同一设备中</p>
       </figcaption>
   </figure>
 </div>
 </p>
 
-<p>Pilot-Discovery的入口函数为：pilot/cmd/pilot-discovery/main.go中的main方法。main方法中创建了Discovery Server，Discovery Server中主要包含三部分逻辑：</p>
-
-<h2 id="config-controller">Config Controller</h2>
-
-<p>Config Controller用于管理各种配置数据，包括用户创建的流量管理规则和策略。Istio目前支持三种类型的Config Controller：</p>
+<p>这种去中心的架构在基于文本和图片的web浏览器应用时代运作良好，但随着互联网业务的爆炸式增长，各种各样的业务纷纷承载在了IP网络上，包括各种实时业务如语音视频通话，对网络提出了新的挑战。</p>
 
 <ul>
-<li>Kubernetes：使用Kubernetes来作为配置数据的存储，该方式的直接依附于Kubernetes强大的CRD机制来存储配置数据，简单方便，是Istio最开始使用的配置存储方案。</li>
-<li>MCP (Mesh Configuration Protocol)：使用Kubernetes来存储配置数据导致了Istio和Kubernetes的耦合，限制了Istio在非Kubernetes环境下的运用。为了解决该耦合，Istio社区提出了MCP，MCP定义了一个向Istio控制面下发配置数据的标准协议，Istio Pilot作为MCP Client，任何实现了MCP协议的Server都可以通过MCP协议向Pilot下发配置，从而解除了Istio和Kubernetes的耦合。如果想要了解更多关于MCP的内容，请参考文后的链接。</li>
-<li>Memory：一个在内存中的Config Controller实现，主要用于测试。</li>
+<li>缺少网络质量保证： 绝大多数IP网络都是基于无连接的，只有基于大带宽的粗放带宽保障措施，缺乏质量保证和监控，业务体验较差。</li>
+<li>低效的业务部署： 网络配置是通过命令行或者网管、由管理员手工配置到网络设备上，并且各种网络设备之间的控制命令互不兼容，导致业务的部署非常低效。</li>
+<li>缓慢的业务适应： 业务由硬件实现，导致新业务的开发周期过长。需要持续数年的特性和架构调整、引入新设备，才能推出新的业务，无法快速适应市场，满足用户的需求。</li>
 </ul>
 
-<p>目前Istio的配置包括：</p>
+<h1 id="sdn如何解决传统网络的问题">SDN如何解决传统网络的问题</h1>
 
-<ul>
-<li>Virtual Service: 定义流量路由规则。</li>
-<li>Destination Rule: 定义和一个服务或者subset相关的流量处理规则，包括负载均衡策略，连接池大小，断路器设置，subset定义等等。</li>
-<li>Gateway: 定义入口网关上对外暴露的服务。</li>
-<li>Service Entry: 通过定义一个Service Entry可以将一个外部服务手动添加到服务网格中。</li>
-<li>Envoy Filter: 通过Pilot在Envoy的配置中添加一个自定义的Filter。</li>
-</ul>
-
-<h2 id="service-controller">Service Controller</h2>
-
-<p>Service Controller用于管理各种Service Registry，提出服务发现数据，目前Istio支持的Service Registry包括：</p>
-
-<ul>
-<li>Kubernetes：对接Kubernetes Registry，可以将Kubernetes中定义的Service和Instance采集到Istio中。</li>
-<li>Consul： 对接Consul Catalog，将Consul中定义的Service采集到Istio中。</li>
-<li>MCP： 和MCP config controller类似，从MCP Server中获取Service和Service Instance。</li>
-<li>Memory： 一个内存中的Service Controller实现，主要用于测试。</li>
-</ul>
-
-<h2 id="discovery-service">Discovery Service</h2>
-
-<p>Discovery Service中主要包含下述逻辑：</p>
-
-<ul>
-<li>启动GRPC Server并接收来自Envoy端的连接请求。</li>
-<li>接收Envoy端的xDS请求，从Config Controller和Service Controller中获取配置和服务信息，生成响应消息发送给Envoy。</li>
-<li>监听来自Config Controller的配置变化消息和来自Service Controller的服务变化消息，并将配置和服务变化内容通过xDS接口推送到Envoy。（备注：目前Pilot未实现增量变化推送，每次变化推送的是全量配置，在网格中服务较多的情况下可能会有性能问题）。</li>
-</ul>
-
-<h1 id="pilot-discovery-业务流程">Pilot-Discovery 业务流程</h1>
-
-<p>Pilot-Disocvery包括以下主要的几个业务流程：</p>
-
-<h2 id="初始化pilot-discovery的各个主要组件">初始化Pilot-Discovery的各个主要组件</h2>
-
-<p>Pilot-Discovery命令的入口为pilot/cmd/pilot-discovery/main.go中的main方法，在该方法中创建Pilot Server,Server代码位于文件pilot/pkg/bootstrap/server.go中。Server主要做了下面一些初始化工作：</p>
-
-<ul>
-<li>创建并初始化Config Controller</li>
-<li>创建并初始化Service Controller</li>
-<li>创建并初始化Discovery Server，Pilot中创建了基于Envoy V1 API的HTTP Discovery Server和基于Envoy V2 API的GPRC Discovery Server。由于V1已经被废弃，本文将主要分析V2 API的GRPC Discovery Server。</li>
-<li>将Discovery Server注册为Config Controller和Service Controller的Event Handler，监听配置和服务变化消息。</li>
-</ul>
+<p>为了应对这些问题，提出了SDN的解决方案，SDN的架构如下图所示：</p>
 
 
 
 <div class="box" >
   <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
     <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-initialization.svg" />
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn.png" alt="SDN架构"/>
     </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-initialization.svg" itemprop="contentUrl"></a>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn.png" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>SDN架构</p>
+      </figcaption>
   </figure>
 </div>
 
 
-<h2 id="创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</h2>
-
-<p>Pilot Server创建了一个GRPC Server，用于监听和接收来自Envoy的xDS请求。pilot/pkg/proxy/envoy/v2/ads.go 中的 DiscoveryServer.StreamAggregatedResources方法被注册为GRPC Server的服务处理方法。</p>
-
-<p>当GRPC Server收到来自Envoy的连接时，会调用DiscoveryServer.StreamAggregatedResources方法，在该方法中创建一个XdsConnection对象，并开启一个goroutine从该connection中接收客户端的xDS请求并进行处理；如果控制面的配置发生变化，Pilot也会通过该connection把配置变化主动推送到Envoy端。</p>
-
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-receive-connection.svg" />
-    </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-receive-connection.svg" itemprop="contentUrl"></a>
-  </figure>
-</div>
-
-
-<h2 id="配置变化后向envoy推送更新">配置变化后向Envoy推送更新</h2>
-
-<p>这是Pilot中最复杂的一个业务流程，主要是因为代码中采用了多个channel和queue对变化消息进行合并和转发。该业务流程如下：</p>
-
-<ol>
-<li>Config Controller或者Service Controller在配置或服务发生变化时通过回调方法通知Discovery Server，Discovery Server将变化消息放入到Push Channel中。</li>
-<li>Discovery Server通过一个goroutine从Push Channel中接收变化消息，将一段时间内连续发生的变化消息进行合并。如果超过指定时间没有新的变化消息，则将合并后的消息加入到一个队列Push Queue中。</li>
-<li>另一个goroutine从Push Queue中取出变化消息，生成XdsEvent，发送到每个客户端连接的Push Channel中。</li>
-<li>在DiscoveryServer.StreamAggregatedResources方法中从Push Channel中取出XdsEvent，然后根据上下文生成符合xDS接口规范的DiscoveryResponse，通过GRPC推送给Envoy端。（GRPC会为每个client连接单独分配一个goroutine来进行处理，因此不同客户端连接的StreamAggregatedResources处理方法是在不同goroutine中处理的）</li>
-</ol>
-
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-push-changes.svg" />
-    </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-push-changes.svg" itemprop="contentUrl"></a>
-  </figure>
-</div>
-
-
-<h2 id="响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</h2>
-
-<p>Pilot和Envoy之间建立的是一个双向的Streaming GRPC服务调用，因此Pilot可以在配置变化时向Envoy推送，Envoy也可以主动发起xDS调用请求获取配置。Envoy主动发起xDS请求的流程如下：</p>
-
-<ol>
-<li>Envoy通过创建好的GRPC连接发送一个DiscoveryRequest</li>
-<li>Discovery Server通过一个goroutine从XdsConnection中接收来自Envoy的DiscoveryRequest，并将请求发送到ReqChannel中</li>
-<li>Discovery Server的另一个goroutine从ReqChannel中接收DiscoveryRequest，根据上下文生成符合xDS接口规范的DiscoveryResponse，然后返回给Envoy。</li>
-</ol>
-
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-client-request.svg" />
-    </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-client-request.svg" itemprop="contentUrl"></a>
-  </figure>
-</div>
-
-
-<h2 id="discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</h2>
-
-<p>下面是Discovery Server的关键代码片段和对应的业务逻辑注解，为方便阅读，代码中只保留了逻辑主干，去掉了一些不重要的细节。</p>
-
-<h3 id="处理xds请求和推送的关键代码">处理xDS请求和推送的关键代码</h3>
-
-<p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/ads.go</code> 文件的StreamAggregatedResources 方法中。StreamAggregatedResources方法被注册为GRPC Server的handler，对于每一个客户端连接，GRPC Server会启动一个goroutine来进行处理。</p>
-
-<p>代码中主要包含以下业务逻辑：</p>
+<p>从图中可以看到，SDN从下至上划分为三层体系结构：</p>
 
 <ul>
-<li>从GRPC连接中接收来自Envoy的xDS 请求，并放到一个channel reqChannel中</li>
-<li>从reqChannel中接收xDS请求，根据xDS请求的类型构造响应并发送给Envoy</li>
-
-<li><p>从connection的pushChannel中接收Service或者Config变化后的通知，构造xDS响应消息，将变化内容推送到Envoy端</p>
-
-<pre><code class="language-go">// StreamAggregatedResources implements the ADS interface.
-func (s *DiscoveryServer) StreamAggregatedResources(stream ads.AggregatedDiscoveryService_StreamAggregatedResourcesServer) error {
-        
-......
-
-//创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
-con := newXdsConnection(peerAddr, stream)
-reqChannel := make(chan *xdsapi.DiscoveryRequest, 1)
-go receiveThread(con, reqChannel, &amp;receiveError)
-
- ......
-    
-for {
-    select{
-    //从reqChannel接收Envoy端主动发起的xDS请求
-    case discReq, ok := &lt;-reqChannel:        
-        //根据请求的类型构造相应的xDS Response并发送到Envoy端
-        switch discReq.TypeUrl {
-        case ClusterType:
-            err := s.pushCds(con, s.globalPushContext(), versionInfo())
-        case ListenerType:
-            err := s.pushLds(con, s.globalPushContext(), versionInfo())
-        case RouteType:
-            err := s.pushRoute(con, s.globalPushContext(), versionInfo())
-        case EndpointType:
-            err := s.pushEds(s.globalPushContext(), con, versionInfo(), nil)
-        }
-
-    //从PushChannel接收Service或者Config变化后的通知
-    case pushEv := &lt;-con.pushChannel:
-        //将变化内容推送到Envoy端
-        err := s.pushConnection(con, pushEv)   
-    }            
-}
-}
-</code></pre></li>
+<li>基础设施层（Infrastructure Layer）： 是网络的数据平面，由各种网络设备构成，根据控制层下发的路由规则对网络数据进行处理和转发。</li>
+<li>控制层（Control Layer）： 是一个逻辑上集中的控制平面，维护了整个网络的信息，如网络拓扑和状态信息等，控制层根据业务逻辑生成配置信息下发给基础设施层，以管理整个网络的运行。</li>
+<li>应用层（Application Layer）：通过控制层提供的编程接口，可以编写各种应用利用控制层的能力对网络进行灵活的配置。</li>
 </ul>
 
-<h3 id="处理服务和配置变化的关键代码">处理服务和配置变化的关键代码</h3>
+<p>SDN的不同层次之间采用标准接口进行通信：</p>
 
-<p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/discovery.go</code> 文件中，用于监听服务和配置变化消息，并将变化消息合并后通过Channel发送给前面提到的 StreamAggregatedResources 方法进行处理。</p>
+<ul>
+<li>南向接口（Southbound API）：数据面和控制面的接口，控制面通过该接口将路由和配置下发到数据面，该接口一般使用OpenFlow、NetConf等网络协议。标准的南向接口解耦了控制层和基础设施层，只要支持标准南向接口的交换机都可以接入到SDN网络中，这样基础设施层可以大量采用支持OpenFlow协议的白盒交换机，解除了厂商锁定，降低了网络成本。</li>
+<li>北向接口（Northbound API）：控制面向应用层提供的可编程接口，例如RestConf接口。利用控制面提供的编程接口，新的网络业务可以通过存软件的方式实现，大大加快了推出新业务的周期。</li>
+</ul>
 
-<p>ConfigUpdate是处理服务和配置变化的回调函数，service controller和config controller在发生变化时会调用该方法通知Discovery Server。</p>
+<h1 id="微服务面临的问题">微服务面临的问题</h1>
 
-<pre><code class="language-go">func (s *DiscoveryServer) ConfigUpdate(req *model.PushRequest) {
-	inboundConfigUpdates.Increment()
-
-	//服务或配置变化后，将一个PushRequest发送到pushChannel中
-	s.pushChannel &lt;- req
-}
-</code></pre>
-
-<p>在debounce方法中将连续发生的PushRequest进行合并，如果一段时间内没有收到新的PushRequest，再发起推送；以避免由于服务和配置频繁变化给系统带来较大压力。</p>
-
-<pre><code class="language-go">// The debounce helper function is implemented to enable mocking
-func debounce(ch chan *model.PushRequest, stopCh &lt;-chan struct{}, pushFn func(req *model.PushRequest)) {
-
-    ......
-
-    pushWorker := func() {
-        eventDelay := time.Since(startDebounce)
-        quietTime := time.Since(lastConfigUpdateTime)
-
-        // it has been too long or quiet enough
-        //一段时间内没有收到新的PushRequest，再发起推送
-        if eventDelay &gt;= DebounceMax || quietTime &gt;= DebounceAfter {
-            if req != nil {
-                pushCounter++
-                adsLog.Infof(&quot;Push debounce stable[%d] %d: %v since last change, %v since last push, full=%v&quot;,
-                pushCounter, debouncedEvents,
-                quietTime, eventDelay, req.Full)
-
-                free = false
-                go push(req)
-                req = nil
-                debouncedEvents = 0
-            }
-        } else {
-           timeChan = time.After(DebounceAfter - quietTime)
-        }
-    }
-    for {
-        select {
-        ......
-
-        case r := &lt;-ch:
-            lastConfigUpdateTime = time.Now()
-            if debouncedEvents == 0 {
-                timeChan = time.After(DebounceAfter)
-                startDebounce = lastConfigUpdateTime
-            }
-            debouncedEvents++
-            //合并连续发生的多个PushRequest
-            req = req.Merge(r)
-        case &lt;-timeChan:
-           if free {
-               pushWorker()
-            }
-        case &lt;-stopCh:
-            return
-    }
-  }
-}
-</code></pre>
-
-<h2 id="完整的业务流程">完整的业务流程</h2>
+<p>在一个微服务系统中，各个独立的微服务之间采用远程调用进行通信。服务发现，请求路由等服务通信相关的功能以代码库的形式存在于各个微服务之中。</p>
 
 
 
 <div class="box" >
   <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
     <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-sequence.svg" />
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/microservice.svg" alt="微服务之间的通信"/>
     </div>
-    <a href="/img/2019-10-21-pilot-discovery-code-analysis/pilot-discovery-sequence.svg" itemprop="contentUrl"></a>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/microservice.svg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>微服务之间的通信</p>
+      </figcaption>
   </figure>
 </div>
 
 
-<h1 id="参考阅读">参考阅读</h1>
+<p>该架构也存在和通信网络类似的问题：</p>
 
 <ul>
-<li><a href="https://docs.google.com/document/d/1o2-V4TLJ8fJACXdlsnxKxDv2Luryo48bAhR8ShxE5-k/">Mesh Configuration Protocol (MCP)</a></li>
-<li><a href="https://docs.google.com/document/d/1S5ygkxR1alNI8cWGG4O4iV8zp8dA6Oc23zQCvFxr83U/">Pilot Decomposition</a></li>
-<li><a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">Istio 服务注册插件机制代码解析</a></li>
+<li>不同语言/框架的代码库版本中关于服务通信相关的配置完全不同，需要对不同的微服务单独进行配置，导致微服务的运维非常困难。</li>
+<li>应用和服务通信之间的代码耦合导致修改或者增加新的服务通信功能需要修改并升级所有的微服务，如果需要引入新的运维功能，例如支持灰度发布等，则需要修改并升级所有微服务，代价非常大。</li>
 </ul>
+
+<h1 id="service-mesh是下一代sdn吗">Service Mesh是下一代SDN吗？</h1>
+
+<p>从上面的分析可以看出，SDN和Service Mesh面临的是类似的问题，既然都是解决类似的问题，那么Service Mesh是否可以看作下一代的SDN呢？</p>
+
+<p>我认为答案是否定的，因为两者之间还是有显著的不同。SDN主要面对L1到L4层，即网络层的基本转发和控制功能；Service Mesh则主要面对L7层及以上，用于处理应用层的服务发现，服务路由等功能。但我们可以把Service Mesh看作SDN的理念在应用层的扩展和实践。</p>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn-vs-service-mesh.jpg" alt="SDN和Service Mesh出于网络协议中的不同层次"/>
+    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn-vs-service-mesh.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>SDN和Service Mesh出于网络协议中的不同层次</p>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>Service Mesh可以借鉴SDN的架构来解决微服务系统的服务通信的相关问题，如下图所示：
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/service-mesh.jpg" alt="Service Mesh架构"/>
+    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/service-mesh.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Service Mesh架构</p>
+      </figcaption>
+  </figure>
+</div>
+</p>
+
+<p>我们可以看到，基本上所有的Service Mesh实现都采用了类似上图的的架构，包括<a href="https://istio.io">Istio</a>，<a href="https://linkerd.io">Linkerd</a>，<a href="https://kuma.io">Kuma</a>等。</p>
+
+<p>在该架构中，数据面承担的是一个白盒交换机的角色，不管何种实现，其功能都是类似的，不存在太多争议，目前envoy已经成为数据面的标准实现，因此数据面和控制面之间也采用了Envoy的xDS v2作为标准的数据面协议。</p>
+
+<p>各个Service Mesh项目的创新和争夺的战场主要在控制面上，Microsoft等公司提出了采用SMI（Service Mesh Interface）作为控制面的标准接口，虽然SMI得到了Linkerd，HashiCorp, Solo.io等一干公司的支持，但目前影响最大的Service Mesh项目Istio还未对此进行表态。缺乏统一的控制面标准，控制面之上的应用层生态目前还没有发展起来，基本没有看到有项目对应用层进行宣传。</p>
+
+<h1 id="统一管理硬件设备和envoy">统一管理硬件设备和Envoy</h1>
+
+<p>SDN给Service Mesh带来的一个重要启发是控制面对数据面各种网络设备的统一控制，那么是否可以采用Service Mesh控制面对硬件设备和软件代理进行统一控制呢？</p>
+
+<p>F5网站上提供了一个<a href="https://aspenmesh.io/2019/03/expanding-service-mesh-without-envoy/">F5 Big IP和Istio集成的案例</a>。在该案例中，
+Service Mesh中的微服务需要和一个外部数据库系统进行通信，为了对数据库进行保护，在数据库前放置了一个F5 Big IP设备作为反向代理，并进行下述配置：</p>
+
+<ul>
+<li>Service Mesh中的微服务通过F5 Big IP作为代理和后端的数据库通信</li>
+<li>F5 Big IP和微服务之间采用mTLS，F5 Big IP和数据库之间采用Plain TCP</li>
+<li>F5 Big IP采用spiffe对微服务进行身份认证，只允许需要访问该数据库的微服务的请求通过</li>
+</ul>
+
+<p>F5的该案例证明了Service Mesh和F5设备之间集成的可能性，但是需要在F5 Big IP设备上进行一系列复杂的配置操作，包括开通服务端口，配置TLS证书，设置认证和访问策略等等。如果Service Mesh控制面可以将F5设备也纳入统一控制，通过控制面统一下发规则，则可以极大简化网络的配置工作，加快业务下发的敏捷性。
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/hardware-sidecar.jpg" alt="采用Service Mesh配置F5 Big IP"/>
+    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/hardware-sidecar.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>采用Service Mesh配置F5 Big IP</p>
+      </figcaption>
+  </figure>
+</div>
+</p>
+
+<h1 id="利用控制面接口开发应用">利用控制面接口开发应用</h1>
+
+<p>SDN的另一个优势是可以通过控制器提供的北向接口快速开发各种SDN应用，而不需要对硬件进行升级，这种模式加快了新业务上线的周期，鼓励各种创新业务蓬勃发展。目前Service Mesh在应用方面尚未有太多实践，但从SDN的发展历程来看，Service Mesh应用层有极大的发展空间。
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/user-ubscription.jpg" alt="Service Mesh应用：用户业务订阅及SLA管理"/>
+    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/user-ubscription.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Service Mesh应用：用户业务订阅及SLA管理</p>
+      </figcaption>
+  </figure>
+</div>
+</p>
 
 
                 
@@ -761,15 +598,10 @@ func debounce(ch chan *model.PushRequest, stopCh &lt;-chan struct{}, pushFn func
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2019-10-08-amsterdam/" data-toggle="tooltip" data-placement="top" title="阿姆斯特丹浮光掠影">&larr;
+                        <a href="/post/2019-10-21-pilot-discovery-code-analysis/" data-toggle="tooltip" data-placement="top" title="Istio Pilot代码深度解析">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2019-10-26-what-can-service-mesh-learn-from-sdn/" data-toggle="tooltip" data-placement="top" title="Service Mesh是下一代SDN吗？">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
