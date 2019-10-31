@@ -169,7 +169,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://images.pexels.com/photos/2093323/pexels-photo-2093323.jpeg')
+        background-image: url('/img/2019-10-26-what-can-service-mesh-learn-from-sdn/background.jpg')
     }
 </style>
 <header class="intro-header">
@@ -366,6 +366,7 @@ $(function() {
 <li><a href="#service-mesh是下一代sdn吗">Service Mesh是下一代SDN吗？</a></li>
 <li><a href="#统一管理硬件设备和envoy">统一管理硬件设备和Envoy</a></li>
 <li><a href="#利用控制面接口开发应用">利用控制面接口开发应用</a></li>
+<li><a href="#总结-他山之石-可以攻玉">总结：他山之石，可以攻玉</a></li>
 </ul>
 </nav>
                 
@@ -535,7 +536,17 @@ Service Mesh中的微服务需要和一个外部数据库系统进行通信，�
 
 <h1 id="利用控制面接口开发应用">利用控制面接口开发应用</h1>
 
-<p>SDN的另一个优势是可以通过控制器提供的北向接口快速开发各种SDN应用，而不需要对硬件进行升级，这种模式加快了新业务上线的周期，鼓励各种创新业务蓬勃发展。目前Service Mesh在应用方面尚未有太多实践，但从SDN的发展历程来看，Service Mesh应用层有极大的发展空间。
+<p>SDN的另一个优势是可以通过控制器提供的北向接口快速开发各种SDN应用，而不需要对硬件进行升级，这种模式加快了新业务上线的周期，鼓励各种创新业务蓬勃发展。目前Service Mesh在应用方面尚未有太多实践，但从SDN的发展历程来看，Service Mesh应用层有极大的发展空间。</p>
+
+<p>下图是一个利用控制面接口开发的用户业务订阅及SLA管理的APP示例：</p>
+
+<ol>
+<li>用户通过APP管理界面订阅服务，并设置SLA（服务水平协议），包括服务的请求次数，服务的响应时间等等</li>
+<li>APP将用户订阅及SLA约定转换为运维策略,调用控制面提供的编程接口下发给控制面</li>
+<li>控制面将运维策略转换为数据面标准协议下发给数据面的代理，在代理上，运维策略被转换为代理的配置和转发策略</li>
+<li>代理在收到用户请求时，根据用户标识对用户进行认证，并根据配置和路由策略对用户请求进行处理，例如根据SLA处理用户请求的限流策略，系统忙时优先转发高SLA等级的用户请求，等等。</li>
+</ol>
+
 
 
 <div class="box" >
@@ -549,7 +560,22 @@ Service Mesh中的微服务需要和一个外部数据库系统进行通信，�
       </figcaption>
   </figure>
 </div>
-</p>
+
+
+<p>上面只是一个非常简单的应用示例。通过对Service Mesh控制面提供的流量控制，安全策略，拓扑信息、性能指标等基本能力进行组合，并加以创新，可以创建大量端到端的高附加值业务，例如支持业务平滑升级的灰度发布，测试微服务系统健壮性的混沌测试，微服务的监控系统等等。</p>
+
+<h1 id="总结-他山之石-可以攻玉">总结：他山之石，可以攻玉</h1>
+
+<p>SDN和Service Mesh的出现都是为了解决类似的网络通信问题，两者都采用了“数据面+控制面”这种类似的架构，但位于网络协议的不同层次。Service Mesh并不是下一代的SDN，但通过借鉴SDN的发展经验，Service Mesh也许可以向下面这些方向发展：</p>
+
+<ul>
+<li>北向接口：北向接口面向业务和运维，具有较高的抽象层次，比较容易提取统一的控制面标准。目前已经有多个公司支持采用SMI作为统一的控制面标准。但SMI的发展也存在一些挑战，例如如何避免SMI成为不同Service Mesh实现之间的最小公共子集，如何扩展支持除HTTP之外的其它应用层协议？</li>
+<li>南向接口：Envoy的xDS v2已经成为了南向接口的事实标准，但xDS接口包含有较多实现相关内容，例如Listener, Filter等，这些限制是否会妨碍Envoy之外的其它兼容数据面实现？</li>
+<li>对硬件的控制能力：Service Mesh控制面可以提供对数据面软硬件的统一控制能力，以减少软硬件混合环境下的运维复杂度。</li>
+<li>应用层的发展：通过北向接口（控制面编程接口）提供出来的能力，可以开发各端到端的创新应用，这也许会成为Service Mesh的下一个热点。</li>
+</ul>
+
+<p>备注：本文来自于Service Mesher Meetup 成都站的话题分享 <a href="chrome-extension://oemmndcbldboiebfnladdacbdfmadadm/https://zhaohuabing.com/slides/what-can-service-mesh-learn-from-sdn-servicemesher-meetup-20191026.pdf">Service Mesh是下一代SDM吗？</a> 点击链接可以下载<a href="chrome-extension://oemmndcbldboiebfnladdacbdfmadadm/https://zhaohuabing.com/slides/what-can-service-mesh-learn-from-sdn-servicemesher-meetup-20191026.pdf">演讲稿</a>。</p>
 
 
                 
