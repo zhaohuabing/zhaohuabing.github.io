@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Service Mesh是下一代SDN吗？" />
-    <meta property="og:title" content="Service Mesh是下一代SDN吗？" />
-    <meta property="twitter:title" content="Service Mesh是下一代SDN吗？" />
+    <meta name="title" content="如何降低Istio服务网格中Envoy的内存开销" />
+    <meta property="og:title" content="如何降低Istio服务网格中Envoy的内存开销" />
+    <meta property="twitter:title" content="如何降低Istio服务网格中Envoy的内存开销" />
     
 
     
-    <meta name="description" content="Service Mesh和SDN(Software Defined Network) 的架构非常相似，这两者都采用了软件对网络进行管理和控制，也都包含控制面和数据面的概念。那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。">
-    <meta property="og:description" content="Service Mesh和SDN(Software Defined Network) 的架构非常相似，这两者都采用了软件对网络进行管理和控制，也都包含控制面和数据面的概念。那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。" />
-    <meta property="twitter:description" content="Service Mesh和SDN(Software Defined Network) 的架构非常相似，这两者都采用了软件对网络进行管理和控制，也都包含控制面和数据面的概念。那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh可以从SDN的发展历史中借鉴哪些经验？本文将就这些问题进行一一探讨。" />
+    <meta name="description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。">
+    <meta property="og:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    <meta property="twitter:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Service Mesh是下一代SDN吗？-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>如何降低Istio服务网格中Envoy的内存开销-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2019-10-26-what-can-service-mesh-learn-from-sdn/">
+    <link rel="canonical" href="/post/2019-11-15-envoy-memory-optimize/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -187,22 +187,22 @@
                             Istio
                         </a>
                         
-                        <a class="tag" href="/tags/sdn" title="SDN">
-                            SDN
+                        <a class="tag" href="/tags/envoy" title="Envoy">
+                            Envoy
                         </a>
                         
                     </div>
-                    <h1>Service Mesh是下一代SDN吗？</h1>
-                    <h2 class="subheading">从SDN看Service Mesh的发展</h2>
+                    <h1>如何降低Istio服务网格中Envoy的内存开销</h1>
+                    <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
                         
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Saturday, October 26, 2019
+                        Friday, November 15, 2019
                         
-                            <span id="/post/2019-10-26-what-can-service-mesh-learn-from-sdn/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2019-11-15-envoy-memory-optimize/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -364,222 +364,83 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
 <ul>
-<li><a href="#传统网络面临的挑战">传统网络面临的挑战</a></li>
-<li><a href="#sdn如何解决传统网络的问题">SDN如何解决传统网络的问题</a></li>
-<li><a href="#微服务面临的问题">微服务面临的问题</a></li>
-<li><a href="#service-mesh是下一代sdn吗">Service Mesh是下一代SDN吗？</a></li>
-<li><a href="#统一管理硬件设备和envoy">统一管理硬件设备和Envoy</a></li>
-<li><a href="#利用控制面接口开发应用">利用控制面接口开发应用</a></li>
-<li><a href="#总结-他山之石-可以攻玉">总结：他山之石，可以攻玉</a></li>
+<li><a href="#istio服务网格中envoy的内存占用">Istio服务网格中Envoy的内存占用</a></li>
+<li><a href="#tcmalloc预留系统内存过大">TCMalloc预留系统内存过大</a></li>
+<li><a href="#使用namespace和sidecar进一步优化envoy内存占用">使用namespace和sidecar进一步优化Envoy内存占用</a>
+<ul>
+<li><a href="#按nampese对配置进行隔离">按nampese对配置进行隔离</a></li>
+</ul></li>
+<li><a href="#参考文档">参考文档</a></li>
 </ul>
 </nav>
                 
                 
 
-<p>如果具有通信或者网络行业的知识背景，那么你对SDN(Software Defined Network)一定不会陌生。你也许已经注意到，近来在微服务领域兴起的Service Mesh和SDN(Software Defined Network) 非常相似，这两者都采用了软件对网络进行管理和控制，也都采用了包含控制面和数据面的类似架构。</p>
+<h1 id="istio服务网格中envoy的内存占用">Istio服务网格中Envoy的内存占用</h1>
 
-<p>那么Service Mesh和SDN有什么关系？Service Mesh是下一代的SDN吗？ Service Mesh是否可以从SDN的发展历史中借鉴一些经验？本文将就这些问题进行一一探讨。</p>
+<p>最近在进行Istio商用部署准备时发现了一个比较严重的问题，Envoy的内存占用过大，下面是在我环境中的一个实测数据：</p>
 
-<h1 id="传统网络面临的挑战">传统网络面临的挑战</h1>
-
-<p>首先我们来回顾一下SDN的起源。传统的IP网络是一个分布式的无中心架构，各个网络设备包含完整的控制面和数据面，单个设备通过网络协议探测网络中其他设备的状态，自主决定如何对流量进行路由。该架构的好处是容错性强，即使网络局部出现故障，整个网络也可以自主恢复，不会影响整个网络的运行。
-
-<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/network-devices.svg" alt="在传统的网络架构下，控制面和数据面位于同一设备中"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/network-devices.svg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>在传统的网络架构下，控制面和数据面位于同一设备中</p>
-      </figcaption>
-  </figure>
-</div>
-</p>
-
-<p>这种去中心的架构在基于文本和图片的web浏览器应用时代运作良好，但随着互联网业务的爆炸式增长，各种各样的业务纷纷承载在了IP网络上，包括各种实时业务如语音视频通话，对网络提出了新的挑战。</p>
+<p>Envoy配置中的Listener和Cluster数量</p>
 
 <ul>
-<li>缺少网络质量保证： 绝大多数IP网络都是基于无连接的，只有基于大带宽的粗放带宽保障措施，缺乏质量保证和监控，业务体验较差。</li>
-<li>低效的业务部署： 网络配置是通过命令行或者网管、由管理员手工配置到网络设备上，并且各种网络设备之间的控制命令互不兼容，导致业务的部署非常低效。</li>
-<li>缓慢的业务适应： 业务由硬件实现，导致新业务的开发周期过长。需要持续数年的特性和架构调整、引入新设备，才能推出新的业务，无法快速适应市场，满足用户的需求。</li>
+<li>Listener数量  175</li>
+<li>Cluster数量   325</li>
+<li>endpoint数量  466</li>
 </ul>
 
-<h1 id="sdn如何解决传统网络的问题">SDN如何解决传统网络的问题</h1>
+<p>内存占用情况</p>
 
-<p>为了应对这些问题，提出了SDN的解决方案，SDN的架构如下图所示：</p>
+<pre><code class="language-bash">$ sudo docker stats 2e8fb
+CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
+2e8fb               0.75%               105.9 MiB / 256 MiB   41.39%              0 B / 0 B           0 B / 0 B           165
+</code></pre>
 
+<p>从上面的数据可以看到，在一个有325个cluster和175个Listener的服务网格中，一个Envoy的实际内存占用量达到了100M左右；网格中一共有466个实例，则所有Envoy占用的内存达到了466*100M=46.6G，这些增加的内存消耗是一个不容小视的数据。</p>
 
+<h1 id="tcmalloc预留系统内存过大">TCMalloc预留系统内存过大</h1>
 
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn.png" alt="SDN架构"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn.png" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>SDN架构</p>
-      </figcaption>
-  </figure>
-</div>
+<p>根据<a href="https://istio.io/docs/concepts/performance-and-scalability/#cpu-and-memory">Istio官方文档</a>，Envoy占用的内存数量和其配置状态相关，和请求处理速率无关。在一个较大的namespace中，Envoy大约占用50M内存。而多大为“较大”，Istio官方文档并未给出一个明确的数据。</p>
 
+<p>可以通过Envoy的管理端口查看其内存分配的详细情况：</p>
 
-<p>从图中可以看到，SDN从下至上划分为三层体系结构：</p>
+<pre><code class="language-bash">$ sudo docker exec 2e8fb curl http://127.0.0.1:15000/memory
+{
+ &quot;allocated&quot;: &quot;50315720&quot;,                //Envoy实际占用内存
+ &quot;heap_size&quot;: &quot;102637568&quot;,               //TCMalloc预留的系统内存
+ &quot;pageheap_unmapped&quot;: &quot;4603904&quot;,
+ &quot;pageheap_free&quot;: &quot;9183232&quot;,
+ &quot;total_thread_cache&quot;: &quot;27784296&quot;
+}
+</code></pre>
+
+<p>各个指标的说明参加<a href="https://www.envoyproxy.io/docs/envoy/latest/api-v2/admin/v2alpha/memory.proto.html">Envoy文档</a>。</p>
+
+<p>从上面的数据可以看到Envoy真正使用的内存为50M左右，和官方文档一致。但Envoy采用了<a href="https://gperftools.github.io/gperftools/tcmalloc.html">TCMalloc</a>作为内存管理器，TCMallocd的内存分配效率比glibc的malloc更高，但会预留系统内存，导致程序占用内存大于其实际所需内存。从前面的Envoy admin 接口的输出可以看到TCMalloc预留的内存为100M左右，远远大于了Envoy实际所需的内存数量。</p>
+
+<p>根据Envoy的实际内存占用情况，将container的最大内存限制调整为60M后再运行，Envoy可以正常启动。再次用docker stat命令查看，其消耗的内存也在60M以内。</p>
+
+<h1 id="使用namespace和sidecar进一步优化envoy内存占用">使用namespace和sidecar进一步优化Envoy内存占用</h1>
+
+<p>即是将内存降低到50M，在一些对资源要求比较严格的环境，例如边缘计算的场景中，网格中这些Envoy内存累加在一起也是不能接受的，因此需要想办法进一步降低Envoy的资源使用。</p>
+
+<p>根据Envoy的这个github issue <a href="https://github.com/envoyproxy/envoy/issues/4196">Per listener and per cluster memory overhead is too high #4196</a> 和<a href="https://istio.io/docs/concepts/performance-and-scalability/#cpu-and-memory">Istio</a>文档可以得知，Envoy占用的内存和其配置的Listener和Cluster个数是强相关的，因此一个自然的想法就是通过减少Pilot为Envoy创建的Listener和Cluster数量来降低Envoy的内存开销。</p>
+
+<h2 id="按nampese对配置进行隔离">按nampese对配置进行隔离</h2>
+
+<p>在Pilot 1.3中，已经按照namespace对Service进行了隔离，Pilot缺省只会为Envoy创建同一个namespace中的Service相关的Listener和Cluster。该策略一定程度上减少了Envoy中的Listener和Cluster数量，但还是太过于粗犷。</p>
+
+<p>在一个微服务运用中，一个服务访问的其他服务一般不会超过10个，而一个namespace中</p>
+
+<p>&ndash;未完待续</p>
+
+<h1 id="参考文档">参考文档</h1>
 
 <ul>
-<li>基础设施层（Infrastructure Layer）： 是网络的数据平面，由各种网络设备构成，根据控制层下发的路由规则对网络数据进行处理和转发。</li>
-<li>控制层（Control Layer）： 是一个逻辑上集中的控制平面，维护了整个网络的信息，如网络拓扑和状态信息等，控制层根据业务逻辑生成配置信息下发给基础设施层，以管理整个网络的运行。</li>
-<li>应用层（Application Layer）：通过控制层提供的编程接口，可以编写各种应用利用控制层的能力对网络进行灵活的配置。</li>
+<li><a href="https://www.envoyproxy.io/docs/envoy/latest/api-v2/admin/v2alpha/memory.proto.html">Envoy Admin: Memory</a></li>
+<li><a href="https://gperftools.github.io/gperftools/tcmalloc.html">TCMalloc : Thread-Caching Malloc</a></li>
+<li><a href="https://istio.io/docs/concepts/performance-and-scalability/#cpu-and-memory">Istio Performance and Scalability</a></li>
+<li><a href="https://github.com/envoyproxy/envoy/issues/4196">Per listener and per cluster memory overhead is too high #4196</a></li>
 </ul>
-
-<p>SDN的不同层次之间采用标准接口进行通信：</p>
-
-<ul>
-<li>南向接口（Southbound API）：数据面和控制面的接口，控制面通过该接口将路由和配置下发到数据面，该接口一般使用OpenFlow、NetConf等网络协议。标准的南向接口解耦了控制层和基础设施层，只要支持标准南向接口的交换机都可以接入到SDN网络中，这样基础设施层可以大量采用支持OpenFlow协议的白盒交换机，解除了厂商锁定，降低了网络成本。</li>
-<li>北向接口（Northbound API）：控制面向应用层提供的可编程接口，例如RestConf接口。利用控制面提供的编程接口，新的网络业务可以通过存软件的方式实现，大大加快了推出新业务的周期。</li>
-</ul>
-
-<h1 id="微服务面临的问题">微服务面临的问题</h1>
-
-<p>在一个微服务系统中，各个独立的微服务之间采用远程调用进行通信。服务发现，请求路由等服务通信相关的功能以代码库的形式存在于各个微服务之中。</p>
-
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/microservice.svg" alt="微服务之间的通信"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/microservice.svg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>微服务之间的通信</p>
-      </figcaption>
-  </figure>
-</div>
-
-
-<p>该架构也存在和通信网络类似的问题：</p>
-
-<ul>
-<li>不同语言/框架的代码库版本中关于服务通信相关的配置完全不同，需要对不同的微服务单独进行配置，导致微服务的运维非常困难。</li>
-<li>应用和服务通信之间的代码耦合导致修改或者增加新的服务通信功能需要修改并升级所有的微服务，如果需要引入新的运维功能，例如支持灰度发布等，则需要修改并升级所有微服务，代价非常大。</li>
-</ul>
-
-<h1 id="service-mesh是下一代sdn吗">Service Mesh是下一代SDN吗？</h1>
-
-<p>从上面的分析可以看出，SDN和Service Mesh面临的是类似的问题，既然都是解决类似的问题，那么Service Mesh是否可以看作下一代的SDN呢？</p>
-
-<p>我认为答案是否定的，因为两者之间还是有显著的不同。SDN主要面对L1到L4层，即网络层的基本转发和控制功能；Service Mesh则主要面对L7层及以上，用于处理应用层的服务发现，服务路由等功能，但两者采用了相似的理念，我们可以把Service Mesh看作SDN的理念在应用层的扩展和实践。</p>
-
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn-vs-service-mesh.jpg" alt="SDN和Service Mesh出于网络协议中的不同层次"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn-vs-service-mesh.jpg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>SDN和Service Mesh出于网络协议中的不同层次</p>
-      </figcaption>
-  </figure>
-</div>
-
-
-<p>Service Mesh可以借鉴SDN的架构来解决微服务系统的服务通信的相关问题，如下图所示：
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/service-mesh.jpg" alt="Service Mesh架构"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/service-mesh.jpg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>Service Mesh架构</p>
-      </figcaption>
-  </figure>
-</div>
-</p>
-
-<p>我们可以看到，基本上所有的Service Mesh实现都采用了类似上图的的架构，包括<a href="https://istio.io">Istio</a>，<a href="https://linkerd.io">Linkerd</a>，<a href="https://kuma.io">Kuma</a>等。</p>
-
-<p>在该架构中，数据面承担的是一个白盒交换机的角色，不管何种实现，其功能都是类似的，不存在太多争议，目前envoy已经成为数据面的标准实现，因此数据面和控制面之间也采用了Envoy的xDS v2作为标准的数据面协议。</p>
-
-<p>各个Service Mesh项目的创新和争夺的战场主要在控制面上，Microsoft等公司提出了采用SMI（Service Mesh Interface）作为控制面的标准接口，虽然SMI得到了Linkerd，HashiCorp, Solo.io等一干公司的支持，但目前影响最大的Service Mesh项目Istio还未对此进行表态。缺乏统一的控制面标准，控制面之上的应用层生态目前还没有发展起来，基本没有看到有项目对应用层进行宣传。</p>
-
-<h1 id="统一管理硬件设备和envoy">统一管理硬件设备和Envoy</h1>
-
-<p>SDN给Service Mesh带来的一个重要启发是控制面对数据面各种网络设备的统一控制，那么是否可以采用Service Mesh控制面对硬件设备和软件代理进行统一控制呢？</p>
-
-<p>F5网站上提供了一个<a href="https://aspenmesh.io/2019/03/expanding-service-mesh-without-envoy/">F5 Big IP和Istio集成的案例</a>。在该案例中，
-Service Mesh中的微服务需要和一个外部数据库系统进行通信，为了对数据库进行保护，在数据库前放置了一个F5 Big IP设备作为反向代理，并进行下述配置：</p>
-
-<ul>
-<li>Service Mesh中的微服务通过F5 Big IP作为代理和后端的数据库通信</li>
-<li>F5 Big IP和微服务之间采用mTLS，F5 Big IP和数据库之间采用Plain TCP</li>
-<li>F5 Big IP采用spiffe对微服务进行身份认证，只允许需要访问该数据库的微服务的请求通过</li>
-</ul>
-
-<p>F5的该案例证明了Service Mesh和F5设备之间集成的可能性，但是需要在F5 Big IP设备上进行一系列复杂的配置操作，包括开通服务端口，配置TLS证书，设置认证和访问策略等等。如果Service Mesh控制面可以将F5设备也纳入统一控制，通过控制面统一下发规则，则可以极大简化网络的配置工作，加快业务下发的敏捷性。
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/hardware-sidecar.jpg" alt="采用Service Mesh配置F5 Big IP"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/hardware-sidecar.jpg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>采用Service Mesh配置F5 Big IP</p>
-      </figcaption>
-  </figure>
-</div>
-</p>
-
-<h1 id="利用控制面接口开发应用">利用控制面接口开发应用</h1>
-
-<p>SDN的另一个优势是可以通过控制器提供的北向接口快速开发各种SDN应用，而不需要对硬件进行升级，这种模式加快了新业务上线的周期，鼓励各种创新业务蓬勃发展。目前Service Mesh在应用方面尚未有太多实践，但从SDN的发展历程来看，Service Mesh应用层有极大的发展空间。</p>
-
-<p>下图是一个利用控制面接口开发的用户业务订阅及SLA管理的APP示例：</p>
-
-<ol>
-<li>用户通过APP管理界面订阅服务，并设置SLA（服务水平协议），包括服务的请求次数，服务的响应时间等等</li>
-<li>APP将用户订阅及SLA约定转换为运维策略,调用控制面提供的编程接口下发给控制面</li>
-<li>控制面将运维策略转换为数据面标准协议下发给数据面的代理，在代理上，运维策略被转换为代理的配置和转发策略</li>
-<li>代理在收到用户请求时，根据用户标识对用户进行认证，并根据配置和路由策略对用户请求进行处理，例如根据SLA处理用户请求的限流策略，系统忙时优先转发高SLA等级的用户请求，等等。</li>
-</ol>
-
-
-
-<div class="box" >
-  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-    <div class="img">
-      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/user-ubscription.jpg" alt="Service Mesh应用：用户业务订阅及SLA管理"/>
-    </div>
-    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/user-ubscription.jpg" itemprop="contentUrl"></a>
-      <figcaption align="center">
-          <p>Service Mesh应用：用户业务订阅及SLA管理</p>
-      </figcaption>
-  </figure>
-</div>
-
-
-<p>上面只是一个非常简单的应用示例。通过对Service Mesh控制面提供的流量控制，安全策略，拓扑信息、性能指标等基本能力进行组合，并加以创新，可以创建大量端到端的高附加值业务，例如支持业务平滑升级的灰度发布，测试微服务系统健壮性的混沌测试，微服务的监控系统等等。</p>
-
-<h1 id="总结-他山之石-可以攻玉">总结：他山之石，可以攻玉</h1>
-
-<p>SDN和Service Mesh的出现都是为了解决类似的网络通信问题，两者都采用了“数据面+控制面”这种类似的架构，但位于网络协议的不同层次。Service Mesh并不是下一代的SDN，但通过借鉴SDN的发展经验，Service Mesh也许可以向下面这些方向发展：</p>
-
-<ul>
-<li>北向接口：北向接口面向业务和运维，具有较高的抽象层次，比较容易提取统一的控制面标准。目前已经有多个公司支持采用SMI作为统一的控制面标准。但SMI的发展也存在一些挑战，例如如何避免SMI成为不同Service Mesh实现之间的最小公共子集，如何扩展支持除HTTP之外的其它应用层协议？</li>
-<li>南向接口：Envoy的xDS v2已经成为了南向接口的事实标准，但xDS接口包含有较多实现相关内容，例如Listener, Filter等，这些限制是否会妨碍Envoy之外的其它兼容数据面实现？</li>
-<li>对硬件的控制能力：Service Mesh控制面可以提供对数据面软硬件的统一控制能力，以减少软硬件混合环境下的运维复杂度。</li>
-<li>应用层的发展：通过北向接口（控制面编程接口）提供出来的能力，可以开发各端到端的创新应用，这也许会成为Service Mesh的下一个热点。</li>
-</ul>
-
-<p>备注：本文来自于Service Mesher Meetup 成都站的话题分享 <a href="chrome-extension://oemmndcbldboiebfnladdacbdfmadadm/https://zhaohuabing.com/slides/what-can-service-mesh-learn-from-sdn-servicemesher-meetup-20191026.pdf">Service Mesh是下一代SDM吗？</a> 点击链接可以下载<a href="chrome-extension://oemmndcbldboiebfnladdacbdfmadadm/https://zhaohuabing.com/slides/what-can-service-mesh-learn-from-sdn-servicemesher-meetup-20191026.pdf">演讲稿</a>。</p>
 
 
                 
@@ -628,15 +489,10 @@ Service Mesh中的微服务需要和一个外部数据库系统进行通信，�
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2019-10-21-pilot-discovery-code-analysis/" data-toggle="tooltip" data-placement="top" title="Istio Pilot代码深度解析">&larr;
+                        <a href="/post/2019-10-26-what-can-service-mesh-learn-from-sdn/" data-toggle="tooltip" data-placement="top" title="Service Mesh是下一代SDN吗？">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2019-11-15-envoy-memory-optimize/" data-toggle="tooltip" data-placement="top" title="如何降低Istio服务网格中Envoy的内存开销">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
