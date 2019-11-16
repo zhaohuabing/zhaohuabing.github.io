@@ -371,6 +371,7 @@ $(function() {
 <li><a href="#按nampese对配置进行隔离">按nampese对配置进行隔离</a></li>
 <li><a href="#按服务访问关系进行细粒度隔离">按服务访问关系进行细粒度隔离</a></li>
 </ul></li>
+<li><a href="#总结">总结</a></li>
 <li><a href="#参考文档">参考文档</a></li>
 </ul>
 </nav>
@@ -487,7 +488,9 @@ sidecar.networking.istio.io/reviews created
 outbound|9080||ratings.default.svc.cluster.local::added_via_api::true
 </code></pre>
 
-<p>&ndash;未完待续</p>
+<h1 id="总结">总结</h1>
+
+<p>在Istio服务网格中，伴随应用部署的Envoy Sidecar导致了较大的内存占用。通过对Sidecar镜像的内存进行限制，并通过Pilot对Sidecar的缺省配置按照服务的实际关联关系进行细化调整，可以对Envoy的内存占用进行优化，减少Istio服务网格部署对内存的额外消耗。</p>
 
 <h1 id="参考文档">参考文档</h1>
 
