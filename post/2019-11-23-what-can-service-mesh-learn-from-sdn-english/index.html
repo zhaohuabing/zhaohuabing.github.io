@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="阿姆斯特丹浮光掠影" />
-    <meta property="og:title" content="阿姆斯特丹浮光掠影" />
-    <meta property="twitter:title" content="阿姆斯特丹浮光掠影" />
+    <meta name="title" content="What Can Service Mesh Learn from SDN?" />
+    <meta property="og:title" content="What Can Service Mesh Learn from SDN?" />
+    <meta property="twitter:title" content="What Can Service Mesh Learn from SDN?" />
     
 
     
-    <meta name="description" content="阿姆斯特丹浮光掠影">
-    <meta property="og:description" content="阿姆斯特丹浮光掠影" />
-    <meta property="twitter:description" content="阿姆斯特丹浮光掠影" />
+    <meta name="description" content="what is the relationship between Service Mesh and SDN — Is Service Mesh the next generation of SDN? What can Service Mesh learn from the experience of SDN? I’d like to share some of my own opinions in this article.">
+    <meta property="og:description" content="what is the relationship between Service Mesh and SDN — Is Service Mesh the next generation of SDN? What can Service Mesh learn from the experience of SDN? I’d like to share some of my own opinions in this article." />
+    <meta property="twitter:description" content="what is the relationship between Service Mesh and SDN — Is Service Mesh the next generation of SDN? What can Service Mesh learn from the experience of SDN? I’d like to share some of my own opinions in this article." />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>阿姆斯特丹浮光掠影-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>What Can Service Mesh Learn from SDN?-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2019-10-08-amsterdam/">
+    <link rel="canonical" href="/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -169,7 +169,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/2019-10-08-amsterdam/bike.jpg')
+        background-image: url('/img/2019-10-26-what-can-service-mesh-learn-from-sdn/background.jpg')
     }
 </style>
 <header class="intro-header">
@@ -179,26 +179,30 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/photograph" title="Photograph">
-                            Photograph
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
                         </a>
                         
-                        <a class="tag" href="/tags/amsterdam" title="Amsterdam">
-                            Amsterdam
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/sdn" title="SDN">
+                            SDN
                         </a>
                         
                     </div>
-                    <h1>阿姆斯特丹浮光掠影</h1>
-                    <h2 class="subheading">Three Days in Amsterdam</h2>
+                    <h1>What Can Service Mesh Learn from SDN?</h1>
+                    <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
                         
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Tuesday, October 8, 2019
+                        Saturday, November 23, 2019
                         
-                            <span id="/post/2019-10-08-amsterdam/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -355,270 +359,236 @@ $(function() {
                 post-container">
 
                 
-                <p>
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li><a href="#traditional-network">Traditional network</a></li>
+<li><a href="#how-sdn-solves-the-problem-of-traditional-network">How SDN solves the problem of traditional network</a></li>
+<li><a href="#challenges-of-microservices">Challenges of Microservices</a></li>
+<li><a href="#is-service-mesh-the-next-generation-sdn">Is Service Mesh the next generation SDN?</a></li>
+<li><a href="#manage-hardware-devices-with-service-mesh">Manage hardware devices with Service Mesh</a></li>
+<li><a href="#service-mesh-applications">Service Mesh applications</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</nav>
+                
+                
+
+<p>Service Mesh is yet another emerging fancy tech word in the field of microservices recently. If you have a telecommunication or networking background, you may have already noticed that Service Mesh and SDN (Software Defined Network) look similar. Both of them use a software layer to manage and control the network infrastructure, and they also share the same architecture, which consists of a control plane and a data plane.</p>
+
+<p>So what is the relationship between Service Mesh and SDN — Is Service Mesh the next generation of SDN? What can Service Mesh learn from the experience of SDN? I’d like to share some of my own opinions in this article.</p>
+
+<h1 id="traditional-network">Traditional network</h1>
+
+<p>First, let’s look into a little bit of the history of networks and how SDN is invented.
+A traditional network is a distributed, decentralized architecture. Each switch or router has its embedded control plane and this embedded control plane decides how to route the traffic on its own. They do coordinate with each other via some routing protocols, but there is no central management point responsible for the end to end route decisions.</p>
+
+<p>The advantage of this architecture is that it is highly fault-tolerant. If a part of the network fails, the entire network can also work with little or even no interruption of the application traffic, because oftentimes the devices can avoid the failed path and find another alternative route by themselves.</p>
+
+
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
-
-<div class="gallery caption-position-bottom caption-effect-slide hover-effect-zoom hover-transition" itemscope itemtype="http://schema.org/ImageGallery">
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//bike-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike-thumb.jpg" alt="Bike" />
-				    </div>
-			      <figcaption>
-		          <p>Bike</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//bike1.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike1.jpg" alt="Bike1" />
-				    </div>
-			      <figcaption>
-		          <p>Bike1</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike1.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//bike2-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike2-thumb.jpg" alt="Bike2" />
-				    </div>
-			      <figcaption>
-		          <p>Bike2</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//bike2.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//boat-in-the-dawn-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//boat-in-the-dawn-thumb.jpg" alt="Boat in the dawn" />
-				    </div>
-			      <figcaption>
-		          <p>Boat in the dawn</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//boat-in-the-dawn.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//canal-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//canal-thumb.jpg" alt="Canal" />
-				    </div>
-			      <figcaption>
-		          <p>Canal</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//canal.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//central-station-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//central-station-thumb.jpg" alt="Central station" />
-				    </div>
-			      <figcaption>
-		          <p>Central station</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//central-station.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//delft-blue-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//delft-blue-thumb.jpg" alt="Delft blue" />
-				    </div>
-			      <figcaption>
-		          <p>Delft blue</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//delft-blue.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//house-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//house-thumb.jpg" alt="House" />
-				    </div>
-			      <figcaption>
-		          <p>House</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//house.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//house1-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//house1-thumb.jpg" alt="House1" />
-				    </div>
-			      <figcaption>
-		          <p>House1</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//house1.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//house2-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//house2-thumb.jpg" alt="House2" />
-				    </div>
-			      <figcaption>
-		          <p>House2</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//house2.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//old-catholic-church.jpeg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//old-catholic-church.jpeg" alt="Old catholic church" />
-				    </div>
-			      <figcaption>
-		          <p>Old catholic church</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//old-catholic-church.jpeg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//rijks-museum-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//rijks-museum-thumb.jpg" alt="Rijks museum" />
-				    </div>
-			      <figcaption>
-		          <p>Rijks museum</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//rijks-museum.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//view-from-the-clouds-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//view-from-the-clouds-thumb.jpg" alt="View from the clouds" />
-				    </div>
-			      <figcaption>
-		          <p>View from the clouds</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//view-from-the-clouds.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill-thumb.jpg" alt="Windmill" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill1-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill1-thumb.jpg" alt="Windmill1" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill1</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill1.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill3-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill3-thumb.jpg" alt="Windmill3" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill3</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill3.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill4-thumb.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill4-thumb.jpg" alt="Windmill4" />
-				    </div>
-			      <figcaption>
-		          <p>Windmill4</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//windmill4.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
-				<div class="box">
-				  <figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
-				    <div class="img" style="background-image: url('https://zhaohuabing.com/img/2019-10-08-amsterdam//wooden-shoes.jpg');" >
-				      <img itemprop="thumbnail" src="https://zhaohuabing.com/img/2019-10-08-amsterdam//wooden-shoes.jpg" alt="Wooden shoes" />
-				    </div>
-			      <figcaption>
-		          <p>Wooden shoes</p>
-			      </figcaption>
-				    <a href="https://zhaohuabing.com/img/2019-10-08-amsterdam//wooden-shoes.jpg" itemprop="contentUrl"></a>
-				  </figure>
-				</div>
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-11-23-what-can-service-mesh-learn-from-sdn-english/network-devices.png" alt="Decentralized Traditional Network"/>
+    </div>
+    <a href="/img/2019-11-23-what-can-service-mesh-learn-from-sdn-english/network-devices.png" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Decentralized Traditional Network</p>
+      </figcaption>
+  </figure>
 </div>
- 
+
+
+<p>This decentralized architecture works well with the HTTP based web applications, which is mainly some web page with pictures and texts and users don’t care much about a small delay when loading the page. But with the explosive growth of the Internet, new kinds of web applications emerged, and they have different demands for the network. For example, video calls can tolerate minor signal loss but require very little latency, while online games require a very stable and fast network but may not need much bandwidth. The traditional network is just not flexible enough to match these demands:</p>
+
+<ul>
+<li>Lack of network QoS assurance: Because each device makes its own routing decision, there is no way to achieve end-to-end QoS service assurance in a traditional network.</li>
+<li>Inefficient service deployment: Devices are manually configured through command lines or network management systems, and the configurations are incompatible with each other. As a result, the service deployment is very inefficient.</li>
+<li>Slow business innovation: Coupling of control plane and data plane in the hardware layer results in a long development cycle for new services. To introduce a new service, it often takes several years to design, develop and manufacture new network gears.</li>
+</ul>
+
+<h1 id="how-sdn-solves-the-problem-of-traditional-network">How SDN solves the problem of traditional network</h1>
+
+<p>SDN is intended to address these issues of traditional networks. The architecture of SDN is shown as below:</p>
 
 
 
-  
-
-
-<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="/js/load-photoswipe.js"></script>
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe.min.css" integrity="sha256-sCl5PUOGMLfFYctzDW3MtRib0ctyUvI9Qsmq2wXOeBY=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/default-skin/default-skin.min.css" integrity="sha256-BFeI1V+Vh1Rk37wswuOYn5lsTcaU96hGaI7OUVCLjPc=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe.min.js" integrity="sha256-UplRCs9v4KXVJvVY+p+RSo5Q4ilAUXh7kpjyIP5odyc=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.1/photoswipe-ui-default.min.js" integrity="sha256-PWHOlUzc96pMc8ThwRIXPn8yH4NOLu42RQ0b9SpnpFk=" crossorigin="anonymous"></script>
-
-
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-<div class="pswp__bg"></div>
-
-<div class="pswp__scroll-wrap">
-    
-    <div class="pswp__container">
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
-      <div class="pswp__item"></div>
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn.png" alt="SDN Architecture"/>
     </div>
-    
-    <div class="pswp__ui pswp__ui--hidden">
-    <div class="pswp__top-bar">
-      
-      <div class="pswp__counter"></div>
-      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-      <button class="pswp__button pswp__button--share" title="Share"></button>
-      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-      
-      
-      <div class="pswp__preloader">
-        <div class="pswp__preloader__icn">
-          <div class="pswp__preloader__cut">
-            <div class="pswp__preloader__donut"></div>
-          </div>
-        </div>
-      </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn.png" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>SDN Architecture</p>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>As you can see from the figure, SDN is a layered architecture:</p>
+
+<ul>
+<li>Infrastructure Layer: It is the data path that is responsible for handling and forwarding the packets.</li>
+<li>Control Layer: It is a logically central point that directing traffic across the whole network. The control layer generates routing tables and sends it to the infrastructure layer.</li>
+<li>Application Layer: Applications that use services from the control layer to accomplish various business requirements.</li>
+</ul>
+
+<p>Standard interfaces are used between different layers of SDN:</p>
+
+<ul>
+<li>Southbound API: The standard southbound interface decouples the control layer and the infrastructure layer. This interface uses some network protocols such as OpenFlow and NetConf.</li>
+<li>Northbound API: With the programmable northbound API provided by the control layer, new kinds of services can be realized purely by software applications, which profoundly accelerates the time to market of new services.</li>
+</ul>
+
+<h1 id="challenges-of-microservices">Challenges of Microservices</h1>
+
+<p>In a microservice system, remote calls are used for inter-service communication. The communication logic such as service discovery, load balancing, Circuit breaker, etc., is normally a code library and compiled into the service binary.</p>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-11-23-what-can-service-mesh-learn-from-sdn-english/microservice.png" alt="Microservices Communication"/>
     </div>
-    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-      <div class="pswp__share-tooltip"></div>
+    <a href="/img/2019-11-23-what-can-service-mesh-learn-from-sdn-english/microservice.png" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Microservices Communication</p>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>Looks quite familiar, right? This microservice system has similar problems to a traditional network:</p>
+
+<ul>
+<li>Since microservices are polyglot, we need different libs to handle inter-service communication for different languages, and the configuration of these libs usually are incompatible with each other, which makes the operation of these microservices very difficult.</li>
+<li>The library solution also results in the tight coupling between the business logic and service communication infrastructure. If we need to fix a bug or introduce a new feature in the communication layer, all services need to be modified and upgraded, which is a big cost in a production system.</li>
+</ul>
+
+<h1 id="is-service-mesh-the-next-generation-sdn">Is Service Mesh the next generation SDN?</h1>
+
+<p>From the above analysis, we can see that SDN and Service Mesh are introduced to solve similar problems. So, you might be wondering: Is Service Mesh the next generation of SDN?</p>
+
+<p>OK, I think it’s yes, and no. Yes because they are all based on the same concept of separated control plane and data plane, no because they work on different OSI network layers. SDN mainly works on the L1 to L4, whereas service Mesh focuses on the L7 layer and above.</p>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn-vs-service-mesh.jpg" alt="Comparison between SDN and Service Mesh"/>
     </div>
-    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-    </button>
-    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-    </button>
-    <div class="pswp__caption">
-      <div class="pswp__caption__center"></div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/sdn-vs-service-mesh.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Comparison between SDN and Service Mesh</p>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>As I mentioned before, Service Mesh uses an SDN like architecture to solve the microservice communication problems.
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/service-mesh.jpg" alt="Service Mesh Architecture"/>
     </div>
-    </div>
-    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/service-mesh.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Service Mesh Architecture</p>
+      </figcaption>
+  </figure>
 </div>
 </p>
+
+<p>Almost all of the popular Service Mesh projects on the table are implemented like this, including<a href="https://istio.io">Istio</a>,<a href="https://linkerd.io">Linkerd</a>,<a href="https://kuma.io">Kuma</a>,etc.</p>
+
+<p>In this architecture, the data plane takes the role of the white-box switch in SDN. At present, the envoy is the most popular data plane implementation, so Envoy’s xDS v2 interface is used as the de-facto data plane protocol.</p>
+
+<p>Most of the innovation and competition happens on the control plane. As an attempt to algin various control plane implementations, Microsoft initiated the SMI (Service Mesh Interface) control plane interface. SMI has also been supported by some other service mesh players such as Linkerd, Consul connect and Gloo, but interestingly, as one of the most important Service Mesh projects, Istio has not yet expressed its opinion. Due to the fact of lacking a unified control plane interface, there are not many innovations in the application layer now.</p>
+
+<h1 id="manage-hardware-devices-with-service-mesh">Manage hardware devices with Service Mesh</h1>
+
+<p>The SDN control plane can manage various devices, no matter it’s a hardware white box or a software vSwitch. This is an important inspiration for Service Mesh. Can we use Service Mesh control plane to manage hardware devices as well?</p>
+
+<p>There is an experiment of <a href="https://aspenmesh.io/2019/03/expanding-service-mesh-without-envoy/">F5 BIG-IP and Istio integration</a>. Some services in Service Mesh need to access data in a legacy database system, which is in another network. To protect the database, an F5 BIG-IP is placed in front of the database as an edge proxy:</p>
+
+<ul>
+<li>Services in the mesh can only access the legacy database via the F5 BIG-IP</li>
+<li>Enforce mTLS for the connection between F5 BIG-IP and services</li>
+<li>F5 BIG-IP uses SPIFFE identity to authenticate microservices</li>
+</ul>
+
+<p>This experiment proves that hardware devices can be integrated with service mesh to deliver a valuable business solution. But in this case, we have to manually configure the F5 BIG IP side, including opening the ports for the DB, configuring TLS certificates, setting authentication and access policies, etc. Imagine that if we could just use the Service Mesh control plane to send the needed configuration to the F5 device, the service provisioning process would be profoundly simplified.
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/hardware-sidecar.jpg" alt="F5 BIG-IP Managed by Service Mesh Control Plane"/>
+    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/hardware-sidecar.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>F5 BIG-IP Managed by Service Mesh Control Plane</p>
+      </figcaption>
+  </figure>
+</div>
+</p>
+
+<h1 id="service-mesh-applications">Service Mesh applications</h1>
+
+<p>Just like SDN, Service Mesh can also expose its capabilities through a programmable API interface to the application layer. At present, Service Mesh is still in its infancy and there are not many innovations in the application layer, but from the history of SDN, we can see that there is a big room for us to fill in the application layer of Service Mesh.</p>
+
+<p>Below is an example of Service Mesh applications: Service subscription and SLA management：</p>
+
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/user-ubscription.jpg" alt="Service Mesh application: service subscription and SLA management"/>
+    </div>
+    <a href="/img/2019-10-26-what-can-service-mesh-learn-from-sdn/user-ubscription.jpg" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Service Mesh application: service subscription and SLA management</p>
+      </figcaption>
+  </figure>
+</div>
+
+
+<ol>
+<li>The user uses the APP to subscribes to services and sets the SLA (Service Level Agreement) of his subscription, including the number of requests per second, the response time, etc.</li>
+<li>The APP calls the Service Mesh control plane API to create the corresponding routing rule and policy.</li>
+<li>The control plane converts the routing rule and operation policy into proxy configuration and sends the configuration to proxies via data plane protocol.</li>
+<li>When receiving the user request, the proxy gets the user identity from the request and processes the request accordingly. For example, if the proxy receives more traffic than the system can handle, the requests from a user of higher SLA are forwarded to the service first, and lower SLA requests may be dropped.</li>
+</ol>
+
+<p>It’s just a very simple example of Service Mesh applications. Leveraging the basic capabilities provided by the service Mesh control plane, including security policy, mesh topology, and request metrics, we can create a large number of value-added services, such as canary deployment, Chaos testing, service monitoring system, etc.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Both SDN and Service Mesh are invented to solve similar problems, but they aim at different network layers. Service Mesh is not the next generation of SDN, but Service Mesh can learn from the experience of SDN and evolve in the following directions:</p>
+
+<ul>
+<li>Northbound interface: The northbound interface of Service Mesh is a high-level abstraction and is relatively easy to work out a unified standard. SMI (Service Mesh Interface) has been proposed as a standard for the northbound interface. However, there are some potential problems in SMI, such as how to avoid SMI becoming the smallest common subset of different Service Mesh implementations? How to extend SMI to support other application layer protocols besides HTTP?</li>
+<li>Southbound interface: Envoy’s xDS has become the de-facto standard for southbound interfaces, but the xDS interface has some implementation-specific details in its protocol, such as Listener, Filter, etc. It’s better to replace these with more abstract concepts so the southbound interface can be more easily adopted by other data plane implementations.</li>
+<li>Hardware management: The Service Mesh control plane could provide unified management for both the software and hardware proxies. This approach would significantly reduce operational costs in a complex environment.</li>
+<li>Innovations in the application layer: the mesh capabilities exposed by the northbound interface could drive innovations in the application layer, which may become the next hot spot of Service Mesh.</li>
+</ul>
+
+<h1 id="references">References</h1>
+
+<ul>
+<li>Part of this post is inspired by Eric Brewer’s talk on Service Mesh day 2019 ( <a href="https://www.youtube.com/watch?v=do-PrVi0ifk">https://www.youtube.com/watch?v=do-PrVi0ifk</a>)</li>
+<li>Expanding Service Mesh Without Envoy ( <a href="https://aspenmesh.io/expanding-service-mesh-without-envoy/">https://aspenmesh.io/expanding-service-mesh-without-envoy/</a>)</li>
+</ul>
 
 
                 
@@ -627,15 +597,10 @@ $(function() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2019-07-02-using-opentracing-with-istio-english/" data-toggle="tooltip" data-placement="top" title="Enhance Istio Distributed Tracing with OpenTracing">&larr;
+                        <a href="/post/2019-11-15-envoy-memory-optimize/" data-toggle="tooltip" data-placement="top" title="如何降低Istio服务网格中Envoy的内存开销">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2019-10-21-pilot-discovery-code-analysis/" data-toggle="tooltip" data-placement="top" title="Istio Pilot代码深度解析">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 

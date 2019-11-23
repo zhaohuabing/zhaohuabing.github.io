@@ -6,10 +6,19 @@
     <description>Recent content in Istio on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 15 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 23 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>What Can Service Mesh Learn from SDN?</title>
+      <link>https://zhaohuabing.com/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/</link>
+      <pubDate>Sat, 23 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/</guid>
+      <description>Service Mesh is yet another emerging fancy tech word in the field of microservices recently. If you have a telecommunication or networking background, you may have already noticed that Service Mesh and SDN (Software Defined Network) look similar. Both of them use a software layer to manage and control the network infrastructure, and they also share the same architecture, which consists of a control plane and a data plane. So</description>
+    </item>
     
     <item>
       <title>如何降低Istio服务网格中Envoy的内存开销</title>

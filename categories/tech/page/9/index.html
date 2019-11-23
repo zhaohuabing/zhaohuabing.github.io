@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-	<meta name="generator" content="Hugo 0.56.0" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Huabing Blog-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Tech-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/">
+    <link rel="canonical" href="/categories/tech/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -198,123 +197,23 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/external_system_auth/">
+    <a href="https://zhaohuabing.com/2017/11/04/istio-install_and_example/">
         <h2 class="post-title">
-            微服务安全沉思录之三
+            Istio及Bookinfo示例程序安装试用笔记
         </h2>
 	
         <h3 class="post-subtitle">
-            外部系统访问控制
+            手把手教你从零搭建Istio及Bookinfo示例程序
         </h3>
 	
         <div class="post-content-preview">
 	
-            一些外部的第三方系统可能需要访问系统内部的微服务。例如在网上商店的例子中，外部的推荐服务可能需要接入系统，以获取商店的商品目录信息。相对于内部服务之间的访问而言，外部系统的访问需要进行严格的安全控制。
+            Istio是来自Google，IBM和Lyft的一个Service Mesh（服务网格）开源项目，是Google继Kubernetes之后的又一大作,本文将演示如何从裸机开始从零搭建Istio及Bookinfo示例程序。
         
         </div>
     </a>
     <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/service_2_service_auth/">
-        <h2 class="post-title">
-            微服务安全沉思录之二
-        </h2>
-	
-        <h3 class="post-subtitle">
-            服务间认证与鉴权
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问,根据应用系统数据敏感程度不同，对于系统内微服务的访问也需要进行相应的安全控制。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/22/user_authentication_authorization/">
-        <h2 class="post-title">
-            微服务安全沉思录之一
-        </h2>
-	
-        <h3 class="post-subtitle">
-            用户访问认证与鉴权
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">
-        <h2 class="post-title">
-            Istio Sidecar自动注入原理
-        </h2>
-	
-        <h3 class="post-subtitle">
-            Kubernetes webhook扩展机制解析
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/20/cryptocurrency_week1_scroogecoin/">
-        <h2 class="post-title">
-            Programming Assignment: Scrooge Coin
-        </h2>
-	
-        <h3 class="post-subtitle">
-            Bitcoin and Cryptocurrency Technologies-Week 1
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            Finally, I got to the most exciting part of week 1 lectures-the programming assignment!
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by 赵化冰 Sunday, May 20, 2018
+    Posted by 赵化冰 Saturday, November 4, 2017
     
     
     </p>
@@ -329,13 +228,9 @@
 <ul class="pager">
     
     <li class="previous">
-        <a href="/page/6/">&larr; Newer Posts</a>
+        <a href="/categories/tech/page/8/">&larr; Newer Posts</a>
     </li>
     
-    
-    <li class="next">
-        <a href="/page/8/">Older Posts &rarr;</a>
-    </li>
     
 </ul>
 
@@ -509,7 +404,7 @@
            <ul class="list-inline"> 
                
                <li>
-                   <a href='/index.xml' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                   <a href='/categories/tech/index.xml' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                        <span class="fa-stack fa-lg">
                            <i class="fa fa-circle fa-stack-2x"></i>
                            <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
@@ -625,7 +520,7 @@
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href='/index.xml' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                       <a href='/categories/tech/index.xml' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
