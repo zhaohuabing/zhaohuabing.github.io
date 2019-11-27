@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HA on Huabing Blog</title>
+    <link>https://zhaohuabing.com/tags/ha/</link>
+    <description>Recent content in HA on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Nov 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/tags/ha/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>VIP的实现原理</title>
+      <link>https://zhaohuabing.com/post/2019-11-27-vip/</link>
+      <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2019-11-27-vip/</guid>
+      <description>什么是VIP？ VIP即Virtual IP Address，是实现HA（高可用）系统的一种方案，高可用的目的是通过技术手段避免因为系统出现故障而导</description>
+    </item>
+    
+  </channel>
+</rss>
