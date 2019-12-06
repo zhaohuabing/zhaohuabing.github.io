@@ -371,39 +371,25 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li><a href="#什么是多网络平面">什么是多网络平面？</a></li>
-<li><a href="#为什么需要多网络平面">为什么需要多网络平面？</a></li>
-<li><a href="#istio在多网络平面下的问题">Istio在多网络平面下的问题</a>
-<ul>
-<li><a href="#服务注册">服务注册</a></li>
-<li><a href="#envoy初始化">Envoy初始化</a></li>
-<li><a href="#服务请求">服务请求</a></li>
-</ul></li>
-<li><a href="#如何支持多网络平面">如何支持多网络平面</a>
-<ul>
-<li><a href="#服务注册-流程不变">服务注册（流程不变）</a></li>
-<li><a href="#envoy初始化-增加多网络平面处理逻辑">Envoy初始化（增加多网络平面处理逻辑）</a></li>
-<li><a href="#服务请求-1">服务请求</a></li>
-</ul></li>
-<li><a href="#参考资料">参考资料</a></li>
-</ul>
+  <ul>
+    <li><a href="#heading2">服务注册</a></li>
+    <li><a href="#envoy">Envoy初始化</a></li>
+    <li><a href="#heading3">服务请求</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#heading5">服务注册（流程不变）</a></li>
+    <li><a href="#envoy1">Envoy初始化（增加多网络平面处理逻辑）</a></li>
+    <li><a href="#heading6">服务请求</a></li>
+  </ul>
 </nav>
                 
-                
-
-<p>Istio 1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。虽然在架构设计上是开放的，但从目前的代码来看，Istio的内部实现还是和Kubernetes高度集成的。由于Kubernetes集群中Pod缺省只支持一个网络接口，因此Istio也存在该限制并不让人意外。</p>
-
+                <p>Istio 1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。虽然在架构设计上是开放的，但从目前的代码来看，Istio的内部实现还是和Kubernetes高度集成的。由于Kubernetes集群中Pod缺省只支持一个网络接口，因此Istio也存在该限制并不让人意外。</p>
 <p>随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes的多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。</p>
-
-<h1 id="什么是多网络平面">什么是多网络平面？</h1>
-
+<h1 id="heading">什么是多网络平面？</h1>
 <p>多网络平面是一个电信行业的常用术语，即将一个电信设备或者系统同时连接到多个网络上。简而言之，就是一个主机上有多个物理或者虚拟的网络接口，这些接口分别连接到不同的网络,这些网络之间一般是相互独立的。由于电信系统对可靠性的要求非常高，因此系统会通过配置多网络平面来避免不同网络流量的相互影响，提高系统的健壮性。</p>
-
-<h1 id="为什么需要多网络平面">为什么需要多网络平面？</h1>
-
+<h1 id="heading1">为什么需要多网络平面？</h1>
 <p>但在一些应用场景下，多网络平面是一个必须支持的重要特性。例如在电信系统中，一般都是有多个网络平面的，电信系统中使用多个网络平面的原因如下：</p>
-
 <ul>
 <li>按功能对不同网络进行隔离，以避免相互影响。例如管理流量，控制流量和数据流量分别采用不同的网络平面。</li>
 <li>通过多个网络的汇聚/绑定，提供网络设计冗余，增强系统的网络健壮性。</li>
@@ -411,32 +397,21 @@ $(function() {
 <li>通过网络隔离提高系统的安全性，例如为不同的租户分配不同的网络。</li>
 <li>在单个网络带宽有限的情况下，通过多个网络接口增加网络的系统带宽。</li>
 </ul>
-
 <p>在电信的NFV（网络功能虚拟化）领域中，已经有多个针对Kubernetes的多网络平面解决方案。其中一个<a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/">Kubernetes推荐的方案</a>是中兴通讯提供的<a href="https://github.com/ZTE/Knitter/">Knitter</a>开源实现。下图展示了Knitter是如何实现Kubernetes的多网络平面支持的。</p>
-
-<p><img src="/img/2018-12-19-multi-network-interfaces-for-istio/knitter-network-topology.png" alt="" />
-<center>Kubernetes多网络平面开源项目<a href="https://github.com/ZTE/Knitter/">Knitter</a></center></p>
-
+<p><img src="/img/2018-12-19-multi-network-interfaces-for-istio/knitter-network-topology.png" alt=""></p>
+<!-- raw HTML omitted -->
 <p>除了NFV的应用场景，Istio也支持除Kubernetes之外的其他部署环境，例如虚机和裸金属部署。在这些场景下，一个Host具有多个网络接口的场景也是很常见的，例如同时需要被内部和外部网络访问的Host就会有两个网络接口。</p>
-
-<h1 id="istio在多网络平面下的问题">Istio在多网络平面下的问题</h1>
-
+<h1 id="istio">Istio在多网络平面下的问题</h1>
 <p>在1.0版本中，Pilot在创建Inbound listener时未考虑多网络平面的情况，因此在Envoy所在节点存在多个IP时的处理逻辑存在问题。</p>
-
 <p>下图描述了在多网络平面场景下 Istio 1.1存在的问题。</p>
-
-<p><img src="/img/2018-12-19-multi-network-interfaces-for-istio/envoy-crash.png" alt="" />
-<center>Istio在多网络平面场景下的问题</center></p>
-
-<h2 id="服务注册">服务注册</h2>
-
+<p><img src="/img/2018-12-19-multi-network-interfaces-for-istio/envoy-crash.png" alt=""></p>
+<!-- raw HTML omitted -->
+<h2 id="heading2">服务注册</h2>
 <ol>
 <li>Envoy所在节点存在两个网络接口，分别连接到10.75.8.0/24和192.168.10.0/24两个网络上。</li>
 <li>Service A被注册到Service Registry中，使用的是第二个网络接口的IP，即10.75.8.101。</li>
 </ol>
-
-<h2 id="envoy初始化">Envoy初始化</h2>
-
+<h2 id="envoy">Envoy初始化</h2>
 <ol>
 <li>Envoy通过xDS接口向Pilot获取配置信息。</li>
 <li>Envoy在xDS请求中携带了第一个网络接口的IP，即192.168.10.63。</li>
@@ -444,9 +419,7 @@ $(function() {
 <li>Pilot用Envoy节点IP来和Service Registry中所有Service Instance的IP进行对比。</li>
 <li>由于Service A的注册IP10.75.8.101和节点IP192.168.10.63不一致，Pilot错误判断该节点上没有Service A的Instance，为Service A创建了一个Outbound Listener。</li>
 </ol>
-
-<h2 id="服务请求">服务请求</h2>
-
+<h2 id="heading3">服务请求</h2>
 <ol>
 <li>节点的网络接口10.75.8.101上收到一个来自downstream的请求，被重定向到Envoy。</li>
 <li>Envoy在15001端口上收到该请求，要求访问Service A</li>
@@ -454,22 +427,16 @@ $(function() {
 <li>Envoy将请求发送到10.75.8.101，经过TCP/IP协议栈处理后，进入第二个网络接口，被Iptable拦截，再次被作为入向请求转发到Envoy的15001端口。
 上述流程形成了一个死循环，最终导致Envoy由于文件描述符被用光 而crash。</li>
 </ol>
-
-<h1 id="如何支持多网络平面">如何支持多网络平面</h1>
-
+<h1 id="heading4">如何支持多网络平面</h1>
 <p>从上面的描述可以看到，要支持多网络平面，Istio需要修改Pilot生成Outbound Listener的代码实现，下图描述了修改后的处理逻辑。
-<img src="/img/2018-12-19-multi-network-interfaces-for-istio/multi-network-solution.png" alt="" />
-<center>Istio多网络平面解决方案</center></p>
-
-<h2 id="服务注册-流程不变">服务注册（流程不变）</h2>
-
+<img src="/img/2018-12-19-multi-network-interfaces-for-istio/multi-network-solution.png" alt=""></p>
+<!-- raw HTML omitted -->
+<h2 id="heading5">服务注册（流程不变）</h2>
 <ol>
 <li>Envoy所在节点存在两个网络接口，分别连接到10.75.8.0/24和192.168.10.0/24两个网络上。</li>
 <li>Service A被注册到Service Registry中，使用的是第二个网络接口的IP，即10.75.8.101。</li>
 </ol>
-
-<h2 id="envoy初始化-增加多网络平面处理逻辑">Envoy初始化（增加多网络平面处理逻辑）</h2>
-
+<h2 id="envoy1">Envoy初始化（增加多网络平面处理逻辑）</h2>
 <ol>
 <li>Envoy通过xDS接口向Pilot获取配置信息。</li>
 <li>Envoy在xDS请求中携带所在节点上的所有网络接口的IP，在本例中即192.168.10.63和10.75.8.101。</li>
@@ -477,23 +444,17 @@ $(function() {
 <li>Pilot用Envoy节点IP来和Service Registry中所有Service Instance的IP进行对比。</li>
 <li>由于Service A的注册IP 10.75.8.101和节点的两个IP之一相同，Pilot判断该节点上存在Service A的Instance，为Service A创建了一个Inbound Listener。</li>
 </ol>
-
-<h2 id="服务请求-1">服务请求</h2>
-
+<h2 id="heading6">服务请求</h2>
 <ol>
 <li>节点的网络接口10.75.8.101上收到一个来自downstream的请求，被重定向到Envoy。</li>
 <li>Envoy在15001端口上收到该请求，要求访问Service A</li>
 <li>Envoy根据Pilot下发的配置将该请求交由在Service A端口的Inbound Listener，该Listener将请求分发到Service A的Inbound Cluster上，对应IP地址为127.0.0。1。</li>
 <li>Envoy将请求发送到127.0.0.1的Service A进程的服务端口上进行处理。</li>
 </ol>
-
 <p>该修改方案已实现并提交PR合入到Istio 代码中，在1月份发布的Istio 1.1 Release中将会正式支持。</p>
-
-<p>RP: <a href="https://github.com/istio/istio/pull/9688">https://github.com/istio/istio/pull/9688</a><br>
+<p>RP: <a href="https://github.com/istio/istio/pull/9688">https://github.com/istio/istio/pull/9688</a><!-- raw HTML omitted -->
 Issue: <a href="https://github.com/istio/istio/issues/9441">https://github.com/istio/istio/issues/9441</a></p>
-
-<h1 id="参考资料">参考资料</h1>
-
+<h1 id="heading7">参考资料</h1>
 <ol>
 <li><a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/">https://kubernetes.io/docs/concepts/cluster-administration/networking/</a></li>
 <li><a href="https://github.com/ZTE/Knitter/">https://github.com/ZTE/Knitter/</a></li>

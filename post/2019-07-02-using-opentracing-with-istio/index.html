@@ -371,97 +371,62 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li><a href="#eshop-示例程序结构">eshop 示例程序结构</a></li>
-<li><a href="#将kafka消息处理加入调用链跟踪">将Kafka消息处理加入调用链跟踪</a>
-<ul>
-<li><a href="#植入kafka-opentracing代码">植入Kafka Opentracing代码</a></li>
-<li><a href="#安装kafka集群">安装Kafka集群</a></li>
-<li><a href="#部署demo应用">部署demo应用</a></li>
-</ul></li>
-<li><a href="#将调用跟踪上下文从kafka传递到rest服务">将调用跟踪上下文从Kafka传递到REST服务</a></li>
-<li><a href="#总结">总结</a></li>
-<li><a href="#参考资料">参考资料</a></li>
-</ul>
+  <ul>
+    <li><a href="#kafka-opentracing">植入Kafka Opentracing代码</a></li>
+    <li><a href="#kafka1">安装Kafka集群</a></li>
+    <li><a href="#demo">部署demo应用</a></li>
+  </ul>
 </nav>
                 
-                
-
-<p>在上一篇文章中，我们通过一个网上商店的示例程序学习了如何使用Opentracing在Istio服务网格中传递分布式调用跟踪的上下文，以及如何将方法级的调用信息加入到Istio/Envoy生成的调用链中。采用Opentracing可以减少应用代码中传递HTTP header的重复代码；也可以根据需要在调用链中加入更细粒度的Span，以用于对系统性能瓶颈进行在线分析。</p>
-
+                <p>在上一篇文章中，我们通过一个网上商店的示例程序学习了如何使用Opentracing在Istio服务网格中传递分布式调用跟踪的上下文，以及如何将方法级的调用信息加入到Istio/Envoy生成的调用链中。采用Opentracing可以减少应用代码中传递HTTP header的重复代码；也可以根据需要在调用链中加入更细粒度的Span，以用于对系统性能瓶颈进行在线分析。</p>
 <p>在实际项目中，除了同步调用之外，异步消息也是微服务架构中常见的一种通信方式。在本篇文章中，我将继续利用eshop demo程序来探讨如何通过Opentracing将Kafka异步消息也纳入到Istio的分布式调用跟踪中。</p>
-
-<h1 id="eshop-示例程序结构">eshop 示例程序结构</h1>
-
+<h1 id="eshop-">eshop 示例程序结构</h1>
 <p>如下图所示，demo程序中增加了发送和接收Kafka消息的代码。eshop微服务在调用inventory，billing，delivery服务后，发送了一个kafka消息通知，consumer接收到通知后调用notification服务的REST接口向用户发送购买成功的邮件通知。</p>
-
-<p><img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt="" /></p>
-
-<h1 id="将kafka消息处理加入调用链跟踪">将Kafka消息处理加入调用链跟踪</h1>
-
-<h2 id="植入kafka-opentracing代码">植入Kafka Opentracing代码</h2>
-
+<p><img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt=""></p>
+<h1 id="kafka">将Kafka消息处理加入调用链跟踪</h1>
+<h2 id="kafka-opentracing">植入Kafka Opentracing代码</h2>
 <p>首先从github下载代码。</p>
-
-<pre><code class="language-bash">git clone git@github.com:zhaohuabing/istio-opentracing-demo.git
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone git@github.com:zhaohuabing/istio-opentracing-demo.git
 git checkout kafka-tracking
-</code></pre>
-
-<p>可以直接使用 kafka-tracking 这个分支的代码，但建议跟随下面的步骤查看相关的代码，以了解各个步骤背后的原理。</p>
-
+</code></pre></div><p>可以直接使用 kafka-tracking 这个分支的代码，但建议跟随下面的步骤查看相关的代码，以了解各个步骤背后的原理。</p>
 <p>根目录下分为了rest-service和kafka-consumer两个目录，rest-service下包含了各个REST服务的代码，kafka-consumer下是Kafka消息消费者的代码。</p>
-
 <p>首先需要将spring kafka和Opentracing kafka的依赖加入到两个目录下的pom文件中。</p>
-
-<pre><code class="language-xml">&lt;dependency&gt;
-	&lt;groupId&gt;org.springframework.kafka&lt;/groupId&gt;
-	&lt;artifactId&gt;spring-kafka&lt;/artifactId&gt;
-&lt;/dependency&gt;
- &lt;dependency&gt;
-	&lt;groupId&gt;io.opentracing.contrib&lt;/groupId&gt;
-	&lt;artifactId&gt;opentracing-kafka-client&lt;/artifactId&gt;
-	&lt;version&gt;${version.opentracing.kafka-client}&lt;/version&gt;
-&lt;/dependency&gt;
-</code></pre>
-
-<p>在rest-service目录中的KafkaConfig.java中配置消息Producer端的Opentracing Instrument。TracingProducerInterceptor会在发送Kafka消息时生成发送端的Span。</p>
-
-<pre><code class="language-java">@Bean
-public ProducerFactory&lt;String, String&gt; producerFactory() {
-    Map&lt;String, Object&gt; configProps = new HashMap&lt;&gt;();
-    configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-    configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    configProps.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingProducerInterceptor.class.getName());
-    return new DefaultKafkaProducerFactory&lt;&gt;(configProps);
-}
-</code></pre>
-
-<p>在kafka-consumer目录中的KafkaConfig.java中配置消息Consumer端的Opentracing Instrument。TracingConsumerInterceptor会在接收到Kafka消息是生成接收端的Span。</p>
-
-<pre><code class="language-java">@Bean
-public ConsumerFactory&lt;String, String&gt; consumerFactory() {
-    Map&lt;String, Object&gt; props = new HashMap&lt;&gt;();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-    props.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, TracingConsumerInterceptor.class.getName());
-    return new DefaultKafkaConsumerFactory&lt;&gt;(props);
-}
-</code></pre>
-
-<p>只需要这两步即可完成Spring程序的Kafka Opentracing代码植入。下面安装并运行示例程序查看效果。</p>
-
-<h2 id="安装kafka集群">安装Kafka集群</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.springframework.kafka<span style="color:#f92672">&lt;/groupId&gt;</span>
+	<span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>spring-kafka<span style="color:#f92672">&lt;/artifactId&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+ <span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
+	<span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>io.opentracing.contrib<span style="color:#f92672">&lt;/groupId&gt;</span>
+	<span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>opentracing-kafka-client<span style="color:#f92672">&lt;/artifactId&gt;</span>
+	<span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>${version.opentracing.kafka-client}<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+</code></pre></div><p>在rest-service目录中的KafkaConfig.java中配置消息Producer端的Opentracing Instrument。TracingProducerInterceptor会在发送Kafka消息时生成发送端的Span。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Bean</span>
+<span style="color:#66d9ef">public</span> ProducerFactory<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">producerFactory</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> configProps <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_SERVERS_CONFIG</span><span style="color:#f92672">,</span> bootstrapAddress<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">KEY_SERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringSerializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">VALUE_SERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringSerializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">INTERCEPTOR_CLASSES_CONFIG</span><span style="color:#f92672">,</span> TracingProducerInterceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> DefaultKafkaProducerFactory<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>configProps<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在kafka-consumer目录中的KafkaConfig.java中配置消息Consumer端的Opentracing Instrument。TracingConsumerInterceptor会在接收到Kafka消息是生成接收端的Span。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Bean</span>
+<span style="color:#66d9ef">public</span> ConsumerFactory<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">consumerFactory</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> props <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_SERVERS_CONFIG</span><span style="color:#f92672">,</span> bootstrapAddress<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">GROUP_ID_CONFIG</span><span style="color:#f92672">,</span> groupId<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">KEY_DESERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringDeserializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">VALUE_DESERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringDeserializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">INTERCEPTOR_CLASSES_CONFIG</span><span style="color:#f92672">,</span> TracingConsumerInterceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> DefaultKafkaConsumerFactory<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>props<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>只需要这两步即可完成Spring程序的Kafka Opentracing代码植入。下面安装并运行示例程序查看效果。</p>
+<h2 id="kafka1">安装Kafka集群</h2>
 <p>示例程序中使用到了Kafka消息，因此需要部署一个Kafka集群。可以参照 <a href="https://kafka.apache.org/quickstart">Kafka Quickstart</a> 在Kubernetes集群外部署Kafka；也可以使用 <a href="https://github.com/strimzi/strimzi-kafka-operator">Kafka Operator</a> 直接将Kafka部署在Kubernetes集群中。</p>
-
-<h2 id="部署demo应用">部署demo应用</h2>
-
+<h2 id="demo">部署demo应用</h2>
 <p>修改Kubernetes yaml部署文件 k8s/eshop.yaml，设置Kafka bootstrap server，以用于demo程序连接到Kafka集群中。</p>
-
-<pre><code class="language-yml">apiVersion: extensions/v1beta1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: eshop-v1
@@ -471,12 +436,12 @@ metadata:
       - name: eshop
         image: zhaohuabing/istio-opentracing-demo:kafka-opentracing
         ports:
-        - containerPort: 8080
+        - containerPort: <span style="color:#ae81ff">8080</span>
         env:
           ....
           //在这里加入Kafka server地址
           - name: KAFKA_BOOTSTRAP_SERVERS
-            value: &quot;192.168.89.192:9092&quot;
+            value: <span style="color:#e6db74">&#34;192.168.89.192:9092&#34;</span>
 
 ---
 apiVersion: extensions/v1beta1
@@ -492,29 +457,17 @@ metadata:
           ....
           //在这里加入Kafka server地址
           - name: KAFKA_BOOTSTRAP_SERVERS
-            value: &quot;192.168.89.192:9092&quot;
-</code></pre>
-
-<p>然后部署应用程序，相关的镜像可以直接从dockerhub下载，也可以通过源码编译生成。</p>
-
-<pre><code class="language-bash">kubectl apply -f k8s/eshop.yaml
-</code></pre>
-
-<p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
-<img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt="" /></p>
-
+            value: <span style="color:#e6db74">&#34;192.168.89.192:9092&#34;</span>
+</code></pre></div><p>然后部署应用程序，相关的镜像可以直接从dockerhub下载，也可以通过源码编译生成。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f k8s/eshop.yaml
+</code></pre></div><p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
+<img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt=""></p>
 <p>从图中可以看到，在调用链中增加了两个Span，分布对应于Kafka消息发送和接收的两个操作。由于Kafka消息的处理是异步的，消息发送端不直接依赖接收端的处理。根据Opentracing对引用关系的定义，From_eshop_topic Span 对 To_eshop_topic Span 的引用关系是 FOLLOWS_FROM 而不是 CHILD_OF 关系。</p>
-
-<h1 id="将调用跟踪上下文从kafka传递到rest服务">将调用跟踪上下文从Kafka传递到REST服务</h1>
-
+<h1 id="kafkarest">将调用跟踪上下文从Kafka传递到REST服务</h1>
 <p>现在eshop代码中已经加入了REST和Kafka的Opentracing Instrumentation，可以在进行REST调用和发送Kafka消息时生成调用跟踪信息。但如果需要从Kafka的消息消费者的处理方法中调用一个REST接口呢？</p>
-
 <p>我们会发现在eshop示例程序中，缺省生成的调用链里面并不会把Kafka消费者的Span和其发起的调用notification服务的REST请求的Span关联在同一个Trace中。</p>
-
 <p>要分析导致该问题的原因，我们首先需要了解<a href="https://opentracing.io/docs/overview/scopes-and-threading/">“Active Span”</a>的概念。在Opentracing中，一个线程可以有一个Active Span，该Active Span代表了目前该线程正在执行的工作。在调用Tracer.buildSpan()方法创建新的Span时，如果Tracer目前存在一个Active Span，则会将该Active Span缺省作为新创建的Span的Parent Span。</p>
-
 <p>Tracer.buildSpan 方法的说明如下：</p>
-
 <pre><code>Tracer.SpanBuilder buildSpan(String operationName)
 Return a new SpanBuilder for a Span with the given `operationName`.
 You can override the operationName later via BaseSpan.setOperationName(String).
@@ -539,91 +492,72 @@ A contrived example:
                      .withTag(&quot;user_agent&quot;, req.UserAgent)
                      .withTag(&quot;lucky_number&quot;, 42)
                      .startManual();
-</code></pre>
+</code></pre><p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">buildAndFinishChildSpan</span><span style="color:#f92672">(</span>ConsumerRecord<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> record<span style="color:#f92672">,</span> Tracer tracer<span style="color:#f92672">,</span>
+      BiFunction<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> ConsumerRecord<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> consumerSpanNameProvider<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    SpanContext parentContext <span style="color:#f92672">=</span> TracingKafkaUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">extractSpanContext</span><span style="color:#f92672">(</span>record<span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> tracer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
 
-<p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
+    String consumerOper <span style="color:#f92672">=</span>
+        FROM_PREFIX <span style="color:#f92672">+</span> record<span style="color:#f92672">.</span><span style="color:#a6e22e">topic</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">// &lt;====== It provides better readability in the UI
+</span><span style="color:#75715e"></span>    Tracer<span style="color:#f92672">.</span><span style="color:#a6e22e">SpanBuilder</span> spanBuilder <span style="color:#f92672">=</span> tracer
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">buildSpan</span><span style="color:#f92672">(</span>consumerSpanNameProvider<span style="color:#f92672">.</span><span style="color:#a6e22e">apply</span><span style="color:#f92672">(</span>consumerOper<span style="color:#f92672">,</span> record<span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">withTag</span><span style="color:#f92672">(</span>Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND_CONSUMER</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
 
-<pre><code class="language-java">public static &lt;K, V&gt; void buildAndFinishChildSpan(ConsumerRecord&lt;K, V&gt; record, Tracer tracer,
-      BiFunction&lt;String, ConsumerRecord, String&gt; consumerSpanNameProvider) {
-    SpanContext parentContext = TracingKafkaUtils.extractSpanContext(record.headers(), tracer);
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>parentContext <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      spanBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">addReference</span><span style="color:#f92672">(</span>References<span style="color:#f92672">.</span><span style="color:#a6e22e">FOLLOWS_FROM</span><span style="color:#f92672">,</span> parentContext<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
 
-    String consumerOper =
-        FROM_PREFIX + record.topic(); // &lt;====== It provides better readability in the UI
-    Tracer.SpanBuilder spanBuilder = tracer
-        .buildSpan(consumerSpanNameProvider.apply(consumerOper, record))
-        .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CONSUMER);
+    Span span <span style="color:#f92672">=</span> spanBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    SpanDecorator<span style="color:#f92672">.</span><span style="color:#a6e22e">onResponse</span><span style="color:#f92672">(</span>record<span style="color:#f92672">,</span> span<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
 
-    if (parentContext != null) {
-      spanBuilder.addReference(References.FOLLOWS_FROM, parentContext);
-    }
+    <span style="color:#75715e">//在调用消费者的处理方法之前，该Span已经被结束。
+</span><span style="color:#75715e"></span>    span<span style="color:#f92672">.</span><span style="color:#a6e22e">finish</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
 
-    Span span = spanBuilder.start();
-    SpanDecorator.onResponse(record, span);
-
-    //在调用消费者的处理方法之前，该Span已经被结束。
-    span.finish();
-
-    // Inject created span context into record headers for extraction by client to continue span chain
-    //这个Span被放到了Kafka消息的header中
-    TracingKafkaUtils.inject(span.context(), record.headers(), tracer);
-  }
-</code></pre>
-
-<p>此时TracingConsumerInterceptor已经将Kafka消费者的Span放到了Kafka消息的header中，因此从Kafka消息头中取出该Span，显示地将Kafka消费者的Span作为REST调用的Parent Span即可。</p>
-
+    <span style="color:#75715e">// Inject created span context into record headers for extraction by client to continue span chain
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//这个Span被放到了Kafka消息的header中
+</span><span style="color:#75715e"></span>    TracingKafkaUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">inject</span><span style="color:#f92672">(</span>span<span style="color:#f92672">.</span><span style="color:#a6e22e">context</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> record<span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> tracer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>此时TracingConsumerInterceptor已经将Kafka消费者的Span放到了Kafka消息的header中，因此从Kafka消息头中取出该Span，显示地将Kafka消费者的Span作为REST调用的Parent Span即可。</p>
 <p>为MessageConsumer.java使用的RestTemplate设置一个TracingKafka2RestTemplateInterceptor。</p>
-
-<pre><code class="language-java">@KafkaListener(topics = &quot;eshop-topic&quot;)
-public void receiveMessage(ConsumerRecord&lt;String, String&gt; record) {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@KafkaListener</span><span style="color:#f92672">(</span>topics <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;eshop-topic&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">(</span>ConsumerRecord<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> record<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     restTemplate
-            .setInterceptors(Collections.singletonList(new TracingKafka2RestTemplateInterceptor(record.headers())));
-    restTemplate.getForEntity(&quot;http://notification:8080/sendEmail&quot;, String.class);
-}
-</code></pre>
-
-<p>TracingKafka2RestTemplateInterceptor是基于Spring Opentracing Instrumentation的TracingRestTemplateInterceptor修改的，将从Kafka header中取出的Span设置为出向请求的Span的Parent Span。</p>
-
-<pre><code class="language-java">@Override
-public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] body, ClientHttpRequestExecution xecution)
-        throws IOException {
-    ClientHttpResponse httpResponse;
-    SpanContext parentSpanContext = TracingKafkaUtils.extractSpanContext(headers, tracer);
-    Span span = tracer.buildSpan(httpRequest.getMethod().toString()).asChildOf(parentSpanContext)
-            .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
-    ......
-}
-</code></pre>
-
-<p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
-<img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt="" /></p>
-
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">setInterceptors</span><span style="color:#f92672">(</span>Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">singletonList</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> TracingKafka2RestTemplateInterceptor<span style="color:#f92672">(</span>record<span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">getForEntity</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://notification:8080/sendEmail&#34;</span><span style="color:#f92672">,</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>TracingKafka2RestTemplateInterceptor是基于Spring Opentracing Instrumentation的TracingRestTemplateInterceptor修改的，将从Kafka header中取出的Span设置为出向请求的Span的Parent Span。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> ClientHttpResponse <span style="color:#a6e22e">intercept</span><span style="color:#f92672">(</span>HttpRequest httpRequest<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> body<span style="color:#f92672">,</span> ClientHttpRequestExecution xecution<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+    ClientHttpResponse httpResponse<span style="color:#f92672">;</span>
+    SpanContext parentSpanContext <span style="color:#f92672">=</span> TracingKafkaUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">extractSpanContext</span><span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    Span span <span style="color:#f92672">=</span> tracer<span style="color:#f92672">.</span><span style="color:#a6e22e">buildSpan</span><span style="color:#f92672">(</span>httpRequest<span style="color:#f92672">.</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">asChildOf</span><span style="color:#f92672">(</span>parentSpanContext<span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">withTag</span><span style="color:#f92672">(</span>Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND_CLIENT</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
+<img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt=""></p>
 <p>从上图可以看到，调用链中出现了Kafka消费者调用notification服务的sendEmail REST接口的Span。从图中可以看到，由于调用链经过了Kafka消息，sendEmail Span的时间没有包含在checkout Span中。</p>
-
 <p>在Jaeger UI上将图形切换为trace graph，可以更清晰地表示出各个Span之间的调用关系。
-<img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt="" /></p>
-
-<h1 id="总结">总结</h1>
-
+<img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt=""></p>
+<h1 id="heading">总结</h1>
 <p>Istio服务网格通过分布式调用跟踪来提高微服务应用的可见性。我们可以使用Opentracing Instrumentation来代替应用编码传递分布式跟踪的相关http header；还可以将方法级的调用跟踪和Kafka消息的调用跟踪加入到Istio生成的调用跟踪链中，以提供更细粒度的调用跟踪信息。</p>
-
 <p>该方案可以达到分布式调用跟踪的目的，但需要在代码框架层进行一定的改动，以植入调用跟踪的相关代码。理想的方案是由服务网格基础设施层来完成所有调用跟踪的数据收集和生成，这样应用代码只需关注业务逻辑，而不用处理调用跟踪信息的生成。可以在Envoy中加入插件来为Kafka消息生成调用跟踪信息，但目前看来服务网格还没有很好的办法在上下游服务之前传递调用跟踪上下文。</p>
-
-<h1 id="参考资料">参考资料</h1>
-
+<h1 id="heading1">参考资料</h1>
 <ol>
 <li><a href="https://github.com/zhaohuabing/istio-opentracing-demo/tree/kafka-tracking">本文中eshop示例程序的源代码</a></li>
 <li><a href="https://objectpartners.com/2019/04/25/distributed-tracing-with-apache-kafka-and-jaeger/">Distributed Tracing with Apache Kafka and Jaeger</a></li>
-<li><a href="https://github.com/opentracing-contrib/java-kafka-client
-TracingRestTemplateInterceptor.java">OpenTracing Apache Kafka Client Instrumentation</a></li>
+<li>[OpenTracing Apache Kafka Client Instrumentation](<a href="https://github.com/opentracing-contrib/java-kafka-client">https://github.com/opentracing-contrib/java-kafka-client</a>
+TracingRestTemplateInterceptor.java)</li>
 <li><a href="https://kafka.apache.org/quickstart">Kafka quick start</a></li>
 <li>参考代码：
-
 <ul>
 <li><a href="https://github.com/opentracing-contrib/java-spring-web/blob/master/opentracing-spring-web/src/main/java/io/opentracing/contrib/spring/web/client/TracingRestTemplateInterceptor.java">https://github.com/opentracing-contrib/java-spring-web/blob/master/opentracing-spring-web/src/main/java/io/opentracing/contrib/spring/web/client/TracingRestTemplateInterceptor.java</a></li>
 <li><a href="https://github.com/burkaa01/jaeger-tracing-kafka/blob/master/spring-consumer-app/src/main/java/com/github/burkaa01/springconsumer/config/TracingChildRestTemplateInterceptor.java">https://github.com/burkaa01/jaeger-tracing-kafka/blob/master/spring-consumer-app/src/main/java/com/github/burkaa01/springconsumer/config/TracingChildRestTemplateInterceptor.java</a></li>
 <li><a href="https://github.com/opentracing-contrib/java-kafka-client/blob/master/opentracing-kafka-client/src/main/java/io/opentracing/contrib/kafka/TracingConsumerInterceptor.java">https://github.com/opentracing-contrib/java-kafka-client/blob/master/opentracing-kafka-client/src/main/java/io/opentracing/contrib/kafka/TracingConsumerInterceptor.java</a></li>
 <li><a href="https://github.com/opentracing-contrib/java-kafka-client/blob/master/opentracing-kafka-client/src/main/java/io/opentracing/contrib/kafka/TracingKafkaUtils.java">https://github.com/opentracing-contrib/java-kafka-client/blob/master/opentracing-kafka-client/src/main/java/io/opentracing/contrib/kafka/TracingKafkaUtils.java</a></li>
-</ul></li>
+</ul>
+</li>
 </ol>
 
 

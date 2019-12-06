@@ -363,110 +363,72 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li><a href="#installation">Installation</a>
-<ul>
-<li><a href="#kubernetes-master">Kubernetes Master</a></li>
-<li><a href="#kubernetes-worker-node">Kubernetes worker Node</a></li>
-<li><a href="#istio-control-plane-with-mutual-tls">Istio Control Plane with Mutual TLS</a></li>
-</ul></li>
-<li><a href="#explore-istio-features">Explore Istio Features</a>
-<ul>
-<li><a href="#distributed-tracing">Distributed Tracing</a></li>
-<li><a href="#service-graph">Service Graph</a></li>
-<li><a href="#metrics-visualization">Metrics Visualization</a></li>
-<li><a href="#authorization-rbac">Authorization(RBAC)</a></li>
-</ul></li>
-<li><a href="#service-mesh-migration">Service Mesh Migration</a>
-<ul>
-<li><a href="#without-istio-authentication-and-authorization">Without Istio Authentication and Authorization</a>
-<ul>
-<li><a href="#service-port-name">Service Port Name</a></li>
-<li><a href="#propagate-http-header-for-distributed-tracing">Propagate Http Header for Distributed Tracing</a></li>
-</ul></li>
-<li><a href="#with-istio-authentication-and-authorization">With Istio Authentication and Authorization</a>
-<ul>
-<li><a href="#liveness-probe">Liveness Probe</a></li>
-<li><a href="#allow-both-mutual-tls-and-plain-traffic">Allow both Mutual TLS and Plain Traffic</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#kubernetes-master">Kubernetes Master</a></li>
+    <li><a href="#kubernetes-worker-node">Kubernetes worker Node</a></li>
+    <li><a href="#istio-control-plane-with-mutual-tls">Istio Control Plane with Mutual TLS</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#distributed-tracing">Distributed Tracing</a></li>
+    <li><a href="#service-graph">Service Graph</a></li>
+    <li><a href="#metrics-visualization">Metrics Visualization</a></li>
+    <li><a href="#authorizationrbac">Authorization(RBAC)</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#without-istio-authentication-and-authorization">Without Istio Authentication and Authorization</a>
+      <ul>
+        <li><a href="#service-port-name">Service Port Name</a></li>
+        <li><a href="#propagate-http-header-for-distributed-tracing">Propagate Http Header for Distributed Tracing</a></li>
+      </ul>
+    </li>
+    <li><a href="#with-istio-authentication-and-authorization">With Istio Authentication and Authorization</a>
+      <ul>
+        <li><a href="#liveness-probe">Liveness Probe</a></li>
+        <li><a href="#allow-both-mutual-tls-and-plain-traffic">Allow both Mutual TLS and Plain Traffic</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
                 
-                
-
-<p>In the previous post <a href="https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/">Manage ONAP Microservices with Istio Service Mesh</a>, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’s worth with the benefits brought by it.
-<!-- more --></p>
-
+                <p>In the previous post <a href="https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/">Manage ONAP Microservices with Istio Service Mesh</a>, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’s worth with the benefits brought by it.</p>
+<!-- raw HTML omitted -->
 <h1 id="installation">Installation</h1>
-
 <p>Download installation scripts from ONAP Gerrit:</p>
-
 <pre><code>git clone https://gerrit.onap.org/r/msb/service-mesh
-</code></pre>
-
-<h2 id="kubernetes-master">Kubernetes Master</h2>
-
+</code></pre><h2 id="kubernetes-master">Kubernetes Master</h2>
 <p>We need Kubernetes1.9 or newer to enable automatic sidecar injection, so we don’t have to modify every individual ONAP kubernetes yaml deployment files to add the sidecar container, which would be inconvenient.</p>
-
 <p>Istio leverages the webhook feature of Kubernetes to automatically inject an Envoy sidecar to each Pod. Kubernetes API server will call the Istio sidecar injection webhook when it receives a request to create a Pod resource, the webhook adds an Envoy sidecar container to the Pod, then the modified Pod resource is stored into etcd.</p>
-
 <p>Webhook and other needed features have already been configured in the install scripts to enable Istio sidecar injection.</p>
-
 <p>Create the Kubernetes master by running this script:</p>
-
 <pre><code>cd service-mesh/install/
 ./1_install_k8s_master.sh
-</code></pre>
-
-<p>This script will create a Kubernetes master node with Kubeadm and install calico network plugin. Some other needed tools such as Docker, Kubectl and Helm will be installed as well.</p>
-
+</code></pre><p>This script will create a Kubernetes master node with Kubeadm and install calico network plugin. Some other needed tools such as Docker, Kubectl and Helm will be installed as well.</p>
 <p>From the output of the script, you should see a command on how to join a node to the created Kubernets cluster. Note that this is an example, the token and cert-hash of your installation will be different, please copy &amp; paste the command to somewhere, we will need it later.</p>
-
 <pre><code>You can now join any number of machines by running the following on each node as root:
 
 kubeadm join 10.12.5.104:6443 --token 1x62yf.60ys5p2iw13tx2t8 --discovery-token-ca-cert-hash sha256:f06628c7cee002b262e69f3f9efadf47bdec125e19606ebff743a3e514a8383b
-</code></pre>
-
-<h2 id="kubernetes-worker-node">Kubernetes worker Node</h2>
-
+</code></pre><h2 id="kubernetes-worker-node">Kubernetes worker Node</h2>
 <p>Log in the worker node machine, run this script to create a kubernetes worker node:</p>
-
 <pre><code>./2_install_k8s_minion.sh
-</code></pre>
-
-<p>You can now join this machines by running “kubeadmin join” command as root:</p>
-
+</code></pre><p>You can now join this machines by running “kubeadmin join” command as root:</p>
 <pre><code>sudo kubeadm join 10.12.5.104:6443 --token 1x62yf.60ys5p2iw13tx2t8 --discovery-token-ca-cert-hash sha256:f06628c7cee002b262e69f3f9efadf47bdec125e19606ebff743a3e514a8383b
-</code></pre>
-
-<p>Please note that this is just an example, please refer to the output of the “kubeamin init” when creating the k8s master for the exact command to use in your k8s cluster.</p>
-
+</code></pre><p>Please note that this is just an example, please refer to the output of the “kubeamin init” when creating the k8s master for the exact command to use in your k8s cluster.</p>
 <p>If you would like to get kubectl talk to your k8s master, you need to copy the administrator kubeconfig file from your master to your workstation like this:</p>
-
 <pre><code>scp root@&lt;master ip&gt;:/etc/kubernetes/admin.conf .
 kubectl --kubeconfig ./admin.conf get nodes
-</code></pre>
-
-<p>or you can manually copy the content of this file to ~/.kube/conf if scp can’t be used due to security reason.</p>
-
+</code></pre><p>or you can manually copy the content of this file to ~/.kube/conf if scp can’t be used due to security reason.</p>
 <h2 id="istio-control-plane-with-mutual-tls">Istio Control Plane with Mutual TLS</h2>
-
 <p>Install Istio by running this script:</p>
-
 <pre><code>./ 3_install_istio_with_auth.sh
-</code></pre>
-
-<p>This script installs the followings Istio components:</p>
-
+</code></pre><p>This script installs the followings Istio components:</p>
 <ul>
 <li>Install Istioctl command line tool in the /usr/bin directory</li>
 <li>Install Istio control plane components, including Pilot, Citadel, Mixer</li>
 <li>Install addons including servicegraph, Promeheus, Grafana, jaeger</li>
 </ul>
-
 <p>Confirm Istio was installed:</p>
-
 <pre><code>kubectl get svc -n istio-system
 NAME                      TYPE          CLUSTER-IP      EXTERNAL-IP  PORT(S)                                                              AGE
 grafana                   NodePort      10.109.190.71   &lt;none&gt;       3000:30300/TCP                                                        20m
@@ -483,12 +445,8 @@ servicegraph              NodePort      10.106.49.168   &lt;none&gt;       8088:
 tracing                   LoadBalancer  10.100.158.236  &lt;pending&gt;    80:30188/TCP                                                          20m
 zipkin                    NodePort      10.96.164.255   &lt;none&gt;       9411:30411/TCP                                                        20m
 Sidecar Injection
-</code></pre>
-
-<p>In the transition phase, the Istio sidecar injector policy is configured as “disabled” when installing Istio. So the sidecar injector will not inject the sidecar into pods by default. Add the <code>sidecar.istio.io/inject annotation</code> with value <code>true</code> to the pod template spec to enable injection.</p>
-
+</code></pre><p>In the transition phase, the Istio sidecar injector policy is configured as “disabled” when installing Istio. So the sidecar injector will not inject the sidecar into pods by default. Add the <code>sidecar.istio.io/inject annotation</code> with value <code>true</code> to the pod template spec to enable injection.</p>
 <p>Example:</p>
-
 <pre><code>apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -512,18 +470,11 @@ spec:
       name: {{ include &quot;common.name&quot; . }}
       annotations:
         sidecar.istio.io/inject: &quot;{{.Values.istioSidecar}}&quot;
-</code></pre>
-
-<p>Note: when all ONAP projects are ready for Istio integration, the Istio sidecar injector policy could be configured as “enabled”, then the annotation in the pod will not be necessary any more.</p>
-
+</code></pre><p>Note: when all ONAP projects are ready for Istio integration, the Istio sidecar injector policy could be configured as “enabled”, then the annotation in the pod will not be necessary any more.</p>
 <p>Enable Istio sidecar injection webhook.</p>
-
 <pre><code>kubectl create namespace onap
 kubectl label namespace onap istio-injection=enabled
-</code></pre>
-
-<p>Confirm that auto sidecar injection has been enabled on onap namespace.</p>
-
+</code></pre><p>Confirm that auto sidecar injection has been enabled on onap namespace.</p>
 <pre><code>kubectl get namespace -L istio-injection
 NAME          STATUS   AGE      ISTIO-INJECTION
 default       Active   20m
@@ -531,23 +482,14 @@ istio-system  Active   10m
 kube-public   Active   20m
 kube-system   Active   20m
 onap          Active   8s       enabled
-</code></pre>
-
-<p>Start a local helm repository server and add it to helm repository list:</p>
-
+</code></pre><p>Start a local helm repository server and add it to helm repository list:</p>
 <pre><code>helm serve &amp;
 helm repo add local http://127.0.0.1:8879 
-</code></pre>
-
-<p>Download OOM Gerrit repository and build the helm charts.</p>
-
+</code></pre><p>Download OOM Gerrit repository and build the helm charts.</p>
 <pre><code>git clone -b beijing http://gerrit.onap.org/r/oom
 cd oom/kubernetes
 make all
-</code></pre>
-
-<p>Confirm that ONAP charts have been successfully created.</p>
-
+</code></pre><p>Confirm that ONAP charts have been successfully created.</p>
 <pre><code>helm search onap
 NAME                   CHART VERSION  APP VERSION    DESCRIPTION
 local/onap              2.0.0          beijing        Open Network Automation Platform (ONAP)
@@ -575,30 +517,19 @@ local/uui               2.0.0                          ONAP uui
 local/vfc               2.0.0                          ONAP Virtual Function Controller (VF-C)
 local/vid               2.0.0                          ONAP Virtual Infrastructure Deployment
 local/vnfsdk            2.0.0                          ONAP VNF SDK
-</code></pre>
-
-<p>Install local/onap chart. Local/onap chart will do some initialization setup which is needed for onap components, such as creating service accounts.</p>
-
+</code></pre><p>Install local/onap chart. Local/onap chart will do some initialization setup which is needed for onap components, such as creating service accounts.</p>
 <pre><code>cd oom/kubernetes
 helm install local/onap -n common --namespace onap -f onap/resources/environments/disable-allcharts
-</code></pre>
-
-<p>In Casablanca, MSB project is working with VF-C and MultiCloud as pilot projects, we would like to roll out it to the other ONAP projects after verifying the integration and Istio features.</p>
-
+</code></pre><p>In Casablanca, MSB project is working with VF-C and MultiCloud as pilot projects, we would like to roll out it to the other ONAP projects after verifying the integration and Istio features.</p>
 <pre><code>helm install local/msb -n msb --namespace onap
 helm install local/multicloud -n multicloud --namespace onap --set liveness.enabled=false,multicloud-ocata.liveness.enabled=false,multicloud-vio.liveness.enabled=false,multicloud-windriver.liveness.enabled=false
 helm install local/multicloud -n multicloud --namespace onap
-</code></pre>
-
-<p>Note:</p>
-
+</code></pre><p>Note:</p>
 <ul>
 <li>The current version of Istio mutual TLS authentication can’t work with kubernetes liveness probe, Istio is working on a long-term fix to solve this problem. A simple workaround for the time being is to disable liveness probe by passing a ‘liveness.enabled=false’ value to helm install command.</li>
 <li>You can also install other ONAP projects with helm install if they are needed. But Istio sidecar will not be injected to their Pods by default.</li>
 </ul>
-
 <p>Confirm that ONAP microservices have been started</p>
-
 <pre><code>kubectl get all -n onap
 NAME READY STATUS RESTARTS AGE
 pod/msb-kube2msb-77ccb675dd-rhfn7 1/1 Running 0 3h
@@ -653,107 +584,58 @@ service/vfc-workflow ClusterIP 10.97.184.206 &lt;none&gt; 10550/TCP 2d
 service/vfc-workflow-engine ClusterIP 10.109.175.61 &lt;none&gt; 8080/TCP 2
 service/vfc-zte-sdnc-driver ClusterIP 10.103.94.142 &lt;none&gt; 8411/TCP 2d
 service/vfc-zte-vnfm-driver ClusterIP 10.108.146.237 &lt;none&gt; 8410/TCP 2d
-</code></pre>
-
-<p>Create an Istio Gateway so we can access the MSB portal out of the Mesh</p>
-
+</code></pre><p>Create an Istio Gateway so we can access the MSB portal out of the Mesh</p>
 <pre><code>cd service-mesh/install/
 kubectl apply -f msb-istio-gateway.yaml -n onap
-</code></pre>
-
-<p>Now you can open the MSB portal http://${INGRESS_IP}:${INGRESS_PORT}/msb in the browser to see all the registered services.</p>
-
+</code></pre><p>Now you can open the MSB portal http://${INGRESS_IP}:${INGRESS_PORT}/msb in the browser to see all the registered services.</p>
 <p>Note: INGRESS_IP and INGRESS_PORT can be found by executing this command ‘kubectl get svc istio-ingressgateway -n istio-system’</p>
-
-<p><img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/msb.png" alt="" /></p>
-
+<p><img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/msb.png" alt=""></p>
 <h1 id="explore-istio-features">Explore Istio Features</h1>
-
 <h2 id="distributed-tracing">Distributed Tracing</h2>
-
 <p>First, let’s generate some traffics in the application, access the following URLs with curl command or open them in the browser</p>
-
 <p>http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-vio/v0/swagger.json</p>
-
 <p>http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-ocata/v0/swagger.json</p>
-
-<p>Then open your browser at <a href="http://tracing_node_ip:tracing_node_port/">http://tracing_node_ip:tracing_node_port/</a>, you should see something similar to the following:
-<img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/tracing.png" alt="" /></p>
-
+<p>Then open your browser at http://tracing_node_ip:tracing_node_port/, you should see something similar to the following:
+<img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/tracing.png" alt=""></p>
 <p>Note</p>
-
 <ul>
 <li>Tracing_node_port can be found by ‘kubctl get svc -n istio-system’.</li>
 <li>ONAP microservices need to propagate the appropriate HTTP headers so that when the proxies send span information, the spans can be correlated correctly into a single trace.</li>
 </ul>
-
 <h2 id="service-graph">Service Graph</h2>
-
 <p>Istio provides a Servicegraph service which generates and visualizes graph representations of the services in the mesh.</p>
-
-<p>Open your browser at <a href="http://node_ip:30088/dotviz">http://node_ip:30088/dotviz</a> or <a href="http://node_ip:30088/force/forcegraph.html">http://node_ip:30088/force/forcegraph.html</a>, you should see the service graph:</p>
-
-<p><img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/graph.png" alt="" /></p>
-
+<p>Open your browser at http://node_ip:30088/dotviz or http://node_ip:30088/force/forcegraph.html, you should see the service graph:</p>
+<p><img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/graph.png" alt=""></p>
 <h2 id="metrics-visualization">Metrics Visualization</h2>
-
 <p>Istio automatically gathers telemetry for services in a mesh. A Prometheus adapter is plugged into Mixer to serve the generated metric data. A Grafana addon is pre-configured with a Prometheus data source and has an Istio dashboard installed for the metric visualization.</p>
-
-<p>Open your browser at <a href="http://node_ip:30300">http://node_ip:30300</a>, you should see the Grafana Istio dashboard:
-<img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/metrics.png" alt="" /></p>
-
-<h2 id="authorization-rbac">Authorization(RBAC)</h2>
-
+<p>Open your browser at http://node_ip:30300, you should see the Grafana Istio dashboard:
+<img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/metrics.png" alt=""></p>
+<h2 id="authorizationrbac">Authorization(RBAC)</h2>
 <p>Istio authorization is disabled by default, running the following command to enable it for onap namespace:</p>
-
 <pre><code>cd /service-mesh/install
 kubectl apply -f enable-istio-rbac.yaml
-</code></pre>
-
-<p>Point your browser at the msb portal or multicloud swagger file:</p>
-
+</code></pre><p>Point your browser at the msb portal or multicloud swagger file:</p>
 <p>http://${INGRESS_IP}:${INGRESS_PORT}/msb</p>
-
 <p>http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-vio/v0/swagger.json</p>
-
 <p>Now you should see “RBAC: access denied”. This is because Istio authorization is “deny by default”, which means that you need to explicitly define access control policy to grant access to any service. Note: There may be some delays due to caching and other propagation overhead.</p>
-
 <p>Running the following command to allow Istio Ingress gateway read access to onap Namespace:</p>
-
 <pre><code>cd /service-mesh/install
 kubectl apply -f apply -f istio-ingress-rbac.yaml
-</code></pre>
-
-<p>Now if you point your browser at the msb portal (http://${INGRESS_IP}:${INGRESS_PORT}/msb). You should see the msb portal page with registered services.</p>
-
+</code></pre><p>Now if you point your browser at the msb portal (http://${INGRESS_IP}:${INGRESS_PORT}/msb). You should see the msb portal page with registered services.</p>
 <p>Note: There may be some delays due to caching and other propagation overhead.</p>
-
 <p>If you try to access http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-vio/v0/swagger.json, you should still see “RBAC: access denied”. What’s happening? This request actually goes through browser-&gt;Istio-ingress-&gt;MSB-&gt;multicloud, even now Istio-ingress can access MSB, MSB is not allowed to access multicloud. So we need to create another RBAC rule to grant the access permission of multicloud to MSB.</p>
-
 <p>Running the following command to grant access of multicloud to MSB:</p>
-
 <pre><code>cd /service-mesh/install
 kubectl apply -f msb-rbac.yaml
-</code></pre>
-
-<p>Try to access http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-vio/v0/swagger.json again, you should be able to see the swagger file return from multicloud microservice.</p>
-
+</code></pre><p>Try to access http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-vio/v0/swagger.json again, you should be able to see the swagger file return from multicloud microservice.</p>
 <p>Note: There may be some delays due to caching and other propagation overhead.</p>
-
 <h1 id="service-mesh-migration">Service Mesh Migration</h1>
-
 <h2 id="without-istio-authentication-and-authorization">Without Istio Authentication and Authorization</h2>
-
 <p>ONAP can be easily integrated with Istio service mesh if Istio Auth is disabled. In that case, ONAP can leverage the traffic management, telemetry and policies capabilities of Istio to connect, control and observe ONAP microservies, but without Mutual TLS authentication and authorization.</p>
-
 <p>Though ONAP services can talk to each other within the mesh, to maximize the benefits brought by Istio, we still need to make little compatible changes to the existing services:</p>
-
 <h3 id="service-port-name">Service Port Name</h3>
-
 <p>The port names must be of the form protocol-suffix with http, http2, grpc, mongo, or redis as the protocol in order to take advantage of Istio’s routing features.</p>
-
 <p>For example, name: http2-foo or name: http are valid port names, but name: http2foo is not. If the port name does not begin with a recognized prefix or if the port is unnamed, traffic on the port will be treated as plain TCP traffic (unless the port explicitly uses Protocol: UDP to signify a UDP port).</p>
-
 <pre><code>kubectl describe svc aai -n onap
 Name:                    aai
 Namespace:               onap
@@ -767,14 +649,9 @@ Type:                    NodePort
 IP:                      10.96.29.203 
 Port:                    http-aai  8080/TCP
 ---omitted for brevity
-</code></pre>
-
-<h3 id="propagate-http-header-for-distributed-tracing">Propagate Http Header for Distributed Tracing</h3>
-
+</code></pre><h3 id="propagate-http-header-for-distributed-tracing">Propagate Http Header for Distributed Tracing</h3>
 <p>Istio uses HTTP headers to record the request tracing information across multiple spans. Although Istio proxies are able to automatically send all the spans to Mixer, they need some hints to tie together the individual spans to get the entire trace.</p>
-
 <p>To do this, ONAP microservies needs to collect and propagate the following headers from the incoming request to any outgoing requests:</p>
-
 <pre><code>x-request-id
 x-b3-traceid
 x-b3-spanid
@@ -782,20 +659,12 @@ x-b3-parentspanid
 x-b3-sampled
 x-b3-flags
 x-ot-span-context
-</code></pre>
-
-<h2 id="with-istio-authentication-and-authorization">With Istio Authentication and Authorization</h2>
-
+</code></pre><h2 id="with-istio-authentication-and-authorization">With Istio Authentication and Authorization</h2>
 <p>In addition to the port name format and http header propagation, the followings need to be done to leverage Istio auth.</p>
-
 <h3 id="liveness-probe">Liveness Probe</h3>
-
 <p>Mutual TLS can’t work with 8Shttp/tcp liveness probe. If mutual TLS is enabled, http and tcp health checks from the kubelet will not work since they do not have Istio-issued certs. The workaround is using liveness command instead or disabling http and tcp liveness probe for the time being.</p>
-
 <h3 id="allow-both-mutual-tls-and-plain-traffic">Allow both Mutual TLS and Plain Traffic</h3>
-
 <p>During the migration, we can use “PERMISSIVE” mode of Istio Auth policy to allow both TLS and plain traffic. After migration is done, the mode can be switched to “STRICT” mode so only TLS traffics are permitted to access services.</p>
-
 <pre><code>cat &lt;&lt;EOF | kubectl apply -n onap -f -
 apiVersion: &quot;authentication.istio.io/v1alpha1&quot;
 kind: &quot;Policy&quot;
@@ -807,10 +676,7 @@ spec:
   - mtls:
       mode: PERMISSIVE
 EOF
-</code></pre>
-
-<p>In that case, the RBAC should be set to allow all users, including the unauthenticated users, to access the services.</p>
-
+</code></pre><p>In that case, the RBAC should be set to allow all users, including the unauthenticated users, to access the services.</p>
 <pre><code>cat &lt;&lt;EOF | kubectl apply -n onap -f -
 apiVersion: &quot;rbac.istio.io/v1alpha1&quot;
 kind: ServiceRole
@@ -834,11 +700,8 @@ spec:
     kind: ServiceRole
     name: &quot;onap-default&quot;
 EOF
-</code></pre>
-
-<p>By this approach, ONAP can be smoothly migrated to Istio with auth enabled. After every ONAP microservice adopts Istio auth, then we can set the authentication to “STRICT” mode and enforce strict access control per the needs of each service.</p>
-
-<p><em>What&rsquo;s the next? we will provide a user-friendly Istio UI to manage Istio rules and policies. Comment here to leave your thoughts or join our <a href="https://wiki.onap.org/display/DW/MSB+Meeting+Notes">weekly project meeting</a> if you&rsquo;re interested.</em></p>
+</code></pre><p>By this approach, ONAP can be smoothly migrated to Istio with auth enabled. After every ONAP microservice adopts Istio auth, then we can set the authentication to “STRICT” mode and enforce strict access control per the needs of each service.</p>
+<p><em>What's the next? we will provide a user-friendly Istio UI to manage Istio rules and policies. Comment here to leave your thoughts or join our <a href="https://wiki.onap.org/display/DW/MSB+Meeting+Notes">weekly project meeting</a> if you're interested.</em></p>
 
 
                 

@@ -355,25 +355,19 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#vim-graphical-cheat-sheet">vim graphical cheat sheet</a></li>
-<li><a href="#vim-jumps">Vim Jumps</a></li>
-<li><a href="#vim-navigations">Vim Navigations</a></li>
-<li><a href="#enable-vim-mode-in-bash">Enable Vim mode in bash</a></li>
-<li><a href="#enable-system-clipboard-upport">Enable system clipboard upport</a></li>
-<li><a href="#others">Others</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#vim-graphical-cheat-sheet">vim graphical cheat sheet</a></li>
+    <li><a href="#vim-jumps">Vim Jumps</a></li>
+    <li><a href="#vim-navigations">Vim Navigations</a></li>
+    <li><a href="#enable-vim-mode-in-bash">Enable Vim mode in bash</a></li>
+    <li><a href="#enable-system-clipboard-upport">Enable system clipboard upport</a></li>
+    <li><a href="#others">Others</a></li>
+  </ul>
 </nav>
                 
                 <h2 id="vim-graphical-cheat-sheet">vim graphical cheat sheet</h2>
-
-<p><img src="/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg" alt="" /></p>
-
+<p><img src="/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg" alt=""></p>
 <h2 id="vim-jumps">Vim Jumps</h2>
-
 <ul>
 <li>^ — Move to start of line</li>
 <li>$ — Move to end of line</li>
@@ -384,46 +378,27 @@ $(function() {
 <li>``(two backticks) jump back to where you were</li>
 <li>gi go back to the last place you inserted a text and enter insert mode</li>
 </ul>
-
 <h2 id="vim-navigations">Vim Navigations</h2>
-
 <ul>
 <li>{ and } jump paragraph back and forth</li>
 <li>Ctrl-F/B move one screen back and forth</li>
 <li>Search the word under cursor, then n/p to jump to next/previous</li>
 </ul>
-
 <h2 id="enable-vim-mode-in-bash">Enable Vim mode in bash</h2>
-
 <p>vi ~/.inputrc
 set editing-mode vi</p>
-
 <h2 id="enable-system-clipboard-upport">Enable system clipboard upport</h2>
-
 <p>See if system clipboard is supported:</p>
-
 <pre><code>$ vim --version | grep clipboard
 -clipboard       +iconv           +path_extra      -toolbar
 +eval            +mouse_dec       +startuptime     -xterm_clipboard
-</code></pre>
-
-<p>Rinstall vim as vim-gnome:</p>
-
+</code></pre><p>Rinstall vim as vim-gnome:</p>
 <pre><code>sudo apt-get install vim-gnome
-</code></pre>
-
-<p>Select what you want using the mouse - then type to copy to clipboard:</p>
-
+</code></pre><p>Select what you want using the mouse - then type to copy to clipboard:</p>
 <pre><code>&quot;+y
-</code></pre>
-
-<p>To paste to vim from clipboard type:</p>
-
+</code></pre><p>To paste to vim from clipboard type:</p>
 <pre><code>&quot;+p
-</code></pre>
-
-<h2 id="others">Others</h2>
-
+</code></pre><h2 id="others">Others</h2>
 <ul>
 <li>Ex: open the current directory</li>
 <li>set number: show line number</li>

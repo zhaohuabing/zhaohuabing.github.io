@@ -359,292 +359,226 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li><a href="#istio服务注册插件机制">Istio服务注册插件机制</a></li>
-<li><a href="#服务注册相关的对象">服务注册相关的对象</a>
-<ul>
-<li><a href="#service">Service</a></li>
-<li><a href="#serviceinstance">ServiceInstance</a></li>
-<li><a href="#registry">Registry</a></li>
-<li><a href="#controller">Controller</a></li>
-<li><a href="#servicediscovery">ServiceDiscovery</a></li>
-</ul></li>
-<li><a href="#service-registry初始化流程">Service Registry初始化流程</a></li>
-</ul>
+  <ul>
+    <li><a href="#service">Service</a></li>
+    <li><a href="#serviceinstance">ServiceInstance</a></li>
+    <li><a href="#registry">Registry</a></li>
+    <li><a href="#controller">Controller</a></li>
+    <li><a href="#servicediscovery">ServiceDiscovery</a></li>
+  </ul>
 </nav>
                 
-                
-
-<h1 id="istio服务注册插件机制">Istio服务注册插件机制</h1>
-
+                <h1 id="istio">Istio服务注册插件机制</h1>
 <p>在Istio架构中，Pilot组件负责维护网格中的标准服务模型，该标准服务模型独立于各种底层平台，Pilot通过适配器和各底层平台对接，以使用底层平台中的服务数据填充此标准模型。</p>
-
 <p>例如Pilot中的Kubernetes适配器通过Kubernetes API Server到kubernetes中的Service以及对应的POD实例，将该数据被翻译为标准模型提供给Pilot使用。通过适配器模式，Pilot还可以从Cloud Foundry, Consul中获取服务信息，也可以开发适配器将其他提供服务发现的组件集成到Pilot中。
-<img src="/img/2019-02-18-pilot-service-registry-code-analysis/pilot.png" alt="" /></p>
-
+<img src="/img/2019-02-18-pilot-service-registry-code-analysis/pilot.png" alt=""></p>
 <p>本文将从代码出发，对Pilot的服务注册机制进行分析。</p>
-
 <p>备注： 本文分析的代码对应Istio commit 58186e1dc3392de842bc2b2c788f993878e0f123</p>
-
-<h1 id="服务注册相关的对象">服务注册相关的对象</h1>
-
+<h1 id="heading">服务注册相关的对象</h1>
 <p>首先我们来了解一下Pilot中关于服务注册的一些基本概念和相关数据结构。</p>
-
 <p>Istio源码中，和服务注册相关的对象如下面的UML类图所示。</p>
-
-<p><img src="/img/2019-02-18-pilot-service-registry-code-analysis/class-diagram.png" alt="" /></p>
-
+<p><img src="/img/2019-02-18-pilot-service-registry-code-analysis/class-diagram.png" alt=""></p>
 <h2 id="service">Service</h2>
-
 <p>源码文件：pilot/pkg/model/service.go</p>
-
 <p>Service用于表示Istio服务网格中的一个服务（例如 catalog.mystore.com:8080)。每一个服务有一个全限定域名(FQDN)和一个或者多个接收客户端请求的监听端口。</p>
-
 <p>一个服务可以有一个可选的 负载均衡器/虚拟IP，DNS解析会对应到该虚拟IP（负载均衡器的IP）上。 一般来说，不管后端的服务实例如何变化，VIP是不会变化的，Istio会维护VIP和后端实例真实IP的对应关系。</p>
-
 <p>例如在Kubernetes中，服务 foo 的FQDN为foo.default.svc.cluster.local， 拥有一个虚拟IP 10.0.1.1，在端口80和8080上监听客户端请求。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Service</span> <span style="color:#66d9ef">struct</span> {
+        <span style="color:#75715e">// Hostn/服务器名
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Hostname</span> <span style="color:#a6e22e">Hostname</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;hostname&#34;</span><span style="color:#e6db74">`</span>
 
-<pre><code class="language-go">type Service struct {
-        // Hostn/服务器名
-        Hostname Hostname `json:&quot;hostname&quot;`
+        <span style="color:#75715e">// 虚拟IP / 负载均衡器 IP
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Address</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;address,omitempty&#34;</span><span style="color:#e6db74">`</span>
 
-        // 虚拟IP / 负载均衡器 IP
-        Address string `json:&quot;address,omitempty&quot;`
+        <span style="color:#75715e">// 如果服务部署在多个集群中，ClusterVIPs会保存不同集群中该服务对应的VIP
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ClusterVIPs</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;cluster-vips,omitempty&#34;</span><span style="color:#e6db74">`</span>
 
-        // 如果服务部署在多个集群中，ClusterVIPs会保存不同集群中该服务对应的VIP
-        ClusterVIPs map[string]string `json:&quot;cluster-vips,omitempty&quot;`
+        <span style="color:#75715e">// 服务端口列表
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Ports</span> <span style="color:#a6e22e">PortList</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;ports,omitempty&#34;</span><span style="color:#e6db74">`</span>
 
-        // 服务端口列表
-        Ports PortList `json:&quot;ports,omitempty&quot;`
+        <span style="color:#75715e">// 运行该服务的服务账号
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ServiceAccounts</span> []<span style="color:#66d9ef">string</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;serviceaccounts,omitempty&#34;</span><span style="color:#e6db74">`</span>
 
-        // 运行该服务的服务账号
-        ServiceAccounts []string `json:&quot;serviceaccounts,omitempty&quot;`
+        <span style="color:#75715e">// 该服务是否为一个 “外部服务”， 采用 ServiceEntry 定义的服务该标志为true
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">MeshExternal</span> <span style="color:#66d9ef">bool</span>
 
-        // 该服务是否为一个 “外部服务”， 采用 ServiceEntry 定义的服务该标志为true
-        MeshExternal bool
+        <span style="color:#75715e">// 服务解析规则： 包括 
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// ClientSideLB: 由Envoy代理根据其本地的LB pool进行请求路由
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// DNSLB: 查询DNS服务器得到IP地址，并将请求发到该IP
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Passthrough： 将请求发转发到其原始目的地
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Resolution</span> <span style="color:#a6e22e">Resolution</span>
 
-        // 服务解析规则： 包括 
-        // ClientSideLB: 由Envoy代理根据其本地的LB pool进行请求路由
-        // DNSLB: 查询DNS服务器得到IP地址，并将请求发到该IP
-        // Passthrough： 将请求发转发到其原始目的地
-        Resolution Resolution
+        <span style="color:#75715e">// 服务创建时间
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">CreationTime</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;creationTime,omitempty&#34;</span><span style="color:#e6db74">`</span>
 
-        // 服务创建时间
-        CreationTime time.Time `json:&quot;creationTime,omitempty&quot;`
-
-        // 服务的一些附加属性
-        Attributes ServiceAttributes
+        <span style="color:#75715e">// 服务的一些附加属性
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Attributes</span> <span style="color:#a6e22e">ServiceAttributes</span>
 }
-</code></pre>
-
-<h2 id="serviceinstance">ServiceInstance</h2>
-
+</code></pre></div><h2 id="serviceinstance">ServiceInstance</h2>
 <p>源码文件：pilot/pkg/model/service.go</p>
-
 <p>SercieInstance中存放了服务实例相关的信息，一个Service可以对应到一到多个Service Instance，Istio在收到客户端请求时，会根据该Service配置的LB策略和路由规则从可用的Service Instance中选择一个来提供服务。</p>
-
-<pre><code class="language-go">type ServiceInstance struct {
-        // Endpoint中包括服务实例的IP：Port，UID等
-        Endpoint       NetworkEndpoint `json:&quot;endpoint,omitempty&quot;`
-        // 对应的服务
-        Service        *Service        `json:&quot;service,omitempty&quot;`
-        // 该实例上的标签，例如版本号
-        Labels         Labels          `json:&quot;labels,omitempty&quot;`
-        // 运行该服务的服务账号
-        ServiceAccount string          `json:&quot;serviceaccount,omitempty&quot;`
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ServiceInstance</span> <span style="color:#66d9ef">struct</span> {
+        <span style="color:#75715e">// Endpoint中包括服务实例的IP：Port，UID等
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Endpoint</span>       <span style="color:#a6e22e">NetworkEndpoint</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;endpoint,omitempty&#34;</span><span style="color:#e6db74">`</span>
+        <span style="color:#75715e">// 对应的服务
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Service</span>        <span style="color:#f92672">*</span><span style="color:#a6e22e">Service</span>        <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;service,omitempty&#34;</span><span style="color:#e6db74">`</span>
+        <span style="color:#75715e">// 该实例上的标签，例如版本号
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Labels</span>         <span style="color:#a6e22e">Labels</span>          <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;labels,omitempty&#34;</span><span style="color:#e6db74">`</span>
+        <span style="color:#75715e">// 运行该服务的服务账号
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ServiceAccount</span> <span style="color:#66d9ef">string</span>          <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;serviceaccount,omitempty&#34;</span><span style="color:#e6db74">`</span>
 }
-</code></pre>
-
-<h2 id="registry">Registry</h2>
-
+</code></pre></div><h2 id="registry">Registry</h2>
 <p>源码文件： pilot/pkg/serviceregistry/aggregate/controller.go</p>
-
 <p>Registry代表一个通过适配器插入到Pilot中的服务注册表，即Kubernetes，Cloud Foundry 或者 Consul 等具体后端的服务部署/服务注册发现平台。</p>
-
 <p>Registry结构体中包含了Service Registry相关的一些接口和属性。</p>
-
-<pre><code class="language-go">type Registry struct {
-        // 注册表的类型，例如Kubernetes, Consul, 等等。
-        Name serviceregistry.ServiceRegistry
-        // 某些类型的服务注册表支持多集群，例如Kubernetes，在这种情况下需要用CluterID来区分同一类型下不同集群的服务注册表
-        ClusterID string
-        // 控制器，负责向外发送该Registry相关的Service变化消息
-        model.Controller
-        // 服务发现接口，用于获取注册表中的服务信息
-        model.ServiceDiscovery
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Registry</span> <span style="color:#66d9ef">struct</span> {
+        <span style="color:#75715e">// 注册表的类型，例如Kubernetes, Consul, 等等。
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Name</span> <span style="color:#a6e22e">serviceregistry</span>.<span style="color:#a6e22e">ServiceRegistry</span>
+        <span style="color:#75715e">// 某些类型的服务注册表支持多集群，例如Kubernetes，在这种情况下需要用CluterID来区分同一类型下不同集群的服务注册表
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ClusterID</span> <span style="color:#66d9ef">string</span>
+        <span style="color:#75715e">// 控制器，负责向外发送该Registry相关的Service变化消息
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Controller</span>
+        <span style="color:#75715e">// 服务发现接口，用于获取注册表中的服务信息
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">ServiceDiscovery</span>
 }
-</code></pre>
-
-<p>Istio支持以下几种服务注册表类型：</p>
-
+</code></pre></div><p>Istio支持以下几种服务注册表类型：</p>
 <p>源码文件： pilot/pkg/serviceregistry/platform.go</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ServiceRegistry defines underlying platform supporting service registry
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ServiceRegistry</span> <span style="color:#66d9ef">string</span>
 
-<pre><code class="language-go">// ServiceRegistry defines underlying platform supporting service registry
-type ServiceRegistry string
-
-const (
-        // MockRegistry,用于测试的服务注册表，包含两个硬编码的test services
-        MockRegistry ServiceRegistry = &quot;Mock&quot;
-        // ConfigRegistry,可以从Configstore中获取定义的service registry，加入到Istio的服务列表中
-        KubernetesRegistry ServiceRegistry = &quot;Kubernetes&quot;
-        // 从Consul获取服务数据的服务注册表
-        ConsulRegistry ServiceRegistry = &quot;Consul&quot;
-        // 采用“Mesh Configuration Protocol”的服务注册表
-        MCPRegistry ServiceRegistry = &quot;MCP&quot;
+<span style="color:#66d9ef">const</span> (
+        <span style="color:#75715e">// MockRegistry,用于测试的服务注册表，包含两个硬编码的test services
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">MockRegistry</span> <span style="color:#a6e22e">ServiceRegistry</span> = <span style="color:#e6db74">&#34;Mock&#34;</span>
+        <span style="color:#75715e">// ConfigRegistry,可以从Configstore中获取定义的service registry，加入到Istio的服务列表中
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">KubernetesRegistry</span> <span style="color:#a6e22e">ServiceRegistry</span> = <span style="color:#e6db74">&#34;Kubernetes&#34;</span>
+        <span style="color:#75715e">// 从Consul获取服务数据的服务注册表
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ConsulRegistry</span> <span style="color:#a6e22e">ServiceRegistry</span> = <span style="color:#e6db74">&#34;Consul&#34;</span>
+        <span style="color:#75715e">// 采用“Mesh Configuration Protocol”的服务注册表
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">MCPRegistry</span> <span style="color:#a6e22e">ServiceRegistry</span> = <span style="color:#e6db74">&#34;MCP&#34;</span>
 )
-</code></pre>
-
-<p>其中支持最完善的就是Kubernetes了，我在项目中使用了Consul，填坑的经验证明对Consul的支持只是原型验证级别的，要在产品中使用的话还需要对其进行较多的改进和优化。</p>
-
+</code></pre></div><p>其中支持最完善的就是Kubernetes了，我在项目中使用了Consul，填坑的经验证明对Consul的支持只是原型验证级别的，要在产品中使用的话还需要对其进行较多的改进和优化。</p>
 <p>注册表中最后一个类型是 MCP，MCP 是 “Mesh Configuration Protocol&rdquo; 的缩写。 Istio 使用了 MCP 实现了一个服务注册和路由配置的标准接口，MCP Server可以从Kubernetes，Cloud Foundry, Consul等获取服务信息和配置数据，并将这些信息通过MCP提供给 MCP Client，即Pilot，通过这种方式，将目前特定平台的相关的代码从Pilot中剥离到独立的MCP服务器中，使Pilot的架构和代码更为清晰。MCP将逐渐替换目前的各种Adapter。更多关于MCP的内容参见：</p>
-
 <ul>
 <li><a href="https://docs.google.com/document/d/1o2-V4TLJ8fJACXdlsnxKxDv2Luryo48bAhR8ShxE5-k/edit">https://docs.google.com/document/d/1o2-V4TLJ8fJACXdlsnxKxDv2Luryo48bAhR8ShxE5-k/edit</a></li>
 <li><a href="https://docs.google.com/document/d/1S5ygkxR1alNI8cWGG4O4iV8zp8dA6Oc23zQCvFxr83U/edit">https://docs.google.com/document/d/1S5ygkxR1alNI8cWGG4O4iV8zp8dA6Oc23zQCvFxr83U/edit</a></li>
 </ul>
-
 <h2 id="controller">Controller</h2>
-
 <p>源码文件： pilot/pkg/model/controller.go</p>
-
 <p>Controller抽象了一个Service Registry变化通知的接口，该接口会将Service及Service Instance的增加，删除，变化等消息通知给ServiceHandler。</p>
-
 <p>调用Controller的Run方法后，Controller会一直执行，将监控Service Registry的变化，并将通知到注册到Controller中的ServiceHandler中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Controller</span> <span style="color:#66d9ef">interface</span> {
+        <span style="color:#75715e">// 添加一个Service Handler，服务的变化会通知到该Handler
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">AppendServiceHandler</span>(<span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Service</span>, <span style="color:#a6e22e">Event</span>)) <span style="color:#66d9ef">error</span>
 
-<pre><code class="language-go">type Controller interface {
-        // 添加一个Service Handler，服务的变化会通知到该Handler
-        AppendServiceHandler(f func(*Service, Event)) error
+        <span style="color:#75715e">// 添加一个Service Instance Handler， 服务实例的变化会通知到该Handler
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">AppendInstanceHandler</span>(<span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">ServiceInstance</span>, <span style="color:#a6e22e">Event</span>)) <span style="color:#66d9ef">error</span>
 
-        // 添加一个Service Instance Handler， 服务实例的变化会通知到该Handler
-        AppendInstanceHandler(f func(*ServiceInstance, Event)) error
-
-        // 启动Controller的主循环，对Service Catalog的变化进行分发
-        Run(stop &lt;-chan struct{})
+        <span style="color:#75715e">// 启动Controller的主循环，对Service Catalog的变化进行分发
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">stop</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{})
 }
-</code></pre>
-
-<h2 id="servicediscovery">ServiceDiscovery</h2>
-
+</code></pre></div><h2 id="servicediscovery">ServiceDiscovery</h2>
 <p>源码文件： pilot/pkg/model/service.go</p>
-
 <p>ServiceDiscovery抽象了一个服务发现的接口，可以通过该接口获取到Service Registry中的Service和Service Instance。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ServiceDiscovery</span> <span style="color:#66d9ef">interface</span> {
+        <span style="color:#75715e">// 列出该Service Registry中的所有服务
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">Services</span>() ([]<span style="color:#f92672">*</span><span style="color:#a6e22e">Service</span>, <span style="color:#66d9ef">error</span>)
 
-<pre><code class="language-go">type ServiceDiscovery interface {
-        // 列出该Service Registry中的所有服务
-        Services() ([]*Service, error)
+        <span style="color:#75715e">// 根据主机名查询服务
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 该接口已废弃
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">GetService</span>(<span style="color:#a6e22e">hostname</span> <span style="color:#a6e22e">Hostname</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">Service</span>, <span style="color:#66d9ef">error</span>)
 
-        // 根据主机名查询服务
-        // 该接口已废弃
-        GetService(hostname Hostname) (*Service, error)
-
-        // 根据主机名，服务端点和标签查询服务实例
-        InstancesByPort(hostname Hostname, servicePort int, labels LabelsCollection) ([]*ServiceInstance, error)
+        <span style="color:#75715e">// 根据主机名，服务端点和标签查询服务实例
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">InstancesByPort</span>(<span style="color:#a6e22e">hostname</span> <span style="color:#a6e22e">Hostname</span>, <span style="color:#a6e22e">servicePort</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">labels</span> <span style="color:#a6e22e">LabelsCollection</span>) ([]<span style="color:#f92672">*</span><span style="color:#a6e22e">ServiceInstance</span>, <span style="color:#66d9ef">error</span>)
 		
-		// 查询边车代理所在节点上的服务实例 
-		GetProxyServiceInstances(*Proxy) ([]*ServiceInstance, error)
+		<span style="color:#75715e">// 查询边车代理所在节点上的服务实例 
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">GetProxyServiceInstances</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Proxy</span>) ([]<span style="color:#f92672">*</span><span style="color:#a6e22e">ServiceInstance</span>, <span style="color:#66d9ef">error</span>)
 		
-		// 获取边车代理所在的Region,Zone和SubZone
-        GetProxyLocality(*Proxy) string
+		<span style="color:#75715e">// 获取边车代理所在的Region,Zone和SubZone
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">GetProxyLocality</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Proxy</span>) <span style="color:#66d9ef">string</span>
         
-		// 管理端口，Istio生成的配置会将管理端口的流量排除，不进行路由处理
-        ManagementPorts(addr string) PortList
+		<span style="color:#75715e">// 管理端口，Istio生成的配置会将管理端口的流量排除，不进行路由处理
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">ManagementPorts</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">PortList</span>
 
-        // 列出用于监控检查的探针
-        WorkloadHealthCheckInfo(addr string) ProbeList
+        <span style="color:#75715e">// 列出用于监控检查的探针
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">WorkloadHealthCheckInfo</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">ProbeList</span>
 }
-</code></pre>
-
-<h1 id="service-registry初始化流程">Service Registry初始化流程</h1>
-
+</code></pre></div><h1 id="service-registry">Service Registry初始化流程</h1>
 <p>Service Registry初始化的主要逻辑在Pilot-discovery程序的主函数中，对应的源码为：pilot/cmd/pilot-discovery/main.go和pilot/pkg/bootstrap/server.go。</p>
-
 <p>在pilot/pkg/bootstrap/server.go中，初始化了各种Service Registry，其流程如下图所示：
 （备注： MCP Registry尚在开发过程中）
-<img src="/img/2019-02-18-pilot-service-registry-code-analysis/init-service-registry.png" alt="" /></p>
-
+<img src="/img/2019-02-18-pilot-service-registry-code-analysis/init-service-registry.png" alt=""></p>
 <p>Pilot将各个Service Registry(Memory, Kube, Consul)保存在serviceregistry.aggreagete.Controller中进行统一管理，Pilot会从所有类型的Registry中查询服务和服务实例，并监控所有Registry的数据变化,当Registry数据变化后，Pilot会清空其内部的缓存并通过ADS接口向Envoy推送更新。
-<img src="/img/2019-02-18-pilot-service-registry-code-analysis/controller.jpg" alt="" /></p>
-
+<img src="/img/2019-02-18-pilot-service-registry-code-analysis/controller.jpg" alt=""></p>
 <blockquote>
 <p>备注：上图中的controller实际上是Service Registry，aggregate controller和具体的各个类型的controller同时实现了Registry要求的controller和discovery interface。</p>
 </blockquote>
-
 <p>Registry的业务逻辑在Kube Controller和Consul controller中，我们主要使用了Consul Controller， 其主要方法如下：</p>
-
 <p>源码文件： pilot/pkg/serviceregistry/consul/controller.go</p>
-
-<pre><code class="language-go">▼+Controller : struct
-    [fields]
-   -client : *api.Client
-   -monitor : Monitor
-    [methods]
-   +AppendInstanceHandler(f func(*model.ServiceInstance, model.Event)) : error
-   +AppendServiceHandler(f func(*model.Service, model.Event)) : error
-   +GetIstioServiceAccounts(hostname model.Hostname, ports []int) : []string
-   +GetProxyServiceInstances(node *model.Proxy) : []*model.ServiceInstance, error
-   +GetService(hostname model.Hostname) : *model.Service, error
-   +InstancesByPort(hostname model.Hostname, port int, labels model.LabelsCollection) : []*model.ServiceInstance, error
-   +ManagementPorts(addr string) : model.PortList
-   +Run(stop chan )
-   +Services() : []*model.Service, error
-   +WorkloadHealthCheckInfo(addr string) : model.ProbeList
-   -getCatalogService(name string, q *api.QueryOptions) : []*api.CatalogService, error
-   -getServices() : map[string][]string, error
-    [functions]
-   +NewController(addr string, interval time.Duration) : *Controller, error
-</code></pre>
-
-<p>可以看到Consul Controller对象同时实现了Registry要求的Controller和ServiceDiscovery接口，可以提供Registry的变化通知和服务查询相关功能。</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#960050;background-color:#1e0010">▼</span><span style="color:#f92672">+</span><span style="color:#a6e22e">Controller</span> : <span style="color:#66d9ef">struct</span>
+    [<span style="color:#a6e22e">fields</span>]
+   <span style="color:#f92672">-</span><span style="color:#a6e22e">client</span> : <span style="color:#f92672">*</span><span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">Client</span>
+   <span style="color:#f92672">-</span><span style="color:#a6e22e">monitor</span> : <span style="color:#a6e22e">Monitor</span>
+    [<span style="color:#a6e22e">methods</span>]
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">AppendInstanceHandler</span>(<span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">ServiceInstance</span>, <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Event</span>)) : <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">AppendServiceHandler</span>(<span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Service</span>, <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Event</span>)) : <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">GetIstioServiceAccounts</span>(<span style="color:#a6e22e">hostname</span> <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Hostname</span>, <span style="color:#a6e22e">ports</span> []<span style="color:#66d9ef">int</span>) : []<span style="color:#66d9ef">string</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">GetProxyServiceInstances</span>(<span style="color:#a6e22e">node</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Proxy</span>) : []<span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">ServiceInstance</span>, <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">GetService</span>(<span style="color:#a6e22e">hostname</span> <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Hostname</span>) : <span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Service</span>, <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">InstancesByPort</span>(<span style="color:#a6e22e">hostname</span> <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Hostname</span>, <span style="color:#a6e22e">port</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">labels</span> <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">LabelsCollection</span>) : []<span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">ServiceInstance</span>, <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">ManagementPorts</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) : <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">PortList</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">Run</span>(<span style="color:#a6e22e">stop</span> <span style="color:#66d9ef">chan</span> )
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">Services</span>() : []<span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Service</span>, <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">WorkloadHealthCheckInfo</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) : <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">ProbeList</span>
+   <span style="color:#f92672">-</span><span style="color:#a6e22e">getCatalogService</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">q</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">QueryOptions</span>) : []<span style="color:#f92672">*</span><span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">CatalogService</span>, <span style="color:#66d9ef">error</span>
+   <span style="color:#f92672">-</span><span style="color:#a6e22e">getServices</span>() : <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>
+    [<span style="color:#a6e22e">functions</span>]
+   <span style="color:#f92672">+</span><span style="color:#a6e22e">NewController</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">interval</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>) : <span style="color:#f92672">*</span><span style="color:#a6e22e">Controller</span>, <span style="color:#66d9ef">error</span>
+</code></pre></div><p>可以看到Consul Controller对象同时实现了Registry要求的Controller和ServiceDiscovery接口，可以提供Registry的变化通知和服务查询相关功能。</p>
 <p>目前Consul Controller的实现比较简单粗暴，定时通过Consul的Rest API获取服务数据并和上一次的查询结果进行对比，如果数据发生了变化则通知Pilot discovery进行更新。该方式发起了大量对Consul Server的HTTP请求，会导致Consul Server CPU占用率高和大量TCP Socket处于TIME_WAIT状态，不能直接在产品环境下使用。</p>
-
 <p>源码文件： pilot/pkg/serviceregistry/consul/monitor.go</p>
-
-<pre><code class="language-go">//定时轮询Consul Server Rest接口，以获取服务数据变化
-func (m *consulMonitor) run(stop &lt;-chan struct{}) {
-        ticker := time.NewTicker(m.period)
-        for {
-                select {
-                case &lt;-stop:
-                        ticker.Stop()
-                        return
-                case &lt;-ticker.C:
-                        m.updateServiceRecord()
-                        m.updateInstanceRecord()
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//定时轮询Consul Server Rest接口，以获取服务数据变化
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">consulMonitor</span>) <span style="color:#a6e22e">run</span>(<span style="color:#a6e22e">stop</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}) {
+        <span style="color:#a6e22e">ticker</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">NewTicker</span>(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">period</span>)
+        <span style="color:#66d9ef">for</span> {
+                <span style="color:#66d9ef">select</span> {
+                <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">stop</span>:
+                        <span style="color:#a6e22e">ticker</span>.<span style="color:#a6e22e">Stop</span>()
+                        <span style="color:#66d9ef">return</span>
+                <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ticker</span>.<span style="color:#a6e22e">C</span>:
+                        <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">updateServiceRecord</span>()
+                        <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">updateInstanceRecord</span>()
                 }
         }
 }
 
-//比较这一次和上一次的服务数据，如有变化则回调ServiceHandler进行通知
-func (m *consulMonitor) updateServiceRecord() {
-        svcs, _, err := m.discovery.Catalog().Services(nil)
-        if err != nil {
-                log.Warnf(&quot;Could not fetch services: %v&quot;, err)
-                return
+<span style="color:#75715e">//比较这一次和上一次的服务数据，如有变化则回调ServiceHandler进行通知
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">consulMonitor</span>) <span style="color:#a6e22e">updateServiceRecord</span>() {
+        <span style="color:#a6e22e">svcs</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">discovery</span>.<span style="color:#a6e22e">Catalog</span>().<span style="color:#a6e22e">Services</span>(<span style="color:#66d9ef">nil</span>)
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+                <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Warnf</span>(<span style="color:#e6db74">&#34;Could not fetch services: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+                <span style="color:#66d9ef">return</span>
         }
-        newRecord := consulServices(svcs)
+        <span style="color:#a6e22e">newRecord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">consulServices</span>(<span style="color:#a6e22e">svcs</span>)
         
-        if !reflect.DeepEqual(newRecord, m.serviceCachedRecord) {
-                // This is only a work-around solution currently
-                // Since Handler functions generally act as a refresher
-                // regardless of the input, thus passing in meaningless
-                // input should make functionalities work
-                //TODO
-                obj := []*api.CatalogService{}
-                var event model.Event
-                for _, f := range m.serviceHandlers {
-                        go func(handler ServiceHandler) {
-                                if err := handler(obj, event); err != nil {
-                                        log.Warnf(&quot;Error executing service handler function: %v&quot;, err)
+        <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">DeepEqual</span>(<span style="color:#a6e22e">newRecord</span>, <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">serviceCachedRecord</span>) {
+                <span style="color:#75715e">// This is only a work-around solution currently
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// Since Handler functions generally act as a refresher
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// regardless of the input, thus passing in meaningless
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// input should make functionalities work
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">//TODO
+</span><span style="color:#75715e"></span>                <span style="color:#a6e22e">obj</span> <span style="color:#f92672">:=</span> []<span style="color:#f92672">*</span><span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">CatalogService</span>{}
+                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">event</span> <span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">Event</span>
+                <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">f</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">serviceHandlers</span> {
+                        <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">handler</span> <span style="color:#a6e22e">ServiceHandler</span>) {
+                                <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">handler</span>(<span style="color:#a6e22e">obj</span>, <span style="color:#a6e22e">event</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+                                        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Warnf</span>(<span style="color:#e6db74">&#34;Error executing service handler function: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
                                 }
-                        }(f)
+                        }(<span style="color:#a6e22e">f</span>)
                 }
-                m.serviceCachedRecord = newRecord
+                <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">serviceCachedRecord</span> = <span style="color:#a6e22e">newRecord</span>
         }
 }
-</code></pre>
-
-<p>我们在Consul Registry中增加了缓存，并降低了Pilot轮询Consul server的频率，以减少Pilot频繁调用给Consul server带来的大量压力，下一步打算采用Consul watch来代替轮询，优化Consul Registry的服务变化通知机制。</p>
+</code></pre></div><p>我们在Consul Registry中增加了缓存，并降低了Pilot轮询Consul server的频率，以减少Pilot频繁调用给Consul server带来的大量压力，下一步打算采用Consul watch来代替轮询，优化Consul Registry的服务变化通知机制。</p>
 
 
                 

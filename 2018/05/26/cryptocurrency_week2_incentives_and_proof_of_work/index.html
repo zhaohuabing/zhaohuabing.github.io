@@ -367,88 +367,66 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#incentive">Incentive</a>
-<ul>
-<li><a href="#incentive-1-block-reward">Incentive 1: Block Reward</a></li>
-<li><a href="#incentive-2-transaction-fees">Incentive 2: Transaction Fees</a></li>
-</ul></li>
-<li><a href="#proof-of-work">Proof of Work</a>
-<ul>
-<li><a href="#why-bitcoin-network-needs-proof-of-work">Why Bitcoin network needs proof of work?</a></li>
-<li><a href="#how-to-prove-the-work">How to prove the work?</a></li>
-<li><a href="#pow-properties">PoW properties</a></li>
-</ul></li>
-<li><a href="#key-security-assumption">Key Security Assumption</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#incentive">Incentive</a>
+      <ul>
+        <li><a href="#incentive-1-block-reward">Incentive 1: Block Reward</a></li>
+        <li><a href="#incentive-2-transaction-fees">Incentive 2: Transaction Fees</a></li>
+      </ul>
+    </li>
+    <li><a href="#proof-of-work">Proof of Work</a>
+      <ul>
+        <li><a href="#why-bitcoin-network-needs-proof-of-work">Why Bitcoin network needs proof of work?</a></li>
+        <li><a href="#how-to-prove-the-work">How to prove the work?</a></li>
+        <li><a href="#pow-properties">PoW properties</a></li>
+      </ul>
+    </li>
+    <li><a href="#key-security-assumption">Key Security Assumption</a></li>
+  </ul>
 </nav>
                 
-                
-
-<blockquote>
+                <blockquote>
 <p>This series of articles are my notes of &ldquo;Bitcoin and Cryptocurrency Technologies&rdquo; online course.</p>
 </blockquote>
-
 <h2 id="incentive">Incentive</h2>
-
 <p>The mechanism to motivate nodes join the Bitcoin network and create blocks.</p>
-
 <h3 id="incentive-1-block-reward">Incentive 1: Block Reward</h3>
-
-<p>Creator of block gets to
-* include special coin-creation transaction in the block
-* choose reciptient address of this transaction (Of course, it is the miner&rsquo;s address)</p>
-
-<p>Explanation: Because the coin-creation transaction is just like other transaction in that block, it will only be valid if the created block ends up in the consensus chain, it&rsquo;s the incentive which encourages the nodes to be honest, otherwise they can&rsquo;t get their rewards.</p>
-
-<p>The value of the created coin is fixed in a period of 4 years, and it halves every 4 years.<br />
-The reward of the first block(the Genesis block) was 50 BTC. Because the Genesis was created on 03/Jan/2009, now 9 years past, so the reward halved twice, the current reward is 12.5 BTC.<br />
+<p>Creator of block gets to</p>
+<ul>
+<li>include special coin-creation transaction in the block</li>
+<li>choose reciptient address of this transaction (Of course, it is the miner's address)</li>
+</ul>
+<p>Explanation: Because the coin-creation transaction is just like other transaction in that block, it will only be valid if the created block ends up in the consensus chain, it's the incentive which encourages the nodes to be honest, otherwise they can't get their rewards.</p>
+<p>The value of the created coin is fixed in a period of 4 years, and it halves every 4 years. <br>
+The reward of the first block(the Genesis block) was 50 BTC. Because the Genesis was created on 03/Jan/2009, now 9 years past, so the reward halved twice, the current reward is 12.5 BTC.<br>
 The total number of BTC is 21 million, at the current rate, all the BTC will be mined out around 2140.</p>
-
 <p>I would have the chance be a miner if I started this lesson in 2009, what a shame! :-(</p>
-
-<p><img src="http://img.zhaohuabing.com/in-post/2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work/block_reward.png" alt="Bitcoin and Block Reward" /></p>
-
-<p><a href="https://en.bitcoin.it/wiki/Genesis_block">Genesis Block</a><br />
+<p><img src="http://img.zhaohuabing.com/in-post/2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work/block_reward.png" alt="Bitcoin and Block Reward"></p>
+<p><a href="https://en.bitcoin.it/wiki/Genesis_block">Genesis Block</a> <br>
 <a href="https://www.bitcoinblockhalf.com/">Bitcoin Block Reward Halving Countdown</a></p>
-
 <h3 id="incentive-2-transaction-fees">Incentive 2: Transaction Fees</h3>
-
 <ul>
 <li>Transaction creator can choose to make the output value less than the input value</li>
 <li>Remainder is a transaction fee and it goes to the block creator
-Right now it&rsquo;s purely voluntary, like a tip. But after all the Bitcoins are mined out after 2140, it might become mandatory.</li>
+Right now it's purely voluntary, like a tip. But after all the Bitcoins are mined out after 2140, it might become mandatory.</li>
 </ul>
-
 <h2 id="proof-of-work">Proof of Work</h2>
-
 <h3 id="why-bitcoin-network-needs-proof-of-work">Why Bitcoin network needs proof of work?</h3>
-
-<p>To select node who gets to propose the block based on their computing power(the proportion of computing power in the whole Bitcoin network), so the adversary can&rsquo;t simply create a lot of civil nodes to try to get more rewards.</p>
-
+<p>To select node who gets to propose the block based on their computing power(the proportion of computing power in the whole Bitcoin network), so the adversary can't simply create a lot of civil nodes to try to get more rewards.</p>
 <h3 id="how-to-prove-the-work">How to prove the work?</h3>
-
 <p>A hash puzzle needs computing power to solve: find a nonce to get a hash output falling into a small target space.</p>
-
-<p><img src="http://img.zhaohuabing.com/in-post/2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work/hash-puzzle.png" alt="Hash Puzzle" /></p>
-
+<p><img src="http://img.zhaohuabing.com/in-post/2018-05-27-cryptocurrency_week2_incentives_and_proof_of_work/hash-puzzle.png" alt="Hash Puzzle"></p>
 <h3 id="pow-properties">PoW properties</h3>
-
 <ul>
-<li>Difficult to Compute<br />
-In Aug 2014, a node needs to try about 10^20 times to find a hash in the target space.<br /></li>
-<li>parameterizable cost<br />
-Nodes automatically re-calculate the target every 2 weeks to keep the average time between blocks = 10 minutes.<br />
-It means if a miner invests a fixed amount of hardware into Bitcoin mining, as time goes by, the BTC he can find during a certain period will be less because the mining ecosystem is growing, his proportion of computing power is decreasing.<br />
-<strong>probability(Alice wins the next block) = fraction of global hash power she controls</strong><br />
+<li>Difficult to Compute <br>
+In Aug 2014, a node needs to try about 10^20 times to find a hash in the target space.</li>
+<li>parameterizable cost <br>
+Nodes automatically re-calculate the target every 2 weeks to keep the average time between blocks = 10 minutes. <br>
+It means if a miner invests a fixed amount of hardware into Bitcoin mining, as time goes by, the BTC he can find during a certain period will be less because the mining ecosystem is growing, his proportion of computing power is decreasing. <br>
+<strong>probability(Alice wins the next block) = fraction of global hash power she controls</strong> <br>
 Why keep the time as 10 minutes: for efficiency, this allows to keep a certain number of transactions into one block</li>
 </ul>
-
 <h2 id="key-security-assumption">Key Security Assumption</h2>
-
 <p>Attacks are infeasible if the majority of the miners weighted by hash power follows the protocol because the competition of hash power can ensure the probability of the next block proposing by an honest node is higher than 50%.</p>
 
 

@@ -366,94 +366,65 @@ $(function() {
                 <header>
                     <h2>TOC</h2>
                 </header>
-                <nav id="TableOfContents">
-<ul>
-<li><a href="#distributed-tracing-with-istio">Distributed Tracing with Istio</a></li>
-<li><a href="#using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</a></li>
-<li><a href="#adding-method-level-tracing-to-istio">Adding Method-Level Tracing to Istio</a></li>
-<li><a href="#wrapping-up">Wrapping up</a></li>
-<li><a href="#what-s-next">What’s next</a></li>
-<li><a href="#references">References</a></li>
-</ul>
-</nav>
+                <nav id="TableOfContents"></nav>
                 
-                
-
-<p>While evolving towards a microservices architecture, the biggest change is that the monolith application has been divided into multiple independent processes(or services), as a result, a method call between software modules now becomes a remote procedure call go through multiple services.</p>
-
+                <p>While evolving towards a microservices architecture, the biggest change is that the monolith application has been divided into multiple independent processes(or services), as a result, a method call between software modules now becomes a remote procedure call go through multiple services.</p>
 <p>A client request usually goes through a couple of or even a dozen of services in a complex microservices system, which makes it really hard to figure out what’s going on when a request fails or becomes slow.</p>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/monolith-microserivce.jpg" alt="" />
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/monolith-microserivce.jpg" alt="">
 Basically, in order to get the overall view of a client request, we need to collect all the related information of service invocations in the path of that request, including start time, end time, URL, errors, etc., and associate all the collected data within a single trace. This process is normally called distributed tracing.</p>
-
 <h1 id="distributed-tracing-with-istio">Distributed Tracing with Istio</h1>
-
 <p>Istio/Envoy provides out-of-the-box distributed tracing for microservices. Envoy can intercept the incoming and outgoing requests of the service in the same pod and automatically generates tracing data for them. By connecting the mesh with a tracing infrastructure backend such as Zipkin or Jaeger, you can get the trace details of a distributed request, such as which services a request went through, which REST APIs were called, and the latency of each span, etc.</p>
-
-<p>It should be noted that although Istio/Envoy has done most of the work in this process, it still requires a small amount of modification to the application code: the application code needs to propagate the tracing header in the upstream HTTP requests to its downstream services. This part of the code can’t be handled directly by Envoy because Envoy just doesn&rsquo;t understand the business logic of the service co-located with it, and therefore it can’t infer the affiliation of incoming requests with the outgoing requests correctly. Although the modification is a minor change, it needs to be added manually to every piece of code where a request is forwarding to a downstream service, which is annoying.</p>
-
+<p>It should be noted that although Istio/Envoy has done most of the work in this process, it still requires a small amount of modification to the application code: the application code needs to propagate the tracing header in the upstream HTTP requests to its downstream services. This part of the code can’t be handled directly by Envoy because Envoy just doesn't understand the business logic of the service co-located with it, and therefore it can’t infer the affiliation of incoming requests with the outgoing requests correctly. Although the modification is a minor change, it needs to be added manually to every piece of code where a request is forwarding to a downstream service, which is annoying.</p>
 <p>Let’s use a simple online shop demo to show how Istio provides distributed tracing. The demo consists of several services: eshop, inventory, billing, and delivery. The structure of the application is shown in the following figure:</p>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/eshop-demo.jpg" alt="" />
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/eshop-demo.jpg" alt="">
 eshop service accepts requests from the client sides, then it calls the REST APIs of inventory, billing, delivery services to accomplish the checkout user request.</p>
-
 <p>Codes can be downloaded from Github: <a href="https://github.com/zhaohuabing/istio-opentracing-demo.git">https://github.com/zhaohuabing/istio-opentracing-demo.git</a></p>
-
 <p>Below is the implementation of the checkout function of eshop Service, as you can see, tracing related HTTP Headers are propagated to downstream services.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#a6e22e">@RequestMapping</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/checkout&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">checkout</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@RequestHeader</span> HttpHeaders headers<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    String result <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// Use HTTP GET in this demo. In a real world use case,We should use HTTP POST
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// instead.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// The three services are bundled in one jar for simplicity. To make it work,
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// define three services in Kubernets.
+</span><span style="color:#75715e"></span>    result <span style="color:#f92672">+</span><span style="color:#f92672">=</span> restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">exchange</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://inventory:8080/createOrder&#34;</span><span style="color:#f92672">,</span> HttpMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">GET</span><span style="color:#f92672">,</span>
+            <span style="color:#66d9ef">new</span> HttpEntity<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>passTracingHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBody</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    result <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&lt;BR&gt;&#34;</span><span style="color:#f92672">;</span>
+    result <span style="color:#f92672">+</span><span style="color:#f92672">=</span> restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">exchange</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://billing:8080/payment&#34;</span><span style="color:#f92672">,</span> HttpMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">GET</span><span style="color:#f92672">,</span>
+            <span style="color:#66d9ef">new</span> HttpEntity<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>passTracingHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBody</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    result <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&lt;BR&gt;&#34;</span><span style="color:#f92672">;</span>
+    result <span style="color:#f92672">+</span><span style="color:#f92672">=</span> restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">exchange</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://delivery:8080/arrangeDelivery&#34;</span><span style="color:#f92672">,</span> HttpMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">GET</span><span style="color:#f92672">,</span>
+            <span style="color:#66d9ef">new</span> HttpEntity<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>passTracingHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBody</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+<span style="color:#66d9ef">private</span> HttpHeaders <span style="color:#a6e22e">passTracingHeader</span><span style="color:#f92672">(</span>HttpHeaders headers<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    HttpHeaders tracingHeaders <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HttpHeaders<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-request-id&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-b3-traceid&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-b3-spanid&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-b3-parentspanid&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-b3-sampled&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-b3-flags&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    extractHeader<span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracingHeaders<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;x-ot-span-context&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> tracingHeaders<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
 
-<pre><code class="language-java"> @RequestMapping(value = &quot;/checkout&quot;)
-public String checkout(@RequestHeader HttpHeaders headers) {
-    String result = &quot;&quot;;
-    // Use HTTP GET in this demo. In a real world use case,We should use HTTP POST
-    // instead.
-    // The three services are bundled in one jar for simplicity. To make it work,
-    // define three services in Kubernets.
-    result += restTemplate.exchange(&quot;http://inventory:8080/createOrder&quot;, HttpMethod.GET,
-            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
-    result += &quot;&lt;BR&gt;&quot;;
-    result += restTemplate.exchange(&quot;http://billing:8080/payment&quot;, HttpMethod.GET,
-            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
-    result += &quot;&lt;BR&gt;&quot;;
-    result += restTemplate.exchange(&quot;http://delivery:8080/arrangeDelivery&quot;, HttpMethod.GET,
-            new HttpEntity&lt;&gt;(passTracingHeader(headers)), String.class).getBody();
-    return result;
-}
-private HttpHeaders passTracingHeader(HttpHeaders headers) {
-    HttpHeaders tracingHeaders = new HttpHeaders();
-    extractHeader(headers, tracingHeaders, &quot;x-request-id&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-traceid&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-spanid&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-parentspanid&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-sampled&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-b3-flags&quot;);
-    extractHeader(headers, tracingHeaders, &quot;x-ot-span-context&quot;);
-    return tracingHeaders;
-}
-
-</code></pre>
-
-<p>Then let’s deploy the demo in a Kubernetes cluster along with Istio.</p>
-
+</code></pre></div><p>Then let’s deploy the demo in a Kubernetes cluster along with Istio.</p>
 <ul>
 <li>First, we need a Kubernetes cluster with Webhook enabled</li>
 <li>Deploy Istio in the Kubernetes cluster, and enable sidecar auto-injection for the default namespace</li>
-
-<li><p>Deploy eshop application</p>
-
-<pre><code class="language-bash">git clone https://github.com/zhaohuabing/istio-opentracing-demo.git
+<li>Deploy eshop application</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/zhaohuabing/istio-opentracing-demo.git
 cd istio-opentracing-demo
 git checkout without-opentracing
 kubectl apply -f k8s/eshop.yaml
-</code></pre></li>
-
-<li><p>Open this URL in your browser to invoke eshop checkout REST API: http://${NODE_IP}:31380/checkout</p></li>
-
-<li><p>Open Jaeger UI to see the trace: http://${NODE_IP}:30088</p></li>
+</code></pre></div><ul>
+<li>Open this URL in your browser to invoke eshop checkout REST API: http://${NODE_IP}:31380/checkout</li>
+<li>Open Jaeger UI to see the trace: http://${NODE_IP}:30088</li>
 </ul>
-
 <p>Note: In order to access Jaeger UI from outside of the Kubernetes Cluster, you may want to modify Istio install scripts to add a NodePort for Jaeger service:</p>
-
-<pre><code class="language-yaml">apiVersion: v1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: v1
   kind: Service
   metadata:
     name: jaeger-query
@@ -468,135 +439,98 @@ kubectl apply -f k8s/eshop.yaml
   spec:
     ports:
       - name: query-http
-        port: 16686
+        port: <span style="color:#ae81ff">16686</span>
         protocol: TCP
-        targetPort: 16686
-        nodePort: 30088
+        targetPort: <span style="color:#ae81ff">16686</span>
+        nodePort: <span style="color:#ae81ff">30088</span>
     type: NodePort
     selector:
       app: jaeger
-</code></pre>
-
-<p>As you can see, Istio/Envoy automatically generates a trace for the client request. The trace is comprised of several spans, and each span corresponds a REST method of a service in the chain of services invoked by the client request.</p>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing.jpg" alt="" /></p>
-
+</code></pre></div><p>As you can see, Istio/Envoy automatically generates a trace for the client request. The trace is comprised of several spans, and each span corresponds a REST method of a service in the chain of services invoked by the client request.</p>
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing.jpg" alt=""></p>
 <h1 id="using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</h1>
-
 <p>Instead of explicitly passing the HTTP headers, we can use Opentracing instrumentation for trace Context propagation. It’s pretty simple：</p>
-
 <ul>
 <li>Add Opentracing Spring Cloud Starter and Jaeger dependency in the maven POM file.</li>
-
-<li><p>Declare a tracer bean in the spring application.</p>
-
-<pre><code class="language-java">@Bean
-public Tracer jaegerTracer() {
-	// The following environment variables need to set
-	// JAEGER_ENDPOINT=&quot;http://10.42.126.171:28019/api/traces&quot;
-	// JAEGER_PROPAGATION=&quot;b3&quot;
-	// JAEGER_TRACEID_128BIT=&quot;true&quot; Use 128bit tracer id to be compatible with the
-	// trace id generated by istio/envoy
-	return Configuration.fromEnv(&quot;eshop-opentracing&quot;).getTracer();
-}
-</code></pre></li>
+<li>Declare a tracer bean in the spring application.</li>
 </ul>
-
-<p>There are two things that we need to pay attention:</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Bean</span>
+<span style="color:#66d9ef">public</span> Tracer <span style="color:#a6e22e">jaegerTracer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+	<span style="color:#75715e">// The following environment variables need to set
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// JAEGER_ENDPOINT=&#34;http://10.42.126.171:28019/api/traces&#34;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// JAEGER_PROPAGATION=&#34;b3&#34;
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// JAEGER_TRACEID_128BIT=&#34;true&#34; Use 128bit tracer id to be compatible with the
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// trace id generated by istio/envoy
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> Configuration<span style="color:#f92672">.</span><span style="color:#a6e22e">fromEnv</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;eshop-opentracing&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getTracer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>There are two things that we need to pay attention:</p>
 <ul>
 <li>By default, the Jaeger tracer uses the uber-trace-id HTTP header format, which is not supported by Istio/Envoy. Therefore, we need to specify the b3 HTTP header format in environment variables to make it compatible with Istio/Envoy.</li>
 <li>The Jaeger tracer uses a 64-bit trace id by default, while Istio/Envoy uses a 128-bit trace id. Therefore, we need to specify the trace id length as 128 bit in environment variables to be compatible with Istio/Envoy.</li>
 </ul>
-
 <p>Deploy the version of the demo application that uses Opentracing for trace context propagation.</p>
-
-<pre><code class="language-bash">git checkout master
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git checkout master
 kubectl apply -f k8s/eshop.yaml
-</code></pre>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing.jpg" alt="" /></p>
-
+</code></pre></div><p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing.jpg" alt=""></p>
 <p>As you can see from the above figure, one interesting thing is that 7 more spans have been inserted to the trace. These spans are implicitly generated by Opentracing Spring instrumentation. They provide us with more detailed information about the request. From these news spans, we can infer that it only takes about 1 millisecond for Envoy to proxy the request, it’s a very short time and it has nearly no impact on the latency of the client request.</p>
-
-<h1 id="adding-method-level-tracing-to-istio">Adding Method-Level Tracing to Istio</h1>
-
+<h1 id="adding-methodlevel-tracing-to-istio">Adding Method-Level Tracing to Istio</h1>
 <p>The distributed tracing capability of Istio/Envoy can only capture the tracing span at the process boundaries, which would be good enough in most cases. However, for some services, we may want more fine-grained trace information for a better understanding of what happened inside a process, such as the latency caused by a method call or SQL insert. To accomplish that, we need to instrument the code where we need to collect tracing data and associate the collected tracing data with the trace created by Envoy, then, we can see all the spans in a single trace on the Jager UI.</p>
-
 <p>AOP and Annotation can be used to simplify the instrumentation code. First, let’s define a Traced annotation and the corresponding AOP implementation logic:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Retention</span><span style="color:#f92672">(</span>RetentionPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@Target</span><span style="color:#f92672">(</span>ElementType<span style="color:#f92672">.</span><span style="color:#a6e22e">METHOD</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@Documented</span>
+<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">@interface</span> Traced <span style="color:#f92672">{</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Aspect</span>
+<span style="color:#a6e22e">@Component</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TracingAspect</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Autowired</span>
+    Tracer tracer<span style="color:#f92672">;</span>
 
-<pre><code class="language-java">@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@Documented
-public @interface Traced {
-}
-</code></pre>
+    <span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;@annotation(com.zhaohuabing.demo.instrument.Traced)&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">aroundAdvice</span><span style="color:#f92672">(</span>ProceedingJoinPoint jp<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+        String class_name <span style="color:#f92672">=</span> jp<span style="color:#f92672">.</span><span style="color:#a6e22e">getTarget</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        String method_name <span style="color:#f92672">=</span> jp<span style="color:#f92672">.</span><span style="color:#a6e22e">getSignature</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Span span <span style="color:#f92672">=</span> tracer<span style="color:#f92672">.</span><span style="color:#a6e22e">buildSpan</span><span style="color:#f92672">(</span>class_name <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.&#34;</span> <span style="color:#f92672">+</span> method_name<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">withTag</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;class&#34;</span><span style="color:#f92672">,</span> class_name<span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">withTag</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;method&#34;</span><span style="color:#f92672">,</span> method_name<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Object result <span style="color:#f92672">=</span> jp<span style="color:#f92672">.</span><span style="color:#a6e22e">proceed</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        span<span style="color:#f92672">.</span><span style="color:#a6e22e">finish</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Then add the Traced annotation to the methods we would like to trace:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Component</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DBAccess</span> <span style="color:#f92672">{</span>
 
-<pre><code class="language-java">@Aspect
-@Component
-public class TracingAspect {
-    @Autowired
-    Tracer tracer;
-
-    @Around(&quot;@annotation(com.zhaohuabing.demo.instrument.Traced)&quot;)
-    public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
-        String class_name = jp.getTarget().getClass().getName();
-        String method_name = jp.getSignature().getName();
-        Span span = tracer.buildSpan(class_name + &quot;.&quot; + method_name).withTag(&quot;class&quot;, class_name)
-                .withTag(&quot;method&quot;, method_name).start();
-        Object result = jp.proceed();
-        span.finish();
-        return result;
-    }
-}
-</code></pre>
-
-<p>Then add the Traced annotation to the methods we would like to trace:</p>
-
-<pre><code class="language-java">@Component
-public class DBAccess {
-
-    @Traced
-    public void save2db() {
-        try {
-            Thread.sleep((long) (Math.random() * 100));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<pre><code class="language-java">@Component
-public class BankTransaction {
-    @Traced
-    public void transfer() {
-        try {
-            Thread.sleep((long) (Math.random() * 100));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre>
-
-<p>The output is shown in the figure below. You can see that two methods-level spans (transfer and save2db) have been inserted into the trace.</p>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth.jpg" alt="" />
+    <span style="color:#a6e22e">@Traced</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">save2db</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 100<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Component</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BankTransaction</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Traced</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">transfer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 100<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The output is shown in the figure below. You can see that two methods-level spans (transfer and save2db) have been inserted into the trace.</p>
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth.jpg" alt="">
 You can open the span to view the details of the method call, including the Java class name, the method name, etc. If needed, you can also add other useful information such as the exception stack in the tracing, it can be easily done by just modify TracingAspect code.</p>
-
-<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth-method.jpg" alt="" /></p>
-
+<p><img src="/img/2019-06-22-using-opentracing-with-istio/istio-tracing-opentracing-in-depth-method.jpg" alt=""></p>
 <h1 id="wrapping-up">Wrapping up</h1>
-
 <p>Istio gives you deep insight into your service mesh by its build-in distribute tracing capabilities. In this blog, we explored how we could leverage Opentracing to propagate tracing header for Istio and how to get more fine-grained tracing by inserted method-level spans into the Istio generated trace.</p>
-
-<h1 id="what-s-next">What’s next</h1>
-
-<p>Async messaging is also a very common mechanism for microservice communication, however, Istio hasn&rsquo;t addressed that for now. In the next post, we’ll take a look at how to trace Kafka messages with the help of Opentracing in an Istio service mesh. Stay tuned!</p>
-
+<h1 id="whats-next">What’s next</h1>
+<p>Async messaging is also a very common mechanism for microservice communication, however, Istio hasn't addressed that for now. In the next post, we’ll take a look at how to trace Kafka messages with the help of Opentracing in an Istio service mesh. Stay tuned!</p>
 <h1 id="references">References</h1>
-
 <ol>
 <li><a href="https://github.com/zhaohuabing/istio-opentracing-demo">Source Code</a></li>
 <li><a href="https://opentracing.io/docs/">Opentracing docs</a></li>

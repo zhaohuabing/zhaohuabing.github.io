@@ -355,30 +355,20 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#什么是vip">什么是VIP？</a></li>
-<li><a href="#vip的实现原理">VIP的实现原理</a></li>
-<li><a href="#采用keepalived实现vip">采用Keepalived实现VIP</a></li>
-<li><a href="#采用pacemaker实现vip">采用pacemaker实现VIP</a></li>
-<li><a href="#参考">参考</a></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#vip">什么是VIP？</a></li>
+    <li><a href="#vip1">VIP的实现原理</a></li>
+    <li><a href="#keepalivedvip">采用Keepalived实现VIP</a></li>
+    <li><a href="#pacemakervip">采用pacemaker实现VIP</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
 </nav>
                 
-                
-
-<h2 id="什么是vip">什么是VIP？</h2>
-
+                <h2 id="vip">什么是VIP？</h2>
 <p>VIP即Virtual IP Address，是实现HA（高可用）系统的一种方案，高可用的目的是通过技术手段避免因为系统出现故障而导致停止对外服务，一般实现方式是部署备用服务器，在主服务器出现故障时接管业务。 VIP用于向客户端提供一个固定的“虚拟”访问地址，以避免后端服务器发生切换时对客户端的影响。</p>
-
 <p>例如在下图的系统中，采用了三个服务器的集群来实现服务的高可用，后端服务器集群通过VIP 193.168.0.6对外提供服务，客户端只知道VIP，并不关注后端服务器的真实地址。</p>
-
 <p>VIP被加载在Master的网卡上，所有指向VIP的请求会被发向Master，Slave服务器出于Standby状态。如果Master出现故障，集群会通过选举算法从可用的Slave节点中选出一个新的Master节点，并将VIP也迁移到新Master节点的网卡上。这样可以保证服务始终可用，并且对客户端来说访问的IP也不会变化。</p>
-
 <p>注意VIP始终指向一个Master，因此VIP的方案并不能实现LB，只能实现HA。</p>
-
 <pre><code>
                                                ______________________
                                               |                      |
@@ -400,107 +390,82 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
                                         |-----| Host IP: 193.168.0.4 |
                                               | Role: Slave          |
                                               |______________________|
-</code></pre>
-
-<h2 id="vip的实现原理">VIP的实现原理</h2>
-
+</code></pre><h2 id="vip1">VIP的实现原理</h2>
 <ol>
 <li>Master选举： 集群创建或者Master出现故障时，集群通过选举协议得到一个Master作为对外服务的节点</li>
 <li>配置VIP： HA软件将VIP配置到Master节点的网卡上</li>
 <li>ARP广播： 主动对外广播ARP消息，声明VIP对应的MAC地址为Master的网卡MAC地址</li>
 </ol>
-
 <p>通过arp -a 命令查看193.168.0.6对应的MAC地址和193.168.0.2相同</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">arp -a|grep 193.168.0
+? <span style="color:#f92672">(</span>193.168.0.6<span style="color:#f92672">)</span> at fa:16:3e:2a:7e:d4 <span style="color:#f92672">[</span>ether<span style="color:#f92672">]</span> on br-apidefault
+? <span style="color:#f92672">(</span>193.168.0.2<span style="color:#f92672">)</span> at fa:16:3e:2a:7e:d4 <span style="color:#f92672">[</span>ether<span style="color:#f92672">]</span> on br-apidefault
+</code></pre></div><p>登录到193.168.0.2主机上，使用ip addr命令可以看到网卡上绑定了VIP 193.168.0.6</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip addr
 
-<pre><code class="language-bash">arp -a|grep 193.168.0
-? (193.168.0.6) at fa:16:3e:2a:7e:d4 [ether] on br-apidefault
-? (193.168.0.2) at fa:16:3e:2a:7e:d4 [ether] on br-apidefault
-</code></pre>
-
-<p>登录到193.168.0.2主机上，使用ip addr命令可以看到网卡上绑定了VIP 193.168.0.6</p>
-
-<pre><code class="language-bash">ip addr
-
-10: br-apidefault: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+10: br-apidefault: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#ae81ff">1000</span>
     link/ether fa:16:3e:2a:7e:d4 brd ff:ff:ff:ff:ff:ff
     inet 193.168.0.3/16 brd 193.168.255.255 scope global br-apidefault
        valid_lft forever preferred_lft forever
     inet 193.168.0.6/16 brd 193.168.255.255 scope global secondary br-apidefault
        valid_lft forever preferred_lft forever
-</code></pre>
-
-<h2 id="采用keepalived实现vip">采用Keepalived实现VIP</h2>
-
+</code></pre></div><h2 id="keepalivedvip">采用Keepalived实现VIP</h2>
 <p>Keepalived的设计目的即是为了管理VIP，因此使用Keepalived实现VIP的配置非常简单。Keepalived采用了<a href="https://rascaldev.io/2017/12/23/vip-management-with-keepalived/">Virtual Router Redundancy Protocol (VRRP)</a>协议来进行实现主备服务器之间的通信以及选举。</p>
-
 <p>下面介绍如何采用Keepalived配置一个一个两节点的HA集群。</p>
-
 <p>首先将用于设置VIP的脚本放到主备两个服务器的 /etc/keepalived/notify.sh 路径下</p>
-
-<pre><code class="language-bash">#!/bin/bash
-
-vipAddress=&quot;192.168.121.100/24&quot;
-if [[ &quot;x$1&quot; == &quot;xmaster&quot; ]]; then
- ip address add dev eth1 ${vipAddress}
-else
-  ip address del dev eth1 ${vipAddress}
-fi
-</code></pre>
-
-<p>Master节点的Keepalived配置文件 keepalived.conf</p>
-
-<pre><code class="language-bash">vrrp_instance VI_1 {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+vipAddress<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;192.168.121.100/24&#34;</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">x</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;xmaster&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+ ip address add dev eth1 <span style="color:#e6db74">${</span>vipAddress<span style="color:#e6db74">}</span>
+<span style="color:#66d9ef">else</span>
+  ip address del dev eth1 <span style="color:#e6db74">${</span>vipAddress<span style="color:#e6db74">}</span>
+<span style="color:#66d9ef">fi</span>
+</code></pre></div><p>Master节点的Keepalived配置文件 keepalived.conf</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vrrp_instance VI_1 <span style="color:#f92672">{</span>
 
   state MASTER
   interface eth0
-  garp_master_delay 10
+  garp_master_delay <span style="color:#ae81ff">10</span>
   smtp_alert
-  virtual_router_id 51
-  priority 100
+  virtual_router_id <span style="color:#ae81ff">51</span>
+  priority <span style="color:#ae81ff">100</span>
   vrrp_unicast_bind 192.168.121.51
   vrrp_unicast_peer 192.168.121.52
-  advert_int 1
+  advert_int <span style="color:#ae81ff">1</span>
 
-  authentication {
+  authentication <span style="color:#f92672">{</span>
     auth_type PASS
     auth_pass testpass
-  }
+  <span style="color:#f92672">}</span>
 
-  notify_master &quot;/etc/keepalived/notify.sh master&quot;
-  notify_backup &quot;/etc/keepalived/notify.sh backup&quot;
-}
-</code></pre>
-
-<p>Backup节点的Keepalived配置文件 keepalived.conf</p>
-
-<pre><code class="language-bash">vrrp_instance VI_1 {
+  notify_master <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh master&#34;</span>
+  notify_backup <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh backup&#34;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Backup节点的Keepalived配置文件 keepalived.conf</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vrrp_instance VI_1 <span style="color:#f92672">{</span>
 
   state BACKUP
   interface eth0
-  garp_master_delay 10
+  garp_master_delay <span style="color:#ae81ff">10</span>
   smtp_alert
-  virtual_router_id 51
-  priority 50
+  virtual_router_id <span style="color:#ae81ff">51</span>
+  priority <span style="color:#ae81ff">50</span>
   vrrp_unicast_bind 192.168.121.52
   vrrp_unicast_peer 192.168.121.51
-  advert_int 1
+  advert_int <span style="color:#ae81ff">1</span>
 
-  authentication {
+  authentication <span style="color:#f92672">{</span>
     auth_type PASS
     auth_pass testpass
-  }
+  <span style="color:#f92672">}</span>
 
-  notify_master &quot;/etc/keepalived/notify.sh master&quot;
-  notify_backup &quot;/etc/keepalived/notify.sh backup&quot;
-}
-</code></pre>
-
-<h2 id="采用pacemaker实现vip">采用pacemaker实现VIP</h2>
-
+  notify_master <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh master&#34;</span>
+  notify_backup <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh backup&#34;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="pacemakervip">采用pacemaker实现VIP</h2>
 <p>Pacemaker和Keepalived的定位不同，Keepalived一般用于无状态，可以Active-Active的HA集群；而Pacemaker可以实现有状态，Active-Passive的HA集群。例如采用pacemaker可以将服务状态和数据从出现故障的服务器上迁移到备份机上，例如拷贝配置文件，加载数据库等。因此Pacemaker的内部结构和配置比Keepalived的更复杂。</p>
-
 <p>Packemaker包括下列组件：</p>
-
 <ul>
 <li>Cluster Information Base (CIB) 集群信息库：使用XML保存了集群内部的配置和当前状态，CIB保存的内容在集群内保持同步。</li>
 <li>Policy Engine (PEngine or PE)：策略引擎：当集群中有节点宕机导致资源当前状态和理想状态不一致时，策略引擎使用CIB中的信息计算需要执行哪些动作使集群达到应处于的理想状态。</li>
@@ -509,13 +474,9 @@ fi
 <li>Fencing daemon (STONITHd): 爆头守护进程： Shoot the other node in the head,在某些情况下，可能有必要关闭节点，以保护共享数据或完整的资源回收。为此，Pacemaker配备了stonithd设备。STONITH可以将其它节点“爆头”，通常是实现与远程电源开关。</li>
 <li>cluster abstraction layer下面为集群的底层消息系统。</li>
 </ul>
-
-<p><img src="https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/images/pcmk-internals.png" alt="Pacemaker内部组件" /></p>
-
+<p><img src="https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/images/pcmk-internals.png" alt="Pacemaker内部组件"></p>
 <p>采用Pacemaker实现VIP的原理和Keepalived基本相同，也是采用将VIP作为Secondary IP绑定到Master网卡的方式，具体设置步骤略。</p>
-
-<h2 id="参考">参考</h2>
-
+<h2 id="heading">参考</h2>
 <ul>
 <li><a href="https://rascaldev.io/2017/12/23/vip-management-with-keepalived/">VIP Management With keepalived</a></li>
 <li><a href="https://tools.ietf.org/html/rfc3768">Virtual Router Redundancy Protocol (VRRP)</a></li>
@@ -532,6 +493,11 @@ fi
                             Previous Post</a>
                     </li>
                     
+                    
+                    <li class="next">
+                        <a href="post/2018-09-25-istio-traffic-management-impl-intro/" data-toggle="tooltip" data-placement="top" title="Istio流量管理实现机制深度解析">Next
+                            Post &rarr;</a>
+                    </li>
                     
                 </ul>
 

@@ -355,35 +355,20 @@ $(function() {
                     <h2>TOC</h2>
                 </header>
                 <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#generate-ssh-key-pair">Generate SSH Key Pair</a></li>
-<li><a href="#shadowsocks">Shadowsocks</a></li>
-</ul></li>
-<li><a href="#set-bing-wallpaper-as-desktop-background">Set bing wallpaper as desktop background</a></li>
-<li><a href="#use-vim-mode-in-bash">Use vim mode in bash</a></li>
-</ul>
+  <ul>
+    <li><a href="#generate-ssh-key-pair">Generate SSH Key Pair</a></li>
+    <li><a href="#shadowsocks">Shadowsocks</a></li>
+  </ul>
 </nav>
                 
-                
-
-<h2 id="generate-ssh-key-pair">Generate SSH Key Pair</h2>
-
+                <h2 id="generate-ssh-key-pair">Generate SSH Key Pair</h2>
 <pre><code>ssh-keygen -C &quot;zhaohuabing@gmail.com&quot;
-</code></pre>
-
-<h2 id="shadowsocks">Shadowsocks</h2>
-
+</code></pre><h2 id="shadowsocks">Shadowsocks</h2>
 <p>Install shadowsokcs</p>
-
 <pre><code>sudo apt-get install python3-pip
 
 sudo pip3 install shadowsocks
-</code></pre>
-
-<p>Create config at <code>config/shadowsocks.json</code>, with the following content:</p>
-
+</code></pre><p>Create config at <code>config/shadowsocks.json</code>, with the following content:</p>
 <pre><code>{
 	&quot;server&quot;:&quot;remote-shadowsocks-server-ip-addr&quot;,
 	&quot;server_port&quot;:443,
@@ -395,42 +380,25 @@ sudo pip3 install shadowsocks
 	&quot;fast_open&quot;:false,
 	&quot;workers&quot;:1
 }
-</code></pre>
-
-<p>Start a local socks proxy</p>
-
+</code></pre><p>Start a local socks proxy</p>
 <pre><code>sudo sslocal -c config/shadowsocks.json -d start
-</code></pre>
-
-<p>In case there is an openssl error, modify shadowsocks source file.</p>
-
+</code></pre><p>In case there is an openssl error, modify shadowsocks source file.</p>
 <pre><code>sudo vi /usr/local/lib/python3.6/dist-packages/shadowsocks/crypto/openssl.py 
 
 :%s/cleanup/reset/gc
-</code></pre>
-
-<p>Convert shadowsocks socks proxy to http proxy</p>
-
+</code></pre><p>Convert shadowsocks socks proxy to http proxy</p>
 <pre><code>sudo apt-get install polipo
 
 echo &quot;socksParentProxy = localhost:1080&quot; | sudo tee -a /etc/polipo/config 
 sudo service polipo restart
-</code></pre>
-
-<p>Http proxy now is available at port 8123</p>
-
+</code></pre><p>Http proxy now is available at port 8123</p>
 <h1 id="set-bing-wallpaper-as-desktop-background">Set bing wallpaper as desktop background</h1>
-
 <pre><code>sudo add-apt-repository ppa:whizzzkid/bingwallpaper
 sudo apt-get update
 sudo apt-get install bingwallpaper
-</code></pre>
-
-<h1 id="use-vim-mode-in-bash">Use vim mode in bash</h1>
-
+</code></pre><h1 id="use-vim-mode-in-bash">Use vim mode in bash</h1>
 <pre><code>echo 'set -o vi'&gt;&gt; ~/.bashrc
 </code></pre>
-
 
                 
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Huabing Blog</title>
@@ -6,10 +6,19 @@
     <description>Recent content on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 27 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 05 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio流量管理实现机制深度解析</title>
+      <link>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</link>
+      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</guid>
+      <description>前言 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的</description>
+    </item>
     
     <item>
       <title>VIP的实现原理</title>
@@ -152,7 +161,7 @@
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</guid>
-      <description>What is service mesh? Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services. What is Istio? Istio</description>
+      <description>What is service mesh?Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services. What is Istio?Istio is an</description>
     </item>
     
     <item>
@@ -192,21 +201,12 @@
     </item>
     
     <item>
-      <title>Istio流量管理实现机制深度解析</title>
-      <link>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</link>
-      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</guid>
-      <description>前言 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的</description>
-    </item>
-    
-    <item>
       <title>English Practice Topic: Smart Phone Addiction</title>
       <link>https://zhaohuabing.com/post/2018-08-28-english-topic-smart-phone/</link>
       <pubDate>Sat, 25 Aug 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-08-28-english-topic-smart-phone/</guid>
-      <description>Smart phones are significantly changing the way we live and work. I heavily depend on my Android phone in my daily life, I use it to schedule my meetings, receive emails, remind me important dates, learning English, etc. What‘s your opinions about smart phone? Are you addicted to your smart phone? Do you think it&amp;rsquo;s a great invention, or a devil tool of commercial? Let&amp;rsquo;s</description>
+      <description>Smart phones are significantly changing the way we live and work. I heavily depend on my Android phone in my daily life, I use it to schedule my meetings, receive emails, remind me important dates, learning English, etc. What‘s your opinions about smart phone? Are you addicted to your smart phone? Do you think it&#39;s a great invention, or a devil tool of commercial? Let&#39;s</description>
     </item>
     
     <item>
@@ -233,7 +233,7 @@
       <pubDate>Fri, 22 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/</guid>
-      <description>ONAP Beijing is available now! ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&amp;rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a</description>
+      <description>ONAP Beijing is available now! ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&#39;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a</description>
     </item>
     
     <item>
@@ -251,7 +251,7 @@
       <pubDate>Sun, 03 Jun 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/06/03/cryptocurrency_week3_bitcoin_script/</guid>
-      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course. Bitcoin Script is using to transfer coins instead of just signature and public key address, which allows more flexibilities for Bitcoin transactions. A Standard Transaction Let&amp;rsquo;s say Alice wants to spend some coins she received from a previous transaction, this is how the procedure looks like. * Alice receives some coins from a previous transaction. One</description>
+      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course. Bitcoin Script is using to transfer coins instead of just signature and public key address, which allows more flexibilities for Bitcoin transactions. A Standard Transaction Let&#39;s say Alice wants to spend some coins she received from a previous transaction, this is how the procedure looks like. Alice receives some coins from a previous transaction. One of</description>
     </item>
     
     <item>
@@ -282,7 +282,7 @@
       <pubDate>Sat, 26 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/26/cryptocurrency_week2_incentives_and_proof_of_work/</guid>
-      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course. Incentive The mechanism to motivate nodes join the Bitcoin network and create blocks. Incentive 1: Block Reward Creator of block gets to * include special coin-creation transaction in the block * choose reciptient address of this transaction (Of course, it is the miner&amp;rsquo;s address) Explanation: Because the coin-creation transaction is just like other transaction in that</description>
+      <description>This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course. Incentive The mechanism to motivate nodes join the Bitcoin network and create blocks. Incentive 1: Block Reward Creator of block gets to include special coin-creation transaction in the block choose reciptient address of this transaction (Of course, it is the miner&#39;s address) Explanation: Because the coin-creation transaction is just like other transaction in that block, it</description>
     </item>
     
     <item>
@@ -309,17 +309,14 @@
       <pubDate>Wed, 23 May 2018 15:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/23/service_2_service_auth/</guid>
-      <description>&lt;h2 id=&#34;服务间认证与鉴权&#34;&gt;服务间认证与鉴权&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;服务间认证与鉴权&lt;/h2&gt;
 &lt;p&gt;除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问，包括下述场景：&lt;/p&gt;
-
 &lt;ul&gt;
-&lt;li&gt;用户间接触发的微服务之间的相互访问&lt;BR&gt;
+&lt;li&gt;用户间接触发的微服务之间的相互访问&lt;!-- raw HTML omitted --&gt;
 例如在一个网上商店应用中，用户访问购物车微服务进行结算时，购物车微服务可能需要访问用户评级微服务获取用户的会员级别，以得到用户可以享受购物折扣。&lt;/li&gt;
-&lt;li&gt;非用户触发的微服务之间的相互访问&lt;BR&gt;
+&lt;li&gt;非用户触发的微服务之间的相互访问&lt;!-- raw HTML omitted --&gt;
 例如数据同步或者后台定时任务导致的微服务之间的相互访问。&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;根据应用系统的数据敏感程度的不同，对于系统内微服务的相互访问可能有不同的安全要求。&lt;/p&gt;</description>
     </item>
     
@@ -338,14 +335,10 @@
       <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
-
-&lt;hr /&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;前言&lt;/h2&gt;
+&lt;hr&gt;
 &lt;p&gt;Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。&lt;/p&gt;
-
 &lt;p&gt;使用webhook的优势是不需要对API Server的源码进行修改和重新编译就可以扩展其功能。插入的逻辑实现为一个独立的web进程，通过参数方式传入到kubernets中，由kubernets在进行自身逻辑处理时对扩展逻辑进行回调。&lt;/p&gt;
-
 &lt;p&gt;Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。&lt;/p&gt;</description>
     </item>
     
@@ -358,7 +351,6 @@
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;p&gt;Finally, I got to the most exciting part of week 1 lectures-the programming assignment!&lt;/p&gt;</description>
     </item>
     
@@ -382,14 +374,14 @@
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;h2 id=&#34;hash-pointer&#34;&gt;Hash Pointer&lt;/h2&gt;
-
-&lt;p&gt;Hash Pointer is comprised of two parts:
-* Pointer to where some information is stored
-* Cryptographic hash of that information&lt;br /&gt;
-The pointer can be used to get the information, the hash can be used to verify that information hasn&amp;rsquo;t been changed&lt;br /&gt;
-&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png&#34; alt=&#34;hashpointer&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;Hash Pointer is comprised of two parts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Pointer to where some information is stored&lt;/li&gt;
+&lt;li&gt;Cryptographic hash of that information &lt;br&gt;
+The pointer can be used to get the information, the hash can be used to verify that information hasn&#39;t been changed &lt;br&gt;
+&lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png&#34; alt=&#34;hashpointer&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -401,13 +393,13 @@ The pointer can be used to get the information, the hash can be used to verify t
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;h2 id=&#34;hash-function&#34;&gt;Hash Function&lt;/h2&gt;
-
-&lt;p&gt;Hash function is a mathematical function:&lt;em&gt;H(X)=Y&lt;/em&gt;
-* H:  A hash function which takes an input value and calculates an output value
-* X: Input of the hash function, it could be any data of any length
-* Y: Output of the hash function: a fix-size bit(, it can be 256, 384, 516 &amp;hellip;, Bitcoin uses 256)&lt;/p&gt;</description>
+&lt;p&gt;Hash function is a mathematical function:&lt;em&gt;H(X)=Y&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;H:  A hash function which takes an input value and calculates an output value&lt;/li&gt;
+&lt;li&gt;X: Input of the hash function, it could be any data of any length&lt;/li&gt;
+&lt;li&gt;Y: Output of the hash function: a fix-size bit(, it can be 256, 384, 516 &amp;hellip;, Bitcoin uses 256)&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
     
     <item>
@@ -419,9 +411,7 @@ The pointer can be used to get the information, the hash can be used to verify t
       <description>&lt;blockquote&gt;
 &lt;p&gt;This series of articles are my notes of &amp;ldquo;Bitcoin and Cryptocurrency Technologies&amp;rdquo; online course.&lt;/p&gt;
 &lt;/blockquote&gt;
-
 &lt;h2 id=&#34;how-did-i-get-into-this&#34;&gt;How did I get into this?&lt;/h2&gt;
-
 &lt;p&gt;I have noticed the buzzwords “Bitcoin” and “Blockchain” for a while. There are lots of articles, news, and talks around them. It seems that many people believe that cryptocurrency is the future of online payment, some even claim that blockchain would become the fundamental technology of the next generation of the Internet.&lt;/p&gt;</description>
     </item>
     
@@ -431,8 +421,7 @@ The pointer can be used to get the information, the hash can be used to verify t
       <pubDate>Tue, 01 May 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/05/01/may-day-jiulonghu/</guid>
-      <description>&lt;h2 id=&#34;寻浮云牧场不遇&#34;&gt;寻浮云牧场不遇&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;寻浮云牧场不遇&lt;/h2&gt;
 &lt;p&gt;五一节前的一周内，几个朋友就纷纷坐不住了，一个二个不再安心上班，开始在微信群里讨论过节要到哪里耍。
 大家思来想去，最后决定还是去理县方向。因为根据多年自驾的经验，只要出了汶川，沿途都是风景。&lt;/p&gt;</description>
     </item>
@@ -461,10 +450,8 @@ The pointer can be used to get the information, the hash can be used to verify t
       <pubDate>Thu, 29 Mar 2018 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/</guid>
-      <description>&lt;h2 id=&#34;微服务架构的演进&#34;&gt;微服务架构的演进&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;微服务架构的演进&lt;/h2&gt;
 &lt;p&gt;作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。&lt;/p&gt;
-
 &lt;p&gt;另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。&lt;/p&gt;</description>
     </item>
     
@@ -475,9 +462,7 @@ The pointer can be used to get the information, the hash can be used to verify t
       
       <guid>https://zhaohuabing.com/2018/03/13/use-docker-behind-http-proxy/</guid>
       <description>&lt;h2 id=&#34;ubuntu&#34;&gt;Ubuntu&lt;/h2&gt;
-
-&lt;h3 id=&#34;设置docker使用http-proxy&#34;&gt;设置docker使用http proxy&lt;/h3&gt;
-
+&lt;h3 id=&#34;dockerhttp-proxy&#34;&gt;设置docker使用http proxy&lt;/h3&gt;
 &lt;pre&gt;&lt;code&gt;sudo /etc/default/docker
 
 export http_proxy=&amp;quot;http://127.0.0.1:3128/&amp;quot;
@@ -494,8 +479,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       
       <guid>https://zhaohuabing.com/2018/02/09/vim-tips/</guid>
       <description>&lt;h2 id=&#34;vim-graphical-cheat-sheet&#34;&gt;vim graphical cheat sheet&lt;/h2&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://zhaohuabing.com/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://zhaohuabing.com/https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -504,7 +488,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Fri, 09 Feb 2018 10:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/02/09/docker-without-sudo/</guid>
-      <description>Add the docker group if it doesn&amp;rsquo;t already exist: sudo groupadd docker Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker Either do a newgrp docker or log out/in to activate the changes to groups.</description>
+      <description>Add the docker group if it doesn&#39;t already exist: sudo groupadd docker Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker Either do a newgrp docker or log out/in to activate the changes to groups.</description>
     </item>
     
     <item>
@@ -522,8 +506,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Tue, 02 Jan 2018 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2018/01/02/nginmesh-install/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。&lt;/p&gt;</description>
     </item>
     
@@ -533,8 +516,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Tue, 28 Nov 2017 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/28/access-application-from-outside/</guid>
-      <description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;前言&lt;/h2&gt;
 &lt;p&gt;我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。&lt;/p&gt;</description>
     </item>
     
@@ -544,8 +526,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Thu, 23 Nov 2017 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/23/windows-proxy-scripts/</guid>
-      <description>&lt;h2 id=&#34;问题&#34;&gt;问题&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;问题&lt;/h2&gt;
 &lt;p&gt;我非常愿意在日程使用的工作工具上进行投资，好的工具可以提升效率，因为工具的问题导致思维中断非常让人沮丧。我在办公室使用一台ThinkPad笔记本，笔记本是公司发的，我自己花钱升级了SSD，内存，安装的是Win10，秒级启动，安装vagrant和virtualbox后，用Linux虚机进行开发也很顺手。但一个小代理服务器设置的小问题却影响了我使用笔记本处理事务的体验。&lt;/p&gt;</description>
     </item>
     
@@ -565,9 +546,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       
       <guid>https://zhaohuabing.com/2017/11/07/istio-traffic-shifting/</guid>
       <description>&lt;p&gt;关于Istio的更多内容请参考&lt;a href=&#34;http://istio.doczh.cn/&#34;&gt;istio中文文档&lt;/a&gt;。&lt;/p&gt;
-
 &lt;p&gt;原文参见&lt;a href=&#34;https://istio.io/docs/tasks/traffic-management/traffic-shifting.html&#34;&gt;Traffic Shifting&lt;/a&gt;。&lt;/p&gt;
-
 &lt;p&gt;本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。&lt;/p&gt;</description>
     </item>
     
@@ -577,10 +556,8 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Sat, 04 Nov 2017 12:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/04/istio-install_and_example/</guid>
-      <description>&lt;h2 id=&#34;服务网格简介&#34;&gt;服务网格简介&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;服务网格简介&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;服务网格&lt;/strong&gt;（Service Mesh）是为解决微服务的通信和治理而出现的一种&lt;strong&gt;架构模式&lt;/strong&gt;。&lt;/p&gt;
-
 &lt;p&gt;服务网格将服务间通讯以及与此相关的管理控制功能从业务程序中下移到一个基础设施层，从而彻底隔离了业务逻辑和服务通讯两个关注点。采用服务网格后，应用开发者只需要关注并实现应用业务逻辑。服务之间的通信，包括服务发现，通讯的可靠性，通讯的安全性，服务路由等由服务网格层进行处理，并对应用程序透明。&lt;/p&gt;</description>
     </item>
     
@@ -590,7 +567,7 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <pubDate>Sat, 04 Nov 2017 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/2017/11/03/hello-world/</guid>
-      <description>“Yeah It&amp;rsquo;s on. ” Hello World!</description>
+      <description>“Yeah It&#39;s on. ” Hello World!</description>
     </item>
     
     <item>
@@ -621,8 +598,7 @@ He loves open source and has been contributing to various open source projects, 
       <guid>https://zhaohuabing.com/top/books/</guid>
       <description>Istio深度解析与项目实践 该电子书为个人项目，深度解析服务网格开源项目Istio的基本原理，实现机制，以及如何在产品项目中使用Istio进行微服务治理和管控。
 Istio Handbook——Istio 服务网格进阶实战 该电子书为国内Service Mesh技术开源社区ServiceMesher合著，我参与了部分章节的撰写。
-Machine learning学习笔记 Coursera 在线课程 Machine learning 笔记 讲师: 吴恩达(Andrew Ng)  课程地址：https://www.coursera.org/learn/machine-learning
-Go语言学习笔记 Go（又称Golang）是Google开发的一种静态强类型、编译型、并发型，并具有垃圾回收功能的编程语言。</description>
+Machine learning学习笔记 Coursera 在线课程 Machine learning 笔记讲师: 吴恩达(Andrew Ng) 课程地址：https://www.coursera.org/learn/machine-learningGo语言学习笔记 Go（又称Golang）是Google开发的一种静态强类型、编译型、并发型，并具有垃圾回收功能的编程语言。</description>
     </item>
     
   </channel>
