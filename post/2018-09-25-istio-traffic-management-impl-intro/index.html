@@ -197,7 +197,7 @@
                         
                     </div>
                     <h1>Istio流量管理实现机制深度解析</h1>
-                    <h2 class="subheading">Istio 1.4.0版本更新</h2>
+                    <h2 class="subheading">基于Istio 1.4.0版本更新</h2>
                     <span class="meta">
                         Posted by 
                         
@@ -1472,8 +1472,8 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 </ol>
 <p>上述调用流程涉及的完整Envoy配置文件参见：</p>
 <ul>
-<li>Proudctpage：https://gist.github.com/zhaohuabing/034ef87786d290a4e89cd6f5ad6fcc97</li>
-<li>Details：https://gist.github.com/zhaohuabing/544d4d45447b65d10150e528a190f8ee</li>
+<li>Proudctpage：https://raw.githubusercontent.com/zhaohuabing/bookinfo-bookinfo-config-dump/istio1.4.0/productpage-config-dump</li>
+<li>Reviews：https://raw.githubusercontent.com/zhaohuabing/bookinfo-bookinfo-config-dump/istio1.4.0/reviews-config-dump</li>
 </ul>
 <h1 id="heading7">小结</h1>
 <p>本文介绍了Istio流量管理相关组件，Istio控制面和数据面之间的标准接口，以及Istio下发到Envoy的完整配置数据的结构和内容。然后通过Bookinfo示例程序的一个端到端调用分析了Envoy是如何实现服务网格中服务发现和路由转发的，希望能帮助大家透过概念更进一步深入理解Istio流量管理的实现机制。</p>
