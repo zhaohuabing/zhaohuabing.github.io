@@ -457,11 +457,12 @@ $(function() {
 <h3 id="k8s-api-server">K8S API Server</h3>
 <p>提供Pilot相关的CRD Resource的增、删、改、查。和Pilot相关的CRD有以下几种:</p>
 <ul>
-<li><strong>Virtualservice</strong>：用于定义路由规则，如根据来源或 Header 制定规则，或在不同服务版本之间分拆流量。</li>
-<li><strong>DestinationRule</strong>：定义目的服务的配置策略以及可路由子集。策略包括断路器、负载均衡以及 TLS 等。</li>
-<li><strong>ServiceEntry</strong>：用 <a href="https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry">ServiceEntry</a> 可以向Istio中加入附加的服务条目，以使网格内可以向istio 服务网格之外的服务发出请求。</li>
-<li><strong>Gateway</strong>：为网格配置网关，以允许一个服务可以被网格外部访问。</li>
-<li><strong>EnvoyFilter</strong>：可以为Envoy配置过滤器。由于Envoy已经支持Lua过滤器，因此可以通过EnvoyFilter启用Lua过滤器，动态改变Envoy的过滤链行为。我之前一直在考虑如何才能动态扩展Envoy的能力，EnvoyFilter提供了很灵活的扩展性。</li>
+<li><a href="https://istio.io/docs/reference/config/networking/virtual-service/"><strong>Virtualservice</strong></a>：用于定义路由规则，如根据来源或 Header 制定规则，或在不同服务版本之间分拆流量。</li>
+<li><a href="https://istio.io/docs/reference/config/networking/destination-rule/"><strong>DestinationRule</strong></a>：定义目的服务的配置策略以及可路由子集。策略包括断路器、负载均衡以及 TLS 等。</li>
+<li><a href="https://istio.io/docs/reference/config/networking/service-entry/"><strong>ServiceEntry</strong></a>：可以使用ServiceEntry向Istio中加入附加的服务条目，以使网格内可以向istio 服务网格之外的服务发出请求。</li>
+<li><a href="https://istio.io/docs/reference/config/networking/gateway/"><strong>Gateway</strong></a>：为网格配置网关，以允许一个服务可以被网格外部访问。</li>
+<li><a href="https://istio.io/docs/reference/config/networking/envoy-filter/"><strong>EnvoyFilter</strong></a>：可以为Envoy配置过滤器。由于Envoy已经支持Lua过滤器，因此可以通过EnvoyFilter启用Lua过滤器，动态改变Envoy的过滤链行为。我之前一直在考虑如何才能动态扩展Envoy的能力，EnvoyFilter提供了很灵活的扩展性。</li>
+<li><a href="https://istio.io/docs/reference/config/networking/sidecar/"><strong>Sidecar</strong></a>：缺省情况下，Pilot将会把和Envoy Sidecar所在namespace的所有services的相关配置，包括inbound和outbound listenter, cluster, route等，都下发给Enovy。使用Sidecar可以对Pilot向Envoy Sidcar下发的配置进行更细粒度的调整，例如只向其下发该Sidecar 所在服务需要访问的那些外部服务的相关outbound配置。</li>
 </ul>
 <h2 id="heading3">数据面组件</h2>
 <p>在数据面有两个进程Pilot-agent和envoy，这两个进程被放在一个docker容器gcr.io/istio-release/proxyv2中。</p>
@@ -505,7 +506,7 @@ $(function() {
 </ol>
 <h2 id="ads">ADS聚合发现服务</h2>
 <p>保证控制面下发数据一致性，避免流量在配置更新过程中丢失的另一个方式是使用ADS(Aggregated Discovery Services)，即聚合的发现服务。ADS通过一个gRPC流来发布所有的配置更新，以保证各个xDS接口的调用顺序，避免由于xDS接口更新顺序导致的配置数据不一致问题。</p>
-<p>关于XDS接口的详细介绍可参考<a href="https://github.com/envoyproxy/data-plane-api/blob/master/XDS_PROTOCOL.md">xDS REST and gRPC protocol</a><!-- raw HTML omitted --><a href="#ref07">[7]</a><!-- raw HTML omitted --></p>
+<p>关于XDS接口的详细介绍可参考<a href="https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol">xDS REST and gRPC protocol</a><!-- raw HTML omitted --><a href="#ref07">[7]</a><!-- raw HTML omitted --></p>
 <h1 id="bookinfo-">Bookinfo 示例程序分析</h1>
 <p>下面我们以Bookinfo为例对Istio中的流量管理实现机制，以及控制面和数据面的交互进行进一步分析。</p>
 <h2 id="bookinfo">Bookinfo程序结构</h2>
@@ -514,8 +515,8 @@ $(function() {
 <h2 id="xds2">xDS接口调试方法</h2>
 <p>首先我们看看如何对xDS接口的相关数据进行查看和分析。Envoy v2接口采用了gRPC，由于gRPC是基于二进制的RPC协议，无法像V1的REST接口一样通过curl和浏览器进行进行分析。但我们还是可以通过Pilot和Envoy的调试接口查看xDS接口的相关数据。</p>
 <h3 id="pilot1">Pilot调试方法</h3>
-<p>Pilot在9093端口提供了下述<a href="https://github.com/istio/istio/tree/master/pilot/pkg/proxy/envoy/v2">调试接口</a><!-- raw HTML omitted --><a href="#ref08">[8]</a><!-- raw HTML omitted -->下述方法查看xDS接口相关数据。</p>
-<pre><code>PILOT=istio-pilot.istio-system:9093
+<p>Pilot在15014端口提供了下述<a href="https://github.com/istio/istio/tree/master/pilot/pkg/proxy/envoy/v2">调试接口</a><!-- raw HTML omitted --><a href="#ref08">[8]</a><!-- raw HTML omitted -->下述方法查看xDS接口相关数据。</p>
+<pre><code>PILOT=istio-pilot.istio-system:15014
 
 # What is sent to envoy
 # Listeners and routes
@@ -528,7 +529,7 @@ curl $PILOT/debug/edsz
 curl $PILOT/debug/cdsz
 </code></pre><h3 id="envoy1">Envoy调试方法</h3>
 <p>Envoy提供了管理接口，缺省为localhost的15000端口，可以获取listener，cluster以及完整的配置数据导出功能。</p>
-<pre><code>kubectl exec productpage-v1-54b8b9f55-bx2dq -c istio-proxy curl http://127.0.0.1:15000/help
+<pre><code>kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy curl http://127.0.0.1:15000/help
   /: Admin home page
   /certs: print certs on machine
   /clusters: upstream cluster status
@@ -550,28 +551,37 @@ curl $PILOT/debug/cdsz
 </code></pre><p>进入productpage pod 中的istio-proxy(Envoy) container，可以看到有下面的监听端口</p>
 <ul>
 <li>9080: productpage进程对外提供的服务端口</li>
-<li>15001: Envoy的入口监听器，iptable会将pod的流量导入该端口中由Envoy进行处理</li>
+<li>15001: Envoy的Virtual Outbound监听器，iptable会将productpage服务发出的出向流量导入该端口中由Envoy进行处理</li>
+<li>15006: Envoy的Virtual Inbound监听器，iptable会将发到productpage的入向流量导入该端口中由Envoy进行处理</li>
 <li>15000: Envoy管理端口，该端口绑定在本地环回地址上，只能在Pod内访问。</li>
+<li>15090：指向127.0.0.1：15000/stats/prometheus, 用于对外提供Envoy的性能统计指标</li>
 </ul>
-<pre><code>kubectl exec t productpage-v1-54b8b9f55-bx2dq -c istio-proxy --  netstat -ln
- 
-Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
-tcp        0      0 0.0.0.0:9080            0.0.0.0:*               LISTEN      -               
-tcp        0      0 127.0.0.1:15000         0.0.0.0:*               LISTEN      13/envoy        
-tcp        0      0 0.0.0.0:15001           0.0.0.0:*               LISTEN      13/envoy  
+<pre><code>master $ kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy --  netstat -ln
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:15090           0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:9080            0.0.0.0:*               LISTEN
+tcp        0      0 127.0.0.1:15000         0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:15001           0.0.0.0:*               LISTEN
+tcp        0      0 0.0.0.0:15006           0.0.0.0:*               LISTEN
+tcp6       0      0 :::15020                :::*                    LISTEN
 </code></pre><h2 id="envoy2">Envoy启动过程分析</h2>
-<p>Istio通过K8s的<a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook">Admission webhook</a><!-- raw HTML omitted --><a href="#ref09">[9]</a><!-- raw HTML omitted -->机制实现了sidecar的自动注入，Mesh中的每个微服务会被加入Envoy相关的容器。下面是Productpage微服务的Pod内容，可见除productpage之外，Istio还在该Pod中注入了两个容器gcr.io/istio-release/proxy_init和gcr.io/istio-release/proxyv2。</p>
+<p>Istio通过K8s的<a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook">Admission webhook</a><!-- raw HTML omitted --><a href="#ref09">[9]</a><!-- raw HTML omitted -->机制实现了sidecar的自动注入，Mesh中的每个微服务会被加入Envoy相关的容器。下面是Productpage微服务的Pod内容，可见除productpage之外，Istio还在该Pod中注入了两个容器istio-init和istio-proxy，为了节约下载镜像的时间，加快业务Pod的启动速度，这两个容器使用了相同的镜像文件，但启动命令不同。</p>
 <p>备注：下面Pod description中只保留了需要关注的内容，删除了其它不重要的部分。为方便查看，本文中后续的其它配置文件以及命令行输出也会进行类似处理。</p>
-<pre><code>ubuntu@envoy-test:~$ kubectl describe pod productpage-v1-54b8b9f55-bx2dq
-
-Name:               productpage-v1-54b8b9f55-bx2dq
+<pre><code>master $ kubectl describe pod productpage-v1-6d8bc58dd7-ts8kw
+Name:               productpage-v1-6d8bc58dd7-ts8kw
 Namespace:          default
+Labels:             app=productpage
+                    version=v1
 Init Containers:
   istio-init:
-    Image:         gcr.io/istio-release/proxy_init:1.0.0
-      Args:
+    Image:         docker.io/istio/proxyv2:1.4.1
+    Command:
+      istio-iptables
       -p
       15001
+      -z
+      15006
       -u
       1337
       -m
@@ -581,249 +591,285 @@ Init Containers:
       -x
 
       -b
-      9080,
+      *
       -d
-
+      15020
 Containers:
   productpage:
-    Image:          istio/examples-bookinfo-productpage-v1:1.8.0
+    Image:          docker.io/istio/examples-bookinfo-productpage-v1:1.15.0
     Port:           9080/TCP
-    
   istio-proxy:
-    Image:         gcr.io/istio-release/proxyv2:1.0.0
+    Image:         docker.io/istio/proxyv2:1.4.1
+    Port:          15090/TCP
     Args:
       proxy
       sidecar
+      --domain
+      $(POD_NAMESPACE).svc.cluster.local
       --configPath
       /etc/istio/proxy
       --binaryPath
       /usr/local/bin/envoy
       --serviceCluster
-      productpage
+      productpage.$(POD_NAMESPACE)
       --drainDuration
       45s
       --parentShutdownDuration
       1m0s
       --discoveryAddress
-      istio-pilot.istio-system:15007
-      --discoveryRefreshDelay
-      1s
+      istio-pilot.istio-system:15010
       --zipkinAddress
       zipkin.istio-system:9411
+      --proxyLogLevel=warning
+      --proxyComponentLogLevel=misc:error
       --connectTimeout
       10s
-      --statsdUdpAddress
-      istio-statsd-prom-bridge.istio-system:9125
       --proxyAdminPort
       15000
+      --concurrency
+      2
       --controlPlaneAuthPolicy
       NONE
+      --dnsRefreshRate
+      300s
+      --statusPort
+      15020
+      --applicationPorts
+      9080
+      --trust-domain=cluster.local   
 </code></pre><h3 id="proxyinit">Proxy_init</h3>
 <p>Productpage的Pod中有一个InitContainer proxy_init，InitContrainer是K8S提供的机制，用于在Pod中执行一些初始化任务.在Initialcontainer执行完毕并退出后，才会启动Pod中的其它container。</p>
-<p>我们看一下proxy_init容器中的内容：</p>
-<pre><code>ubuntu@envoy-test:~$ sudo docker inspect gcr.io/istio-release/proxy_init:1.0.0
-[
-    {
-        &quot;RepoTags&quot;: [
-            &quot;gcr.io/istio-release/proxy_init:1.0.0&quot;
-        ],
-
-        &quot;ContainerConfig&quot;: {
-            &quot;Env&quot;: [
-                &quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;
-            ],
-            &quot;Cmd&quot;: [
-                &quot;/bin/sh&quot;,
-                &quot;-c&quot;,
-                &quot;#(nop) &quot;,
-                &quot;ENTRYPOINT [\&quot;/usr/local/bin/istio-iptables.sh\&quot;]&quot;
-            ],
-            &quot;Entrypoint&quot;: [
-                &quot;/usr/local/bin/istio-iptables.sh&quot;
-            ],
-        },
-    }
-]
-</code></pre><p>从上面的命令行输出可以看到，Proxy_init中执行的命令是istio-iptables.sh，该脚本源码较长，就不列出来了，有兴趣可以在Istio 源码仓库的<a href="https://github.com/istio/istio/blob/master/tools/deb/istio-iptables.sh">tools/deb/istio-iptables.sh</a>查看。</p>
-<p>该脚本的作用是通过配置iptable来劫持Pod中的流量。结合前面Pod中该容器的命令行参数-p 15001，可以得知Pod中的数据流量被iptable拦截，并发向Envoy的15001端口。  -u 1337参数用于排除用户ID为1337，即Envoy自身的流量，以避免Iptable把Envoy发出的数据又重定向到Envoy，形成死循环。</p>
+<p>从上面的Pod description可以看到，proxy_init容器执行的命令是istio-iptables，这是一个go编译出来的二进制文件，该二进制文件会调用iptables命令创建了一些列iptables规则来劫持Pod中的流量。该命令有这些关键的参数：</p>
+<ul>
+<li>命令行参数 -p 15001表示出向流量被iptable重定向到Envoy的15001端口</li>
+<li>命令行参数 -z 15006表示入向流量被iptable重定向到Envoy的15006端口</li>
+<li>命令行参数 -u 1337参数用于排除用户ID为1337，即Envoy自身的流量，以避免Iptable把Envoy发出的数据又重定向到Envoy，形成死循环。</li>
+</ul>
+<p>Iptables规则的详细内容参见istio源码中的shell脚本<a href="https://github.com/istio/istio/blob/1.4.0/tools/packaging/common/istio-iptables.sh">tools/packaging/common/istio-iptables.sh</a>。</p>
 <h3 id="proxyv2">Proxyv2</h3>
 <p>前面提到，该容器中有两个进程Pilot-agent和envoy。我们进入容器中看看这两个进程的相关信息。</p>
-<pre><code>ubuntu@envoy-test:~$ kubectl exec   productpage-v1-54b8b9f55-bx2dq -c istio-proxy -- ps -ef
-
+<pre><code>master $ kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy -- ps -ef
 UID        PID  PPID  C STIME TTY          TIME CMD
-istio-p+     1     0  0 Sep06 ?        00:00:00 /usr/local/bin/pilot-agent proxy sidecar --configPath /etc/istio/proxy --binaryPath /usr/local/bin/envoy --serviceCluster productpage --drainDuration 45s --parentShutdownDuration 1m0s --discoveryAddress istio-pilot.istio-system:15007 --discoveryRefreshDelay 1s --zipkinAddress zipkin.istio-system:9411 --connectTimeout 10s --statsdUdpAddress istio-statsd-prom-bridge.istio-system:9125 --proxyAdminPort 15000 --controlPlaneAuthPolicy NONE
-istio-p+    13     1  0 Sep06 ?        00:47:37 /usr/local/bin/envoy -c /etc/istio/proxy/envoy-rev0.json --restart-epoch 0 --drain-time-s 45 --parent-shutdown-time-s 60 --service-cluster productpage --service-node sidecar~192.168.206.23~productpage-v1-54b8b9f55-bx2dq.default~default.svc.cluster.local --max-obj-name-len 189 -l warn --v2-config-only
+istio-p+     1     0  0 10:46 ?        00:00:02 /usr/local/bin/pilot-agent proxy sidecar --domain default.svc.cluster.local --configPath /etc/istio/proxy --binaryPath/usr/local/bin/envoy --serviceCluster productpage.default --drainDuration 45s --parentShutdownDuration 1m0s --discoveryAddress istio-pilot.istio-system:15010 --zipkinAddress zipkin.istio-system:9411 --proxyLogLevel=warning --proxyComponentLogLevel=misc:error --connectTimeout 10s --proxyAdminPort 15000 --concurrency 2 --controlPlaneAuthPolicy NONE --dnsRefreshRate 300s --statusPort 15020 --applicationPorts 9080 --trust-domain=cluster.local
+istio-p+    20     1  0 10:46 ?        00:00:07 /usr/local/bin/envoy -c /etc/istio/proxy/envoy-rev0.json --restart-epoch 0 --drain-time-s 45 --parent-shutdown-time-s 60 --service-cluster productpage.default --service-node sidecar~10.40.0.18~productpage-v1-6d8bc58dd7-ts8kw.default~default.svc.cluster.local --max-obj-name-len 189 --local-address-ip-version v4 --log-format [Envoy (Epoch 0)] [%Y-%m-%d %T.%e][%t][%l][%n] %v -l warning --component-log-level misc:error --concurrency 2
+istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
 </code></pre><p>Envoy的大部分配置都是dynamic resource，包括网格中服务相关的service cluster, listener, route规则等。这些dynamic resource是通过xDS接口从Istio控制面中动态获取的。但Envoy如何知道xDS server的地址呢？这是在Envoy初始化配置文件中以static resource的方式配置的。</p>
 <h4 id="envoy3">Envoy初始配置文件</h4>
-<p>Pilot-agent进程根据启动参数和K8S API Server中的配置信息生成Envoy的初始配置文件，并负责启动Envoy进程。从ps命令输出可以看到Pilot-agent在启动Envoy进程时传入了pilot地址和zipkin地址，并为Envoy生成了一个初始化配置文件envoy-rev0.json</p>
-<p>Pilot agent生成初始化配置文件的代码：
-<a href="https://github.com/istio/istio/blob/release-1.0/pkg/bootstrap/bootstrap_config.go">https://github.com/istio/istio/blob/release-1.0/pkg/bootstrap/bootstrap_config.go</a> 137行</p>
-<pre><code>// WriteBootstrap generates an envoy config based on config and epoch, and returns the filename.
-// TODO: in v2 some of the LDS ports (port, http_port) should be configured in the bootstrap.
-func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilotSAN []string, opts map[string]interface{}) (string, error) {
-	if opts == nil {
-		opts = map[string]interface{}{}
-	}
-	if err := os.MkdirAll(config.ConfigPath, 0700); err != nil {
-		return &quot;&quot;, err
-	}
-	// attempt to write file
-	fname := configFile(config.ConfigPath, epoch)
-
-	cfg := config.CustomConfigFile
-	if cfg == &quot;&quot; {
-		cfg = config.ProxyBootstrapTemplatePath
-	}
-	if cfg == &quot;&quot; {
-		cfg = DefaultCfgDir
-	}
-	......
-
-	if config.StatsdUdpAddress != &quot;&quot; {
-		h, p, err = GetHostPort(&quot;statsd UDP&quot;, config.StatsdUdpAddress)
-		if err != nil {
-			return &quot;&quot;, err
-		}
-		StoreHostPort(h, p, &quot;statsd&quot;, opts)
-	}
-
-	fout, err := os.Create(fname)
-	if err != nil {
-		return &quot;&quot;, err
-	}
-
-	// Execute needs some sort of io.Writer
-	err = t.Execute(fout, opts)
-	return fname, err
-}
-</code></pre><p>可以使用下面的命令将productpage pod中该文件导出来查看其中的内容：</p>
-<pre><code>kubectl exec productpage-v1-54b8b9f55-bx2dq -c istio-proxy -- cat /etc/istio/proxy/envoy-rev0.json &gt; envoy-rev0.json
+<p>Pilot-agent进程根据启动参数和K8S API Server中的配置信息生成Envoy的初始配置文件，并负责启动Envoy进程。从ps命令输出可以看到Pilot-agent在启动Envoy进程时传入了pilot地址和zipkin地址，并为Envoy生成了一个初始化配置文件envoy-rev0.json。</p>
+<p>可以使用下面的命令将productpage pod中该文件导出来查看其中的内容：</p>
+<pre><code>kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy cat /etc/istio/proxy/envoy-rev0.json &gt; envoy-rev0.json
 </code></pre><p>配置文件的结构如图所示：</p>
 <p><img src="/img/2019-12-05-istio-traffic-management-impl-intro/envoy-rev0.png" alt=""></p>
 <p>其中各个配置节点的内容如下：</p>
 <h5 id="node">Node</h5>
 <p>包含了Envoy所在节点相关信息。</p>
-<pre><code>&quot;node&quot;: {
-    &quot;id&quot;: &quot;sidecar~192.168.206.23~productpage-v1-54b8b9f55-bx2dq.default~default.svc.cluster.local&quot;,
-    //用于标识envoy所代理的node（在k8s中对应为Pod）上的service cluster，来自于Envoy进程启动时的service-cluster参数
-    &quot;cluster&quot;: &quot;productpage&quot;,  
-    &quot;metadata&quot;: {
-          &quot;INTERCEPTION_MODE&quot;: &quot;REDIRECT&quot;,
-          &quot;ISTIO_PROXY_SHA&quot;: &quot;istio-proxy:6166ae7ebac7f630206b2fe4e6767516bf198313&quot;,
-          &quot;ISTIO_PROXY_VERSION&quot;: &quot;1.0.0&quot;,
-          &quot;ISTIO_VERSION&quot;: &quot;1.0.0&quot;,
-          &quot;POD_NAME&quot;: &quot;productpage-v1-54b8b9f55-bx2dq&quot;,
-          &quot;istio&quot;: &quot;sidecar&quot;
+<pre><code>{
+    &quot;node&quot;: {
+        &quot;id&quot;: &quot;sidecar~10.40.0.18~productpage-v1-6d8bc58dd7-ts8kw.default~default.svc.cluster.local&quot;,
+        &quot;cluster&quot;: &quot;productpage.default&quot;,
+        &quot;locality&quot;: {},
+        &quot;metadata&quot;: {
+            &quot;CLUSTER_ID&quot;: &quot;Kubernetes&quot;,
+            &quot;CONFIG_NAMESPACE&quot;: &quot;default&quot;,
+            &quot;EXCHANGE_KEYS&quot;: &quot;NAME,NAMESPACE,INSTANCE_IPS,LABELS,OWNER,PLATFORM_METADATA,WORKLOAD_NAME,CANONICAL_TELEMETRY_SERVICE,MESH_ID,SERVICE_ACCOUNT&quot;,
+            &quot;INCLUDE_INBOUND_PORTS&quot;: &quot;9080&quot;,
+            &quot;INSTANCE_IPS&quot;: &quot;10.40.0.18,fe80::94df:47ff:fef3:bc99&quot;,
+            &quot;INTERCEPTION_MODE&quot;: &quot;REDIRECT&quot;,
+            &quot;ISTIO_PROXY_SHA&quot;: &quot;istio-proxy:3af92d895f6cb80993fc8bb04dc9b2008183f2ba&quot;,
+            &quot;ISTIO_VERSION&quot;: &quot;1.4.1&quot;,
+            &quot;LABELS&quot;: {
+                &quot;app&quot;: &quot;productpage&quot;,
+                &quot;pod-template-hash&quot;: &quot;6d8bc58dd7&quot;,
+                &quot;security.istio.io/tlsMode&quot;: &quot;istio&quot;,
+                &quot;version&quot;: &quot;v1&quot;
+            },
+            &quot;MESH_ID&quot;: &quot;cluster.local&quot;,
+            &quot;NAME&quot;: &quot;productpage-v1-6d8bc58dd7-ts8kw&quot;,
+            &quot;NAMESPACE&quot;: &quot;default&quot;,
+            &quot;OWNER&quot;: &quot;kubernetes://api/apps/v1/namespaces/default/deployments/productpage-v1&quot;,
+            &quot;POD_NAME&quot;: &quot;productpage-v1-6d8bc58dd7-ts8kw&quot;,
+            &quot;POD_PORTS&quot;: &quot;[{\&quot;containerPort\&quot;:9080,\&quot;protocol\&quot;:\&quot;TCP\&quot;},{\&quot;name\&quot;:\&quot;http-envoy-prom\&quot;,\&quot;containerPort\&quot;:15090,\&quot;protocol\&quot;:\&quot;TCP\&quot;}]&quot;,
+            &quot;SERVICE_ACCOUNT&quot;: &quot;bookinfo-productpage&quot;,
+            &quot;WORKLOAD_NAME&quot;: &quot;productpage-v1&quot;,
+            &quot;app&quot;: &quot;productpage&quot;,
+            &quot;pod-template-hash&quot;: &quot;6d8bc58dd7&quot;,
+            &quot;security.istio.io/tlsMode&quot;: &quot;istio&quot;,
+            &quot;sidecar.istio.io/status&quot;: &quot;{\&quot;version\&quot;:\&quot;8d80e9685defcc00b0d8c9274b60071ba8810537e0ed310ea96c1de0785272c7\&quot;,\&quot;initContainers\&quot;:[\&quot;istio-init\&quot;],\&quot;containers\&quot;:[\&quot;istio-proxy\&quot;],\&quot;volumes\&quot;:[\&quot;istio-envoy\&quot;,\&quot;istio-certs\&quot;],\&quot;imagePullSecrets\&quot;:null}&quot;,
+            &quot;version&quot;: &quot;v1&quot;
+        }
     }
-  }
+}
 </code></pre><h5 id="admin">Admin</h5>
 <p>配置Envoy的日志路径以及管理端口。</p>
-<pre><code>&quot;admin&quot;: {
-    &quot;access_log_path&quot;: &quot;/dev/stdout&quot;,
-    &quot;address&quot;: {
-      &quot;socket_address&quot;: {
-        &quot;address&quot;: &quot;127.0.0.1&quot;,
-        &quot;port_value&quot;: 15000
-      }
+<pre><code>    &quot;admin&quot;: {
+        &quot;access_log_path&quot;: &quot;/dev/null&quot;,
+        &quot;address&quot;: {
+            &quot;socket_address&quot;: {
+                &quot;address&quot;: &quot;127.0.0.1&quot;,
+                &quot;port_value&quot;: 15000
+            }
+        }
     }
-  }
 </code></pre><h5 id="dynamicresources">Dynamic_resources</h5>
 <p>配置动态资源,这里配置了ADS服务器。</p>
-<pre><code>&quot;dynamic_resources&quot;: {
-    &quot;lds_config&quot;: {
-        &quot;ads&quot;: {}
-    },
-    &quot;cds_config&quot;: {
-        &quot;ads&quot;: {}
-    },
-    &quot;ads_config&quot;: {
-      &quot;api_type&quot;: &quot;GRPC&quot;,
-      &quot;refresh_delay&quot;: {&quot;seconds&quot;: 1, &quot;nanos&quot;: 0},
-      &quot;grpc_services&quot;: [
-        {
-          &quot;envoy_grpc&quot;: {
-            &quot;cluster_name&quot;: &quot;xds-grpc&quot;
-          }
-        }
-      ]
-    }
-  }```
-</code></pre><h5 id="staticresources">Static_resources</h5>
-<p>配置静态资源，包括了xds-grpc和zipkin两个cluster。其中xds-grpc cluster对应前面dynamic_resources中ADS配置，指明了Envoy用于获取动态资源的服务器地址。</p>
-<pre><code>&quot;static_resources&quot;: {
-    &quot;clusters&quot;: [
-    {
-    &quot;name&quot;: &quot;xds-grpc&quot;,
-    &quot;type&quot;: &quot;STRICT_DNS&quot;,
-    &quot;connect_timeout&quot;: {&quot;seconds&quot;: 10, &quot;nanos&quot;: 0},
-    &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
-
-    &quot;hosts&quot;: [
-    {
-    &quot;socket_address&quot;: {&quot;address&quot;: &quot;istio-pilot.istio-system&quot;, &quot;port_value&quot;: 15010}
-    }
-    ],
-    &quot;circuit_breakers&quot;: {
-        &quot;thresholds&quot;: [
-      {
-        &quot;priority&quot;: &quot;default&quot;,
-        &quot;max_connections&quot;: &quot;100000&quot;,
-        &quot;max_pending_requests&quot;: &quot;100000&quot;,
-        &quot;max_requests&quot;: &quot;100000&quot;
-      },
-      {
-        &quot;priority&quot;: &quot;high&quot;,
-        &quot;max_connections&quot;: &quot;100000&quot;,
-        &quot;max_pending_requests&quot;: &quot;100000&quot;,
-        &quot;max_requests&quot;: &quot;100000&quot;
-      }]
-    },
-    &quot;upstream_connection_options&quot;: {
-      &quot;tcp_keepalive&quot;: {
-        &quot;keepalive_time&quot;: 300
-      }
-    },
-    &quot;http2_protocol_options&quot;: { }
-    } ,
-      {
-        &quot;name&quot;: &quot;zipkin&quot;,
-        &quot;type&quot;: &quot;STRICT_DNS&quot;,
-        &quot;connect_timeout&quot;: {
-          &quot;seconds&quot;: 1
+<pre><code>{
+    &quot;dynamic_resources&quot;: {
+        &quot;lds_config&quot;: {
+            &quot;ads&quot;: {}
         },
-        &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
-        &quot;hosts&quot;: [
-          {
-            &quot;socket_address&quot;: {&quot;address&quot;: &quot;zipkin.istio-system&quot;, &quot;port_value&quot;: 9411}
-          }
+        &quot;cds_config&quot;: {
+            &quot;ads&quot;: {}
+        },
+        &quot;ads_config&quot;: {
+            &quot;api_type&quot;: &quot;GRPC&quot;,
+            &quot;grpc_services&quot;: [
+                {
+                    &quot;envoy_grpc&quot;: {
+                        &quot;cluster_name&quot;: &quot;xds-grpc&quot;
+                    }
+                }
+            ]
+        }
+    }
+}
+</code></pre><h5 id="staticresources">Static_resources</h5>
+<p>配置静态资源，包括了prometheus_stats、xds-grpc和zipkin三个cluster和一个在15090上监听的listener。其中xds-grpc cluster对应前面dynamic_resources中ADS配置，指明了Envoy用于获取动态资源的服务器地址。prometheus_stats cluster和15090 listener用于对外提供兼容prometheus格式的统计指标。zipkin cluster则是外部的zipkin调用跟踪服务器地址，Envoy会向该地址上报兼容zipkin格式的调用跟踪信息。</p>
+<pre><code>{
+    &quot;static_resources&quot;: {
+        &quot;clusters&quot;: [
+            {
+                &quot;name&quot;: &quot;prometheus_stats&quot;,
+                &quot;type&quot;: &quot;STATIC&quot;,
+                &quot;connect_timeout&quot;: &quot;0.250s&quot;,
+                &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
+                &quot;hosts&quot;: [
+                    {
+                        &quot;socket_address&quot;: {
+                            &quot;protocol&quot;: &quot;TCP&quot;,
+                            &quot;address&quot;: &quot;127.0.0.1&quot;,
+                            &quot;port_value&quot;: 15000
+                        }
+                    }
+                ]
+            },
+            {
+                &quot;name&quot;: &quot;xds-grpc&quot;,
+                &quot;type&quot;: &quot;STRICT_DNS&quot;,
+                &quot;dns_refresh_rate&quot;: &quot;300s&quot;,
+                &quot;dns_lookup_family&quot;: &quot;V4_ONLY&quot;,
+                &quot;connect_timeout&quot;: &quot;10s&quot;,
+                &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
+                &quot;hosts&quot;: [
+                    {
+                        &quot;socket_address&quot;: {
+                            &quot;address&quot;: &quot;istio-pilot.istio-system&quot;,
+                            &quot;port_value&quot;: 15010
+                        }
+                    }
+                ],
+                &quot;circuit_breakers&quot;: {
+                    &quot;thresholds&quot;: [
+                        {
+                            &quot;priority&quot;: &quot;DEFAULT&quot;,
+                            &quot;max_connections&quot;: 100000,
+                            &quot;max_pending_requests&quot;: 100000,
+                            &quot;max_requests&quot;: 100000
+                        },
+                        {
+                            &quot;priority&quot;: &quot;HIGH&quot;,
+                            &quot;max_connections&quot;: 100000,
+                            &quot;max_pending_requests&quot;: 100000,
+                            &quot;max_requests&quot;: 100000
+                        }
+                    ]
+                },
+                &quot;upstream_connection_options&quot;: {
+                    &quot;tcp_keepalive&quot;: {
+                        &quot;keepalive_time&quot;: 300
+                    }
+                },
+                &quot;http2_protocol_options&quot;: {}
+            },
+            {
+                &quot;name&quot;: &quot;zipkin&quot;,
+                &quot;type&quot;: &quot;STRICT_DNS&quot;,
+                &quot;dns_refresh_rate&quot;: &quot;300s&quot;,
+                &quot;dns_lookup_family&quot;: &quot;V4_ONLY&quot;,
+                &quot;connect_timeout&quot;: &quot;1s&quot;,
+                &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
+                &quot;hosts&quot;: [
+                    {
+                        &quot;socket_address&quot;: {
+                            &quot;address&quot;: &quot;zipkin.istio-system&quot;,
+                            &quot;port_value&quot;: 9411
+                        }
+                    }
+                ]
+            }
+        ],
+        &quot;listeners&quot;: [
+            {
+                &quot;address&quot;: {
+                    &quot;socket_address&quot;: {
+                        &quot;protocol&quot;: &quot;TCP&quot;,
+                        &quot;address&quot;: &quot;0.0.0.0&quot;,
+                        &quot;port_value&quot;: 15090
+                    }
+                },
+                &quot;filter_chains&quot;: [
+                    {
+                        &quot;filters&quot;: [
+                            {
+                                &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
+                                &quot;config&quot;: {
+                                    &quot;codec_type&quot;: &quot;AUTO&quot;,
+                                    &quot;stat_prefix&quot;: &quot;stats&quot;,
+                                    &quot;route_config&quot;: {
+                                        &quot;virtual_hosts&quot;: [
+                                            {
+                                                &quot;name&quot;: &quot;backend&quot;,
+                                                &quot;domains&quot;: [
+                                                    &quot;*&quot;
+                                                ],
+                                                &quot;routes&quot;: [
+                                                    {
+                                                        &quot;match&quot;: {
+                                                            &quot;prefix&quot;: &quot;/stats/prometheus&quot;
+                                                        },
+                                                        &quot;route&quot;: {
+                                                            &quot;cluster&quot;: &quot;prometheus_stats&quot;
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    &quot;http_filters&quot;: {
+                                        &quot;name&quot;: &quot;envoy.router&quot;
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
         ]
-      }
-      
-    ]
-  }
+    }
+}
 </code></pre><h5 id="tracing">Tracing</h5>
-<p>配置分布式链路跟踪。</p>
-<pre><code>&quot;tracing&quot;: {
+<p>配置分布式链路跟踪，这里配置的后端cluster是前面static_resources里面定义的zipkin cluster。</p>
+<pre><code>  &quot;tracing&quot;: {
     &quot;http&quot;: {
       &quot;name&quot;: &quot;envoy.zipkin&quot;,
       &quot;config&quot;: {
-        &quot;collector_cluster&quot;: &quot;zipkin&quot;
+        &quot;collector_cluster&quot;: &quot;zipkin&quot;,
+        &quot;collector_endpoint&quot;: &quot;/api/v1/spans&quot;,
+        &quot;trace_id_128bit&quot;: &quot;true&quot;,
+        &quot;shared_span_context&quot;: &quot;false&quot;
       }
     }
   }
-</code></pre><h5 id="statssinks">Stats_sinks</h5>
-<p>这里配置的是和Envoy直连的metrics收集sink,和Mixer telemetry没有关系。Envoy自带stats格式的metrics上报。</p>
-<pre><code>&quot;stats_sinks&quot;: [
-    {
-      &quot;name&quot;: &quot;envoy.statsd&quot;,
-      &quot;config&quot;: {
-        &quot;address&quot;: {
-          &quot;socket_address&quot;: {&quot;address&quot;: &quot;10.103.219.158&quot;, &quot;port_value&quot;: 9125}
-        }
-      }
-    }
-  ]
-</code></pre><p>在Gist <a href="https://gist.github.com/zhaohuabing/14191bdcf72e37bf700129561c3b41ae">https://gist.github.com/zhaohuabing/14191bdcf72e37bf700129561c3b41ae</a>中可以查看该配置文件的完整内容。</p>
+</code></pre><p>在https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/productpage-envoy-rev0.json中可以查看该配置文件的完整内容。</p>
 <h2 id="envoy4">Envoy配置分析</h2>
 <h3 id="heading6">通过管理接口获取完整配置</h3>
 <p>从Envoy初始化配置文件中，我们可以大致看到Istio通过Envoy来实现服务发现和流量管理的基本原理。即控制面将xDS server信息通过static resource的方式配置到Envoy的初始化配置文件中，Envoy启动后通过xDS server获取到dynamic resource，包括网格中的service信息及路由规则。</p>
@@ -837,133 +883,198 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 </ol>
 <p>可以看到，Envoy中实际生效的配置是由初始化配置文件中的静态配置和从Pilot获取的动态配置一起组成的。因此只对envoy-rev0
 .json进行分析并不能看到Mesh中流量管理的全貌。那么有没有办法可以看到Envoy中实际生效的完整配置呢？答案是可以的，我们可以通过Envoy的管理接口来获取Envoy的完整配置。</p>
-<pre><code>kubectl exec -it productpage-v1-54b8b9f55-bx2dq -c istio-proxy curl http://127.0.0.1:15000/config_dump &gt; config_dump
-</code></pre><p>该文件内容长达近7000行，本文中就不贴出来了，在Gist <a href="https://gist.github.com/zhaohuabing/034ef87786d290a4e89cd6f5ad6fcc97">https://gist.github.com/zhaohuabing/034ef87786d290a4e89cd6f5ad6fcc97</a> 中可以查看到全文。</p>
+<pre><code>kubectl exec -it productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy curl http://127.0.0.1:15000/config_dump &gt; config_dump
+</code></pre><p>该文件内容长达近一万行，本文中就不贴出来了，在https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/productpage-config-dump中可以查看到文件的全部内容。</p>
 <h3 id="envoy5">Envoy配置文件结构</h3>
 <p><img src="/img/2019-12-05-istio-traffic-management-impl-intro/envoy-config.png" alt=""></p>
-<p>文件中的配置节点包括：</p>
+<p>从dump文件中可以看到Envoy中包括下述配置：</p>
 <h4 id="bootstrap">Bootstrap</h4>
 <p>从名字可以大致猜出这是Envoy的初始化配置，打开该节点，可以看到文件中的内容和前一章节中介绍的envoy-rev0.json是一致的，这里不再赘述。</p>
 <p><img src="/img/2019-12-05-istio-traffic-management-impl-intro/envoy-config-bootstrap.png" alt=""></p>
 <h4 id="clusters">Clusters</h4>
 <p>在Envoy中，Cluster是一个服务集群，Cluster中包含一个到多个endpoint，每个endpoint都可以提供服务，Envoy根据负载均衡算法将请求发送到这些endpoint中。</p>
-<p>在Productpage的clusters配置中包含static_clusters和dynamic_active_clusters两部分，其中static_clusters是来自于envoy-rev0.json的xDS server和zipkin server信息。dynamic_active_clusters是通过xDS接口从Istio控制面获取的动态服务信息。</p>
+<p>在Productpage的clusters配置中包含static_clusters和dynamic_active_clusters两部分，其中static_clusters是来自于envoy-rev0.json的初始化配置中的prometheus_stats、xDS server和zipkin server信息。dynamic_active_clusters是通过xDS接口从Istio控制面获取的动态服务信息。</p>
 <p><img src="/img/2019-12-05-istio-traffic-management-impl-intro/envoy-config-clusters.png" alt=""></p>
 <p>Dynamic Cluster中有以下几类Cluster：</p>
 <h5 id="outbound-cluster">Outbound Cluster</h5>
-<p>这部分的Cluster占了绝大多数，该类Cluster对应于Envoy所在节点的外部服务。以details为例，对于Productpage来说,details是一个外部服务，因此其Cluster名称中包含outbound字样。</p>
-<p>从details 服务对应的cluster配置中可以看到，其类型为EDS，即表示该Cluster的endpoint来自于动态发现，动态发现中eds_config则指向了ads，最终指向static Resource中配置的xds-grpc cluster,即Pilot的地址。</p>
+<p>这部分的Cluster占了绝大多数，该类Cluster对应于Envoy所在节点的外部服务。以reviews为例，对于Productpage来说,reviews是一个外部服务，因此其Cluster名称中包含outbound字样。</p>
+<p>从reviews 服务对应的cluster配置中可以看到，其类型为EDS，即表示该Cluster的endpoint来自于动态发现，动态发现中eds_config则指向了ads，最终指向static Resource中配置的xds-grpc cluster,即Pilot的地址。</p>
 <pre><code>{
- &quot;version_info&quot;: &quot;2018-09-06T09:34:19Z&quot;,
- &quot;cluster&quot;: {
-  &quot;name&quot;: &quot;outbound|9080||details.default.svc.cluster.local&quot;,
-  &quot;type&quot;: &quot;EDS&quot;,
-  &quot;eds_cluster_config&quot;: {
-   &quot;eds_config&quot;: {
-    &quot;ads&quot;: {}
-   },
-   &quot;service_name&quot;: &quot;outbound|9080||details.default.svc.cluster.local&quot;
-  },
-  &quot;connect_timeout&quot;: &quot;1s&quot;,
-  &quot;circuit_breakers&quot;: {
-   &quot;thresholds&quot;: [
-    {}
-   ]
-  }
- },
- &quot;last_updated&quot;: &quot;2018-09-06T09:34:20.404Z&quot;
-}
-</code></pre><p>可以通过Pilot的调试接口获取该Cluster的endpoint：</p>
-<pre><code>curl http://10.96.8.103:9093/debug/edsz &gt; pilot_eds_dump
-</code></pre><p>导出的文件长达1300多行，本文只贴出details服务相关的endpoint配置，完整文件参见:https://gist.github.com/zhaohuabing/a161d2f64746acd18097b74e6a5af551</p>
-<p>从下面的文件内容可以看到，details cluster配置了1个endpoint地址，是details的pod ip。</p>
-<pre><code>{
-  &quot;clusterName&quot;: &quot;outbound|9080||details.default.svc.cluster.local&quot;,
-  &quot;endpoints&quot;: [
-    {
-      &quot;locality&quot;: {
-
-      },
-      &quot;lbEndpoints&quot;: [
-        {
-          &quot;endpoint&quot;: {
-            &quot;address&quot;: {
-              &quot;socketAddress&quot;: {
-                &quot;address&quot;: &quot;192.168.206.21&quot;,
-                &quot;portValue&quot;: 9080
-              }
-            }
-          },
-          &quot;metadata&quot;: {
-            &quot;filterMetadata&quot;: {
-              &quot;istio&quot;: {
-                  &quot;uid&quot;: &quot;kubernetes://details-v1-6764bbc7f7-qwzdg.default&quot;
-                }
-            }
-          }
-        }
-      ]
-    }
-  ]
-}
-</code></pre><h5 id="inbound-cluster">Inbound Cluster</h5>
-<p>该类Cluster对应于Envoy所在节点上的服务。如果该服务接收到请求，当然就是一个入站请求。对于Productpage Pod上的Envoy，其对应的Inbound Cluster只有一个，即productpage。该cluster对应的host为127.0.0.1,即环回地址上productpage的监听端口。由于iptable规则中排除了127.0.0.1,入站请求通过该Inbound cluster处理后将跳过Envoy，直接发送给Productpage进程处理。</p>
-<pre><code>{
-   &quot;version_info&quot;: &quot;2018-09-14T01:44:05Z&quot;,
-   &quot;cluster&quot;: {
-    &quot;name&quot;: &quot;inbound|9080||productpage.default.svc.cluster.local&quot;,
-    &quot;connect_timeout&quot;: &quot;1s&quot;,
-    &quot;hosts&quot;: [
-     {
-      &quot;socket_address&quot;: {
-       &quot;address&quot;: &quot;127.0.0.1&quot;,
-       &quot;port_value&quot;: 9080
-      }
-     }
-    ],
-    &quot;circuit_breakers&quot;: {
-     &quot;thresholds&quot;: [
-      {}
-     ]
-    }
-   },
-   &quot;last_updated&quot;: &quot;2018-09-14T01:44:05.291Z&quot;
-}
-</code></pre><h5 id="blackholecluster">BlackHoleCluster</h5>
-<p>这是一个特殊的Cluster，并没有配置后端处理请求的Host。如其名字所暗示的一样，请求进入后将被直接丢弃掉。如果一个请求没有找到其对的目的服务，则被发到cluste。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;version_info&#34;</span>: <span style="color:#e6db74">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
-    <span style="color:#f92672">&#34;cluster&#34;</span>: {
-        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;BlackHoleCluster&#34;</span>,
-        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;STATIC&#34;</span>,
-        <span style="color:#f92672">&#34;connect_timeout&#34;</span>: <span style="color:#e6db74">&#34;1s&#34;</span>
-    },
-    <span style="color:#f92672">&#34;last_updated&#34;</span>: <span style="color:#e6db74">&#34;2019-12-04T03:08:22.658Z&#34;</span>
-}
-
-</code></pre></div><h5 id="passthroughcluster">PassthroughCluster</h5>
-<p>和BlackHoleCluter相反，发向PassthroughCluster的请求会被直接发送到其请求中要求的原始目地的，Envoy不会对请求进行重新路由。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;version_info&#34;</span>: <span style="color:#e6db74">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
-    <span style="color:#f92672">&#34;cluster&#34;</span>: {
-        <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;PassthroughCluster&#34;</span>,
-        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;ORIGINAL_DST&#34;</span>,
-        <span style="color:#f92672">&#34;connect_timeout&#34;</span>: <span style="color:#e6db74">&#34;1s&#34;</span>,
-        <span style="color:#f92672">&#34;lb_policy&#34;</span>: <span style="color:#e6db74">&#34;CLUSTER_PROVIDED&#34;</span>,
-        <span style="color:#f92672">&#34;circuit_breakers&#34;</span>: {
-            <span style="color:#f92672">&#34;thresholds&#34;</span>: [
+    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
+    &quot;cluster&quot;: {
+        &quot;name&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
+        &quot;type&quot;: &quot;EDS&quot;,
+        &quot;eds_cluster_config&quot;: {
+            &quot;eds_config&quot;: {
+                &quot;ads&quot;: {}
+            },
+            &quot;service_name&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;
+        },
+        &quot;connect_timeout&quot;: &quot;1s&quot;,
+        &quot;circuit_breakers&quot;: {
+            &quot;thresholds&quot;: [
                 {
-                    <span style="color:#f92672">&#34;max_connections&#34;</span>: <span style="color:#ae81ff">4294967295</span>,
-                    <span style="color:#f92672">&#34;max_pending_requests&#34;</span>: <span style="color:#ae81ff">4294967295</span>,
-                    <span style="color:#f92672">&#34;max_requests&#34;</span>: <span style="color:#ae81ff">4294967295</span>,
-                    <span style="color:#f92672">&#34;max_retries&#34;</span>: <span style="color:#ae81ff">4294967295</span>
+                    &quot;max_connections&quot;: 4294967295,
+                    &quot;max_pending_requests&quot;: 4294967295,
+                    &quot;max_requests&quot;: 4294967295,
+                    &quot;max_retries&quot;: 4294967295
                 }
             ]
         }
     },
-    <span style="color:#f92672">&#34;last_updated&#34;</span>: <span style="color:#e6db74">&#34;2019-12-04T03:08:22.658Z&#34;</span>
+    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
 }
-</code></pre></div><h4 id="listeners">Listeners</h4>
+</code></pre><p>可以通过Pilot的调试接口获取该Cluster的endpoint：</p>
+<pre><code>curl http://10.97.222.108:15014/debug/edsz &gt; pilot_eds_dump
+</code></pre><p>导出的文件较长，本文只贴出reviews服务相关的endpoint配置，完整文件参见:https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/pilot_eds_dump</p>
+<p>从下面的文件内容可以看到，reviews cluster配置了3个endpoint地址，是reviews的pod ip。</p>
+<pre><code>{
+    &quot;clusterName&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
+    &quot;endpoints&quot;: [
+        {
+            &quot;lbEndpoints&quot;: [
+                {
+                    &quot;endpoint&quot;: {
+                        &quot;address&quot;: {
+                            &quot;socketAddress&quot;: {
+                                &quot;address&quot;: &quot;10.40.0.15&quot;,
+                                &quot;portValue&quot;: 9080
+                            }
+                        }
+                    },
+                    &quot;metadata&quot;: {
+                        &quot;filterMetadata&quot;: {
+                            &quot;envoy.transport_socket_match&quot;: {
+                                &quot;tlsMode&quot;: &quot;istio&quot;
+                            },
+                            &quot;istio&quot;: {
+                                &quot;uid&quot;: &quot;kubernetes://reviews-v1-75b979578c-pw8zs.default&quot;
+                            }
+                        }
+                    },
+                    &quot;loadBalancingWeight&quot;: 1
+                },
+                {
+                    &quot;endpoint&quot;: {
+                        &quot;address&quot;: {
+                            &quot;socketAddress&quot;: {
+                                &quot;address&quot;: &quot;10.40.0.16&quot;,
+                                &quot;portValue&quot;: 9080
+                            }
+                        }
+                    },
+                    &quot;metadata&quot;: {
+                        &quot;filterMetadata&quot;: {
+                            &quot;envoy.transport_socket_match&quot;: {
+                                &quot;tlsMode&quot;: &quot;istio&quot;
+                            },
+                            &quot;istio&quot;: {
+                                &quot;uid&quot;: &quot;kubernetes://reviews-v3-54c6c64795-wbls7.default&quot;
+                            }
+                        }
+                    },
+                    &quot;loadBalancingWeight&quot;: 1
+                },
+                {
+                    &quot;endpoint&quot;: {
+                        &quot;address&quot;: {
+                            &quot;socketAddress&quot;: {
+                                &quot;address&quot;: &quot;10.40.0.17&quot;,
+                                &quot;portValue&quot;: 9080
+                            }
+                        }
+                    },
+                    &quot;metadata&quot;: {
+                        &quot;filterMetadata&quot;: {
+                            &quot;envoy.transport_socket_match&quot;: {
+                                &quot;tlsMode&quot;: &quot;istio&quot;
+                            },
+                            &quot;istio&quot;: {
+                                &quot;uid&quot;: &quot;kubernetes://reviews-v2-597bf96c8f-l2fp8.default&quot;
+                            }
+                        }
+                    },
+                    &quot;loadBalancingWeight&quot;: 1
+                }
+            ],
+            &quot;loadBalancingWeight&quot;: 3
+        }
+    ]
+}
+</code></pre><h5 id="inbound-cluster">Inbound Cluster</h5>
+<p>该类Cluster对应于Envoy所在节点上的服务。如果该服务接收到请求，当然就是一个入站请求。对于Productpage Pod上的Envoy，其对应的Inbound Cluster只有一个，即productpage。该cluster对应的host为127.0.0.1,即环回地址上productpage的监听端口。由于iptable规则中排除了127.0.0.1,入站请求通过该Inbound cluster处理后将跳过Envoy，直接发送给Productpage进程处理。</p>
+<pre><code>{
+    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
+    &quot;cluster&quot;: {
+        &quot;name&quot;: &quot;inbound|9080|http|productpage.default.svc.cluster.local&quot;,
+        &quot;type&quot;: &quot;STATIC&quot;,
+        &quot;connect_timeout&quot;: &quot;1s&quot;,
+        &quot;circuit_breakers&quot;: {
+            &quot;thresholds&quot;: [
+                {
+                    &quot;max_connections&quot;: 4294967295,
+                    &quot;max_pending_requests&quot;: 4294967295,
+                    &quot;max_requests&quot;: 4294967295,
+                    &quot;max_retries&quot;: 4294967295
+                }
+            ]
+        },
+        &quot;load_assignment&quot;: {
+            &quot;cluster_name&quot;: &quot;inbound|9080|http|productpage.default.svc.cluster.local&quot;,
+            &quot;endpoints&quot;: [
+                {
+                    &quot;lb_endpoints&quot;: [
+                        {
+                            &quot;endpoint&quot;: {
+                                &quot;address&quot;: {
+                                    &quot;socket_address&quot;: {
+                                        &quot;address&quot;: &quot;127.0.0.1&quot;,
+                                        &quot;port_value&quot;: 9080
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+}
+</code></pre><h5 id="blackholecluster">BlackHoleCluster</h5>
+<p>这是一个特殊的Cluster，并没有配置后端处理请求的Host。如其名字所暗示的一样，请求进入后将被直接丢弃掉。如果一个请求没有找到其对的目的服务，则被发到cluste。</p>
+<pre><code>{
+    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
+    &quot;cluster&quot;: {
+        &quot;name&quot;: &quot;BlackHoleCluster&quot;,
+        &quot;type&quot;: &quot;STATIC&quot;,
+        &quot;connect_timeout&quot;: &quot;1s&quot;
+    },
+    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+}
+</code></pre><h5 id="passthroughcluster">PassthroughCluster</h5>
+<p>和BlackHoleCluter相反，发向PassthroughCluster的请求会被直接发送到其请求中要求的原始目地的，Envoy不会对请求进行重新路由。</p>
+<pre><code>{
+    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
+    &quot;cluster&quot;: {
+        &quot;name&quot;: &quot;PassthroughCluster&quot;,
+        &quot;type&quot;: &quot;ORIGINAL_DST&quot;,
+        &quot;connect_timeout&quot;: &quot;1s&quot;,
+        &quot;lb_policy&quot;: &quot;CLUSTER_PROVIDED&quot;,
+        &quot;circuit_breakers&quot;: {
+            &quot;thresholds&quot;: [
+                {
+                    &quot;max_connections&quot;: 4294967295,
+                    &quot;max_pending_requests&quot;: 4294967295,
+                    &quot;max_requests&quot;: 4294967295,
+                    &quot;max_retries&quot;: 4294967295
+                }
+            ]
+        }
+    },
+    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+}
+</code></pre><h4 id="listeners">Listeners</h4>
 <p>Envoy采用listener来接收并处理downstream发过来的请求，listener采用了插件式的架构，可以通过配置不同的filter在Listener中插入不同的处理逻辑。Istio就在Envoy中加入了用于policy check和metric report的Mixer filter。</p>
 <p>Listener可以绑定到IP Socket或者Unix Domain Socket上，以接收来自客户端的请求;也可以不绑定，而是接收从其他listener转发来的数据。Istio利用了Envoy listener的这一特点，通过VirtualOutboundListener在一个端口接收所有出向请求，然后再按照请求的端口分别转发给不同的listener分别处理。</p>
 <h5 id="virtualoutbound-listener">VirtualOutbound Listener</h5>
@@ -996,9 +1107,8 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 <ul>
 <li>0.0.0.0_9080 :处理对details,reviews和rating服务的出向请求</li>
 <li>0.0.0.0_9411 :处理对zipkin的出向请求</li>
-<li>0.0.0.0_15031 :处理对ingressgateway的出向请求</li>
 <li>0.0.0.0_3000 :处理对grafana的出向请求</li>
-<li>0.0.0.0_9093 :处理对citadel、galley、pilot、(Mixer)policy、(Mixer)telemetry的出向请求</li>
+<li>0.0.0.0_15014 :处理对citadel、galley、pilot、(Mixer)policy、(Mixer)telemetry的出向请求</li>
 <li>0.0.0.0_15004 :处理对(Mixer)policy、(Mixer)telemetry的出向请求</li>
 <li>&hellip;&hellip;</li>
 </ul>
@@ -1007,105 +1117,47 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 <p>监听器name为0.0.0.0_9080,推测其含义应为匹配发向任意IP的9080的请求，从<a href="#bookinfo%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84">bookinfo程序结构</a>可以看到该程序中的productpage,revirews,ratings,details四个service都是9080端口，那么Envoy如何区别处理这四个service呢？</p>
 <p>首先需要区分入向（发送给productpage）请求和出向（发送给其他几个服务）请求：</p>
 <ul>
-<li>发给productpage的入向请求，virtual listener根据其目的IP和Port首先匹配到<a href="#inbound-listener">192.168.206.23_9080</a>这个listener上，不会进入0.0.0.0_9080 listener处理。</li>
-<li>从productpage外发给reviews、details和ratings的出向请求，virtual listener无法找到和其目的IP完全匹配的listener，因此根据通配原则转交给0.0.0.0_9080处理。</li>
+<li>发给productpage的入向请求，Iptables规则会将其重定向到15006端口的VirtualInbound listener上，因此不会进入0.0.0.0_9080 listener处理。</li>
+<li>从productpage外发给reviews、details和ratings的出向请求，virtualOutbound listener无法找到和其目的IP完全匹配的listener，因此根据通配原则转交给0.0.0.0_9080这个Outbound Listener处理。</li>
 </ul>
 <blockquote>
-<p>备注：<!-- raw HTML omitted --></p>
+<p>备注： 根据业务逻辑，实际上productpage并不会调用ratings服务，但Istio并不知道各个业务之间会如何调用，因此将所有的服务信息都下发到了Envoy中。这样做对Envoy的内存占用和效率有一定影响，如果希望去掉Envoy配置中的无用数据，可以通过<a href="https://istio.io/docs/reference/config/networking/sidecar/">sidecar</a>规则对Envoy的ingress和egress service配置进行调整。
+由于对应到reviews、details和Ratings三个服务，当0.0.0.0_9080接收到出向请求后，并不能直接发送到一个downstream cluster中，而是需要根据请求目的地进行不同的路由。</p>
 </blockquote>
-<ol>
-<li>该转发逻辑为根据Envoy配置进行的推测，并未分析Envoy代码进行验证。欢迎了解Envoy代码和实现机制的朋友指正。<!-- raw HTML omitted -->
-2.根据业务逻辑，实际上productpage并不会调用ratings服务，但Istio并不知道各个业务之间会如何调用，因此将所有的服务信息都下发到了Envoy中。这样做对效率和性能理论上有一定影响，存在一定的优化空间。</li>
-</ol>
-<p>由于对应到reviews、details和Ratings三个服务，当0.0.0.0_9080接收到出向请求后，并不能直接发送到一个downstream cluster中，而是需要根据请求目的地进行不同的路由。</p>
-<p>在该listener的配置中，我们可以看到并没有像inbound listener那样通过envoy.tcp_proxy直接指定一个downstream的cluster，而是通过rds配置了一个<a href="#routes">路由规则9080</a>，在路由规则中再根据不同的请求目的地对请求进行处理。</p>
-<pre><code>{
-     &quot;version_info&quot;: &quot;2018-09-06T09:34:19Z&quot;,
-     &quot;listener&quot;: {
-      &quot;name&quot;: &quot;0.0.0.0_9080&quot;,
-      &quot;address&quot;: {
-       &quot;socket_address&quot;: {
-        &quot;address&quot;: &quot;0.0.0.0&quot;,
-        &quot;port_value&quot;: 9080
-       }
-      },
-      &quot;filter_chains&quot;: [
-       {
-        &quot;filters&quot;: [
-         {
-          &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
-          &quot;config&quot;: {
-           &quot;access_log&quot;: [
-            {
-             &quot;name&quot;: &quot;envoy.file_access_log&quot;,
-             &quot;config&quot;: {
-              &quot;path&quot;: &quot;/dev/stdout&quot;
-             }
-            }
-           ],
-           &quot;http_filters&quot;: [
-            {
-             &quot;name&quot;: &quot;mixer&quot;,
-             &quot;config&quot;: {
-			  
-			  ......
+<p>下图为productpage服务中导出的0.0.0.0_9080 outbound listener，我们可以看到该listener配置了一个<a href="#routes">路由规则9080</a>，在路由规则中再根据不同的请求目的地对请求进行处理。</p>
 
-             }
-            },
-            {
-             &quot;name&quot;: &quot;envoy.cors&quot;
-            },
-            {
-             &quot;name&quot;: &quot;envoy.fault&quot;
-            },
-            {
-             &quot;name&quot;: &quot;envoy.router&quot;
-            }
-           ],
-           &quot;tracing&quot;: {
-            &quot;operation_name&quot;: &quot;EGRESS&quot;,
-            &quot;client_sampling&quot;: {
-             &quot;value&quot;: 100
-            },
-            &quot;overall_sampling&quot;: {
-             &quot;value&quot;: 100
-            },
-            &quot;random_sampling&quot;: {
-             &quot;value&quot;: 100
-            }
-           },
-           &quot;use_remote_address&quot;: false,
-           &quot;stat_prefix&quot;: &quot;0.0.0.0_9080&quot;,
-           &quot;rds&quot;: {
-            &quot;route_config_name&quot;: &quot;9080&quot;,
-            &quot;config_source&quot;: {
-             &quot;ads&quot;: {}
-            }
-           },
-           &quot;stream_idle_timeout&quot;: &quot;0.000s&quot;,
-           &quot;generate_request_id&quot;: true,
-           &quot;upgrade_configs&quot;: [
-            {
-             &quot;upgrade_type&quot;: &quot;websocket&quot;
-            }
-           ]
-          }
-         }
-        ]
-       }
-      ],
-      &quot;deprecated_v1&quot;: {
-       &quot;bind_to_port&quot;: false
-      }
-     },
-     &quot;last_updated&quot;: &quot;2018-09-06T09:34:26.172Z&quot;
-    },
-    
-</code></pre><h5 id="virtualinbound-listener">VirtualInbound Listener</h5>
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-12-05-istio-traffic-management-impl-intro/outbound.png" alt="Outnbound Listener"/>
+    </div>
+    <a href="/img/2019-12-05-istio-traffic-management-impl-intro/outbound.png" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Outnbound Listener</p>
+      </figcaption>
+  </figure>
+</div>
+
+<h5 id="virtualinbound-listener">VirtualInbound Listener</h5>
 <p>在较早的版本中，Istio采用同一个VirtualListener在端口15001上同时处理入向和出向的请求。该方案存在一些潜在的问题，例如可能会导致出现死循环，参见<a href="https://github.com/istio/istio/pull/15713">这个PR</a>。在1.4中，Istio为Envoy单独创建了一个VirtualInboundListener，在15006端口监听入向请求，原来的15001端口只用于处理出向请求。</p>
 <p>另外一个变化是当VirtualInboundListener接收到请求后，将直接在VirtualInboundListener采用一系列filterChain对入向请求进行处理，而不是像VirtualOutboundListener一样分发给其它独立的Listener进行处理。</p>
 <p>这样修改后，Envoy配置中入向和出向的请求处理流程被完全拆分开，请求处理流程更为清晰，可以避免由于配置导致的一些潜在错误。</p>
 <p>下图是Bookinfo例子中Reviews服务中Enovy Proxy的Virutal Inbound Listener配置。</p>
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2019-12-05-istio-traffic-management-impl-intro/virtualinbound.png" alt="Virtual Inbound Listener"/>
+    </div>
+    <a href="/img/2019-12-05-istio-traffic-management-impl-intro/virtualinbound.png" itemprop="contentUrl"></a>
+      <figcaption align="center">
+          <p>Virtual Inbound Listener</p>
+      </figcaption>
+  </figure>
+</div>
+
 <p>该Listener中第三个filterchain用于处理Review服务的入向请求。该filterchain的匹配条件为Review服务的Pod IP和9080端口，配置了一个http_connection_manager filter，http_connection_manager 中又嵌入了istio_auth，Mixer，envoy.router等http filter，经过这些filter进行处理后，请求最终将被转发给&quot;inbound|9080||reviews.default.svc.cluster.local&quot;这个<a href="#inbound-cluster">Inbound Cluster</a>，由于该Inbound Cluster中配置的Upstream为127.0.0.1:9080，由于iptable设置中127.0.0.1不会被拦截,该请求将发送到同Pod的Reviews服务的9080端口上进行业务处理。</p>
 <p>VirtualInbound Listener中的第一个filterchain的匹配条件为所有IP，用于缺省处理未在Pilot服务注册表中注册的服务。</p>
 
@@ -1124,135 +1176,221 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 
 <h4 id="routes">Routes</h4>
 <p>配置Envoy的路由规则。Istio下发的缺省路由规则中对每个端口设置了一个路由规则，根据host来对请求进行路由分发。</p>
-<p>下面是9080的路由配置，从文件中可以看到对应了3个virtual host，分别是details、ratings和reviews，这三个virtual host分别对应到不同的<a href="#outbound-cluster">outbound cluster</a>。</p>
+<p>下面是Proudctpage服务中9080的路由配置，从文件中可以看到对应了5个virtual host，分别是details、productpage、ratings、reviews和allow_any，前三个virtual host分别对应到不同服务的<a href="#outbound-cluster">outbound cluster</a>。最后一个对应到<a href="#passthroughcluster">PassthroughCluster</a>,即当入向的i请求没有找到对应的服务时，也会让其直接通过。</p>
 <pre><code>{
-     &quot;version_info&quot;: &quot;2018-09-14T01:38:20Z&quot;,
-     &quot;route_config&quot;: {
-      &quot;name&quot;: &quot;9080&quot;,
-      &quot;virtual_hosts&quot;: [
-       {
-        &quot;name&quot;: &quot;details.default.svc.cluster.local:9080&quot;,
-        &quot;domains&quot;: [
-         &quot;details.default.svc.cluster.local&quot;,
-         &quot;details.default.svc.cluster.local:9080&quot;,
-         &quot;details&quot;,
-         &quot;details:9080&quot;,
-         &quot;details.default.svc.cluster&quot;,
-         &quot;details.default.svc.cluster:9080&quot;,
-         &quot;details.default.svc&quot;,
-         &quot;details.default.svc:9080&quot;,
-         &quot;details.default&quot;,
-         &quot;details.default:9080&quot;,
-         &quot;10.101.163.201&quot;,
-         &quot;10.101.163.201:9080&quot;
-        ],
-        &quot;routes&quot;: [
-         {
-          &quot;match&quot;: {
-           &quot;prefix&quot;: &quot;/&quot;
-          },
-          &quot;route&quot;: {
-           &quot;cluster&quot;: &quot;outbound|9080||details.default.svc.cluster.local&quot;,
-           &quot;timeout&quot;: &quot;0s&quot;,
-           &quot;max_grpc_timeout&quot;: &quot;0s&quot;
-          },
-          &quot;decorator&quot;: {
-           &quot;operation&quot;: &quot;details.default.svc.cluster.local:9080/*&quot;
-          },
-          &quot;per_filter_config&quot;: {
-           &quot;mixer&quot;: {
-            ......
-
-           }
-          }
-         }
-        ]
-       },
-       {
-        &quot;name&quot;: &quot;ratings.default.svc.cluster.local:9080&quot;,
-        &quot;domains&quot;: [
-         &quot;ratings.default.svc.cluster.local&quot;,
-         &quot;ratings.default.svc.cluster.local:9080&quot;,
-         &quot;ratings&quot;,
-         &quot;ratings:9080&quot;,
-         &quot;ratings.default.svc.cluster&quot;,
-         &quot;ratings.default.svc.cluster:9080&quot;,
-         &quot;ratings.default.svc&quot;,
-         &quot;ratings.default.svc:9080&quot;,
-         &quot;ratings.default&quot;,
-         &quot;ratings.default:9080&quot;,
-         &quot;10.99.16.205&quot;,
-         &quot;10.99.16.205:9080&quot;
-        ],
-        &quot;routes&quot;: [
-         {
-          &quot;match&quot;: {
-           &quot;prefix&quot;: &quot;/&quot;
-          },
-          &quot;route&quot;: {
-           &quot;cluster&quot;: &quot;outbound|9080||ratings.default.svc.cluster.local&quot;,
-           &quot;timeout&quot;: &quot;0s&quot;,
-           &quot;max_grpc_timeout&quot;: &quot;0s&quot;
-          },
-          &quot;decorator&quot;: {
-           &quot;operation&quot;: &quot;ratings.default.svc.cluster.local:9080/*&quot;
-          },
-          &quot;per_filter_config&quot;: {
-           &quot;mixer&quot;: {
-           ......
-
+    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
+    &quot;route_config&quot;: {
+        &quot;name&quot;: &quot;9080&quot;,
+        &quot;virtual_hosts&quot;: [
+            {
+                &quot;name&quot;: &quot;details.default.svc.cluster.local:9080&quot;,
+                &quot;domains&quot;: [
+                    &quot;details.default.svc.cluster.local&quot;,
+                    &quot;details.default.svc.cluster.local:9080&quot;,
+                    &quot;details&quot;,
+                    &quot;details:9080&quot;,
+                    &quot;details.default.svc.cluster&quot;,
+                    &quot;details.default.svc.cluster:9080&quot;,
+                    &quot;details.default.svc&quot;,
+                    &quot;details.default.svc:9080&quot;,
+                    &quot;details.default&quot;,
+                    &quot;details.default:9080&quot;,
+                    &quot;10.101.41.162&quot;,
+                    &quot;10.101.41.162:9080&quot;
+                ],
+                &quot;routes&quot;: [
+                    {
+                        &quot;match&quot;: {
+                            &quot;prefix&quot;: &quot;/&quot;
+                        },
+                        &quot;route&quot;: {
+                            &quot;cluster&quot;: &quot;outbound|9080||details.default.svc.cluster.local&quot;,
+                            &quot;timeout&quot;: &quot;0s&quot;,
+                            &quot;retry_policy&quot;: {
+                                &quot;retry_on&quot;: &quot;connect-failure,refused-stream,unavailable,cancelled,resource-exhausted,retriable-status-codes&quot;,
+                                &quot;num_retries&quot;: 2,
+                                &quot;retry_host_predicate&quot;: [
+                                    {
+                                        &quot;name&quot;: &quot;envoy.retry_host_predicates.previous_hosts&quot;
+                                    }
+                                ],
+                                &quot;host_selection_retry_max_attempts&quot;: &quot;5&quot;,
+                                &quot;retriable_status_codes&quot;: [
+                                    503
+                                ]
+                            },
+                            &quot;max_grpc_timeout&quot;: &quot;0s&quot;
+                        },
+                        &quot;decorator&quot;: {
+                            &quot;operation&quot;: &quot;details.default.svc.cluster.local:9080/*&quot;
+                        },
+                        &quot;typed_per_filter_config&quot;: {
+                            &quot;mixer&quot;: {
+                                &quot;@type&quot;: &quot;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&quot;,
+                                &quot;disable_check_calls&quot;: true,
+                                &quot;mixer_attributes&quot;: {
+                                    &quot;attributes&quot;: {
+                                        &quot;destination.service.host&quot;: {
+                                            &quot;string_value&quot;: &quot;details.default.svc.cluster.local&quot;
+                                        },
+                                        &quot;destination.service.name&quot;: {
+                                            &quot;string_value&quot;: &quot;details&quot;
+                                        },
+                                        &quot;destination.service.namespace&quot;: {
+                                            &quot;string_value&quot;: &quot;default&quot;
+                                        },
+                                        &quot;destination.service.uid&quot;: {
+                                            &quot;string_value&quot;: &quot;istio://default/services/details&quot;
+                                        }
+                                    }
+                                },
+                                &quot;forward_attributes&quot;: {
+                                    &quot;attributes&quot;: {
+                                        &quot;destination.service.host&quot;: {
+                                            &quot;string_value&quot;: &quot;details.default.svc.cluster.local&quot;
+                                        },
+                                        &quot;destination.service.name&quot;: {
+                                            &quot;string_value&quot;: &quot;details&quot;
+                                        },
+                                        &quot;destination.service.namespace&quot;: {
+                                            &quot;string_value&quot;: &quot;default&quot;
+                                        },
+                                        &quot;destination.service.uid&quot;: {
+                                            &quot;string_value&quot;: &quot;istio://default/services/details&quot;
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        &quot;name&quot;: &quot;default&quot;
+                    }
+                ]
             },
-            &quot;disable_check_calls&quot;: true
-           }
-          }
-         }
-        ]
-       },
-       {
-        &quot;name&quot;: &quot;reviews.default.svc.cluster.local:9080&quot;,
-        &quot;domains&quot;: [
-         &quot;reviews.default.svc.cluster.local&quot;,
-         &quot;reviews.default.svc.cluster.local:9080&quot;,
-         &quot;reviews&quot;,
-         &quot;reviews:9080&quot;,
-         &quot;reviews.default.svc.cluster&quot;,
-         &quot;reviews.default.svc.cluster:9080&quot;,
-         &quot;reviews.default.svc&quot;,
-         &quot;reviews.default.svc:9080&quot;,
-         &quot;reviews.default&quot;,
-         &quot;reviews.default:9080&quot;,
-         &quot;10.108.25.157&quot;,
-         &quot;10.108.25.157:9080&quot;
-        ],
-        &quot;routes&quot;: [
-         {
-          &quot;match&quot;: {
-           &quot;prefix&quot;: &quot;/&quot;
-          },
-          &quot;route&quot;: {
-           &quot;cluster&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
-           &quot;timeout&quot;: &quot;0s&quot;,
-           &quot;max_grpc_timeout&quot;: &quot;0s&quot;
-          },
-          &quot;decorator&quot;: {
-           &quot;operation&quot;: &quot;reviews.default.svc.cluster.local:9080/*&quot;
-          },
-          &quot;per_filter_config&quot;: {
-           &quot;mixer&quot;: {
-            ......
-
+            {
+                &quot;name&quot;: &quot;productpage.default.svc.cluster.local:9080&quot;,
+                &quot;domains&quot;: [
+                    &quot;productpage.default.svc.cluster.local&quot;,
+                    &quot;productpage.default.svc.cluster.local:9080&quot;,
+                    &quot;productpage&quot;,
+                    &quot;productpage:9080&quot;,
+                    &quot;productpage.default.svc.cluster&quot;,
+                    &quot;productpage.default.svc.cluster:9080&quot;,
+                    &quot;productpage.default.svc&quot;,
+                    &quot;productpage.default.svc:9080&quot;,
+                    &quot;productpage.default&quot;,
+                    &quot;productpage.default:9080&quot;,
+                    &quot;10.100.240.212&quot;,
+                    &quot;10.100.240.212:9080&quot;
+                ],
+                &quot;routes&quot;: [
+                    {
+                        &quot;match&quot;: {
+                            &quot;prefix&quot;: &quot;/&quot;
+                        },
+                        &quot;route&quot;: {
+                            &quot;cluster&quot;: &quot;outbound|9080||productpage.default.svc.cluster.local&quot;
+													
+													......
+                        }
+                ]
             },
-            &quot;disable_check_calls&quot;: true
-           }
-          }
-         }
-        ]
-       }
-      ],
-      &quot;validate_clusters&quot;: false
-     },
-     &quot;last_updated&quot;: &quot;2018-09-27T07:17:50.242Z&quot;
-    }
+            {
+                &quot;name&quot;: &quot;ratings.default.svc.cluster.local:9080&quot;,
+                &quot;domains&quot;: [
+                    &quot;ratings.default.svc.cluster.local&quot;,
+                    &quot;ratings.default.svc.cluster.local:9080&quot;,
+                    &quot;ratings&quot;,
+                    &quot;ratings:9080&quot;,
+                    &quot;ratings.default.svc.cluster&quot;,
+                    &quot;ratings.default.svc.cluster:9080&quot;,
+                    &quot;ratings.default.svc&quot;,
+                    &quot;ratings.default.svc:9080&quot;,
+                    &quot;ratings.default&quot;,
+                    &quot;ratings.default:9080&quot;,
+                    &quot;10.101.170.120&quot;,
+                    &quot;10.101.170.120:9080&quot;
+                ],
+                &quot;routes&quot;: [
+                    {
+                        &quot;match&quot;: {
+                            &quot;prefix&quot;: &quot;/&quot;
+                        },
+                        &quot;route&quot;: {
+                            &quot;cluster&quot;: &quot;outbound|9080||ratings.default.svc.cluster.local&quot;,
+                            													
+													......
+                        }
+                ]
+            },
+            {
+                &quot;name&quot;: &quot;reviews.default.svc.cluster.local:9080&quot;,
+                &quot;domains&quot;: [
+                    &quot;reviews.default.svc.cluster.local&quot;,
+                    &quot;reviews.default.svc.cluster.local:9080&quot;,
+                    &quot;reviews&quot;,
+                    &quot;reviews:9080&quot;,
+                    &quot;reviews.default.svc.cluster&quot;,
+                    &quot;reviews.default.svc.cluster:9080&quot;,
+                    &quot;reviews.default.svc&quot;,
+                    &quot;reviews.default.svc:9080&quot;,
+                    &quot;reviews.default&quot;,
+                    &quot;reviews.default:9080&quot;,
+                    &quot;10.102.108.56&quot;,
+                    &quot;10.102.108.56:9080&quot;
+                ],
+                &quot;routes&quot;: [
+                    {
+                        &quot;match&quot;: {
+                            &quot;prefix&quot;: &quot;/&quot;
+                        },
+                        &quot;route&quot;: {
+                            &quot;cluster&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
+                            													
+													......
+                        }
+                ]
+            },
+            {
+                &quot;name&quot;: &quot;allow_any&quot;,
+                &quot;domains&quot;: [
+                    &quot;*&quot;
+                ],
+                &quot;routes&quot;: [
+                    {
+                        &quot;match&quot;: {
+                            &quot;prefix&quot;: &quot;/&quot;
+                        },
+                        &quot;route&quot;: {
+                            &quot;cluster&quot;: &quot;PassthroughCluster&quot;
+                        },
+                        &quot;typed_per_filter_config&quot;: {
+                            &quot;mixer&quot;: {
+                                &quot;@type&quot;: &quot;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&quot;,
+                                &quot;disable_check_calls&quot;: true,
+                                &quot;mixer_attributes&quot;: {
+                                    &quot;attributes&quot;: {
+                                        &quot;destination.service.name&quot;: {
+                                            &quot;string_value&quot;: &quot;PassthroughCluster&quot;
+                                        }
+                                    }
+                                },
+                                &quot;forward_attributes&quot;: {
+                                    &quot;attributes&quot;: {
+                                        &quot;destination.service.name&quot;: {
+                                            &quot;string_value&quot;: &quot;PassthroughCluster&quot;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        &quot;validate_clusters&quot;: false
+    },
+    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.935Z&quot;
+}
 </code></pre><h2 id="bookinfo1">Bookinfo端到端调用分析</h2>
 <p>通过前面章节对Envoy配置文件的分析，我们了解到Istio控制面如何将服务和路由信息通过xDS接口下发到数据面中；并介绍了Envoy上生成的各种配置数据的结构，包括listener,cluster,route和endpoint。</p>
 <p>下面我们来分析一个端到端的调用请求，通过调用请求的流程把这些配置串连起来，以从全局上理解Istio控制面的流量控制是如何在数据面的Envoy上实现的。</p>
@@ -1487,7 +1625,7 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 <li><!-- raw HTML omitted --><a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/overview/v2_overview">Envoy V2 API Overview</a></li>
 <li><!-- raw HTML omitted --><a href="https://github.com/envoyproxy/data-plane-api/tree/master/envoy/api/v2">Data Plane API Protocol Buffer Definition</a></li>
 <li><!-- raw HTML omitted --><a href="https://github.com/envoyproxy/data-plane-api/blob/master/XDS_PROTOCOL.md">xDS REST and gRPC protocol</a>
-<a href="https://github.com/istio/istio/tree/master/pilot/pkg/proxy/envoy/v2">https://github.com/istio/istio/tree/master/pilot/pkg/proxy/envoy/v2</a></li>
+<a href="https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol">https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol</a></li>
 <li><!-- raw HTML omitted --><a href="https://github.com/istio/istio/tree/master/pilot/pkg/proxy/envoy/v2">Pilot Debug interface</a></li>
 <li><!-- raw HTML omitted --><a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">Istio Sidecar自动注入原理</a></li>
 </ol>
