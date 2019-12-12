@@ -197,7 +197,7 @@
       <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</guid>
-      <description>前言 更新中，未完成。。。。。。 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服</description>
+      <description>前言 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的</description>
     </item>
     
     <item>
