@@ -6,46 +6,10 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 05 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 27 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Envoy</title>
-      <link>https://zhaohuabing.com/tags/envoy/</link>
-      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/envoy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Istio</title>
-      <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/istio/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Pilot</title>
-      <link>https://zhaohuabing.com/tags/pilot/</link>
-      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/pilot/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>service Mesh</title>
-      <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
-      <description></description>
-    </item>
     
     <item>
       <title>HA</title>
@@ -57,11 +21,38 @@
     </item>
     
     <item>
+      <title>Istio</title>
+      <link>https://zhaohuabing.com/tags/istio/</link>
+      <pubDate>Sat, 23 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>SDN</title>
       <link>https://zhaohuabing.com/tags/sdn/</link>
       <pubDate>Sat, 23 Nov 2019 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/sdn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>service Mesh</title>
+      <link>https://zhaohuabing.com/tags/service-mesh/</link>
+      <pubDate>Sat, 23 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Envoy</title>
+      <link>https://zhaohuabing.com/tags/envoy/</link>
+      <pubDate>Fri, 15 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/envoy/</guid>
       <description></description>
     </item>
     
@@ -224,6 +215,15 @@
       <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/paas/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pilot</title>
+      <link>https://zhaohuabing.com/tags/pilot/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/pilot/</guid>
       <description></description>
     </item>
     

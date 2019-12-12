@@ -370,7 +370,17 @@ $(function() {
                 <header>
                     <h2>TOC</h2>
                 </header>
-                <nav id="TableOfContents"></nav>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#eshop-demo-application">Eshop Demo Application</a></li>
+    <li><a href="#kafka-opentracing-instrumentation">Kafka Opentracing Instrumentation</a></li>
+    <li><a href="#install-kafka">Install Kafka</a></li>
+    <li><a href="#deploy-demo-application">Deploy Demo Application</a></li>
+    <li><a href="#propagate-tracing-context-from-kafka-to-rest">Propagate Tracing Context from Kafka to REST</a></li>
+    <li><a href="#wrap-up">Wrap Up</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
                 
                 <p>In the previous post, we discussed how to use Opentracing to help Istio Service Mesh to propagate tracing context across process boundaries, and how to enrich Istio/Envoy generated traces with method-level spans to get more fine-grained insights to the services.</p>
 <p>For now, all that we have been talking is just about synchronous RPC (HTTP/REST), however, we can’t ignore the fact that asynchronous messaging is also widely adopted as an inter-services communication mechanism. So in this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing.</p>

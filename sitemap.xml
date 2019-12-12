@@ -4,52 +4,7 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/envoy/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/pilot/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/tech/</loc>
-    <lastmod>2019-12-05T00:00:00+00:00</lastmod>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -58,8 +13,23 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/categories/note/</loc>
     <lastmod>2019-11-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -68,13 +38,33 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/istio/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/tags/sdn/</loc>
     <lastmod>2019-11-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/</loc>
     <lastmod>2019-11-23T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/envoy/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -260,6 +250,16 @@
   <url>
     <loc>https://zhaohuabing.com/tags/paas/</loc>
     <lastmod>2018-10-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/pilot/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>

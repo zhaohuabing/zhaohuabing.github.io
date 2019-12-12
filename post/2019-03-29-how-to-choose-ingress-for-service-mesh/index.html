@@ -380,21 +380,28 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#cluster-ip">Cluster IP</a></li>
-    <li><a href="#istio-sidecar-proxy">Istio Sidecar Proxy</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#nodeport">NodePort</a></li>
-    <li><a href="#loadbalancer">LoadBalancer</a></li>
-    <li><a href="#ingress">Ingress</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#k8s-ingress">K8s Ingress</a></li>
-    <li><a href="#istio-gateway">Istio Gateway</a></li>
-    <li><a href="#api-gateway">应用对API Gateway的需求</a></li>
-    <li><a href="#api-gateway--sidecar-proxy">采用API Gateway + Sidecar Proxy作为服务网格的流量入口</a></li>
+    <li><a href="#heading">内部服务间的通信</a>
+      <ul>
+        <li><a href="#cluster-ip">Cluster IP</a></li>
+        <li><a href="#istio-sidecar-proxy">Istio Sidecar Proxy</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading1">如何从外部网络访问</a>
+      <ul>
+        <li><a href="#nodeport">NodePort</a></li>
+        <li><a href="#loadbalancer">LoadBalancer</a></li>
+        <li><a href="#ingress">Ingress</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading2">如何为服务网格选择入口网关？</a>
+      <ul>
+        <li><a href="#k8s-ingress">K8s Ingress</a></li>
+        <li><a href="#istio-gateway">Istio Gateway</a></li>
+        <li><a href="#api-gateway">应用对API Gateway的需求</a></li>
+        <li><a href="#api-gateway--sidecar-proxy">采用API Gateway + Sidecar Proxy作为服务网格的流量入口</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading3">参考资料</a></li>
   </ul>
 </nav>
                 

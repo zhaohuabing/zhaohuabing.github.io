@@ -360,23 +360,25 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#config-controller">Config Controller</a></li>
-    <li><a href="#service-controller">Service Controller</a></li>
-    <li><a href="#discovery-service">Discovery Service</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#pilotdiscovery">初始化Pilot-Discovery的各个主要组件</a></li>
-    <li><a href="#grpc-serverenvoy">创建GRPC Server并接收Envoy的连接请求</a></li>
-    <li><a href="#envoy">配置变化后向Envoy推送更新</a></li>
-    <li><a href="#envoyxds">响应Envoy主动发起的xDS请求</a></li>
-    <li><a href="#discovery-server">Discovery Server业务处理关键代码片段</a>
+    <li><a href="#istio-pilot-">Istio Pilot 组件介绍</a></li>
+    <li><a href="#pilotdiscovery-">Pilot-Discovery 代码结构</a>
       <ul>
-        <li><a href="#xds">处理xDS请求和推送的关键代码</a></li>
-        <li><a href="#heading">处理服务和配置变化的关键代码</a></li>
+        <li><a href="#config-controller">Config Controller</a></li>
+        <li><a href="#service-controller">Service Controller</a></li>
+        <li><a href="#discovery-service">Discovery Service</a></li>
       </ul>
     </li>
-    <li><a href="#heading1">完整的业务流程</a></li>
+    <li><a href="#pilotdiscovery-1">Pilot-Discovery 业务流程</a>
+      <ul>
+        <li><a href="#pilotdiscovery">初始化Pilot-Discovery的各个主要组件</a></li>
+        <li><a href="#grpc-serverenvoy">创建GRPC Server并接收Envoy的连接请求</a></li>
+        <li><a href="#envoy">配置变化后向Envoy推送更新</a></li>
+        <li><a href="#envoyxds">响应Envoy主动发起的xDS请求</a></li>
+        <li><a href="#discovery-server">Discovery Server业务处理关键代码片段</a></li>
+        <li><a href="#heading1">完整的业务流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading2">参考阅读</a></li>
   </ul>
 </nav>
                 

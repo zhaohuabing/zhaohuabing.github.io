@@ -366,7 +366,16 @@ $(function() {
                 <header>
                     <h2>TOC</h2>
                 </header>
-                <nav id="TableOfContents"></nav>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#distributed-tracing-with-istio">Distributed Tracing with Istio</a></li>
+    <li><a href="#using-opentracing-for-trace-context-propagation">Using Opentracing for Trace Context Propagation</a></li>
+    <li><a href="#adding-methodlevel-tracing-to-istio">Adding Method-Level Tracing to Istio</a></li>
+    <li><a href="#wrapping-up">Wrapping up</a></li>
+    <li><a href="#whats-next">What’s next</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
                 
                 <p>While evolving towards a microservices architecture, the biggest change is that the monolith application has been divided into multiple independent processes(or services), as a result, a method call between software modules now becomes a remote procedure call go through multiple services.</p>
 <p>A client request usually goes through a couple of or even a dozen of services in a complex microservices system, which makes it really hard to figure out what’s going on when a request fails or becomes slow.</p>
