@@ -1640,7 +1640,8 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
     ]
 }
 </code></pre><ol start="8">
-<li>请求被转发到其中一个endpoint 10.40.0.15，即Reviews-v1所在的Pod，然后该请求被iptable规则拦截，重定向到本地的15006端口。</li>
+<li>请求被转发到其中一个endpoint 10.40.0.15，即Reviews-v1所在的Pod。</li>
+<li>然后该请求被iptable规则拦截，重定向到本地的15006端口。</li>
 <li>在15006端口上监听的Envoy Virtual  Inbound Listener收到了该请求。</li>
 <li>根据匹配条件，请求被Virtual Inbound Listener内部配置的Http connection manager filter处理，该filter设置的路由配置为将其发送给inbound|9080|http|reviews.default.svc.cluster.local这个inbound cluster。</li>
 </ol>
@@ -1722,7 +1723,7 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
                 ],
                 ......
 }
-</code></pre><ol start="11">
+</code></pre><ol start="12">
 <li>inbound|9080|http|reviews.default.svc.cluster.local cluster配置的host为127.0.0.1：9080。</li>
 </ol>
 <pre><code>{
@@ -1763,7 +1764,7 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
     },
     &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
 }
-</code></pre><ol start="12">
+</code></pre><ol start="13">
 <li>请求被转发到127.0.0.1：9080，即Reviews服务进行业务处理。</li>
 </ol>
 <p>上述调用流程涉及的完整Envoy配置文件参见该github repository：https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/tree/istio1.4.0</p>
