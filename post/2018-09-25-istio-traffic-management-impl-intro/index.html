@@ -1396,7 +1396,7 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
 <ol>
 <li>Productpage发起对Reviews服务的调用：<code>http://reviews:9080/reviews/0</code> 。</li>
 <li>请求被Productpage Pod的iptable规则拦截，重定向到本地的15001端口。</li>
-<li>在5001端口上监听的Envoy Virtual Outbound Listener收到了该请求。</li>
+<li>在15001端口上监听的Envoy Virtual Outbound Listener收到了该请求。</li>
 <li>请求被Virtual Outbound Listener根据原目标IP（通配）和端口（9080）转发到0.0.0.0_9080这个 outbound listener。</li>
 </ol>
 <pre><code>{
@@ -2072,7 +2072,7 @@ var disq = new iDisqus('disqus-comment', {
                     
                 </ul>
 		<p class="copyright text-muted">
-                    Copyright &copy; Huabing Blog 2019
+                    Copyright &copy; Huabing Blog 2020
                     <br>
                     <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
                     <iframe
