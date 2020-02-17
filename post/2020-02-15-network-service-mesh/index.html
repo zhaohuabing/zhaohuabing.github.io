@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="当看到Network Service Mesh这一新名词时，你很可能和我第一次看到该名词一样，好奇它到底是什么？它是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。">
-    <meta property="og:description" content="当看到Network Service Mesh这一新名词时，你很可能和我第一次看到该名词一样，好奇它到底是什么？它是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。" />
-    <meta property="twitter:description" content="当看到Network Service Mesh这一新名词时，你很可能和我第一次看到该名词一样，好奇它到底是什么？它是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。" />
+    <meta name="description" content="当第一次看到Network Service Mesh这一名词时，你很可能和我一样好奇它到底是什么？是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。">
+    <meta property="og:description" content="当第一次看到Network Service Mesh这一名词时，你很可能和我一样好奇它到底是什么？是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。" />
+    <meta property="twitter:description" content="当第一次看到Network Service Mesh这一名词时，你很可能和我一样好奇它到底是什么？是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。" />
     
 
     
@@ -389,13 +389,17 @@ $(function() {
     <li><a href="#network-service-meshkubernetes-cni">Network Service Mesh与Kubernetes CNI的关系</a></li>
     <li><a href="#network-service-meshservice-mesh">Network Service Mesh与Service Mesh的关系</a></li>
     <li><a href="#network-service-meshsdn">Network Service Mesh与SDN的关系</a></li>
-    <li><a href="#network-service-meshnfv">Network Service Mesh与NFV的关系</a></li>
-    <li><a href="#heading2">参考文档</a></li>
+    <li><a href="#network-service-meshnfv">Network Service Mesh与NFV的关系</a>
+      <ul>
+        <li><a href="#heading2">总结</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading3">参考文档</a></li>
   </ul>
 </nav>
                 
                 <h1 id="heading">前言</h1>
-<p>当看到Network Service Mesh这一新名词时，你很可能和我第一次看到该名词一样，好奇它到底是什么？它是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。</p>
+<p>当第一次看到Network Service Mesh这一名词时，你很可能和我一样好奇它到底是什么？是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。</p>
 <h1 id="heading1">云原生应用面临的网络问题</h1>
 <h2 id="kubernetes">Kubernetes网络模型</h2>
 <p>Kubernetes已经成为云原生应用编排（即应用程序资源分配、部署和运行管理）的事实标准，几乎所有的公有和私有云解决方案都提供了Kuberetes的管理服务。由于采用了微服务架构，因此云原生应用系统中存在大量服务间的东西向网络流量。为了满足集群内部应用之间的这些东西向流量需求，Kubernetes采用了一个扁平的三层网络模型。该模型可以有多种实现方式，但所有这些实现都必须满足下面的基本要求：</p>
@@ -573,7 +577,9 @@ $(function() {
 </div>
 
 <p>目前NFV主要由电信标准驱动(如ETSI NFV系列标准），电信标准用在各种系统之间的接口上很有意义，可以确保不同厂家系统之间的互联互通；但如果在系统内部的实现机制上也采用标准那一套流程，就显得过于笨重和缓慢。NSM以开源代码的方式推动NFV向云原生时代迈进，很有可能将对NFV带来革命性的变革。</p>
-<h1 id="heading2">参考文档</h1>
+<h2 id="heading2">总结</h2>
+<p>Network Service Mesh是CNCF中的一个沙箱项目，其架构借鉴了Service Mesh的理念（换句话说，蹭了Service Mesh的热点 :-) ），可以为Kubernetes中部署的应用提供高级的L2/L3网络服务。Network Service Mesh补齐了Kubernetes在网络能力方面的短板，并且可以用于虚拟机、服务器等混合云以及跨云场景。相信随着Network Service Mesh项目的发展和逐渐成熟，将加速电信，ISP，高级企业应用等对网络功能有更高要求的行业向云原生的转型。</p>
+<h1 id="heading3">参考文档</h1>
 <ul>
 <li><a href="https://drive.google.com/drive/folders/1f5fek-PLvoycMTCp6c-Dn_d9_sBNTfag">https://drive.google.com/drive/folders/1f5fek-PLvoycMTCp6c-Dn_d9_sBNTfag</a></li>
 <li><a href="https://www.youtube.com/watch?v=YeAKtUFaqQ0">https://www.youtube.com/watch?v=YeAKtUFaqQ0</a></li>
