@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="Network Service Mesh: A Big Step Toward Cloud-Native NFV" />
+    <meta property="og:title" content="Network Service Mesh: A Big Step Toward Cloud-Native NFV" />
+    <meta property="twitter:title" content="Network Service Mesh: A Big Step Toward Cloud-Native NFV" />
+    
+
+    
+    <meta name="description" content="When hearing about Network Service Mesh for the first time, you probably are as curious as I was:  Does it have anything to do with Service Mesh/Istio? In my opinion, Network Service Mesh could be a turn point for NFV. I&#39;ll dive into more details in this post.">
+    <meta property="og:description" content="When hearing about Network Service Mesh for the first time, you probably are as curious as I was:  Does it have anything to do with Service Mesh/Istio? In my opinion, Network Service Mesh could be a turn point for NFV. I&#39;ll dive into more details in this post." />
+    <meta property="twitter:description" content="When hearing about Network Service Mesh for the first time, you probably are as curious as I was:  Does it have anything to do with Service Mesh/Istio? In my opinion, Network Service Mesh could be a turn point for NFV. I&#39;ll dive into more details in this post." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Network Service Mesh: A Big Step Toward Cloud-Native NFV-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2020-02-21-network-service-mesh-english/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/syntax.css">
+    
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+    
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    
+
+</head>
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/life">life</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/note">note</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/categories/tech">tech</a>
+                    </li>
+                    
+                    
+		    
+                        <li><a href="/top/books/">BOOKS</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/2020-02-21-network-service-mesh-english/background.png')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/network-service-mesh" title="Network Service Mesh">
+                            Network Service Mesh
+                        </a>
+                        
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
+                        </a>
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/sdn" title="SDN">
+                            SDN
+                        </a>
+                        
+                        <a class="tag" href="/tags/nfv" title="NFV">
+                            NFV
+                        </a>
+                        
+                    </div>
+                    <h1>Network Service Mesh: A Big Step Toward Cloud-Native NFV</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by 
+                        
+                                &#34;Huabing Zhao&#34;
+                         
+                        on 
+                        Friday, February 21, 2020
+                        
+                            <span id="/post/2020-02-21-network-service-mesh-english/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                        
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-short-brief-of-kubernetes-network">A Short Brief of Kubernetes Network</a></li>
+    <li><a href="#limitation-of-kubernetes-network-innfv">Limitation of Kubernetes Network in NFV</a></li>
+    <li><a href="#what-is-network-servicemesh">What is Network Service Mesh?</a></li>
+    <li><a href="#network-service-mesh-architecture">Network Service Mesh architecture</a></li>
+    <li><a href="#vpn-gatewayexample">VPN Gateway Example</a></li>
+    <li><a href="#network-service-mesh-andcni">Network Service Mesh and CNI</a></li>
+    <li><a href="#network-service-mesh-and-servicemesh">Network Service Mesh and Service Mesh</a></li>
+    <li><a href="#network-service-mesh-andsdn">Network Service Mesh and SDN</a></li>
+    <li><a href="#network-service-mesh-andnfv">Network Service Mesh and NFV</a></li>
+    <li><a href="#key-takeaways">Key Takeaways</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+                
+                <p>When hearing about the term “Network Service Mesh” for the first time, you probably are as curious as I was: What exactly is it behind this fancy name? Does it have anything to do with Service Mesh/Istio? It turns out that Network Service Mesh is a sandbox project in the CNCF (Cloud Native Foundation), and it’s also a new hotspot in the cloud-native area. In this post, I’ll dive into the architecture and technical details of Network Service Mesh, and also explore the relationship between it and some other similar technologies you might get confused with, including Service Mesh, SDN, and NFV.</p>
+<h1 id="a-short-brief-of-kubernetes-network">A Short Brief of Kubernetes Network</h1>
+<p>Kubernetes has become the de-facto standard for cloud-native application orchestration (that is, deployment, scaling, and management of containerized applications), and almost all public and private clouds are providing managed Kubernetes services. Most of the applications deployed in Kubernetes clusters are based on microservices architecture, therefore, there is a large amount of east-west traffic among these services. Kubernetes uses a flat layer 3 network model to address the network needs of these east-west traffics. The model can have different implementations, but all of them must meet the following basic requirements:</p>
+<ul>
+<li>Each pod is assigned a unique IP address.</li>
+<li>Each pod can communicate directly with any other pod in the same cluster without NAT(Network Address Translation).
+If we ignore the trivial details of bridging and routing configuration, the Kubernetes network can be depicted as below:</li>
+</ul>
+<p><img src="/img/2020-02-21-network-service-mesh-english/kubernetes-network-model.png" alt=""></p>
+<p>As the figure shows, all pods in a Kubernetes cluster can access each other through a flat layer 3 network. The meaning of &ldquo;flat&rdquo; here is that a pod can access any other pod in the same cluster just through layer 3 routing without any NAT in the middle, in other words, the source pod and the destination pod see the same IP addresses in the packages exchanged between them.</p>
+<p>Of course, the layer 3 network is &ldquo;flat&rdquo; only from the perspective of a pod. For actual deployment, the implementation of this L3 network can be an overlay network with complex encapsulating.</p>
+<h1 id="limitation-of-kubernetes-network-innfv">Limitation of Kubernetes Network in NFV</h1>
+<p>The purpose of the Kubernetes network is to handle east-west traffic among pods in a cluster, so it has a very simple, elegant design. For normal IT or enterprise applications, it's more than enough. But this model doesn't fit the needs of telcos, ISPs, and some advanced enterprise network, it has the following limitations:</p>
+<ul>
+<li>Kubernetes network cannot provide some advanced L2 / L3 network features.</li>
+<li>The Kubernetes network cannot meet some dynamic network requirements of pods.</li>
+<li>Kubernetes networks lack support for cross-cluster / multi-cloud/hybrid-cloud connectivity.</li>
+</ul>
+<p>We probably should not take these limitations as issues. Kubernetes is mainly designed as an orchestration tool for enterprise/IT applications, and its current network model has already supported the inter-communication among the pods very well, which is its original intention.</p>
+<p>The Telcom industry has been adopting the cloud-native mindset and technologies such as microservices and containerization for a while. However, when trying to leverage Kubernetes&rsquo; powerful container orchestration capabilities in NFV (Network Function Virtualization) area, the Telcom industry found that Kubernetes&rsquo; network mode can't meet NFV's needs. NFV requires some advanced L2 / L3 networking, which is missing in the static Kubernetes network mode. For NFV, Kubernetes&rsquo; limited network support has become its Achilles&rsquo; Heel.</p>
+<h1 id="what-is-network-servicemesh">What is Network Service Mesh?</h1>
+<p>Network Service Mesh (NSM) is a CNCF project that provides advanced L2 / L3 networking capabilities for applications deployed in Kubernetes. NSM does not touch the Kubernetes CNI, instead, it's a totally stand-alone mechanism that consists of a number of components that can be deployed in or out of a Kubernetes cluster. It's a cloud-native network solution works across multi-cloud/hybrid-cloud.</p>
+<p>Before diving into the details of NSM, we need to understand what is a Network Service first.</p>
+<p>It'll be easier to understand Network Service when compared with the Kubernetes service. We can think of a Kubernetes service as an abstract construct providing some kind of application layer(L7) service for clients, such as HTTP or GRPC services. NSM defines Network Service in a similar way, but instead of L7, a Network service provides L2 / L3 service. The differences between Service and Network Service are as follows:：</p>
+<ul>
+<li>Service: It's application workload and provides services at the application layer (L7), such as web services.</li>
+<li>Network Service: It is a network function and provides services at the L2 / L3 layer, which means Network Service processes and forwards packets, and generally does not terminate these packets. The example of Network Services includes Bridge, Router, Firewall, DPI, VPN Gateway, etc.</li>
+</ul>
+<p>The following figure shows the relationship between Service and Network Service.
+<img src="/img/2020-02-21-network-service-mesh-english/network-service.jpg" alt=""></p>
+<p>There can be multiple endpoints behind the scene to actually provide service in Kubernetes. It's also true for NSM Network Service, multiple pods/endpoints are deployed to share the client loads, and this deployment can be horizontally scaled to meet different workloads.</p>
+<p><img src="/img/2020-02-21-network-service-mesh-english/network-service-endpoint.jpg" alt=""></p>
+<h1 id="network-service-mesh-architecture">Network Service Mesh architecture</h1>
+<p>Network Service Mesh consists of a couple of components, as shown in this figure:</p>
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2020-02-21-network-service-mesh-english/nsm-architecture.jpg" />
+    </div>
+    <a href="/img/2020-02-21-network-service-mesh-english/nsm-architecture.jpg" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+<ul>
+<li>
+<p>Network Service Endpoint (NSE): the implementation of Network Services, which can be a container, pod, virtual machine or physical forwarder. A network service endpoint accepts connection requests from clients which want to receive the Network Service it is offering.</p>
+</li>
+<li>
+<p>Network Service Client (NSC): a requester or consumer of the Network Service.</p>
+</li>
+<li>
+<p>Network service registry (MSR): the registry of NSM components including NS, NSE, and NSMgr.</p>
+</li>
+<li>
+<p>Network Service Manager (NSMgr): the control plane of NSM. It is deployed as a daemon set on each node. NSMgr communicates with each other to form a distributed control plane. NSMgr is mainly responsible for two things:</p>
+<ul>
+<li>It accepts the Network Service requests from the NSC and matches the request with appropriate NSE, then creates the virtual wire between the NSC and NSE(the actual job is done by the data plane component ).</li>
+<li>Register the NSE on its node to the NSR.</li>
+</ul>
+</li>
+<li>
+<p>Network Service Mesh Forwarder: the data plane component providing end-to-end connections, wires, mechanisms and forwarding elements to a network service. This may be achieved by provisioning mechanisms and configuring forwarding elements directly, or by making requests to an intermediate control plane acting as a proxy capable of providing the four components needed to realize the network service.
+For example: FD.io (VPP), OvS, Kernel Networking, SRIOV etc.</p>
+</li>
+</ul>
+<p>There are a few other components in NSM as well, but what we mentioned here are all we need to know to understand how NSM works.</p>
+<p>NSM deploys an NSMgr on each Node in the cluster. These NSMgrs talk to each other to select appropriate NSE to meet the Network Service requests from clients, and create a virtual wire between the client and the NSE. From the perspective, these NSMgrs form a mesh to provide L2/L3 network services for the applications, similar to a Service Mesh.</p>
+<p><img src="/img/2020-02-21-network-service-mesh-english/network-service-mesh.jpg" alt=""></p>
+<h1 id="vpn-gatewayexample">VPN Gateway Example</h1>
+<p>Let's see how exactly NSM works by using a simple VPN gateway example. Imagining that you need to connect a pod to the corporation intranet to access a service in the private network, as below diagram shows:</p>
+<p><img src="/img/2020-02-21-network-service-mesh-english/vpn-usecase.png" alt=""></p>
+<p>So you will need some kind of VPN to accomplish that. In the traditional way to do it, you need to have a VPN gateway installed somewhere you pod can reach to, probably in the same cluster, you also need to manually configure some network details, such as the VPN gateway address, the subnet prefix and IP address, the routes to the corporate intranet, etc, which should not be exposed to the user of VPN Gateway service at all. In this scenario, the client just needs to connect the corporate intranet and do whatever it needs to do, so it shouldn't care about the underlying implementation details of it, such as how the VPN is configured and established.</p>
+<p>In contrast, NSM uses a simple declarative way to provide the VPN service to the clients. This figure shows the YAML definitions of the VPN network service, network service endpoint, and network service client.</p>
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2020-02-21-network-service-mesh-english/vpn-usecase-yaml.png" />
+    </div>
+    <a href="/img/2020-02-21-network-service-mesh-english/vpn-usecase-yaml.png" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+<ul>
+<li>Defines vpn-gateway Network Service with NetworkService CRD. The yaml specification shows that vpn-gateway NS accepts IP payload, and it uses a selector to match pods with label &ldquo;app: vpng&rdquo; as the backend pods that provides this Network Service.</li>
+<li>The client uses an annotation &ldquo;Ns.networkservicemesh.io:vpn-gateway&rdquo; to request for the Network Service.</li>
+</ul>
+<p>NSM has an admission webhook deployed in Kubernetes, which injects an init container into the client pod. This init container requests the desired Network Service specified in the annotation by negotiating with the NSMgr in the same node. This process is transparent to the client, the application container is started after the Network Service has been set up by NSM.</p>
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2020-02-21-network-service-mesh-english/vpn-usecase-setup-connection.png" />
+    </div>
+    <a href="/img/2020-02-21-network-service-mesh-english/vpn-usecase-setup-connection.png" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+<ol>
+<li>Vpng-pod has been deployed to provide VPN gateway network service.</li>
+<li>NSMgr registers vpng-pod as an NSE to the API Server (Service Registry).</li>
+<li>The NSM init container in the client pod sends a request for vpn-gateway network service to the NSMgr on the same node.</li>
+<li>NSMgr queries API Server (Service Registry) for available network service endpoints.</li>
+<li>The chosen NSE may reside on the same or a different node. If it's on a remote node, the NSMgr calls its peer on that node to forward the request.</li>
+<li>The NSMgr on the NSE node requests a connection on behalf of the NSC.</li>
+<li>The NSE accepts the request if it still has enough resources to handle it.</li>
+<li>The NSMgr on the NSE node creates a network interface and inject it to the NSE's Pod.</li>
+<li>If the NSE and NSC are on different nodes, the NSMgr on the NSE node notifies the NSMgr on the NSC node that the service request has been The NSMgr on the NSE node creates a network interface and inject it to the NSE's Pod..</li>
+<li>The NSMgr on the NSC node creates a network interface and inject it to the NSC's pod, it also sets the routes to the corporate network.</li>
+</ol>
+<p>Note: The two interfaces on the NSC and NSE pods are connected through a virtual wire established by NSM data plane, which could be a block of shared memory or a tunnel, depends on the locations of NSC and NSE.</p>
+<h1 id="network-service-mesh-andcni">Network Service Mesh and CNI</h1>
+<p>As can be seen from the introduction of NSM in the previous section, NSM is not an implementation or extension of Container Networking Interface(CNI), it's a totally different mechanism.</p>
+<p>CNI works in the life cycle of Kubernetes runtime. It only concerns network allocation during a pod's initialization and deletion phases. CNI provides basic Layer 3 network connections between pods in a Cluster. That's it, you can't ask CNI for more advanced networking capabilities.</p>
+<p><img src="/img/2020-02-21-network-service-mesh-english/cni.png" alt=""></p>
+<p>NSM works out of Kubernetes runtime&rsquo; life cycle and it's much more flexible. Various Network Services can be implemented by 3-rd parties and introduced into the Kubernetes world. The implementation details are wrapped into NSE and the complicated network configuration such as IP address, subnet, routes are done by NSM. A client can request and use a Network Service just by a single line of annotation in its YAML deployment file, without noticing all these networking details.</p>
+<p>In a word, NSM is a powerful complement to the Kubernetes CNI network model. NSM provides dynamic, advanced network services for pods while CNI provides basic L3 connectivity in a cluster.</p>
+<h1 id="network-service-mesh-and-servicemesh">Network Service Mesh and Service Mesh</h1>
+<p>NSM borrows the concept of Service Mesh, but they work on different layers of the OSI model.
+Service Mesh works at Layer 4 and Layer 7 (primarily Layer 7), handling service-to-service communication(service discovery, LB, retries, circuit breaker, advanced routing with application layer headers) and also providing security and insight for microservices.</p>
+<p>Network Service Mesh works at layer 2 and layer 3, providing advanced L2/L3 network services such as virtual L2 networks, virtual L3 networks, VPNs, firewalls, and DPI, etc.</p>
+<p>If needed, Service Mesh and Network Service Mesh can actually work together. For example, you can create an overlay L3 network across multiple clouds with NSM, and then build an Istio Service Mesh on top of that L3 network.</p>
+<p><img src="/img/2020-02-21-network-service-mesh-english/istio-on-top-of-nsm.png" alt=""></p>
+<h1 id="network-service-mesh-andsdn">Network Service Mesh and SDN</h1>
+<p>SDN (Soft Defined Network) disaggregates network control and forwarding functions from individual switches and routers, and places them instead in a centralized SDN controller, as this figure shows:</p>
+<p><img src="/img/2020-02-21-network-service-mesh-english/sdn.png" alt=""></p>
+<p>NSM and SDN do have overlap on OSI layers. SDN works on L1 / L2 / L3, and NSM works on L2 / L3, but in different areas. NSM intends to provide advanced L2 / L3 network services in a cloud-native way for Kubernetes, while SDN is mainly used to facilitate the configuration and management of network gears.</p>
+<p>NSM can wrap the capabilities of SDN into Network Services to be used by pods in Kubernetes. The below figure shows an example of using SDN together with NSM to provide QoE (Quality of Experience) services in a Kubernetes cluster.</p>
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2020-02-21-network-service-mesh-english/qoe.png" />
+    </div>
+    <a href="/img/2020-02-21-network-service-mesh-english/qoe.png" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+<p>In this example, NSM provides QoE network services and the virtual wire between the client and QoE network service endpoint in Kubernetes; the SDN controller configures the network devices and implements the actual QoE mechanism in the transport network.</p>
+<h1 id="network-service-mesh-andnfv">Network Service Mesh and NFV</h1>
+<p>Network Functions Virtualization (NFV) is the decoupling of network functions from proprietary hardware appliances and running them as software. These virtualized network functions(VNFs) are normally packaged as virtual machines (VMs).</p>
+<p>However, containers could be much less resource consuming and much more efficient than VMs. It can take minutes to spin up a VM, while only a few seconds for a container.</p>
+<p>The major problem of this solution is that the container orchestrator, Kubernetes, lacks the networking capabilities which is a must for NFV. The emerging of NSM fixed the missing part of this puzzle, provides a cloud-native NFV solution. VNFs could be implemented as NSM Network Service, and these Network Services can be connected to form service function chains (SFC). With Kubernetes's powerful orchestration, VNFs can also be easily horizontally scaled to meet different workloads.</p>
+<p>This is an example of SFC implemented with NSM:</p>
+
+
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2020-02-21-network-service-mesh-english/sfc.png" />
+    </div>
+    <a href="/img/2020-02-21-network-service-mesh-english/sfc.png" itemprop="contentUrl"></a>
+  </figure>
+</div>
+
+<p>At present, NFV is driven by telecommunications standards (such as the ETSI NFV family). Telecommunication standards are great to ensure interoperability among different vendors or operators, but it's terribly inefficient because of the long process to come out a standard. Open source projects, like NSM, may bring revolutionary changes to NFV in the near future.</p>
+<h1 id="key-takeaways">Key Takeaways</h1>
+<p>Network Service Mesh is a CNCF sandbox project that provides complicated L2/L3 networking capabilities for Kubernetes. It maps the concept of service mesh but works in L2/L3 instead of L4/L7. Network Service Mesh complements Kubernetes&rsquo; original network model, providing a cloud-native way to deploy and use advanced L2/L3 network services. Network Service Mesh can also work with Service Mesh and SDN to provide comprehensive network solutions for applications deployed in the Kubernetes cluster. As a nice way to implement cloud-native Network Functions(CNFs) and SFCs, Network Service Mesh is a big step toward the next generation of NFV, and will have significant impacts on cloud, 5G, and edge computing.</p>
+<h1 id="references">References</h1>
+<ul>
+<li><a href="https://drive.google.com/drive/folders/1f5fek-PLvoycMTCp6c-Dn_d9_sBNTfag">https://drive.google.com/drive/folders/1f5fek-PLvoycMTCp6c-Dn_d9_sBNTfag</a></li>
+<li><a href="https://www.youtube.com/watch?v=YeAKtUFaqQ0">https://www.youtube.com/watch?v=YeAKtUFaqQ0</a></li>
+<li><a href="https://www.youtube.com/watch?v=AWHkn_dqAUA&amp;t=331s">https://www.youtube.com/watch?v=AWHkn_dqAUA&amp;t=331s</a></li>
+<li><a href="https://static.sched.com/hosted_files/kccnceu19/26/NSM%20Deep%20Dive%20KubeCon%20EU%202019%20%28developer%20centric%29.pdf">https://static.sched.com/hosted_files/kccnceu19/26/NSM%20Deep%20Dive%20KubeCon%20EU%202019%20%28developer%20centric%29.pdf</a></li>
+<li><a href="https://www.youtube.com/watch?v=mrkW83_kLLM&amp;t=2990s">https://www.youtube.com/watch?v=mrkW83_kLLM&amp;t=2990s</a></li>
+<li><a href="https://docs.google.com/presentation/d/1aG56Oqv7I1JpNsY4VPNpyoKppT-BRyOdYE43fr9ylNs/edit#slide=id.g64538f607d_2_94">https://docs.google.com/presentation/d/1aG56Oqv7I1JpNsY4VPNpyoKppT-BRyOdYE43fr9ylNs/edit#slide=id.g64538f607d_2_94</a></li>
+<li><a href="https://docs.google.com/presentation/d/1-nlBx0Qo4oCmlwYc72dirVcw19y5MAwvKu0wc4lk1VA/edit#slide=id.g790e663adc_0_145">https://docs.google.com/presentation/d/1-nlBx0Qo4oCmlwYc72dirVcw19y5MAwvKu0wc4lk1VA/edit#slide=id.g790e663adc_0_145</a></li>
+</ul>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2020-02-15-network-service-mesh/" data-toggle="tooltip" data-placement="top" title="NFV迈向云原生时代：Network Service Mesh项目介绍">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    <li>
+                        <a target="_blank" href="https://stackoverflow.com/users/2306565/huabing-zhao">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-overflow fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2020
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>
