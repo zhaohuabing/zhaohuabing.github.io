@@ -393,6 +393,7 @@ $(function() {
 <h1 id="tap">使用Tap隧道桥接两个远程站点</h1>
 <p>如下图所示，可以使用tap建立二层隧道将两个远程站点桥接起来，组成一个局域网。对于两边站点中的主机来说，访问对方站点的主机和本地站点的主机的方式没有区别，都处于一个局域网192.168.0.0/24中。</p>
 <p>VPN主机上有两个物理网卡，其中Eth0用于和对方站点的VPN主机进行通信，建立隧道。Eth1在通过网线连接到以太网交换机的同时也被则加入了Linux Bridge，这相当于用一条网线将Linux Bridge上的一个端口（Eth1）连接到了本地站点的以太网交换机上，Eth1上收到的所有数据包都会被发送到Linux Bridge上，Linux Bridge发给Eth1的数据包也会被发送到以太网交换机上。Linux Bridge上还有一个Tap虚拟网卡，用于VPN程序接收从Linux Bridge上收到的数据包。</p>
+<p><img src="/img/2020-02-24-linux-taptun/linux-bridge-tunnel.png" alt=""></p>
 <p>假设192.168.0.5发出了一个对192.168.0.3的ARP请求，该ARP请求在网络中经过的路径如下：</p>
 <ol>
 <li>192.168.0.5发出ARP请求，询问192.168.0.3的MAC地址。</li>
@@ -407,7 +408,8 @@ $(function() {
 <li>192.168.0.3收到了APR请求，判断iP地址和自己相同，对此请求进行响应。</li>
 <li>同理，ARP响应包也可以按照该路径返回到图左边包括192.168.0.5在内的站点中。</li>
 </ol>
-<p><img src="/img/2020-02-24-linux-taptun/linux-bridge-tunnel.png" alt=""></p>
+<p>从站点主机的角度来看，上面图中两个VPN主机之间的远程连接可以看作一条虚拟的网线，这条网线将两个Linux Bridge连接起来。这两个Linux Bridge和两个以太网交换机一起将左右两个站点的主机连接在一起，形成了一个局域网。
+<img src="/img/2020-02-24-linux-taptun/linux-bridge-tunnel-simplified.png" alt=""></p>
 <h1 id="heading">参考资料</h1>
 <ul>
 <li><a href="https://www.kernel.org/doc/Documentation/networking/tuntap.txt">Universal TUN/TAP device driver</a></li>
