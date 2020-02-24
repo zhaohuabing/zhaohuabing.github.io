@@ -106,6 +106,10 @@
                     
                         
                         <li>
+                            <a href="/categories/knowledgegraph">knowledgegraph</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/life">life</a>
                         </li>
                         
@@ -391,8 +395,21 @@ $(function() {
 <p>结合路由规则和IPTables规则，可以将VPN服务器端的主机作为连接外部网络的网关，以绕过防火墙对客户端的一些外部网络访问限制。如下图所示，防火墙规则允许客户端访问主机IP2，而禁止访问其他Internet上的节点。通过采用Tun隧道，从防火墙角度只能看到被封装后的数据包，因此防火墙认为客户端只是在访问IP2，会对数据进行放行。而VPN服务端在解包得到真实的访问目的后，会通过路由规则和IPTables规则将请求转发到真正的访问目的地上，然后再将真实目的地的响应IP数据包封装进隧道后原路返回给客户端，从而达到绕过防火墙限制的目的。</p>
 <h1 id="tap">使用Tap隧道桥接两个远程站点</h1>
 <p>如下图所示，可以使用tap建立二层隧道将两个远程站点桥接起来，组成一个局域网。对于两边站点中的主机来说，访问对方站点的主机和本地站点的主机的方式没有区别，都处于一个局域网192.168.0.0/24中。</p>
-<p>VPN主机上有两个物理网卡，其中Eth0用于和对方站点的VPN主机进行通信，建立隧道。Eth1被则加入了Linux Bridge，这样Eth1上收到的所有数据包都会被发送到Linux Bridge上，相当于将Linux Bridge连接到了本地站点的以太网交换机上。Linux Bridge上还有一个Tap虚拟网卡，用于VPN程序接收从Linux Bridge上收到的数据包。</p>
-<p>假设192.168.0.5发出了一个对192.168.0.3的ARP请求，该ARP请求将被发送到以太网交换机上，然后被交换机发送到Eth1上，由于Eth1被连接到了Linux Bridge，因此Linux Bridge将收到该ARP请求，并发送到连到其上面的Tap虚拟网卡，VPN程序通过/dev/net/tun字符设备读取到该ARP请求，然后封装到TCP/UDP隧道中发送到对端站点的VPN程序监听的socket端口上，VPN程序解包后将ARP请求通过/dev/net/tun字符设备写入到Tap设备中，然后被Linux Bridge通过Eth1发送到以太网交换机，最后被连接到以太网交换机的192.168.0.3主机收到。同理，ARP响应包也可以按照该路径返回到图左边的站点中。</p>
+<p>VPN主机上有两个物理网卡，其中Eth0用于和对方站点的VPN主机进行通信，建立隧道。Eth1在连接到以太网交换机的同时也被则加入了Linux Bridge，这相当于用一条网线将Linux Bridge连接到了本地站点的以太网交换机上，Eth1上收到的所有数据包都会被发送到Linux Bridge上，Linux Bridge发给Eth1的数据包也会出现在以太网交换机上。Linux Bridge上还有一个Tap虚拟网卡，用于VPN程序接收从Linux Bridge上收到的数据包。</p>
+<p>假设192.168.0.5发出了一个对192.168.0.3的ARP请求，该ARP请求在网络中经过的路径如下：</p>
+<ol>
+<li>192.168.0.5发出ARP请求，询问192.168.0.3的MAC地址。</li>
+<li>该ARP请求将被发送到以太网交换机上。</li>
+<li>以太网交换机对该请求进行泛洪，发送到其包括Eth1在内的所有端口上。</li>
+<li>由于Eth1被加入了VPN主机上的Linux Bridge，因此Linux Bridge收到该ARP请求。</li>
+<li>Linux Bridge对该ARP请求进行泛洪，发送到连到其上面的Tap虚拟网卡上。</li>
+<li>VPN程序通过/dev/net/tun字符设备读取到该ARP请求，然后封装到TCP/UDP包中，发送到对端站点的VPN主机。</li>
+<li>对端站点的VPN程序通过监听TCP/UDP端口接收到封装的ARP请求，将ARP请求通过/dev/net/tun字符设备写入到Tap设备中。</li>
+<li>Linux Bridge泛洪，将ARP请求发送往Eth1，由于Eth1连接到了以太网交换机上，以太网交换机接收到了该ARP请求。</li>
+<li>以太网交换机进行泛洪，将ARP请求发送给了包括192.168.0.3的所有主机。</li>
+<li>192.168.0.3收到了APR请求，判断iP地址和自己相同，对此请求进行响应。</li>
+<li>同理，ARP响应包也可以按照该路径返回到图左边包括192.168.0.5在内的站点中。</li>
+</ol>
 <p><img src="/img/2020-02-24-linux-taptun/linux-bridge-tunnel.png" alt=""></p>
 <h1 id="heading">参考资料</h1>
 <ul>
@@ -409,7 +426,7 @@ $(function() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2020-02-21-network-service-mesh-english/" data-toggle="tooltip" data-placement="top" title="Network Service Mesh: A Big Step Toward Cloud-Native NFV">&larr;
+                        <a href="/post/2020-02-22-k8s-network-mindmap/" data-toggle="tooltip" data-placement="top" title="Kubernetes知识图谱">&larr;
                             Previous Post</a>
                     </li>
                     
