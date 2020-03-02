@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="All the things about Kubernetes">
-    <meta property="og:description" content="All the things about Kubernetes" />
-    <meta property="twitter:description" content="All the things about Kubernetes" />
+    <meta name="description" content="Kubernetes相关知识汇总">
+    <meta property="og:description" content="Kubernetes相关知识汇总" />
+    <meta property="twitter:description" content="Kubernetes相关知识汇总" />
     
 
     
@@ -106,7 +106,7 @@
                     
                         
                         <li>
-                            <a href="/categories/knowledgegraph">knowledgegraph</a>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
                         </li>
                         
                         <li>
@@ -175,7 +175,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/2020-02-21-network-service-mesh-english/background.png')
+        background-image: url('https://images.pexels.com/photos/1482193/pexels-photo-1482193.jpeg')
     }
 </style>
 <header class="intro-header">
@@ -370,9 +370,41 @@ $(function() {
     <ul>
 <li>Kubernetes
 <ul>
-<li>network
+<li>Network
 <ul>
-<li><a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/">linux tun/tap</a></li>
+<li>Linux Network Virtualization
+<ul>
+<li><a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/">Linux tun/tap</a></li>
+<li>Veth Pair</li>
+<li>Network Namespace</li>
+</ul>
+</li>
+<li>Vlan</li>
+<li>Vxlan
+<ul>
+<li><a href="https://cizixs.com/2017/09/25/vxlan-protocol-introduction/">Vxlan原理</a></li>
+<li><a href="https://cizixs.com/2017/09/28/linux-vxlan/">Linux 上实现 vxlan 网络</a></li>
+</ul>
+</li>
+<li>K8s Network
+<ul>
+<li>Service
+<ul>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#cluster-ip">Cluster IP</a></li>
+<li><a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/#headless-services">Headless</a></li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#nodeport">NodePort</a></li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#loadbalancer">LoadBalancer</a></li>
+</ul>
+</li>
+<li>Ingress
+<ul>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#k8s-ingress">K8s Ingress</a></li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#istio-gateway">Istio Ingress Gateway</a></li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#api-gateway--sidecar-proxy">API Gateway+Service Mesh</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

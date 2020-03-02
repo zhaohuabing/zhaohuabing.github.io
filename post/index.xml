@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>Kubernetes知识图谱</title>
+      <link>https://zhaohuabing.com/post/2020-02-22-k8s-network-mindmap/</link>
+      <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-02-22-k8s-network-mindmap/</guid>
+      <description>Kubernetes Network Linux Network Virtualization Linux tun/tap Veth Pair Network Namespace Vlan Vxlan Vxlan原理 Linux 上实现 vxlan 网络 K8s Network Service Cluster IP Headless NodePort LoadBalancer Ingress K8s Ingress Istio Ingress Gateway API Gateway+Service Mesh</description>
+    </item>
+    
+    <item>
       <title>Network Service Mesh: A Big Step Toward Cloud-Native NFV</title>
       <link>https://zhaohuabing.com/post/2020-02-21-network-service-mesh-english/</link>
       <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
