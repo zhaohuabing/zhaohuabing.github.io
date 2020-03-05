@@ -475,31 +475,31 @@ metadata:
 <p>我们会发现在eshop示例程序中，缺省生成的调用链里面并不会把Kafka消费者的Span和其发起的调用notification服务的REST请求的Span关联在同一个Trace中。</p>
 <p>要分析导致该问题的原因，我们首先需要了解<a href="https://opentracing.io/docs/overview/scopes-and-threading/">“Active Span”</a>的概念。在Opentracing中，一个线程可以有一个Active Span，该Active Span代表了目前该线程正在执行的工作。在调用Tracer.buildSpan()方法创建新的Span时，如果Tracer目前存在一个Active Span，则会将该Active Span缺省作为新创建的Span的Parent Span。</p>
 <p>Tracer.buildSpan 方法的说明如下：</p>
-<pre><code>Tracer.SpanBuilder buildSpan(String operationName)
-Return a new SpanBuilder for a Span with the given `operationName`.
-You can override the operationName later via BaseSpan.setOperationName(String).
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Tracer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">SpanBuilder</span> <span style="color:#50fa7b">buildSpan</span><span style="color:#ff79c6">(</span>String operationName<span style="color:#ff79c6">)</span>
+Return a <span style="color:#ff79c6">new</span> SpanBuilder <span style="color:#ff79c6">for</span> a Span with the given `operationName`<span style="color:#ff79c6">.</span>
+You can override the operationName later via BaseSpan<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setOperationName</span><span style="color:#ff79c6">(</span>String<span style="color:#ff79c6">)</span><span style="color:#ff79c6">.</span>
 
-A contrived example:
+A contrived example<span style="color:#ff79c6">:</span>
 
 
-   Tracer tracer = ...
+   Tracer tracer <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span>
 
-   // Note: if there is a `tracer.activeSpan()`, it will be used as the target of an implicit CHILD_OF
-   // Reference for &quot;workSpan&quot; when `startActive()` is invoked.
-   // 如果存在active span，则其创建的新Span会隐式地创建一个 CHILD_OF 引用到该active span
-   try (ActiveSpan workSpan = tracer.buildSpan(&quot;DoWork&quot;).startActive()) {
-       workSpan.setTag(&quot;...&quot;, &quot;...&quot;);
-       // etc, etc
-   }
+   <span style="color:#6272a4">// Note: if there is a `tracer.activeSpan()`, it will be used as the target of an implicit CHILD_OF
+</span><span style="color:#6272a4"></span>   <span style="color:#6272a4">// Reference for &#34;workSpan&#34; when `startActive()` is invoked.
+</span><span style="color:#6272a4"></span>   <span style="color:#6272a4">// 如果存在active span，则其创建的新Span会隐式地创建一个 CHILD_OF 引用到该active span
+</span><span style="color:#6272a4"></span>   <span style="color:#ff79c6">try</span> <span style="color:#ff79c6">(</span>ActiveSpan workSpan <span style="color:#ff79c6">=</span> tracer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">buildSpan</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;DoWork&#34;</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">startActive</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+       workSpan<span style="color:#ff79c6">.</span><span style="color:#50fa7b">setTag</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;...&#34;</span><span style="color:#ff79c6">,</span> <span style="color:#f1fa8c">&#34;...&#34;</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+       <span style="color:#6272a4">// etc, etc
+</span><span style="color:#6272a4"></span>   <span style="color:#ff79c6">}</span>
 
-   // 也可以通过asChildOf方法指定新创建的Span的Parent Span
-   // It's also possible to create Spans manually, bypassing the ActiveSpanSource activation.
-   Span http = tracer.buildSpan(&quot;HandleHTTPRequest&quot;)
-                     .asChildOf(rpcSpanContext)  // an explicit parent
-                     .withTag(&quot;user_agent&quot;, req.UserAgent)
-                     .withTag(&quot;lucky_number&quot;, 42)
-                     .startManual();
-</code></pre><p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
+   <span style="color:#6272a4">// 也可以通过asChildOf方法指定新创建的Span的Parent Span
+</span><span style="color:#6272a4"></span>   <span style="color:#6272a4">// It&#39;s also possible to create Spans manually, bypassing the ActiveSpanSource activation.
+</span><span style="color:#6272a4"></span>   Span http <span style="color:#ff79c6">=</span> tracer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">buildSpan</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;HandleHTTPRequest&#34;</span><span style="color:#ff79c6">)</span>
+                     <span style="color:#ff79c6">.</span><span style="color:#50fa7b">asChildOf</span><span style="color:#ff79c6">(</span>rpcSpanContext<span style="color:#ff79c6">)</span>  <span style="color:#6272a4">// an explicit parent
+</span><span style="color:#6272a4"></span>                     <span style="color:#ff79c6">.</span><span style="color:#50fa7b">withTag</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;user_agent&#34;</span><span style="color:#ff79c6">,</span> req<span style="color:#ff79c6">.</span><span style="color:#50fa7b">UserAgent</span><span style="color:#ff79c6">)</span>
+                     <span style="color:#ff79c6">.</span><span style="color:#50fa7b">withTag</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;lucky_number&#34;</span><span style="color:#ff79c6">,</span> 42<span style="color:#ff79c6">)</span>
+                     <span style="color:#ff79c6">.</span><span style="color:#50fa7b">startManual</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+</code></pre></div><p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span> V<span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">buildAndFinishChildSpan</span><span style="color:#ff79c6">(</span>ConsumerRecord<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span> V<span style="color:#ff79c6">&gt;</span> record<span style="color:#ff79c6">,</span> Tracer tracer<span style="color:#ff79c6">,</span>
       BiFunction<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> ConsumerRecord<span style="color:#ff79c6">,</span> String<span style="color:#ff79c6">&gt;</span> consumerSpanNameProvider<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
     SpanContext parentContext <span style="color:#ff79c6">=</span> TracingKafkaUtils<span style="color:#ff79c6">.</span><span style="color:#50fa7b">extractSpanContext</span><span style="color:#ff79c6">(</span>record<span style="color:#ff79c6">.</span><span style="color:#50fa7b">headers</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">,</span> tracer<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
