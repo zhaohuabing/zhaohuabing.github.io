@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -404,14 +397,14 @@ $(function() {
 <p>对于入口流量管理，您可能会问： 为什么不直接使用Kubernetes Ingress API ？ 原因是Ingress API无法表达Istio的路由需求。 Ingress试图在不同的HTTP代理之间取一个公共的交集，因此只能支持最基本的HTTP路由，最终导致需要将代理的其他高级功能放入到注解（annotation）中，而注解的方式在多个代理之间是不兼容的，无法移植。</p>
 <p>Istio <code>Gateway</code> 通过将L4-L6配置与L7配置分离的方式克服了<code>Ingress</code>的这些缺点。 <code>Gateway</code>只用于配置L4-L6功能（例如，对外公开的端口，TLS配置），所有主流的L7代理均以统一的方式实现了这些功能。 然后，通过在<code>Gateway</code>上绑定<code>VirtualService</code>的方式，可以使用标准的Istio规则来控制进入<code>Gateway</code>的HTTP和TCP流量。</p>
 <p>例如，下面这个简单的<code>Gateway</code>配置了一个Load Balancer，以允许访问host bookinfo.com的https外部流量入mesh中：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: bookinfo-gateway
 spec:
   servers:
   - port:
-      number: <span style="color:#ae81ff">443</span>
+      number: <span style="color:#bd93f9">443</span>
       name: https
       protocol: HTTPS
     hosts:
@@ -421,7 +414,7 @@ spec:
       serverCertificate: /tmp/tls.crt
       privateKey: /tmp/tls.key
 </code></pre></div><p>要为进入上面的Gateway的流量配置相应的路由，必须为同一个host定义一个<code>VirtualService</code>（在下一节中描述），并使用配置中的<code>gateways</code>字段绑定到前面定义的<code>Gateway</code> 上：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: bookinfo
@@ -429,7 +422,7 @@ spec:
   hosts:
     - bookinfo.com
   gateways:
-  - bookinfo-gateway <span style="color:#75715e"># &lt;---- bind to gateway</span>
+  - bookinfo-gateway <span style="color:#6272a4"># &lt;---- bind to gateway</span>
   http:
   - match:
     - uri:
@@ -441,14 +434,14 @@ spec:
 <p>用一种叫做“Virtual services”的东西代替路由规则可能看起来有点奇怪，但对于它配置的内容而言，这事实上是一个更好的名称，特别是在重新设计API以解决先前模型的可扩展性问题之后。</p>
 <p>实际上，发生的变化是：在之前的模型中，需要用一组相互独立的配置规则来为特定的目的服务设置路由规则，并通过precedence字段来控制这些规则的顺序；在新的API中，则直接对（虚拟）服务进行配置，该虚拟服务的所有规则以一个有序列表的方式配置在对应的<a href="/docs/reference/config/istio.networking.v1alpha3/#VirtualService">VirtualService</a> 资源中。</p>
 <p>例如，之前在<a href="/docs/guides/bookinfo/">Bookinfo</a> 应用程序的reviews服务中有两个RouteRule资源，如下所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: config.istio.io/v1alpha2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: config.istio.io/v1alpha2
 kind: RouteRule
 metadata:
   name: reviews-default
 spec:
   destination:
     name: reviews
-  precedence: <span style="color:#ae81ff">1</span>
+  precedence: <span style="color:#bd93f9">1</span>
   route:
   - labels:
       version: v1
@@ -460,17 +453,17 @@ metadata:
 spec:
   destination:
     name: reviews
-  precedence: <span style="color:#ae81ff">2</span>
+  precedence: <span style="color:#bd93f9">2</span>
   match:
     request:
       headers:
         cookie:
-          regex: <span style="color:#e6db74">&#34;^(.*?;)?(user=jason)(;.*)?$&#34;</span>
+          regex: <span style="color:#f1fa8c">&#34;^(.*?;)?(user=jason)(;.*)?$&#34;</span>
   route:
   - labels:
       version: v2
 </code></pre></div><p>在<code>v1alph3</code>，可以在单个<code>VirtualService</code>资源中提供相同的配置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: reviews
@@ -481,7 +474,7 @@ spec:
   - match:
     - headers:
         cookie:
-          regex: <span style="color:#e6db74">&#34;^(.*?;)?(user=jason)(;.*)?$&#34;</span>
+          regex: <span style="color:#f1fa8c">&#34;^(.*?;)?(user=jason)(;.*)?$&#34;</span>
     route:
     - destination:
         host: reviews
@@ -495,7 +488,7 @@ spec:
 <p><code>VirtualService</code>描述了一个或多个用户可寻址目标到网格内实际工作负载之间的映射。在上面的示例中，这两个地址是相同的，但实际上用户可寻址目标可以是任何用于定位服务的，具有可选通配符前缀或CIDR前缀的DNS名称。
 这对于应用从单体架构到微服务架构的迁移过程特别有用，单体应用被拆分为多个独立的微服务后，采用VirtaulService可以继续把多个微服务对外暴露为同一个目标地址，而不需要服务消费者进行修改以适应该变化。</p>
 <p>例如，以下规则允许服务消费者访问Bookinfo应用程序的reviews和ratings服务，就好像它们是<code>http://bookinfo.com/</code>（虚拟）服务的一部分：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: bookinfo
@@ -537,7 +530,7 @@ spec:
 <li><code>DestinationRule</code>定义了目的host的子集<code>subsets</code> （例如：命名版本）。 这些subset用于｀VirtualService｀的路由规则设置中，可以将流量导向服务的某些特定版本。 通过这种方式为版本命名后，可以在不同的virtual service中明确地引用这些命名版本的ubset，简化Istio代理发出的统计数据，并可以将subsets编码到SNI头中。
 为reviews服务配置策略和subsets的<code>DestinationRule</code>可能如下所示：</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: reviews
@@ -564,7 +557,7 @@ spec:
 <p><a href="https://istio.io/docs/reference/config/istio.networking.v1alpha3/#ServiceEntry">ServiceEntry</a>用于将附加条目添加到Istio内部维护的服务注册表中。
 它最常用于对访问网格外部依赖的流量进行建模，例如访问Web上的API或遗留基础设施中的服务。</p>
 <p>所有以前使用<code>EgressRule</code>进行配置的内容都可以通过<code>ServiceEntry</code>轻松完成。 例如，可以使用类似这样的配置来允许从网格内部访问一个简单的外部服务：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: foo-ext
@@ -572,12 +565,12 @@ spec:
   hosts:
   - foo.com
   ports:
-  - number: <span style="color:#ae81ff">80</span>
+  - number: <span style="color:#bd93f9">80</span>
     name: http
     protocol: HTTP
 </code></pre></div><p>也就是说，<code>ServiceEntry</code>比它的前身具有更多的功能。首先，<code>ServiceEntry</code>不限于外部服务配置，它可以有两种类型：网格内部或网格外部。网格内部条目只是用于向网格显式添加服务，添加的服务与其他内部服务一样。采用网格内部条目，可以把原本未被网格管理的基础设施也纳入到网格中（例如，把虚机中的服务添加到基于Kubernetes的服务网格中）。网格外部条目则代表了网格外部的服务。对于这些外部服务来说，mTLS身份验证是禁用的，并且策略是在客户端执行的，而不是在像内部服务请求一样在服务器端执行策略。</p>
 <p>由于<code>ServiceEntry</code>配置只是将服务添加到网格内部的服务注册表中，因此它可以像注册表中的任何其他服务一样,与<code>VirtualService</code>和/或<code>DestinationRule</code>一起使用。例如，以下<code>DestinationRule</code>可用于启动外部服务的mTLS连接：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: foo-ext
@@ -931,6 +924,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

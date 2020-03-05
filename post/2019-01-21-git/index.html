@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -377,8 +370,8 @@ $(function() {
 <h1 id="git-">Git 目录结构</h1>
 <p>Git的本质是一个文件系统，其工作目录中的所有文件的历史版本以及提交记录(Commit)都是以文件对象的方式保存在.git目录中的。</p>
 <p>首先创建一个work目录，并采用git init命令初始化git仓库。该命令会在工作目录下生成一个.git目录，该目录将用于保存工作区中所有的文件历史的历史版本，提交记录，branch，tag等信息。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir work
-$ cd work
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir work
+$ <span style="color:#8be9fd;font-style:italic">cd</span> work
 $ git init
 </code></pre></div><p>其目录结构如下：</p>
 <pre><code>├── branches             不这么重要，暂不用管                    
@@ -406,14 +399,14 @@ $ git init
     └── tags            tag对应的commit
 </code></pre><h2 id="git-object">Git Object存储方式</h2>
 <p>目前objects目录中还没有任何内容，我们创建一个文件并提交。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ echo <span style="color:#e6db74">&#34;my project&#34;</span> &gt; README
-$ echo <span style="color:#e6db74">&#34;hello world&#34;</span> &gt; src/file1.txt
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;my project&#34;</span> &gt; README
+$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;hello world&#34;</span> &gt; src/file1.txt
 $ git add .
-$ git commit -sm <span style="color:#e6db74">&#34;init commit&#34;</span>
-<span style="color:#f92672">[</span>master <span style="color:#f92672">(</span>root-commit<span style="color:#f92672">)</span> b767d71<span style="color:#f92672">]</span> init commit
- <span style="color:#ae81ff">2</span> files changed, <span style="color:#ae81ff">2</span> insertions<span style="color:#f92672">(</span>+<span style="color:#f92672">)</span>
- create mode <span style="color:#ae81ff">100644</span> README
- create mode <span style="color:#ae81ff">100644</span> src/file1.txt
+$ git commit -sm <span style="color:#f1fa8c">&#34;init commit&#34;</span>
+<span style="color:#ff79c6">[</span>master <span style="color:#ff79c6">(</span>root-commit<span style="color:#ff79c6">)</span> b767d71<span style="color:#ff79c6">]</span> init commit
+ <span style="color:#bd93f9">2</span> files changed, <span style="color:#bd93f9">2</span> insertions<span style="color:#ff79c6">(</span>+<span style="color:#ff79c6">)</span>
+ create mode <span style="color:#bd93f9">100644</span> README
+ create mode <span style="color:#bd93f9">100644</span> src/file1.txt
 </code></pre></div><p>从打印输出可以看到，上面的命令创建了一个commit对象，该commit包含两个文件。 查看.git/objects目录，可以看到该目录下增加了5个子目录 06，3b， 82， b7， ca，每个子目录下有一个以一长串字母数字命令的文件。</p>
 <pre><code>.git/objects
 ├── 06
@@ -438,29 +431,29 @@ ref: refs/heads/master
 cat .git/refs/heads/master
 b767d7115ef57666c9d279c7acc955f86f298a8d
 </code></pre><p>使用 -t 参数查看文件类型：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -t b767d7
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -t b767d7
 commit
 </code></pre></div><p>使用 -p 参数可以查看文件内容：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p b767d7
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p b767d7
 tree ca964f37599d41e285d1a71d11495ddc486b6c3b
-author Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#ae81ff">1548055516</span> +0800
-committer Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#ae81ff">1548055516</span> +0800
+author Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#bd93f9">1548055516</span> +0800
+committer Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#bd93f9">1548055516</span> +0800
 
 init commit
 
 Signed-off-by: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
 </code></pre></div><p>可以看出这是一个commit对象，commit对象中保存了commit的作者，commit的描述信息，签名信息以及该commit中包含哪些tree对象和blob对象。</p>
 <p>b767d7这个commit中保存了一个tree对象，可以把该tree对象看成这次提交相关的所有文件的根目录。让我们来看看该tree对象中的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p ca964f
-<span style="color:#ae81ff">100644</span> blob 065bcad11008c5e958ff743f2445551e05561f59    README
-<span style="color:#ae81ff">040000</span> tree 82424451ac502bd69712561a524e2d97fd932c69    src
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p ca964f
+<span style="color:#bd93f9">100644</span> blob 065bcad11008c5e958ff743f2445551e05561f59    README
+<span style="color:#bd93f9">040000</span> tree 82424451ac502bd69712561a524e2d97fd932c69    src
 </code></pre></div><p>可以看到该tree对象中包含了一个blob对象，即README文件；和一个tree对象，即src目录。 分别查看该blob对象和tree对象，其内容如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p 065bca
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p 065bca
 my project
-$ git cat-file -p <span style="color:#ae81ff">824244</span>
-<span style="color:#ae81ff">100644</span> blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad    file1.txt
+$ git cat-file -p <span style="color:#bd93f9">824244</span>
+<span style="color:#bd93f9">100644</span> blob 3b18e512dba79e4c8300dd08aeb37f8e728b8dad    file1.txt
 </code></pre></div><p>查看file1.txt的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p 3b18e51
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p 3b18e51
 hello world
 </code></pre></div><p>从上面的实验我们可以得知，git中存储了三种类型的对象，commit，tree和blob。分别对应git commit，此commit中的目录和文件。这些对象之间的关系如下图所示。</p>
 <pre><code>HEAD---&gt; refs/heads/master--&gt; b767d7(commit)
@@ -482,8 +475,8 @@ hello world
                                              file1.txt                                     
 </code></pre><h3 id="git-branchtag">Git branch和tag</h3>
 <p>从refs/heads/master的内容可以看到，branch是一个指向commit的指针，master branch实际是指向了b767d7这个commit。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout -b work
-Switched to a new branch <span style="color:#e6db74">&#39;work&#39;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout -b work
+Switched to a new branch <span style="color:#f1fa8c">&#39;work&#39;</span>
 $ tree .git/refs/
 .git/refs/
 ├── heads
@@ -496,37 +489,37 @@ b767d7115ef57666c9d279c7acc955f86f298a8d
 </code></pre></div><p>上面的命令创建了一个work branch。从其内容可以看到，该branch并没有创建任何新的版本文件，和master一样指向了b767d7这个commit。</p>
 <p>从上面的实验可以看出，一个branch其实只是一个commit对象的应用，Git并不会为每个branch存储一份拷贝，因此在git中创建branch几乎没有任何代价。</p>
 <p>在work branch上进行一些修改，然后提交。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ echo <span style="color:#e6db74">&#34;new line&#34;</span> &gt;&gt; src/file1.txt
-$ echo <span style="color:#e6db74">&#34;do nothing&#34;</span> &gt;&gt; Makefile
-$ git commit -sm <span style="color:#e6db74">&#34;some change&#34;</span>
-<span style="color:#f92672">[</span>work 4f73993<span style="color:#f92672">]</span> some change
- <span style="color:#ae81ff">2</span> files changed, <span style="color:#ae81ff">2</span> insertions<span style="color:#f92672">(</span>+<span style="color:#f92672">)</span>
- create mode <span style="color:#ae81ff">100644</span> Makefile
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;new line&#34;</span> &gt;&gt; src/file1.txt
+$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;do nothing&#34;</span> &gt;&gt; Makefile
+$ git commit -sm <span style="color:#f1fa8c">&#34;some change&#34;</span>
+<span style="color:#ff79c6">[</span>work 4f73993<span style="color:#ff79c6">]</span> some change
+ <span style="color:#bd93f9">2</span> files changed, <span style="color:#bd93f9">2</span> insertions<span style="color:#ff79c6">(</span>+<span style="color:#ff79c6">)</span>
+ create mode <span style="color:#bd93f9">100644</span> Makefile
 </code></pre></div><p>查看当前的HEAD和branch内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat .git/HEAD
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat .git/HEAD
 ref: refs/heads/work
 huabing@huabing-xubuntu:~/work$ cat .git/refs/heads/work .git/refs/heads/master
 4f73993cf81931bc15375f0a23d82c40b3ae6789
 b767d7115ef57666c9d279c7acc955f86f298a8d
 </code></pre></div><p>可以看到HEAD指向了work branch,而work branch则指向了4f73993这个commit，master branch指向的commit未变化，还是b767d7。</p>
 <p>查看4f73993这个commit对象的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p 4f73993
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p 4f73993
 tree 082b6d87eeddb15526b7c920e21f09f950f78b54
 parent b767d7115ef57666c9d279c7acc955f86f298a8d
-author Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#ae81ff">1548069325</span> +0800
-committer Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#ae81ff">1548069325</span> +0800
+author Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#bd93f9">1548069325</span> +0800
+committer Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#bd93f9">1548069325</span> +0800
 
 some change
 
 Signed-off-by: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
 </code></pre></div><p>可以看到commit有一个parent字段，指向了前一个commi b767d7。该commit也包含了一个tree对象，让我们看看其中的内容。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  git cat-file -p  082b6d
-<span style="color:#ae81ff">100644</span> blob 8cc95f278445722c59d08bbd798fbaf60da8ca14    Makefile
-<span style="color:#ae81ff">100644</span> blob 065bcad11008c5e958ff743f2445551e05561f59    README
-<span style="color:#ae81ff">040000</span> tree 9aeacd1fa832ca167b0f72fb1d0c744a9ee1902f    src
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  git cat-file -p  082b6d
+<span style="color:#bd93f9">100644</span> blob 8cc95f278445722c59d08bbd798fbaf60da8ca14    Makefile
+<span style="color:#bd93f9">100644</span> blob 065bcad11008c5e958ff743f2445551e05561f59    README
+<span style="color:#bd93f9">040000</span> tree 9aeacd1fa832ca167b0f72fb1d0c744a9ee1902f    src
 
 $ git cat-file -p 9aeacd
-<span style="color:#ae81ff">100644</span> blob 79ee69e841a5fd382faef2be2f2eb6e836cc980a    file1.txt
+<span style="color:#bd93f9">100644</span> blob 79ee69e841a5fd382faef2be2f2eb6e836cc980a    file1.txt
 </code></pre></div><p>可以看到该tree对象中包含了该版本的所有文件和目录，由于README没有变化，还是指向的065bca这个blob对象。Makefile是一个新建的blob对象，src和file1.txt则指向了新版本的对象。</p>
 <p>增加了这次commit后，git中各个对象的关系如下图所示：</p>
 <pre><code>                                          (parent)
@@ -550,7 +543,7 @@ HEAD--&gt; refs/heads/work--&gt; 4f7399(commit) +-------&gt; b767d7(commit)&lt;-
 
 </code></pre><p>从上图可以看到，Git会为每次commit时修改的目录/文件生成一个新的版本的tree/blob对象，如果文件没有修改，则会指向老版本的tree/blob对象。而branch则只是指向某一个commit的一个指针。即Git中整个工作目录的version是以commit对象的形式存在的，可以认为一个commit就是一个version，而不同version可以指向相同或者不同的tree和blob对象，对应到不同版本的子目录和文件。如果某一个子目录/文件在版本间没有变化，则不会为该子目录/文件生成新的tree/blob对象，不同version的commit对象会指向同一个tree/object对象。</p>
 <p>Tag和branch类似，也是指向某个commit的指针。不同的是tag创建后其指向的commit不能变化，而branch创建后，其指针会在提交新的commit后向前移动。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git tag v1.0
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git tag v1.0
 $ cat .git/refs/tags/v1.0 .git/refs/heads/work
 4f73993cf81931bc15375f0a23d82c40b3ae6789
 4f73993cf81931bc15375f0a23d82c40b3ae6789
@@ -560,10 +553,10 @@ $ cat .git/refs/tags/v1.0 .git/refs/heads/work
 <p>“‘储藏”“可以获取你工作目录的中间状态——也就是你修改过的被追踪的文件和暂存的变更——并将它保存到一个未完结变更的堆栈中，随时可以重新应用。</p>
 <p>Git是如何实现Stash的呢？理解了Commit, Tree, Blog这三种Git存储对象，我们就可以很容易理解Git Stash的实现原理。因为和bransh及tag类似，Git Stash其实也是通过Commit来实现的。</p>
 <p>通过实验来测试一下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ echo <span style="color:#e6db74">&#34;another line&#34;</span> &gt;&gt; src/file1.txt
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;another line&#34;</span> &gt;&gt; src/file1.txt
 $ git stash
 </code></pre></div><p>通过上面的命令，我们在file1.txt中增加了一行，然后通过git stash命令将这些改动“暂存”在了一个“堆栈”中，让我们来看看.git目录发生了什么变化。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tree .git/
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tree .git/
 .git/
 ├── branches
 ├── COMMIT_EDITMSG
@@ -591,13 +584,13 @@ $ git stash
 │       │   └── work
 │       └── stash
 ├── objects
-│   ├── <span style="color:#ae81ff">06</span>
+│   ├── <span style="color:#bd93f9">06</span>
 │   │   └── 5bcad11008c5e958ff743f2445551e05561f59
-│   ├── <span style="color:#ae81ff">08</span>
+│   ├── <span style="color:#bd93f9">08</span>
 │   │   └── 2b6d87eeddb15526b7c920e21f09f950f78b54
-│   ├── <span style="color:#ae81ff">11</span>
+│   ├── <span style="color:#bd93f9">11</span>
 │   │   └── a6d1031e4fa2d4da0b6303dd74ed8e85c54057
-│   ├── <span style="color:#ae81ff">33</span>
+│   ├── <span style="color:#bd93f9">33</span>
 │   │   └── f98923002cd224dabf32222c808611badd6d48
 │   ├── 3b
 │   │   └── 18e512dba79e4c8300dd08aeb37f8e728b8dad
@@ -606,15 +599,15 @@ $ git stash
 │   ├── 6a
 │   │   ├── 1474c4da0653af0245970997b6fab0a0a7c1df
 │   │   └── d88760c3be94d8cb582bf2d06b99083d034428
-│   ├── <span style="color:#ae81ff">75</span>
+│   ├── <span style="color:#bd93f9">75</span>
 │   │   └── e170cc1d928ae5a28547b4a3f2f3394a675b9a
-│   ├── <span style="color:#ae81ff">79</span>
+│   ├── <span style="color:#bd93f9">79</span>
 │   │   └── ee69e841a5fd382faef2be2f2eb6e836cc980a
-│   ├── <span style="color:#ae81ff">82</span>
+│   ├── <span style="color:#bd93f9">82</span>
 │   │   └── 424451ac502bd69712561a524e2d97fd932c69
 │   ├── 8c
 │   │   └── c95f278445722c59d08bbd798fbaf60da8ca14
-│   ├── <span style="color:#ae81ff">90</span>
+│   ├── <span style="color:#bd93f9">90</span>
 │   │   └── c43dbb1e71c271510994d6b147c425cbffa673
 │   ├── 9a
 │   │   └── eacd1fa832ca167b0f72fb1d0c744a9ee1902f
@@ -635,31 +628,31 @@ $ git stash
     └── tags
         └── v1.0
 </code></pre></div><p>可以看到objects目录中增加了一些对象文件，refs中增加了一个stash文件。通过命令查看该文件内容：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat .git/refs/stash
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat .git/refs/stash
 11a6d1031e4fa2d4da0b6303dd74ed8e85c54057
 $ git cat-file -p 11a6
 tree 90c43dbb1e71c271510994d6b147c425cbffa673
 parent 4f73993cf81931bc15375f0a23d82c40b3ae6789
 parent 6a1474c4da0653af0245970997b6fab0a0a7c1df
-author Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#ae81ff">1548326421</span> +0800
-committer Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#ae81ff">1548326421</span> +0800
+author Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#bd93f9">1548326421</span> +0800
+committer Huabing Zhao &lt;zhaohuabing@gmail.com&gt; <span style="color:#bd93f9">1548326421</span> +0800
 
 WIP on work: 4f73993 some change
 $ git cat-file -p 90c4
-<span style="color:#ae81ff">100644</span> blob 8cc95f278445722c59d08bbd798fbaf60da8ca14    Makefile
-<span style="color:#ae81ff">100644</span> blob 065bcad11008c5e958ff743f2445551e05561f59    README
-<span style="color:#ae81ff">040000</span> tree 33f98923002cd224dabf32222c808611badd6d48    src
+<span style="color:#bd93f9">100644</span> blob 8cc95f278445722c59d08bbd798fbaf60da8ca14    Makefile
+<span style="color:#bd93f9">100644</span> blob 065bcad11008c5e958ff743f2445551e05561f59    README
+<span style="color:#bd93f9">040000</span> tree 33f98923002cd224dabf32222c808611badd6d48    src
 $ git cat-file -p 33f9
-<span style="color:#ae81ff">100644</span> blob 75e170cc1d928ae5a28547b4a3f2f3394a675b9a    file1.txt
+<span style="color:#bd93f9">100644</span> blob 75e170cc1d928ae5a28547b4a3f2f3394a675b9a    file1.txt
 $ git cat-file -p 75e1
 hello world
 new line
 another line
 </code></pre></div><p>从命令行输出可以看到,git stash实际上创建了一个新的commit对象11a6d1, 该commit对象的父节点为4f7399。commit对象中包含了修改后的file1.txt blob对象75e170。通过git log可以查看：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log --oneline --graph stash@<span style="color:#f92672">{</span>0<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log --oneline --graph stash@<span style="color:#ff79c6">{</span>0<span style="color:#ff79c6">}</span>
 *   f566001 WIP on work: 4f73993 some change
-|<span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>| * 0796ced index on work: 4f73993 some change
+|<span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>| * 0796ced index on work: 4f73993 some change
 |/
 * 4f73993 some change
 * b767d71 init commit
@@ -668,17 +661,17 @@ another line
 <h3 id="git-reset-">Git reset 实现原理</h3>
 <p>在进行一些改动以后并通过git commit 将改动的代码提交到本地的repo后，如果你测试发现刚才的改动不合理，希望回退刚才的改动，应该如何处理？</p>
 <p>我们先提交一个错误的改动：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ echo <span style="color:#e6db74">&#34;I did something wrong&#34;</span> &gt;&gt; src/file1.txt
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;I did something wrong&#34;</span> &gt;&gt; src/file1.txt
 $ git add .
-$ git commit -sm <span style="color:#e6db74">&#34;This commit should not be there&#34;</span>
-<span style="color:#f92672">[</span>work ccbc363<span style="color:#f92672">]</span> This commit should not be there
- <span style="color:#ae81ff">1</span> file changed, <span style="color:#ae81ff">1</span> insertion<span style="color:#f92672">(</span>+<span style="color:#f92672">)</span>
+$ git commit -sm <span style="color:#f1fa8c">&#34;This commit should not be there&#34;</span>
+<span style="color:#ff79c6">[</span>work ccbc363<span style="color:#ff79c6">]</span> This commit should not be there
+ <span style="color:#bd93f9">1</span> file changed, <span style="color:#bd93f9">1</span> insertion<span style="color:#ff79c6">(</span>+<span style="color:#ff79c6">)</span>
 </code></pre></div><p>你可以通过git revert回退刚才的改动，或者修改代码后再次提交，但这样的话你的提交log会显得非常凌乱；如果不想把中间过程的commit push到远程仓库，可以通过git reset 回退刚才的改动。</p>
 <p>先查看目前的log</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log
 commit ccbc3638142191bd68454d47a0f67fd12519806b
 Author: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
-Date:   Fri Jan <span style="color:#ae81ff">25</span> 12:35:31 <span style="color:#ae81ff">2019</span> +0800
+Date:   Fri Jan <span style="color:#bd93f9">25</span> 12:35:31 <span style="color:#bd93f9">2019</span> +0800
 
     This commit should not be there
 
@@ -686,7 +679,7 @@ Date:   Fri Jan <span style="color:#ae81ff">25</span> 12:35:31 <span style="colo
 
 commit 4f73993cf81931bc15375f0a23d82c40b3ae6789
 Author: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
-Date:   Mon Jan <span style="color:#ae81ff">21</span> 19:15:25 <span style="color:#ae81ff">2019</span> +0800
+Date:   Mon Jan <span style="color:#bd93f9">21</span> 19:15:25 <span style="color:#bd93f9">2019</span> +0800
 
     some change
 
@@ -694,20 +687,20 @@ Date:   Mon Jan <span style="color:#ae81ff">21</span> 19:15:25 <span style="colo
 
 commit b767d7115ef57666c9d279c7acc955f86f298a8d
 Author: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
-Date:   Mon Jan <span style="color:#ae81ff">21</span> 15:25:16 <span style="color:#ae81ff">2019</span> +0800
+Date:   Mon Jan <span style="color:#bd93f9">21</span> 15:25:16 <span style="color:#bd93f9">2019</span> +0800
 
     init commit
 
     Signed-off-by: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
 </code></pre></div><p>通过 git reset回退到上一个commit。注意这里HEAD是一个指向当前branch最后一个commit指针，因此HEAD~1表示之前的一个commit。git reset命令也可以直接使用commit号作为命令参数。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git reset HEAD~1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git reset HEAD~1
 Unstaged changes after reset:
 M       src/file1.txt
 
 $ git log
 commit 4f73993cf81931bc15375f0a23d82c40b3ae6789
 Author: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
-Date:   Mon Jan <span style="color:#ae81ff">21</span> 19:15:25 <span style="color:#ae81ff">2019</span> +0800
+Date:   Mon Jan <span style="color:#bd93f9">21</span> 19:15:25 <span style="color:#bd93f9">2019</span> +0800
 
     some change
 
@@ -715,7 +708,7 @@ Date:   Mon Jan <span style="color:#ae81ff">21</span> 19:15:25 <span style="colo
 
 commit b767d7115ef57666c9d279c7acc955f86f298a8d
 Author: Huabing Zhao &lt;zhaohuabing@gmail.com&gt;
-Date:   Mon Jan <span style="color:#ae81ff">21</span> 15:25:16 <span style="color:#ae81ff">2019</span> +0800
+Date:   Mon Jan <span style="color:#bd93f9">21</span> 15:25:16 <span style="color:#bd93f9">2019</span> +0800
 
     init commit
 
@@ -736,32 +729,32 @@ nothing to commit, working directory clean
 <li>将压缩后的内容写入到以 “hash值前两位命令的目录/hash值后38位命令的文件” 中</li>
 </ol>
 <p>可以通过Ruby手工创建一个 Git object 来验证上面的步骤。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ irb
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:001:0&gt; content <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;what is up, doc?&#34;</span>                     //文件内容
-<span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;what is up, doc?&#34;</span>
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:002:0&gt; header <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;blob #{content.length}\0&#34;</span>              //创建header
-<span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;blob 16\u0000&#34;</span>
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:003:0&gt; store <span style="color:#f92672">=</span> header + content                         //拼接header和文件内容
-<span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;blob 16\u0000what is up, doc?&#34;</span>
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:004:0&gt; require <span style="color:#e6db74">&#39;digest/sha1&#39;</span>
-<span style="color:#f92672">=</span>&gt; true
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:005:0&gt; sha1 <span style="color:#f92672">=</span> Digest::SHA1.hexdigest<span style="color:#f92672">(</span>store<span style="color:#f92672">)</span>
-<span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;bd9dbf5aae1a3862dd1526723246b20206e5fc37&#34;</span>                     //计算得到hash值
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:006:0&gt;  require <span style="color:#e6db74">&#39;zlib&#39;</span>
-<span style="color:#f92672">=</span>&gt; true
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:007:0&gt; zlib_content <span style="color:#f92672">=</span> Zlib::Deflate.deflate<span style="color:#f92672">(</span>store<span style="color:#f92672">)</span>      //压缩header+文件内容 
-<span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;x\x9CK\xCA\xC9OR04c(\xCFH,Q\xC8,V(-\xD0QH\xC9O\xB6\a\x00_\x1C\a\x9D&#34;</span>
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:008:0&gt;  path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;.git/objects/&#39;</span> + sha1<span style="color:#f92672">[</span>0,2<span style="color:#f92672">]</span> + <span style="color:#e6db74">&#39;/&#39;</span> + sha1<span style="color:#f92672">[</span>2,38<span style="color:#f92672">]</span>
-<span style="color:#f92672">=</span>&gt; <span style="color:#e6db74">&#34;.git/objects/bd/9dbf5aae1a3862dd1526723246b20206e5fc37&#34;</span>       //通过hash值计算文件存储路径
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:009:0&gt; require <span style="color:#e6db74">&#39;fileutils&#39;</span>
-<span style="color:#f92672">=</span>&gt; true
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:010:0&gt;  FileUtils.mkdir_p<span style="color:#f92672">(</span>File.dirname<span style="color:#f92672">(</span>path<span style="color:#f92672">)</span><span style="color:#f92672">)</span>           //写文件
-<span style="color:#f92672">=</span>&gt; <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;.git/objects/bd&#34;</span><span style="color:#f92672">]</span>
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:011:0&gt; File.open<span style="color:#f92672">(</span>path, <span style="color:#e6db74">&#39;w&#39;</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> |f| f.write zlib_content <span style="color:#f92672">}</span>
-<span style="color:#f92672">=</span>&gt; <span style="color:#ae81ff">32</span>
-irb<span style="color:#f92672">(</span>main<span style="color:#f92672">)</span>:012:0&gt;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ irb
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:001:0&gt; <span style="color:#8be9fd;font-style:italic">content</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;what is up, doc?&#34;</span>                     //文件内容
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;what is up, doc?&#34;</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:002:0&gt; <span style="color:#8be9fd;font-style:italic">header</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;blob #{content.length}\0&#34;</span>              //创建header
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;blob 16\u0000&#34;</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:003:0&gt; <span style="color:#8be9fd;font-style:italic">store</span> <span style="color:#ff79c6">=</span> header + content                         //拼接header和文件内容
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;blob 16\u0000what is up, doc?&#34;</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:004:0&gt; require <span style="color:#f1fa8c">&#39;digest/sha1&#39;</span>
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#8be9fd;font-style:italic">true</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:005:0&gt; <span style="color:#8be9fd;font-style:italic">sha1</span> <span style="color:#ff79c6">=</span> Digest::SHA1.hexdigest<span style="color:#ff79c6">(</span>store<span style="color:#ff79c6">)</span>
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;bd9dbf5aae1a3862dd1526723246b20206e5fc37&#34;</span>                     //计算得到hash值
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:006:0&gt;  require <span style="color:#f1fa8c">&#39;zlib&#39;</span>
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#8be9fd;font-style:italic">true</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:007:0&gt; <span style="color:#8be9fd;font-style:italic">zlib_content</span> <span style="color:#ff79c6">=</span> Zlib::Deflate.deflate<span style="color:#ff79c6">(</span>store<span style="color:#ff79c6">)</span>      //压缩header+文件内容 
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;x\x9CK\xCA\xC9OR04c(\xCFH,Q\xC8,V(-\xD0QH\xC9O\xB6\a\x00_\x1C\a\x9D&#34;</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:008:0&gt;  <span style="color:#8be9fd;font-style:italic">path</span> <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#39;.git/objects/&#39;</span> + sha1<span style="color:#ff79c6">[</span>0,2<span style="color:#ff79c6">]</span> + <span style="color:#f1fa8c">&#39;/&#39;</span> + sha1<span style="color:#ff79c6">[</span>2,38<span style="color:#ff79c6">]</span>
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;.git/objects/bd/9dbf5aae1a3862dd1526723246b20206e5fc37&#34;</span>       //通过hash值计算文件存储路径
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:009:0&gt; require <span style="color:#f1fa8c">&#39;fileutils&#39;</span>
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#8be9fd;font-style:italic">true</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:010:0&gt;  FileUtils.mkdir_p<span style="color:#ff79c6">(</span>File.dirname<span style="color:#ff79c6">(</span>path<span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span>           //写文件
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#34;.git/objects/bd&#34;</span><span style="color:#ff79c6">]</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:011:0&gt; File.open<span style="color:#ff79c6">(</span>path, <span style="color:#f1fa8c">&#39;w&#39;</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span> |f| f.write zlib_content <span style="color:#ff79c6">}</span>
+<span style="color:#ff79c6">=</span>&gt; <span style="color:#bd93f9">32</span>
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:012:0&gt;
 </code></pre></div><p>文件以及写入到Git的内部存储中，我们尝试通过git cat-file 验证并读取该文件内容：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p bd9dbf5aae1a3862dd1526723246b20206e5fc37
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p bd9dbf5aae1a3862dd1526723246b20206e5fc37
 what is up, doc?
 </code></pre></div><p>可以看到，可以通过git cat-file文件读取该文件内容，因此该文件是一个合法的git object，和通过git 命令写入的文件格式相同。</p>
 <h2 id="heading">总结</h2>
@@ -1086,6 +1079,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

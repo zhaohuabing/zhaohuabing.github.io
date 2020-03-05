@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -439,7 +432,7 @@ $(function() {
 <li>拷贝到bin目录 mv linux-amd64/helm /usr/local/bin/helm</li>
 </ol>
 <p>然后使用下面的命令安装服务器端组件Tiller</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Helm init
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Helm init
 </code></pre></div><h2 id="helm-chart">构建一个Helm chart</h2>
 <hr>
 <p>让我们在实践中来了解Helm。这里将使用一个Go测试小程序，让我们先为这个小程序创建一个Helm chart。</p>
@@ -448,7 +441,7 @@ cd testapi
 </code></pre><p>首先创建一个chart的骨架</p>
 <pre><code>helm create testapi-chart
 </code></pre><p>该命令创建一个testapi-chart目录，该目录结构如下所示，我们主要关注目录中的这三个文件即可: Chart.yaml，values.yaml 和 NOTES.txt。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">testapi-chart
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">testapi-chart
 ├── charts
 ├── Chart.yaml
 ├── templates
@@ -504,20 +497,20 @@ Saved /Users/daemonza/testapi/testapi-chart/testapi-chart-0.0.1.tgz to /Users/da
 No results found
 </code></pre><p>这是因为repository目录中的chart还没有被Helm管理。我们可以在本地启动一个Repository Server，并将其加入到Helm repo列表中。</p>
 <p>通过helm repo list命令可以看到目前helm中只配置了一个名为stable的repo，该repo指向了google的一个服务器。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm repo list
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm repo list
 NAME    URL
 stable  https://kubernetes-charts.storage.googleapis.com
 </code></pre></div><p>使用helm serve命令启动一个repo server，该server缺省使用'$HELM_HOME/repository/local'目录作为chart存储，并在8879端口上提供服务。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm serve&amp;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm serve&amp;
 Now serving you on 127.0.0.1:8879
 </code></pre></div><p>启动本地repo server后，将其加入helm的repo列表。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm repo add local http://127.0.0.1:8879
-<span style="color:#e6db74">&#34;local&#34;</span> has been added to your repositories
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm repo add <span style="color:#8be9fd;font-style:italic">local</span> http://127.0.0.1:8879
+<span style="color:#f1fa8c">&#34;local&#34;</span> has been added to your repositories
 </code></pre></div><p>现在再查找testapi chart包，就可以找到了。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm search testapi
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm search testapi
 
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION
-local/testapi-chart     0.0.1                           A Helm chart <span style="color:#66d9ef">for</span> Kubernetes
+local/testapi-chart     0.0.1                           A Helm chart <span style="color:#ff79c6">for</span> Kubernetes
 </code></pre></div><h2 id="kuberneteschart">在kubernetes中部署Chart</h2>
 <hr>
 <p>chart被发布到仓储后，可以通过Helm instal命令部署chart，部署时指定chart名及Release（部署的实例）名：</p>
@@ -557,27 +550,27 @@ testapi 1               Mon Apr 16 10:21:44 2018        DEPLOYED        testapi-
 <hr>
 <p>修改Chart.yaml，将版本号从0.0.1 修改为 1.0.0, 然后使用Helm package命令打包并发布到本地仓库。</p>
 <p>查看本地库中的Chart信息，可以看到在本地仓库中testapi-chart有两个版本</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm search testapi -l
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm search testapi -l
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION
-local/testapi-chart     0.0.1                           A Helm chart <span style="color:#66d9ef">for</span> Kubernetes
-local/testapi-chart     1.0.0                           A Helm chart <span style="color:#66d9ef">for</span> Kubernetes
+local/testapi-chart     0.0.1                           A Helm chart <span style="color:#ff79c6">for</span> Kubernetes
+local/testapi-chart     1.0.0                           A Helm chart <span style="color:#ff79c6">for</span> Kubernetes
 </code></pre></div><p>现在用helm upgrade将已部署的testapi升级到新版本。可以通过参数指定需要升级的版本号，如果没有指定版本号，则缺省使用最新版本。</p>
 <pre><code>helm upgrade testapi local/testapi-chart 
 </code></pre><p>已部署的testapi release被升级到1.0.0版本</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm list
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm list
 NAME    REVISION        UPDATED                         STATUS          CHART                   NAMESPACE
-testapi <span style="color:#ae81ff">2</span>               Mon Apr <span style="color:#ae81ff">16</span> 10:43:10 <span style="color:#ae81ff">2018</span>        DEPLOYED        testapi-chart-1.0.0     default
+testapi <span style="color:#bd93f9">2</span>               Mon Apr <span style="color:#bd93f9">16</span> 10:43:10 <span style="color:#bd93f9">2018</span>        DEPLOYED        testapi-chart-1.0.0     default
 </code></pre></div><p>可以通过Helm history查看一个Release的多次更改。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm history testapi
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm <span style="color:#8be9fd;font-style:italic">history</span> testapi
 REVISION        UPDATED                         STATUS          CHART                   DESCRIPTION
-<span style="color:#ae81ff">1</span>               Mon Apr <span style="color:#ae81ff">16</span> 10:21:44 <span style="color:#ae81ff">2018</span>        SUPERSEDED      testapi-chart-0.0.1     Install complete
-<span style="color:#ae81ff">2</span>               Mon Apr <span style="color:#ae81ff">16</span> 10:43:10 <span style="color:#ae81ff">2018</span>        DEPLOYED        testapi-chart-1.0.0     Upgrade complete
+<span style="color:#bd93f9">1</span>               Mon Apr <span style="color:#bd93f9">16</span> 10:21:44 <span style="color:#bd93f9">2018</span>        SUPERSEDED      testapi-chart-0.0.1     Install <span style="color:#8be9fd;font-style:italic">complete</span>
+<span style="color:#bd93f9">2</span>               Mon Apr <span style="color:#bd93f9">16</span> 10:43:10 <span style="color:#bd93f9">2018</span>        DEPLOYED        testapi-chart-1.0.0     Upgrade <span style="color:#8be9fd;font-style:italic">complete</span>
 </code></pre></div><p>如果更新后的程序由于某些原因运行有问题，我们则需要回退到旧版本的应用，可以采用下面的命令进行回退。其中的参数1是前面Helm history中查看到的Release的更改历史。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm rollback testapi <span style="color:#ae81ff">1</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm rollback testapi <span style="color:#bd93f9">1</span>
 </code></pre></div><p>使用Helm list命令查看，部署的testapi的版本已经回退到0.0.1</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm list
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm list
 NAME    REVISION        UPDATED                         STATUS          CHART                   NAMESPACE
-testapi <span style="color:#ae81ff">3</span>               Mon Apr <span style="color:#ae81ff">16</span> 10:48:20 <span style="color:#ae81ff">2018</span>        DEPLOYED        testapi-chart-0.0.1     default
+testapi <span style="color:#bd93f9">3</span>               Mon Apr <span style="color:#bd93f9">16</span> 10:48:20 <span style="color:#bd93f9">2018</span>        DEPLOYED        testapi-chart-0.0.1     default
 </code></pre></div><h2 id="heading2">总结</h2>
 <hr>
 <p>Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能。Helm以Chart软件包的形式简化Kubernetes的应用管理，提高了对用户的友好性。</p>
@@ -592,12 +585,12 @@ testapi <span style="color:#ae81ff">3</span>               Mon Apr <span style="
 <strong>A</strong>：Chart是支持参数替换的，可以把业务配置相关的参数设置为模板变量。使用Helm install Chart的时候可以指定一个参数值文件，这样就可以把业务参数从Chart中剥离了。例子： helm install &ndash;values=myvals.yaml wordpress</p>
 <p><strong>Q</strong>: helm能解决服务依赖吗？<!-- raw HTML omitted -->
 <strong>A</strong>：可以的，在chart可以通过requirements.yaml声明对其他chart的依赖关系。如下面声明表明chart依赖apache和mysql这两个第三方chart。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">dependencies:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">dependencies:
   - name: apache
-    version: <span style="color:#ae81ff">1.2</span><span style="color:#ae81ff">.3</span>
+    version: <span style="color:#bd93f9">1.2</span><span style="color:#bd93f9">.3</span>
     repository: http://example.com/charts
   - name: mysql
-    version: <span style="color:#ae81ff">3.2</span><span style="color:#ae81ff">.1</span>
+    version: <span style="color:#bd93f9">3.2</span><span style="color:#bd93f9">.1</span>
     repository: http://another.example.com/charts
 </code></pre></div><p><strong>Q</strong>: chart的reversion 可以自定义吗？比如跟git的tag<!-- raw HTML omitted -->
 <strong>A</strong>: 这位朋友应该是把chart的version和Release的reversion搞混了，呵呵。 Chart是没有reversion的，Chart部署的一个实例（Release）才有Reversion，Reversion是Release被更新后自动生成的。</p>
@@ -924,6 +917,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

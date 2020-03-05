@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -407,13 +400,13 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
 <li>ARP广播： 主动对外广播ARP消息，声明VIP对应的MAC地址为Master的网卡MAC地址</li>
 </ol>
 <p>通过arp -a 命令查看193.168.0.6对应的MAC地址和193.168.0.2相同</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">arp -a|grep 193.168.0
-? <span style="color:#f92672">(</span>193.168.0.6<span style="color:#f92672">)</span> at fa:16:3e:2a:7e:d4 <span style="color:#f92672">[</span>ether<span style="color:#f92672">]</span> on br-apidefault
-? <span style="color:#f92672">(</span>193.168.0.2<span style="color:#f92672">)</span> at fa:16:3e:2a:7e:d4 <span style="color:#f92672">[</span>ether<span style="color:#f92672">]</span> on br-apidefault
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">arp -a|grep 193.168.0
+? <span style="color:#ff79c6">(</span>193.168.0.6<span style="color:#ff79c6">)</span> at fa:16:3e:2a:7e:d4 <span style="color:#ff79c6">[</span>ether<span style="color:#ff79c6">]</span> on br-apidefault
+? <span style="color:#ff79c6">(</span>193.168.0.2<span style="color:#ff79c6">)</span> at fa:16:3e:2a:7e:d4 <span style="color:#ff79c6">[</span>ether<span style="color:#ff79c6">]</span> on br-apidefault
 </code></pre></div><p>登录到193.168.0.2主机上，使用ip addr命令可以看到网卡上绑定了VIP 193.168.0.6</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip addr
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip addr
 
-10: br-apidefault: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#ae81ff">1000</span>
+10: br-apidefault: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#bd93f9">1000</span>
     link/ether fa:16:3e:2a:7e:d4 brd ff:ff:ff:ff:ff:ff
     inet 193.168.0.3/16 brd 193.168.255.255 scope global br-apidefault
        valid_lft forever preferred_lft forever
@@ -423,56 +416,56 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
 <p>Keepalived的设计目的即是为了管理VIP，因此使用Keepalived实现VIP的配置非常简单。Keepalived采用了<a href="https://rascaldev.io/2017/12/23/vip-management-with-keepalived/">Virtual Router Redundancy Protocol (VRRP)</a>协议来进行实现主备服务器之间的通信以及选举。</p>
 <p>下面介绍如何采用Keepalived配置一个一个两节点的HA集群。</p>
 <p>首先将用于设置VIP的脚本放到主备两个服务器的 /etc/keepalived/notify.sh 路径下</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>
-vipAddress<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;192.168.121.100/24&#34;</span>
-<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">x</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;xmaster&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
- ip address add dev eth1 <span style="color:#e6db74">${</span>vipAddress<span style="color:#e6db74">}</span>
-<span style="color:#66d9ef">else</span>
-  ip address del dev eth1 <span style="color:#e6db74">${</span>vipAddress<span style="color:#e6db74">}</span>
-<span style="color:#66d9ef">fi</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">#!/bin/bash
+</span><span style="color:#ff79c6"></span>
+<span style="color:#8be9fd;font-style:italic">vipAddress</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;192.168.121.100/24&#34;</span>
+<span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">[</span> <span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">x</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">=</span><span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;xmaster&#34;</span> <span style="color:#ff79c6">]</span><span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
+ ip address add dev eth1 <span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">vipAddress</span><span style="color:#f1fa8c">}</span>
+<span style="color:#ff79c6">else</span>
+  ip address del dev eth1 <span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">vipAddress</span><span style="color:#f1fa8c">}</span>
+<span style="color:#ff79c6">fi</span>
 </code></pre></div><p>Master节点的Keepalived配置文件 keepalived.conf</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vrrp_instance VI_1 <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vrrp_instance VI_1 <span style="color:#ff79c6">{</span>
 
   state MASTER
   interface eth0
-  garp_master_delay <span style="color:#ae81ff">10</span>
+  garp_master_delay <span style="color:#bd93f9">10</span>
   smtp_alert
-  virtual_router_id <span style="color:#ae81ff">51</span>
-  priority <span style="color:#ae81ff">100</span>
+  virtual_router_id <span style="color:#bd93f9">51</span>
+  priority <span style="color:#bd93f9">100</span>
   vrrp_unicast_bind 192.168.121.51
   vrrp_unicast_peer 192.168.121.52
-  advert_int <span style="color:#ae81ff">1</span>
+  advert_int <span style="color:#bd93f9">1</span>
 
-  authentication <span style="color:#f92672">{</span>
+  authentication <span style="color:#ff79c6">{</span>
     auth_type PASS
     auth_pass testpass
-  <span style="color:#f92672">}</span>
+  <span style="color:#ff79c6">}</span>
 
-  notify_master <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh master&#34;</span>
-  notify_backup <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh backup&#34;</span>
-<span style="color:#f92672">}</span>
+  notify_master <span style="color:#f1fa8c">&#34;/etc/keepalived/notify.sh master&#34;</span>
+  notify_backup <span style="color:#f1fa8c">&#34;/etc/keepalived/notify.sh backup&#34;</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><p>Backup节点的Keepalived配置文件 keepalived.conf</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vrrp_instance VI_1 <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vrrp_instance VI_1 <span style="color:#ff79c6">{</span>
 
   state BACKUP
   interface eth0
-  garp_master_delay <span style="color:#ae81ff">10</span>
+  garp_master_delay <span style="color:#bd93f9">10</span>
   smtp_alert
-  virtual_router_id <span style="color:#ae81ff">51</span>
-  priority <span style="color:#ae81ff">50</span>
+  virtual_router_id <span style="color:#bd93f9">51</span>
+  priority <span style="color:#bd93f9">50</span>
   vrrp_unicast_bind 192.168.121.52
   vrrp_unicast_peer 192.168.121.51
-  advert_int <span style="color:#ae81ff">1</span>
+  advert_int <span style="color:#bd93f9">1</span>
 
-  authentication <span style="color:#f92672">{</span>
+  authentication <span style="color:#ff79c6">{</span>
     auth_type PASS
     auth_pass testpass
-  <span style="color:#f92672">}</span>
+  <span style="color:#ff79c6">}</span>
 
-  notify_master <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh master&#34;</span>
-  notify_backup <span style="color:#e6db74">&#34;/etc/keepalived/notify.sh backup&#34;</span>
-<span style="color:#f92672">}</span>
+  notify_master <span style="color:#f1fa8c">&#34;/etc/keepalived/notify.sh master&#34;</span>
+  notify_backup <span style="color:#f1fa8c">&#34;/etc/keepalived/notify.sh backup&#34;</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><h2 id="pacemakervip">采用pacemaker实现VIP</h2>
 <p>Pacemaker和Keepalived的定位不同，Keepalived一般用于无状态，可以Active-Active的HA集群；而Pacemaker可以实现有状态，Active-Passive的HA集群。例如采用pacemaker可以将服务状态和数据从出现故障的服务器上迁移到备份机上，例如拷贝配置文件，加载数据库等。因此Pacemaker的内部结构和配置比Keepalived的更复杂。</p>
 <p>Packemaker包括下列组件：</p>
@@ -801,6 +794,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

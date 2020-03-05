@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -400,47 +393,47 @@ $(function() {
 <h1 id="kafka">将Kafka消息处理加入调用链跟踪</h1>
 <h2 id="kafka-opentracing">植入Kafka Opentracing代码</h2>
 <p>首先从github下载代码。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone git@github.com:zhaohuabing/istio-opentracing-demo.git
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone git@github.com:zhaohuabing/istio-opentracing-demo.git
 git checkout kafka-tracking
 </code></pre></div><p>可以直接使用 kafka-tracking 这个分支的代码，但建议跟随下面的步骤查看相关的代码，以了解各个步骤背后的原理。</p>
 <p>根目录下分为了rest-service和kafka-consumer两个目录，rest-service下包含了各个REST服务的代码，kafka-consumer下是Kafka消息消费者的代码。</p>
 <p>首先需要将spring kafka和Opentracing kafka的依赖加入到两个目录下的pom文件中。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
-	<span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.springframework.kafka<span style="color:#f92672">&lt;/groupId&gt;</span>
-	<span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>spring-kafka<span style="color:#f92672">&lt;/artifactId&gt;</span>
-<span style="color:#f92672">&lt;/dependency&gt;</span>
- <span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
-	<span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>io.opentracing.contrib<span style="color:#f92672">&lt;/groupId&gt;</span>
-	<span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>opentracing-kafka-client<span style="color:#f92672">&lt;/artifactId&gt;</span>
-	<span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>${version.opentracing.kafka-client}<span style="color:#f92672">&lt;/version&gt;</span>
-<span style="color:#f92672">&lt;/dependency&gt;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#ff79c6">&lt;dependency</span><span style="color:#ff79c6">&gt;</span>
+	<span style="color:#ff79c6">&lt;groupId</span><span style="color:#ff79c6">&gt;</span>org.springframework.kafka<span style="color:#ff79c6">&lt;/groupId&gt;</span>
+	<span style="color:#ff79c6">&lt;artifactId</span><span style="color:#ff79c6">&gt;</span>spring-kafka<span style="color:#ff79c6">&lt;/artifactId&gt;</span>
+<span style="color:#ff79c6">&lt;/dependency&gt;</span>
+ <span style="color:#ff79c6">&lt;dependency</span><span style="color:#ff79c6">&gt;</span>
+	<span style="color:#ff79c6">&lt;groupId</span><span style="color:#ff79c6">&gt;</span>io.opentracing.contrib<span style="color:#ff79c6">&lt;/groupId&gt;</span>
+	<span style="color:#ff79c6">&lt;artifactId</span><span style="color:#ff79c6">&gt;</span>opentracing-kafka-client<span style="color:#ff79c6">&lt;/artifactId&gt;</span>
+	<span style="color:#ff79c6">&lt;version</span><span style="color:#ff79c6">&gt;</span>${version.opentracing.kafka-client}<span style="color:#ff79c6">&lt;/version&gt;</span>
+<span style="color:#ff79c6">&lt;/dependency&gt;</span>
 </code></pre></div><p>在rest-service目录中的KafkaConfig.java中配置消息Producer端的Opentracing Instrument。TracingProducerInterceptor会在发送Kafka消息时生成发送端的Span。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Bean</span>
-<span style="color:#66d9ef">public</span> ProducerFactory<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">producerFactory</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> configProps <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_SERVERS_CONFIG</span><span style="color:#f92672">,</span> bootstrapAddress<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">KEY_SERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringSerializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">VALUE_SERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringSerializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    configProps<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ProducerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">INTERCEPTOR_CLASSES_CONFIG</span><span style="color:#f92672">,</span> TracingProducerInterceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> DefaultKafkaProducerFactory<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>configProps<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">@Bean
+<span style="color:#8be9fd;font-style:italic">public</span> ProducerFactory<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> String<span style="color:#ff79c6">&gt;</span> <span style="color:#50fa7b">producerFactory</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+    Map<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> Object<span style="color:#ff79c6">&gt;</span> configProps <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> HashMap<span style="color:#ff79c6">&lt;</span><span style="color:#ff79c6">&gt;</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    configProps<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ProducerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">BOOTSTRAP_SERVERS_CONFIG</span><span style="color:#ff79c6">,</span> bootstrapAddress<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    configProps<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ProducerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">KEY_SERIALIZER_CLASS_CONFIG</span><span style="color:#ff79c6">,</span> StringSerializer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    configProps<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ProducerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">VALUE_SERIALIZER_CLASS_CONFIG</span><span style="color:#ff79c6">,</span> StringSerializer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    configProps<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ProducerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">INTERCEPTOR_CLASSES_CONFIG</span><span style="color:#ff79c6">,</span> TracingProducerInterceptor<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">getName</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">new</span> DefaultKafkaProducerFactory<span style="color:#ff79c6">&lt;</span><span style="color:#ff79c6">&gt;</span><span style="color:#ff79c6">(</span>configProps<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><p>在kafka-consumer目录中的KafkaConfig.java中配置消息Consumer端的Opentracing Instrument。TracingConsumerInterceptor会在接收到Kafka消息是生成接收端的Span。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Bean</span>
-<span style="color:#66d9ef">public</span> ConsumerFactory<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">consumerFactory</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> props <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">BOOTSTRAP_SERVERS_CONFIG</span><span style="color:#f92672">,</span> bootstrapAddress<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">GROUP_ID_CONFIG</span><span style="color:#f92672">,</span> groupId<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">KEY_DESERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringDeserializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">VALUE_DESERIALIZER_CLASS_CONFIG</span><span style="color:#f92672">,</span> StringDeserializer<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    props<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ConsumerConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">INTERCEPTOR_CLASSES_CONFIG</span><span style="color:#f92672">,</span> TracingConsumerInterceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> DefaultKafkaConsumerFactory<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>props<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">@Bean
+<span style="color:#8be9fd;font-style:italic">public</span> ConsumerFactory<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> String<span style="color:#ff79c6">&gt;</span> <span style="color:#50fa7b">consumerFactory</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+    Map<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> Object<span style="color:#ff79c6">&gt;</span> props <span style="color:#ff79c6">=</span> <span style="color:#ff79c6">new</span> HashMap<span style="color:#ff79c6">&lt;</span><span style="color:#ff79c6">&gt;</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    props<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ConsumerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">BOOTSTRAP_SERVERS_CONFIG</span><span style="color:#ff79c6">,</span> bootstrapAddress<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    props<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ConsumerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">GROUP_ID_CONFIG</span><span style="color:#ff79c6">,</span> groupId<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    props<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ConsumerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">KEY_DESERIALIZER_CLASS_CONFIG</span><span style="color:#ff79c6">,</span> StringDeserializer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    props<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ConsumerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">VALUE_DESERIALIZER_CLASS_CONFIG</span><span style="color:#ff79c6">,</span> StringDeserializer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    props<span style="color:#ff79c6">.</span><span style="color:#50fa7b">put</span><span style="color:#ff79c6">(</span>ConsumerConfig<span style="color:#ff79c6">.</span><span style="color:#50fa7b">INTERCEPTOR_CLASSES_CONFIG</span><span style="color:#ff79c6">,</span> TracingConsumerInterceptor<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">getName</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    <span style="color:#ff79c6">return</span> <span style="color:#ff79c6">new</span> DefaultKafkaConsumerFactory<span style="color:#ff79c6">&lt;</span><span style="color:#ff79c6">&gt;</span><span style="color:#ff79c6">(</span>props<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><p>只需要这两步即可完成Spring程序的Kafka Opentracing代码植入。下面安装并运行示例程序查看效果。</p>
 <h2 id="kafka1">安装Kafka集群</h2>
 <p>示例程序中使用到了Kafka消息，因此需要部署一个Kafka集群。可以参照 <a href="https://kafka.apache.org/quickstart">Kafka Quickstart</a> 在Kubernetes集群外部署Kafka；也可以使用 <a href="https://github.com/strimzi/strimzi-kafka-operator">Kafka Operator</a> 直接将Kafka部署在Kubernetes集群中。</p>
 <h2 id="demo">部署demo应用</h2>
 <p>修改Kubernetes yaml部署文件 k8s/eshop.yaml，设置Kafka bootstrap server，以用于demo程序连接到Kafka集群中。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">apiVersion: extensions/v1beta1
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml">apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: eshop-v1
@@ -450,12 +443,12 @@ metadata:
       - name: eshop
         image: zhaohuabing/istio-opentracing-demo:kafka-opentracing
         ports:
-        - containerPort: <span style="color:#ae81ff">8080</span>
+        - containerPort: <span style="color:#bd93f9">8080</span>
         env:
           ....
           //在这里加入Kafka server地址
           - name: KAFKA_BOOTSTRAP_SERVERS
-            value: <span style="color:#e6db74">&#34;192.168.89.192:9092&#34;</span>
+            value: <span style="color:#f1fa8c">&#34;192.168.89.192:9092&#34;</span>
 
 ---
 apiVersion: extensions/v1beta1
@@ -471,9 +464,9 @@ metadata:
           ....
           //在这里加入Kafka server地址
           - name: KAFKA_BOOTSTRAP_SERVERS
-            value: <span style="color:#e6db74">&#34;192.168.89.192:9092&#34;</span>
+            value: <span style="color:#f1fa8c">&#34;192.168.89.192:9092&#34;</span>
 </code></pre></div><p>然后部署应用程序，相关的镜像可以直接从dockerhub下载，也可以通过源码编译生成。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f k8s/eshop.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f k8s/eshop.yaml
 </code></pre></div><p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
 <img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt=""></p>
 <p>从图中可以看到，在调用链中增加了两个Span，分布对应于Kafka消息发送和接收的两个操作。由于Kafka消息的处理是异步的，消息发送端不直接依赖接收端的处理。根据Opentracing对引用关系的定义，From_eshop_topic Span 对 To_eshop_topic Span 的引用关系是 FOLLOWS_FROM 而不是 CHILD_OF 关系。</p>
@@ -507,48 +500,48 @@ A contrived example:
                      .withTag(&quot;lucky_number&quot;, 42)
                      .startManual();
 </code></pre><p>分析Kafka Opentracing Instrumentation的代码，会发现TracingConsumerInterceptor在调用Kafka消费者的处理方法之前已经把消费者的Span结束了，因此发起REST调用时tracer没有active span，不会将Kafka消费者的Span作为后面REST调用的parent span。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">buildAndFinishChildSpan</span><span style="color:#f92672">(</span>ConsumerRecord<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> record<span style="color:#f92672">,</span> Tracer tracer<span style="color:#f92672">,</span>
-      BiFunction<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> ConsumerRecord<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> consumerSpanNameProvider<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    SpanContext parentContext <span style="color:#f92672">=</span> TracingKafkaUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">extractSpanContext</span><span style="color:#f92672">(</span>record<span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> tracer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd;font-style:italic">static</span> <span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span> V<span style="color:#ff79c6">&gt;</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">buildAndFinishChildSpan</span><span style="color:#ff79c6">(</span>ConsumerRecord<span style="color:#ff79c6">&lt;</span>K<span style="color:#ff79c6">,</span> V<span style="color:#ff79c6">&gt;</span> record<span style="color:#ff79c6">,</span> Tracer tracer<span style="color:#ff79c6">,</span>
+      BiFunction<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> ConsumerRecord<span style="color:#ff79c6">,</span> String<span style="color:#ff79c6">&gt;</span> consumerSpanNameProvider<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+    SpanContext parentContext <span style="color:#ff79c6">=</span> TracingKafkaUtils<span style="color:#ff79c6">.</span><span style="color:#50fa7b">extractSpanContext</span><span style="color:#ff79c6">(</span>record<span style="color:#ff79c6">.</span><span style="color:#50fa7b">headers</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">,</span> tracer<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
 
-    String consumerOper <span style="color:#f92672">=</span>
-        FROM_PREFIX <span style="color:#f92672">+</span> record<span style="color:#f92672">.</span><span style="color:#a6e22e">topic</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">// &lt;====== It provides better readability in the UI
-</span><span style="color:#75715e"></span>    Tracer<span style="color:#f92672">.</span><span style="color:#a6e22e">SpanBuilder</span> spanBuilder <span style="color:#f92672">=</span> tracer
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">buildSpan</span><span style="color:#f92672">(</span>consumerSpanNameProvider<span style="color:#f92672">.</span><span style="color:#a6e22e">apply</span><span style="color:#f92672">(</span>consumerOper<span style="color:#f92672">,</span> record<span style="color:#f92672">)</span><span style="color:#f92672">)</span>
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">withTag</span><span style="color:#f92672">(</span>Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND_CONSUMER</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    String consumerOper <span style="color:#ff79c6">=</span>
+        FROM_PREFIX <span style="color:#ff79c6">+</span> record<span style="color:#ff79c6">.</span><span style="color:#50fa7b">topic</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span> <span style="color:#6272a4">// &lt;====== It provides better readability in the UI
+</span><span style="color:#6272a4"></span>    Tracer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">SpanBuilder</span> spanBuilder <span style="color:#ff79c6">=</span> tracer
+        <span style="color:#ff79c6">.</span><span style="color:#50fa7b">buildSpan</span><span style="color:#ff79c6">(</span>consumerSpanNameProvider<span style="color:#ff79c6">.</span><span style="color:#50fa7b">apply</span><span style="color:#ff79c6">(</span>consumerOper<span style="color:#ff79c6">,</span> record<span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span>
+        <span style="color:#ff79c6">.</span><span style="color:#50fa7b">withTag</span><span style="color:#ff79c6">(</span>Tags<span style="color:#ff79c6">.</span><span style="color:#50fa7b">SPAN_KIND</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">,</span> Tags<span style="color:#ff79c6">.</span><span style="color:#50fa7b">SPAN_KIND_CONSUMER</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
 
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>parentContext <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      spanBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">addReference</span><span style="color:#f92672">(</span>References<span style="color:#f92672">.</span><span style="color:#a6e22e">FOLLOWS_FROM</span><span style="color:#f92672">,</span> parentContext<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#ff79c6">if</span> <span style="color:#ff79c6">(</span>parentContext <span style="color:#ff79c6">!</span><span style="color:#ff79c6">=</span> <span style="color:#ff79c6">null</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
+      spanBuilder<span style="color:#ff79c6">.</span><span style="color:#50fa7b">addReference</span><span style="color:#ff79c6">(</span>References<span style="color:#ff79c6">.</span><span style="color:#50fa7b">FOLLOWS_FROM</span><span style="color:#ff79c6">,</span> parentContext<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    <span style="color:#ff79c6">}</span>
 
-    Span span <span style="color:#f92672">=</span> spanBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    SpanDecorator<span style="color:#f92672">.</span><span style="color:#a6e22e">onResponse</span><span style="color:#f92672">(</span>record<span style="color:#f92672">,</span> span<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    Span span <span style="color:#ff79c6">=</span> spanBuilder<span style="color:#ff79c6">.</span><span style="color:#50fa7b">start</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    SpanDecorator<span style="color:#ff79c6">.</span><span style="color:#50fa7b">onResponse</span><span style="color:#ff79c6">(</span>record<span style="color:#ff79c6">,</span> span<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
 
-    <span style="color:#75715e">//在调用消费者的处理方法之前，该Span已经被结束。
-</span><span style="color:#75715e"></span>    span<span style="color:#f92672">.</span><span style="color:#a6e22e">finish</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#6272a4">//在调用消费者的处理方法之前，该Span已经被结束。
+</span><span style="color:#6272a4"></span>    span<span style="color:#ff79c6">.</span><span style="color:#50fa7b">finish</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
 
-    <span style="color:#75715e">// Inject created span context into record headers for extraction by client to continue span chain
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//这个Span被放到了Kafka消息的header中
-</span><span style="color:#75715e"></span>    TracingKafkaUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">inject</span><span style="color:#f92672">(</span>span<span style="color:#f92672">.</span><span style="color:#a6e22e">context</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> record<span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> tracer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-  <span style="color:#f92672">}</span>
+    <span style="color:#6272a4">// Inject created span context into record headers for extraction by client to continue span chain
+</span><span style="color:#6272a4"></span>    <span style="color:#6272a4">//这个Span被放到了Kafka消息的header中
+</span><span style="color:#6272a4"></span>    TracingKafkaUtils<span style="color:#ff79c6">.</span><span style="color:#50fa7b">inject</span><span style="color:#ff79c6">(</span>span<span style="color:#ff79c6">.</span><span style="color:#50fa7b">context</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">,</span> record<span style="color:#ff79c6">.</span><span style="color:#50fa7b">headers</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">,</span> tracer<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+  <span style="color:#ff79c6">}</span>
 </code></pre></div><p>此时TracingConsumerInterceptor已经将Kafka消费者的Span放到了Kafka消息的header中，因此从Kafka消息头中取出该Span，显示地将Kafka消费者的Span作为REST调用的Parent Span即可。</p>
 <p>为MessageConsumer.java使用的RestTemplate设置一个TracingKafka2RestTemplateInterceptor。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@KafkaListener</span><span style="color:#f92672">(</span>topics <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;eshop-topic&#34;</span><span style="color:#f92672">)</span>
-<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">(</span>ConsumerRecord<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> String<span style="color:#f92672">&gt;</span> record<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">@KafkaListener<span style="color:#ff79c6">(</span>topics <span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;eshop-topic&#34;</span><span style="color:#ff79c6">)</span>
+<span style="color:#8be9fd;font-style:italic">public</span> <span style="color:#8be9fd">void</span> <span style="color:#50fa7b">receiveMessage</span><span style="color:#ff79c6">(</span>ConsumerRecord<span style="color:#ff79c6">&lt;</span>String<span style="color:#ff79c6">,</span> String<span style="color:#ff79c6">&gt;</span> record<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span>
     restTemplate
-            <span style="color:#f92672">.</span><span style="color:#a6e22e">setInterceptors</span><span style="color:#f92672">(</span>Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">singletonList</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> TracingKafka2RestTemplateInterceptor<span style="color:#f92672">(</span>record<span style="color:#f92672">.</span><span style="color:#a6e22e">headers</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    restTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">getForEntity</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;http://notification:8080/sendEmail&#34;</span><span style="color:#f92672">,</span> String<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
+            <span style="color:#ff79c6">.</span><span style="color:#50fa7b">setInterceptors</span><span style="color:#ff79c6">(</span>Collections<span style="color:#ff79c6">.</span><span style="color:#50fa7b">singletonList</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">new</span> TracingKafka2RestTemplateInterceptor<span style="color:#ff79c6">(</span>record<span style="color:#ff79c6">.</span><span style="color:#50fa7b">headers</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    restTemplate<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getForEntity</span><span style="color:#ff79c6">(</span><span style="color:#f1fa8c">&#34;http://notification:8080/sendEmail&#34;</span><span style="color:#ff79c6">,</span> String<span style="color:#ff79c6">.</span><span style="color:#50fa7b">class</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><p>TracingKafka2RestTemplateInterceptor是基于Spring Opentracing Instrumentation的TracingRestTemplateInterceptor修改的，将从Kafka header中取出的Span设置为出向请求的Span的Parent Span。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
-<span style="color:#66d9ef">public</span> ClientHttpResponse <span style="color:#a6e22e">intercept</span><span style="color:#f92672">(</span>HttpRequest httpRequest<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> body<span style="color:#f92672">,</span> ClientHttpRequestExecution xecution<span style="color:#f92672">)</span>
-        <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
-    ClientHttpResponse httpResponse<span style="color:#f92672">;</span>
-    SpanContext parentSpanContext <span style="color:#f92672">=</span> TracingKafkaUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">extractSpanContext</span><span style="color:#f92672">(</span>headers<span style="color:#f92672">,</span> tracer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    Span span <span style="color:#f92672">=</span> tracer<span style="color:#f92672">.</span><span style="color:#a6e22e">buildSpan</span><span style="color:#f92672">(</span>httpRequest<span style="color:#f92672">.</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">asChildOf</span><span style="color:#f92672">(</span>parentSpanContext<span style="color:#f92672">)</span>
-            <span style="color:#f92672">.</span><span style="color:#a6e22e">withTag</span><span style="color:#f92672">(</span>Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> Tags<span style="color:#f92672">.</span><span style="color:#a6e22e">SPAN_KIND_CLIENT</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">@Override
+<span style="color:#8be9fd;font-style:italic">public</span> ClientHttpResponse <span style="color:#50fa7b">intercept</span><span style="color:#ff79c6">(</span>HttpRequest httpRequest<span style="color:#ff79c6">,</span> <span style="color:#8be9fd">byte</span><span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span> body<span style="color:#ff79c6">,</span> ClientHttpRequestExecution xecution<span style="color:#ff79c6">)</span>
+        <span style="color:#8be9fd;font-style:italic">throws</span> IOException <span style="color:#ff79c6">{</span>
+    ClientHttpResponse httpResponse<span style="color:#ff79c6">;</span>
+    SpanContext parentSpanContext <span style="color:#ff79c6">=</span> TracingKafkaUtils<span style="color:#ff79c6">.</span><span style="color:#50fa7b">extractSpanContext</span><span style="color:#ff79c6">(</span>headers<span style="color:#ff79c6">,</span> tracer<span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    Span span <span style="color:#ff79c6">=</span> tracer<span style="color:#ff79c6">.</span><span style="color:#50fa7b">buildSpan</span><span style="color:#ff79c6">(</span>httpRequest<span style="color:#ff79c6">.</span><span style="color:#50fa7b">getMethod</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">toString</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">asChildOf</span><span style="color:#ff79c6">(</span>parentSpanContext<span style="color:#ff79c6">)</span>
+            <span style="color:#ff79c6">.</span><span style="color:#50fa7b">withTag</span><span style="color:#ff79c6">(</span>Tags<span style="color:#ff79c6">.</span><span style="color:#50fa7b">SPAN_KIND</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">getKey</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">,</span> Tags<span style="color:#ff79c6">.</span><span style="color:#50fa7b">SPAN_KIND_CLIENT</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">.</span><span style="color:#50fa7b">start</span><span style="color:#ff79c6">(</span><span style="color:#ff79c6">)</span><span style="color:#ff79c6">;</span>
+    <span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span><span style="color:#ff79c6">.</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
 <img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt=""></p>
 <p>从上图可以看到，调用链中出现了Kafka消费者调用notification服务的sendEmail REST接口的Span。从图中可以看到，由于调用链经过了Kafka消息，sendEmail Span的时间没有包含在checkout Span中。</p>
@@ -883,6 +876,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

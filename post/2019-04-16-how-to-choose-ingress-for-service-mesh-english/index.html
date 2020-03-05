@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -447,44 +440,44 @@ $(function() {
 <p><a href="http://www.katacoda.com">www.katacoda.com</a> is an interactive learning and training platform. You can explore almost all the Kubernetes features once registered. I'll use this website to show how NodePort is implemented under the hood. I encourage you to test it by yourself in Katacoda, it's easy to use and totally free!</p>
 <p>Enter this URL in your browser: <a href="https://www.katacoda.com/courses/kubernetes/networking-introduction">https://www.katacoda.com/courses/kubernetes/networking-introduction</a>. Katacoda will prepare a Kubernetes cluster for you, then you can connect to the Kubernetes master with a web-based interactive terminal.</p>
 <p>Run the following command to create a NodePort type service.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f nodeport.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f nodeport.yaml
 </code></pre></div><p>Display the created Service with the following command. We can see that webapp-nodeport-svc has been created, and Kubernetes also created a NodePort 30080 for it.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl get svc
-NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#f92672">(</span>S<span style="color:#f92672">)</span>        AGE
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl get svc
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#ff79c6">(</span>S<span style="color:#ff79c6">)</span>        AGE
 kubernetes             ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP        36m
 webapp1-nodeport-svc   NodePort    10.103.188.73   &lt;none&gt;        80:30080/TCP   3m
 </code></pre></div><p>Display the created Pods with the following command. There are two backend Pods for the service. The first one's IP is 10.32.0.3, and the other's is 10.32.0.5.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl get pod -o wide
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl get pod -o wide
 NAME                                           READY     STATUS    RESTARTS   AGE       IPNODE      NOMINATED NODE
-webapp1-nodeport-deployment-785989576b-cjc5b   1/1       Running   <span style="color:#ae81ff">0</span>          2m        10.32.0.3
-webapp1-nodeport-deployment-785989576b-tpfqr   1/1       Running   <span style="color:#ae81ff">0</span>          2m        10.32.0.5
+webapp1-nodeport-deployment-785989576b-cjc5b   1/1       Running   <span style="color:#bd93f9">0</span>          2m        10.32.0.3
+webapp1-nodeport-deployment-785989576b-tpfqr   1/1       Running   <span style="color:#bd93f9">0</span>          2m        10.32.0.5
 </code></pre></div><p>The output of netstat command shows that it's Kube-proxy who is actually listening on 30080 port.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ netstat -lnp|grep 30080
-tcp6      <span style="color:#ae81ff">0</span>    <span style="color:#ae81ff">0</span>    :::30080   :::*     LISTEN      7427/kube-proxy
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ netstat -lnp|grep 30080
+tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0</span>    :::30080   :::*     LISTEN      7427/kube-proxy
 </code></pre></div><p>Kube-proxy also created the corresponding iptables rules to capture traffic sending to 30080 NodePort and redirect that traffic to the two backend pods. All the iptables rules are list below, and I add comments to explain each rule's function.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables-save &gt; iptables-dump
-<span style="color:#75715e"># Generated by iptables-save v1.6.0 on Thu Mar 28 07:33:57 2019</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables-save &gt; iptables-dump
+<span style="color:#6272a4"># Generated by iptables-save v1.6.0 on Thu Mar 28 07:33:57 2019</span>
 *nat
-<span style="color:#75715e"># Chain for NodePort</span>
-:KUBE-NODEPORTS - <span style="color:#f92672">[</span>0:0<span style="color:#f92672">]</span>
-<span style="color:#75715e"># Chain for Service</span>
-:KUBE-SERVICES - <span style="color:#f92672">[</span>0:0<span style="color:#f92672">]</span>
-<span style="color:#75715e"># Chains used by both th NodePort and Service</span>
-:KUBE-SVC-J2DWGRZTH4C2LPA4 - <span style="color:#f92672">[</span>0:0<span style="color:#f92672">]</span>
-:KUBE-SEP-4CGFRVESQ3AECDE7 - <span style="color:#f92672">[</span>0:0<span style="color:#f92672">]</span>
-:KUBE-SEP-YLXG4RMKAICGY2B3 - <span style="color:#f92672">[</span>0:0<span style="color:#f92672">]</span>
-<span style="color:#75715e"># Capture external traffic sent to NodePort 30080 and jump to chain KUBE-SVC-J2DWGRZTH4C2LPA4.</span>
--A KUBE-NODEPORTS -p tcp -m comment --comment <span style="color:#e6db74">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp --dport <span style="color:#ae81ff">30080</span> -j KUBE-SVC-J2DWGRZTH4C2LPA4
-<span style="color:#75715e"># Capture internal traffic sent to ClusterIP 10.103.188.73 and jump to chain UBE-SVC-J2DWGRZTH4C2LPA4, chain KUBE-SERVICES is responsible for handling traffic sent to Service webapp1-nodeport-svc.</span>
--A KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color:#e6db74">&#34;default/webapp1-nodeport-svc: cluster IP&#34;</span> -m tcp --dport <span style="color:#ae81ff">80</span> -j KUBE-SVC-J2DWGRZTH4C2LPA4
-<span style="color:#75715e"># The first rule in chain KUBE-SVC-J2DWGRZTH4C2LPA4 sends 50% of the traffic to Pod 10.32.0.3</span>
--A KUBE-SVC-J2DWGRZTH4C2LPA4 -m comment --comment <span style="color:#e6db74">&#34;default/webapp1-nodeport-svc:&#34;</span> -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-YLXG4RMKAICGY2B3
-<span style="color:#75715e"># This rule sends the other 50% traffic to Pod 10.32.0.5</span>
--A KUBE-SVC-J2DWGRZTH4C2LPA4 -m comment --comment <span style="color:#e6db74">&#34;default/webapp1-nodeport-svc:&#34;</span> -j KUBE-SEP-4CGFRVESQ3AECDE7
-<span style="color:#75715e"># This rule forewords traffic to Pod 10.32.0.3</span>
--A KUBE-SEP-YLXG4RMKAICGY2B3 -p tcp -m comment --comment <span style="color:#e6db74">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp -j DNAT --to-destination 10.32.0.3:80
-<span style="color:#75715e"># This rule forewords traffic to Pod 10.32.0.5</span>
--A KUBE-SEP-4CGFRVESQ3AECDE7 -p tcp -m comment --comment <span style="color:#e6db74">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp -j DNAT --to-destination 10.32.0.5:80
+<span style="color:#6272a4"># Chain for NodePort</span>
+:KUBE-NODEPORTS - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
+<span style="color:#6272a4"># Chain for Service</span>
+:KUBE-SERVICES - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
+<span style="color:#6272a4"># Chains used by both th NodePort and Service</span>
+:KUBE-SVC-J2DWGRZTH4C2LPA4 - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
+:KUBE-SEP-4CGFRVESQ3AECDE7 - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
+:KUBE-SEP-YLXG4RMKAICGY2B3 - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
+<span style="color:#6272a4"># Capture external traffic sent to NodePort 30080 and jump to chain KUBE-SVC-J2DWGRZTH4C2LPA4.</span>
+-A KUBE-NODEPORTS -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp --dport <span style="color:#bd93f9">30080</span> -j KUBE-SVC-J2DWGRZTH4C2LPA4
+<span style="color:#6272a4"># Capture internal traffic sent to ClusterIP 10.103.188.73 and jump to chain UBE-SVC-J2DWGRZTH4C2LPA4, chain KUBE-SERVICES is responsible for handling traffic sent to Service webapp1-nodeport-svc.</span>
+-A KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc: cluster IP&#34;</span> -m tcp --dport <span style="color:#bd93f9">80</span> -j KUBE-SVC-J2DWGRZTH4C2LPA4
+<span style="color:#6272a4"># The first rule in chain KUBE-SVC-J2DWGRZTH4C2LPA4 sends 50% of the traffic to Pod 10.32.0.3</span>
+-A KUBE-SVC-J2DWGRZTH4C2LPA4 -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m statistic --mode random --probability 0.50000000000 -j KUBE-SEP-YLXG4RMKAICGY2B3
+<span style="color:#6272a4"># This rule sends the other 50% traffic to Pod 10.32.0.5</span>
+-A KUBE-SVC-J2DWGRZTH4C2LPA4 -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -j KUBE-SEP-4CGFRVESQ3AECDE7
+<span style="color:#6272a4"># This rule forewords traffic to Pod 10.32.0.3</span>
+-A KUBE-SEP-YLXG4RMKAICGY2B3 -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp -j DNAT --to-destination 10.32.0.3:80
+<span style="color:#6272a4"># This rule forewords traffic to Pod 10.32.0.5</span>
+-A KUBE-SEP-4CGFRVESQ3AECDE7 -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp -j DNAT --to-destination 10.32.0.5:80
 </code></pre></div><p>As you can see from the above experiment, if a Service is declared as NodePort type, Kube-proxy will create a port on the node and listen on that port. But Kube-proxy will not directly accept traffic from node networks, instead, it will create the corresponding iptables rules which will capture the traffic sent to the NodePort and redirect that traffic to the back-end Pods.</p>
 <p>This diagram shows how traffic flows into a Kubernetes cluster with the help of NodePort:</p>
 <p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/NodePort.jpg" alt=""></p>
@@ -907,6 +900,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

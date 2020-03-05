@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -392,21 +385,21 @@ $(function() {
 <li>endpoint数量  466</li>
 </ul>
 <p>内存占用情况</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo docker stats 2e8fb
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo docker stats 2e8fb
 CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
-2e8fb               0.75%               105.9 MiB / <span style="color:#ae81ff">256</span> MiB   41.39%              <span style="color:#ae81ff">0</span> B / <span style="color:#ae81ff">0</span> B           <span style="color:#ae81ff">0</span> B / <span style="color:#ae81ff">0</span> B           <span style="color:#ae81ff">165</span>
+2e8fb               0.75%               105.9 MiB / <span style="color:#bd93f9">256</span> MiB   41.39%              <span style="color:#bd93f9">0</span> B / <span style="color:#bd93f9">0</span> B           <span style="color:#bd93f9">0</span> B / <span style="color:#bd93f9">0</span> B           <span style="color:#bd93f9">165</span>
 </code></pre></div><p>从上面的数据可以看到，在一个有325个cluster和175个Listener的服务网格中，一个Envoy的实际内存占用量达到了100M左右；网格中一共有466个实例，则所有Envoy占用的内存达到了466*100M=46.6G，这些增加的内存消耗是一个不容小视的数据。</p>
 <h2 id="tcmalloc">减少TCMalloc预留系统内存</h2>
 <p>根据<a href="https://istio.io/docs/concepts/performance-and-scalability/#cpu-and-memory">Istio官方文档</a>，Envoy占用的内存大小和其配置相关，和请求处理速率无关。在一个较大的namespace中，Envoy大约占用50M内存。然而对于多大为“较大”，Istio官方文档并未给出一个明确的数据。</p>
 <p>通过Envoy的管理端口查看上面环境中一个Envoy内存分配的详细情况：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo docker exec 2e8fb curl http://127.0.0.1:15000/memory
-<span style="color:#f92672">{</span>
- <span style="color:#e6db74">&#34;allocated&#34;</span>: <span style="color:#e6db74">&#34;50315720&#34;</span>,                //Envoy实际占用内存
- <span style="color:#e6db74">&#34;heap_size&#34;</span>: <span style="color:#e6db74">&#34;102637568&#34;</span>,               //TCMalloc预留的系统内存
- <span style="color:#e6db74">&#34;pageheap_unmapped&#34;</span>: <span style="color:#e6db74">&#34;4603904&#34;</span>,
- <span style="color:#e6db74">&#34;pageheap_free&#34;</span>: <span style="color:#e6db74">&#34;9183232&#34;</span>,
- <span style="color:#e6db74">&#34;total_thread_cache&#34;</span>: <span style="color:#e6db74">&#34;27784296&#34;</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo docker <span style="color:#8be9fd;font-style:italic">exec</span> 2e8fb curl http://127.0.0.1:15000/memory
+<span style="color:#ff79c6">{</span>
+ <span style="color:#f1fa8c">&#34;allocated&#34;</span>: <span style="color:#f1fa8c">&#34;50315720&#34;</span>,                //Envoy实际占用内存
+ <span style="color:#f1fa8c">&#34;heap_size&#34;</span>: <span style="color:#f1fa8c">&#34;102637568&#34;</span>,               //TCMalloc预留的系统内存
+ <span style="color:#f1fa8c">&#34;pageheap_unmapped&#34;</span>: <span style="color:#f1fa8c">&#34;4603904&#34;</span>,
+ <span style="color:#f1fa8c">&#34;pageheap_free&#34;</span>: <span style="color:#f1fa8c">&#34;9183232&#34;</span>,
+ <span style="color:#f1fa8c">&#34;total_thread_cache&#34;</span>: <span style="color:#f1fa8c">&#34;27784296&#34;</span>
+<span style="color:#ff79c6">}</span>
 </code></pre></div><p>各个指标的详细说明参见<a href="https://www.envoyproxy.io/docs/envoy/latest/api-v2/admin/v2alpha/memory.proto.html">Envoy文档</a>。从上面的数据可以看到Envoy真正使用的内存为50M左右，和官方文档一致。但由于Envoy采用了<a href="https://gperftools.github.io/gperftools/tcmalloc.html">TCMalloc</a>作为内存管理器，导致其占用内存大于Envoy实际使用内存。</p>
 <p>TCMalloc的内存分配效率比glibc的malloc更高，但会预留系统内存，导致程序占用内存大于其实际所需内存。从前面的Envoy admin 接口的输出可以看到TCMalloc预留的内存为100M左右，远远大于了Envoy实际所需的内存数量。</p>
 <p>根据Envoy的实际内存占用情况，将container的最大内存限制调整为60M后再运行，Envoy可以正常启动。再次用docker stat命令查看，其消耗的内存也在60M以内。</p>
@@ -423,15 +416,15 @@ CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %             
 <p><img src="https://istio.io/docs/examples/bookinfo/withistio.svg" alt=""></p>
 <p>从图中可以看到，reviews服务只需要访问ratings服务，因此在reviews的sidecar中只需要ratings服务相关的outbound配置。</p>
 <p>但是通过查询reviews pod中proxy的配置，可以看到Pilot下发的缺省配置信息中包含了reviews， productpage，details这些它并不需要的outbound cluster信息，这些outbound cluster会导致额外的内存消耗。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl exec reviews-v3-54c6c64795-2tzjc -c istio-proxy curl 127.0.0.1:15000/clusters|grep 9080|grep added_via_api::true|grep outbound
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl <span style="color:#8be9fd;font-style:italic">exec</span> reviews-v3-54c6c64795-2tzjc -c istio-proxy curl 127.0.0.1:15000/clusters|grep 9080|grep added_via_api::true|grep outbound
 
-outbound|9080<span style="color:#f92672">||</span>reviews.default.svc.cluster.local::added_via_api::true
-outbound|9080<span style="color:#f92672">||</span>details.default.svc.cluster.local::added_via_api::true
-outbound|9080<span style="color:#f92672">||</span>ratings.default.svc.cluster.local::added_via_api::true
-outbound|9080<span style="color:#f92672">||</span>productpage.default.svc.cluster.local::added_via_api::true
+outbound|9080<span style="color:#ff79c6">||</span>reviews.default.svc.cluster.local::added_via_api::true
+outbound|9080<span style="color:#ff79c6">||</span>details.default.svc.cluster.local::added_via_api::true
+outbound|9080<span style="color:#ff79c6">||</span>ratings.default.svc.cluster.local::added_via_api::true
+outbound|9080<span style="color:#ff79c6">||</span>productpage.default.svc.cluster.local::added_via_api::true
 </code></pre></div><p>下面通过sidecar来对reviews服务的sidecar进行配置，只为ratings服务创建相关的outbound cluster。</p>
 <p>创建一个sidecar.yaml文件，对reviews服务进行配置。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
 kind: Sidecar
 metadata:
   name: reviews
@@ -442,14 +435,14 @@ spec:
       app: reviews
   egress:
   - hosts:
-    - <span style="color:#e6db74">&#34;./ratings.default.svc.cluster.local&#34;</span>
+    - <span style="color:#f1fa8c">&#34;./ratings.default.svc.cluster.local&#34;</span>
 </code></pre></div><p>在Istio中运用该sidecar配置。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl apply -f sidecar.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl apply -f sidecar.yaml
 sidecar.networking.istio.io/reviews created
 </code></pre></div><p>再查看Reviews Pod中的Envoy配置，配置中的outbound cluster只包含ratings服务，去掉了其他无关的服务相关的配置。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl exec reviews-v1-75b979578c-x7g46 -c istio-proxy curl 127.0.0.1:15000/clusters|grep 9080|grep added_via_api::true|grep outbound
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl <span style="color:#8be9fd;font-style:italic">exec</span> reviews-v1-75b979578c-x7g46 -c istio-proxy curl 127.0.0.1:15000/clusters|grep 9080|grep added_via_api::true|grep outbound
 
-outbound|9080<span style="color:#f92672">||</span>ratings.default.svc.cluster.local::added_via_api::true
+outbound|9080<span style="color:#ff79c6">||</span>ratings.default.svc.cluster.local::added_via_api::true
 </code></pre></div><p>在本文开始的环境中再进行测试，通过该方法去掉无关配置，只保留5个左右相关的outbound service，可以把Envoy的内存控制在15M以内。</p>
 <h2 id="heading1">总结</h2>
 <p>在Istio服务网格中，伴随应用部署的Envoy sidecar导致了较大的内存占用。通过对sidecar镜像的内存进行限制，并通过Pilot对sidecar的缺省配置按照服务的实际关联关系进行细化调整，可以对Envoy的内存占用进行优化，减少Istio服务网格部署对内存的额外消耗。</p>
@@ -771,6 +764,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

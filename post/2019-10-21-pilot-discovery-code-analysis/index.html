@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -542,97 +535,97 @@ $(function() {
 <li>从reqChannel中接收xDS请求，根据xDS请求的类型构造响应并发送给Envoy</li>
 <li>从connection的pushChannel中接收Service或者Config变化后的通知，构造xDS响应消息，将变化内容推送到Envoy端</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// StreamAggregatedResources implements the ADS interface.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DiscoveryServer</span>) <span style="color:#a6e22e">StreamAggregatedResources</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">ads</span>.<span style="color:#a6e22e">AggregatedDiscoveryService_StreamAggregatedResourcesServer</span>) <span style="color:#66d9ef">error</span> {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// StreamAggregatedResources implements the ADS interface.
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (s <span style="color:#ff79c6">*</span>DiscoveryServer) <span style="color:#50fa7b">StreamAggregatedResources</span>(stream ads.AggregatedDiscoveryService_StreamAggregatedResourcesServer) <span style="color:#8be9fd">error</span> {
         
-    <span style="color:#f92672">...</span><span style="color:#f92672">...</span>
+    <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
 
-    <span style="color:#75715e">//创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">con</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newXdsConnection</span>(<span style="color:#a6e22e">peerAddr</span>, <span style="color:#a6e22e">stream</span>)
-    <span style="color:#a6e22e">reqChannel</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">xdsapi</span>.<span style="color:#a6e22e">DiscoveryRequest</span>, <span style="color:#ae81ff">1</span>)
-    <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">receiveThread</span>(<span style="color:#a6e22e">con</span>, <span style="color:#a6e22e">reqChannel</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">receiveError</span>)
+    <span style="color:#6272a4">//创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
+</span><span style="color:#6272a4"></span>    con <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">newXdsConnection</span>(peerAddr, stream)
+    reqChannel <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#ff79c6">*</span>xdsapi.DiscoveryRequest, <span style="color:#bd93f9">1</span>)
+    <span style="color:#ff79c6">go</span> <span style="color:#50fa7b">receiveThread</span>(con, reqChannel, <span style="color:#ff79c6">&amp;</span>receiveError)
 
-     <span style="color:#f92672">...</span><span style="color:#f92672">...</span>
+     <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
     
-    <span style="color:#66d9ef">for</span> {
-        <span style="color:#66d9ef">select</span>{
-        <span style="color:#75715e">//从reqChannel接收Envoy端主动发起的xDS请求
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">discReq</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">reqChannel</span>:        
-            <span style="color:#75715e">//根据请求的类型构造相应的xDS Response并发送到Envoy端
-</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">discReq</span>.<span style="color:#a6e22e">TypeUrl</span> {
-            <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ClusterType</span>:
-                <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">pushCds</span>(<span style="color:#a6e22e">con</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">globalPushContext</span>(), <span style="color:#a6e22e">versionInfo</span>())
-            <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">ListenerType</span>:
-                <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">pushLds</span>(<span style="color:#a6e22e">con</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">globalPushContext</span>(), <span style="color:#a6e22e">versionInfo</span>())
-            <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">RouteType</span>:
-                <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">pushRoute</span>(<span style="color:#a6e22e">con</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">globalPushContext</span>(), <span style="color:#a6e22e">versionInfo</span>())
-            <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">EndpointType</span>:
-                <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">pushEds</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">globalPushContext</span>(), <span style="color:#a6e22e">con</span>, <span style="color:#a6e22e">versionInfo</span>(), <span style="color:#66d9ef">nil</span>)
+    <span style="color:#ff79c6">for</span> {
+        <span style="color:#ff79c6">select</span>{
+        <span style="color:#6272a4">//从reqChannel接收Envoy端主动发起的xDS请求
+</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">case</span> discReq, ok <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&lt;-</span>reqChannel:        
+            <span style="color:#6272a4">//根据请求的类型构造相应的xDS Response并发送到Envoy端
+</span><span style="color:#6272a4"></span>            <span style="color:#ff79c6">switch</span> discReq.TypeUrl {
+            <span style="color:#ff79c6">case</span> ClusterType:
+                err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">pushCds</span>(con, s.<span style="color:#50fa7b">globalPushContext</span>(), <span style="color:#50fa7b">versionInfo</span>())
+            <span style="color:#ff79c6">case</span> ListenerType:
+                err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">pushLds</span>(con, s.<span style="color:#50fa7b">globalPushContext</span>(), <span style="color:#50fa7b">versionInfo</span>())
+            <span style="color:#ff79c6">case</span> RouteType:
+                err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">pushRoute</span>(con, s.<span style="color:#50fa7b">globalPushContext</span>(), <span style="color:#50fa7b">versionInfo</span>())
+            <span style="color:#ff79c6">case</span> EndpointType:
+                err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">pushEds</span>(s.<span style="color:#50fa7b">globalPushContext</span>(), con, <span style="color:#50fa7b">versionInfo</span>(), <span style="color:#ff79c6">nil</span>)
             }
 
-        <span style="color:#75715e">//从PushChannel接收Service或者Config变化后的通知
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">pushEv</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">con</span>.<span style="color:#a6e22e">pushChannel</span>:
-            <span style="color:#75715e">//将变化内容推送到Envoy端
-</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">pushConnection</span>(<span style="color:#a6e22e">con</span>, <span style="color:#a6e22e">pushEv</span>)   
+        <span style="color:#6272a4">//从PushChannel接收Service或者Config变化后的通知
+</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">case</span> pushEv <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&lt;-</span>con.pushChannel:
+            <span style="color:#6272a4">//将变化内容推送到Envoy端
+</span><span style="color:#6272a4"></span>            err <span style="color:#ff79c6">:=</span> s.<span style="color:#50fa7b">pushConnection</span>(con, pushEv)   
         }            
     }
 }
 </code></pre></div><h3 id="heading">处理服务和配置变化的关键代码</h3>
 <p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/discovery.go</code> 文件中，用于监听服务和配置变化消息，并将变化消息合并后通过Channel发送给前面提到的 StreamAggregatedResources 方法进行处理。</p>
 <p>ConfigUpdate是处理服务和配置变化的回调函数，service controller和config controller在发生变化时会调用该方法通知Discovery Server。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DiscoveryServer</span>) <span style="color:#a6e22e">ConfigUpdate</span>(<span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">PushRequest</span>) {
-	<span style="color:#a6e22e">inboundConfigUpdates</span>.<span style="color:#a6e22e">Increment</span>()
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> (s <span style="color:#ff79c6">*</span>DiscoveryServer) <span style="color:#50fa7b">ConfigUpdate</span>(req <span style="color:#ff79c6">*</span>model.PushRequest) {
+	inboundConfigUpdates.<span style="color:#50fa7b">Increment</span>()
 
-	<span style="color:#75715e">//服务或配置变化后，将一个PushRequest发送到pushChannel中
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">pushChannel</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">req</span>
+	<span style="color:#6272a4">//服务或配置变化后，将一个PushRequest发送到pushChannel中
+</span><span style="color:#6272a4"></span>	s.pushChannel <span style="color:#ff79c6">&lt;-</span> req
 }
 </code></pre></div><p>在debounce方法中将连续发生的PushRequest进行合并，如果一段时间内没有收到新的PushRequest，再发起推送；以避免由于服务和配置频繁变化给系统带来较大压力。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// The debounce helper function is implemented to enable mocking
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">debounce</span>(<span style="color:#a6e22e">ch</span> <span style="color:#66d9ef">chan</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">PushRequest</span>, <span style="color:#a6e22e">stopCh</span> <span style="color:#f92672">&lt;-</span><span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">struct</span>{}, <span style="color:#a6e22e">pushFn</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">model</span>.<span style="color:#a6e22e">PushRequest</span>)) {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The debounce helper function is implemented to enable mocking
+</span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">debounce</span>(ch <span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#ff79c6">*</span>model.PushRequest, stopCh <span style="color:#ff79c6">&lt;-</span><span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd;font-style:italic">struct</span>{}, pushFn <span style="color:#8be9fd;font-style:italic">func</span>(req <span style="color:#ff79c6">*</span>model.PushRequest)) {
 
-    <span style="color:#f92672">...</span><span style="color:#f92672">...</span>
+    <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
 
-    <span style="color:#a6e22e">pushWorker</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>() {
-        <span style="color:#a6e22e">eventDelay</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">startDebounce</span>)
-        <span style="color:#a6e22e">quietTime</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">lastConfigUpdateTime</span>)
+    pushWorker <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+        eventDelay <span style="color:#ff79c6">:=</span> time.<span style="color:#50fa7b">Since</span>(startDebounce)
+        quietTime <span style="color:#ff79c6">:=</span> time.<span style="color:#50fa7b">Since</span>(lastConfigUpdateTime)
 
-        <span style="color:#75715e">// it has been too long or quiet enough
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">//一段时间内没有收到新的PushRequest，再发起推送
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">eventDelay</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">DebounceMax</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">quietTime</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">DebounceAfter</span> {
-            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">req</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-                <span style="color:#a6e22e">pushCounter</span><span style="color:#f92672">++</span>
-                <span style="color:#a6e22e">adsLog</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Push debounce stable[%d] %d: %v since last change, %v since last push, full=%v&#34;</span>,
-                <span style="color:#a6e22e">pushCounter</span>, <span style="color:#a6e22e">debouncedEvents</span>,
-                <span style="color:#a6e22e">quietTime</span>, <span style="color:#a6e22e">eventDelay</span>, <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Full</span>)
+        <span style="color:#6272a4">// it has been too long or quiet enough
+</span><span style="color:#6272a4"></span>        <span style="color:#6272a4">//一段时间内没有收到新的PushRequest，再发起推送
+</span><span style="color:#6272a4"></span>        <span style="color:#ff79c6">if</span> eventDelay <span style="color:#ff79c6">&gt;=</span> DebounceMax <span style="color:#ff79c6">||</span> quietTime <span style="color:#ff79c6">&gt;=</span> DebounceAfter {
+            <span style="color:#ff79c6">if</span> req <span style="color:#ff79c6">!=</span> <span style="color:#ff79c6">nil</span> {
+                pushCounter<span style="color:#ff79c6">++</span>
+                adsLog.<span style="color:#50fa7b">Infof</span>(<span style="color:#f1fa8c">&#34;Push debounce stable[%d] %d: %v since last change, %v since last push, full=%v&#34;</span>,
+                pushCounter, debouncedEvents,
+                quietTime, eventDelay, req.Full)
 
-                <span style="color:#a6e22e">free</span> = <span style="color:#66d9ef">false</span>
-                <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">req</span>)
-                <span style="color:#a6e22e">req</span> = <span style="color:#66d9ef">nil</span>
-                <span style="color:#a6e22e">debouncedEvents</span> = <span style="color:#ae81ff">0</span>
+                free = <span style="color:#ff79c6">false</span>
+                <span style="color:#ff79c6">go</span> <span style="color:#50fa7b">push</span>(req)
+                req = <span style="color:#ff79c6">nil</span>
+                debouncedEvents = <span style="color:#bd93f9">0</span>
             }
-        } <span style="color:#66d9ef">else</span> {
-           <span style="color:#a6e22e">timeChan</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">DebounceAfter</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">quietTime</span>)
+        } <span style="color:#ff79c6">else</span> {
+           timeChan = time.<span style="color:#50fa7b">After</span>(DebounceAfter <span style="color:#ff79c6">-</span> quietTime)
         }
     }
-    <span style="color:#66d9ef">for</span> {
-        <span style="color:#66d9ef">select</span> {
-        <span style="color:#f92672">...</span><span style="color:#f92672">...</span>
+    <span style="color:#ff79c6">for</span> {
+        <span style="color:#ff79c6">select</span> {
+        <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
 
-        <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ch</span>:
-            <span style="color:#a6e22e">lastConfigUpdateTime</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
-            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">debouncedEvents</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
-                <span style="color:#a6e22e">timeChan</span> = <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">After</span>(<span style="color:#a6e22e">DebounceAfter</span>)
-                <span style="color:#a6e22e">startDebounce</span> = <span style="color:#a6e22e">lastConfigUpdateTime</span>
+        <span style="color:#ff79c6">case</span> r <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&lt;-</span>ch:
+            lastConfigUpdateTime = time.<span style="color:#50fa7b">Now</span>()
+            <span style="color:#ff79c6">if</span> debouncedEvents <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">0</span> {
+                timeChan = time.<span style="color:#50fa7b">After</span>(DebounceAfter)
+                startDebounce = lastConfigUpdateTime
             }
-            <span style="color:#a6e22e">debouncedEvents</span><span style="color:#f92672">++</span>
-            <span style="color:#75715e">//合并连续发生的多个PushRequest
-</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">req</span> = <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Merge</span>(<span style="color:#a6e22e">r</span>)
-        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">timeChan</span>:
-           <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">free</span> {
-               <span style="color:#a6e22e">pushWorker</span>()
+            debouncedEvents<span style="color:#ff79c6">++</span>
+            <span style="color:#6272a4">//合并连续发生的多个PushRequest
+</span><span style="color:#6272a4"></span>            req = req.<span style="color:#50fa7b">Merge</span>(r)
+        <span style="color:#ff79c6">case</span> <span style="color:#ff79c6">&lt;-</span>timeChan:
+           <span style="color:#ff79c6">if</span> free {
+               <span style="color:#50fa7b">pushWorker</span>()
             }
-        <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">stopCh</span>:
-            <span style="color:#66d9ef">return</span>
+        <span style="color:#ff79c6">case</span> <span style="color:#ff79c6">&lt;-</span>stopCh:
+            <span style="color:#ff79c6">return</span>
     }
   }
 }
@@ -964,6 +957,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">

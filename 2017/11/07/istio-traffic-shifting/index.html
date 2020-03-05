@@ -70,13 +70,6 @@
 
     
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/docco.min.css">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-
-    
-    
 
 </head>
 
@@ -390,7 +383,7 @@ $(function() {
 <ol>
 <li>
 <p>将所有微服务的缺省版本设置为v1.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl create -f samples/bookinfo/kube/route-rule-all-v1.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl create -f samples/bookinfo/kube/route-rule-all-v1.yaml
 </code></pre></div></li>
 <li>
 <p>在浏览器中打开http://$GATEWAY_URL/productpage,  确认<code>reviews</code> 服务目前的活动版本是v1。</p>
@@ -399,11 +392,11 @@ $(function() {
 <blockquote>
 <p>请注意：如果之前执行过 <a href="http://istio.doczh.cn/docs/tasks/traffic-management/request-routing.html">配置请求路由</a>任务，则需要先注销测试用户“jason”或者删除之前单独为该用户创建的测试规则：</p>
 </blockquote>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl delete routerule reviews-test-v2
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl delete routerule reviews-test-v2
 </code></pre></div></li>
 <li>
 <p>首先，使用下面的命令把50%的流量从<code>reviews:v1</code>转移到<code>reviews:v3</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl replace -f samples/bookinfo/kube/route-rule-reviews-50-v3.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl replace -f samples/bookinfo/kube/route-rule-reviews-50-v3.yaml
 </code></pre></div><p>注意这里使用了<code>istioctl replace</code>而不是<code>create</code>。</p>
 </li>
 <li>
@@ -414,7 +407,7 @@ $(function() {
 </li>
 <li>
 <p>当v3版本的<code>reviews</code>服务已经稳定运行后，可以将100%的流量路由到<code>reviews:v3</code>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl replace -f samples/bookinfo/kube/route-rule-reviews-v3.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl replace -f samples/bookinfo/kube/route-rule-reviews-v3.yaml
 </code></pre></div><p>此时，以任何用户登录到<code>productpage</code>页面，都可以看到带红星的评价信息。</p>
 </li>
 </ol>
@@ -426,7 +419,7 @@ $(function() {
 <ul>
 <li>
 <p>删除路由规则。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl delete -f samples/bookinfo/kube/route-rule-all-v1.yaml
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">istioctl delete -f samples/bookinfo/kube/route-rule-all-v1.yaml
 </code></pre></div></li>
 <li>
 <p>如果不打算尝试后面的任务，请参照<a href="http://istio.doczh.cn/docs/guides/bookinfo.html#cleanup">BookInfo cleanup</a> 中的步骤关闭应用程序。</p>
@@ -745,6 +738,8 @@ var disq = new iDisqus('disqus-comment', {
                     
                     
                     
+            
+            
             
                 </ul>
 		<p class="copyright text-muted">
