@@ -499,24 +499,24 @@ $(function() {
 <p>首先我们看看如何对xDS接口的相关数据进行查看和分析。Envoy v2接口采用了gRPC，由于gRPC是基于二进制的RPC协议，无法像V1的REST接口一样通过curl和浏览器进行进行分析。但我们还是可以通过Pilot和Envoy的调试接口查看xDS接口的相关数据。</p>
 <h3 id="pilot1">Pilot调试方法</h3>
 <p>Pilot在15014端口提供了下述<a href="https://github.com/istio/istio/tree/master/pilot/pkg/proxy/envoy/v2">调试接口</a><!-- raw HTML omitted --><a href="#ref08">[8]</a><!-- raw HTML omitted -->下述方法查看xDS接口相关数据。</p>
-<pre><code>PILOT=istio-pilot.istio-system:15014
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">PILOT</span><span style="color:#ff79c6">=</span>istio-pilot.istio-system:15014
 
-# What is sent to envoy
-# Listeners and routes
-curl $PILOT/debug/adsz
+<span style="color:#6272a4"># What is sent to envoy</span>
+<span style="color:#6272a4"># Listeners and routes</span>
+curl <span style="color:#8be9fd;font-style:italic">$PILOT</span>/debug/adsz
 
-# Endpoints
-curl $PILOT/debug/edsz
+<span style="color:#6272a4"># Endpoints</span>
+curl <span style="color:#8be9fd;font-style:italic">$PILOT</span>/debug/edsz
 
-# Clusters
-curl $PILOT/debug/cdsz
-</code></pre><h3 id="envoy1">Envoy调试方法</h3>
+<span style="color:#6272a4"># Clusters</span>
+curl <span style="color:#8be9fd;font-style:italic">$PILOT</span>/debug/cdsz
+</code></pre></div><h3 id="envoy1">Envoy调试方法</h3>
 <p>Envoy提供了管理接口，缺省为localhost的15000端口，可以获取listener，cluster以及完整的配置数据导出功能。</p>
-<pre><code>kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy curl http://127.0.0.1:15000/help
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl <span style="color:#8be9fd;font-style:italic">exec</span> productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy curl http://127.0.0.1:15000/help
   /: Admin home page
   /certs: print certs on machine
   /clusters: upstream cluster status
-  /config_dump: dump current Envoy configs (experimental)
+  /config_dump: dump current Envoy configs <span style="color:#ff79c6">(</span>experimental<span style="color:#ff79c6">)</span>
   /cpuprofiler: enable/disable the CPU profiler
   /healthcheck/fail: cause the server to fail health checks
   /healthcheck/ok: cause the server to pass health checks
@@ -524,14 +524,14 @@ curl $PILOT/debug/cdsz
   /hot_restart_version: print the hot restart compatibility version
   /listeners: print listener addresses
   /logging: query/change logging levels
-  /quitquitquit: exit the server
+  /quitquitquit: <span style="color:#8be9fd;font-style:italic">exit</span> the server
   /reset_counters: reset all counters to zero
   /runtime: print runtime values
   /runtime_modify: modify runtime values
   /server_info: print server version/status information
   /stats: print server stats
   /stats/prometheus: print server stats in prometheus format
-</code></pre><p>进入productpage pod 中的istio-proxy(Envoy) container，可以看到有下面的监听端口</p>
+</code></pre></div><p>进入productpage pod 中的istio-proxy(Envoy) container，可以看到有下面的监听端口</p>
 <ul>
 <li>9080: productpage进程对外提供的服务端口</li>
 <li>15001: Envoy的Virtual Outbound监听器，iptable会将productpage服务发出的出向流量导入该端口中由Envoy进行处理</li>
@@ -539,23 +539,23 @@ curl $PILOT/debug/cdsz
 <li>15000: Envoy管理端口，该端口绑定在本地环回地址上，只能在Pod内访问。</li>
 <li>15090：指向127.0.0.1：15000/stats/prometheus, 用于对外提供Envoy的性能统计指标</li>
 </ul>
-<pre><code>master $ kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy --  netstat -ln
-Active Internet connections (only servers)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl <span style="color:#8be9fd;font-style:italic">exec</span> productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy --  netstat -ln
+Active Internet connections <span style="color:#ff79c6">(</span>only servers<span style="color:#ff79c6">)</span>
 Proto Recv-Q Send-Q Local Address           Foreign Address         State
-tcp        0      0 0.0.0.0:15090           0.0.0.0:*               LISTEN
-tcp        0      0 0.0.0.0:9080            0.0.0.0:*               LISTEN
-tcp        0      0 127.0.0.1:15000         0.0.0.0:*               LISTEN
-tcp        0      0 0.0.0.0:15001           0.0.0.0:*               LISTEN
-tcp        0      0 0.0.0.0:15006           0.0.0.0:*               LISTEN
-tcp6       0      0 :::15020                :::*                    LISTEN
-</code></pre><h2 id="envoy2">Envoy启动过程分析</h2>
+tcp        <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> 0.0.0.0:15090           0.0.0.0:*               LISTEN
+tcp        <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> 0.0.0.0:9080            0.0.0.0:*               LISTEN
+tcp        <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> 127.0.0.1:15000         0.0.0.0:*               LISTEN
+tcp        <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> 0.0.0.0:15001           0.0.0.0:*               LISTEN
+tcp        <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> 0.0.0.0:15006           0.0.0.0:*               LISTEN
+tcp6       <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> :::15020                :::*                    LISTEN
+</code></pre></div><h2 id="envoy2">Envoy启动过程分析</h2>
 <p>Istio通过K8s的<a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook">Admission webhook</a><!-- raw HTML omitted --><a href="#ref09">[9]</a><!-- raw HTML omitted -->机制实现了sidecar的自动注入，Mesh中的每个微服务会被加入Envoy相关的容器。下面是Productpage微服务的Pod内容，可见除productpage之外，Istio还在该Pod中注入了两个容器istio-init和istio-proxy，为了节约下载镜像的时间，加快业务Pod的启动速度，这两个容器使用了相同的镜像文件，但启动命令不同。</p>
 <p>备注：下面Pod description中只保留了需要关注的内容，删除了其它不重要的部分。为方便查看，本文中后续的其它配置文件以及命令行输出也会进行类似处理。</p>
-<pre><code>master $ kubectl describe pod productpage-v1-6d8bc58dd7-ts8kw
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl describe pod productpage-v1-6d8bc58dd7-ts8kw
 Name:               productpage-v1-6d8bc58dd7-ts8kw
 Namespace:          default
-Labels:             app=productpage
-                    version=v1
+Labels:             <span style="color:#8be9fd;font-style:italic">app</span><span style="color:#ff79c6">=</span>productpage
+                    <span style="color:#8be9fd;font-style:italic">version</span><span style="color:#ff79c6">=</span>v1
 Init Containers:
   istio-init:
     Image:         docker.io/istio/proxyv2:1.4.1
@@ -588,13 +588,13 @@ Containers:
       proxy
       sidecar
       --domain
-      $(POD_NAMESPACE).svc.cluster.local
+      <span style="color:#ff79c6">$(</span>POD_NAMESPACE<span style="color:#ff79c6">)</span>.svc.cluster.local
       --configPath
       /etc/istio/proxy
       --binaryPath
       /usr/local/bin/envoy
       --serviceCluster
-      productpage.$(POD_NAMESPACE)
+      productpage.<span style="color:#ff79c6">$(</span>POD_NAMESPACE<span style="color:#ff79c6">)</span>
       --drainDuration
       45s
       --parentShutdownDuration
@@ -603,8 +603,8 @@ Containers:
       istio-pilot.istio-system:15010
       --zipkinAddress
       zipkin.istio-system:9411
-      --proxyLogLevel=warning
-      --proxyComponentLogLevel=misc:error
+      --proxyLogLevel<span style="color:#ff79c6">=</span>warning
+      --proxyComponentLogLevel<span style="color:#ff79c6">=</span>misc:error
       --connectTimeout
       10s
       --proxyAdminPort
@@ -619,8 +619,8 @@ Containers:
       15020
       --applicationPorts
       9080
-      --trust-domain=cluster.local   
-</code></pre><h3 id="proxyinit">Proxy_init</h3>
+      --trust-domain<span style="color:#ff79c6">=</span>cluster.local   
+</code></pre></div><h3 id="proxyinit">Proxy_init</h3>
 <p>Productpage的Pod中有一个InitContainer proxy_init，InitContrainer是K8S提供的机制，用于在Pod中执行一些初始化任务.在Initialcontainer执行完毕并退出后，才会启动Pod中的其它container。</p>
 <p>从上面的Pod description可以看到，proxy_init容器执行的命令是istio-iptables，这是一个go编译出来的二进制文件，该二进制文件会调用iptables命令创建了一些列iptables规则来劫持Pod中的流量。该命令有这些关键的参数：</p>
 <ul>
@@ -631,204 +631,204 @@ Containers:
 <p>Iptables规则的详细内容参见istio源码中的shell脚本<a href="https://github.com/istio/istio/blob/1.4.0/tools/packaging/common/istio-iptables.sh">tools/packaging/common/istio-iptables.sh</a>。</p>
 <h3 id="proxyv2">Proxyv2</h3>
 <p>前面提到，该容器中有两个进程Pilot-agent和envoy。我们进入容器中看看这两个进程的相关信息。</p>
-<pre><code>master $ kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy -- ps -ef
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl <span style="color:#8be9fd;font-style:italic">exec</span> productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy -- ps -ef
 UID        PID  PPID  C STIME TTY          TIME CMD
-istio-p+     1     0  0 10:46 ?        00:00:02 /usr/local/bin/pilot-agent proxy sidecar --domain default.svc.cluster.local --configPath /etc/istio/proxy --binaryPath/usr/local/bin/envoy --serviceCluster productpage.default --drainDuration 45s --parentShutdownDuration 1m0s --discoveryAddress istio-pilot.istio-system:15010 --zipkinAddress zipkin.istio-system:9411 --proxyLogLevel=warning --proxyComponentLogLevel=misc:error --connectTimeout 10s --proxyAdminPort 15000 --concurrency 2 --controlPlaneAuthPolicy NONE --dnsRefreshRate 300s --statusPort 15020 --applicationPorts 9080 --trust-domain=cluster.local
-istio-p+    20     1  0 10:46 ?        00:00:07 /usr/local/bin/envoy -c /etc/istio/proxy/envoy-rev0.json --restart-epoch 0 --drain-time-s 45 --parent-shutdown-time-s 60 --service-cluster productpage.default --service-node sidecar~10.40.0.18~productpage-v1-6d8bc58dd7-ts8kw.default~default.svc.cluster.local --max-obj-name-len 189 --local-address-ip-version v4 --log-format [Envoy (Epoch 0)] [%Y-%m-%d %T.%e][%t][%l][%n] %v -l warning --component-log-level misc:error --concurrency 2
-istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
-</code></pre><p>Envoy的大部分配置都是dynamic resource，包括网格中服务相关的service cluster, listener, route规则等。这些dynamic resource是通过xDS接口从Istio控制面中动态获取的。但Envoy如何知道xDS server的地址呢？这是在Envoy初始化配置文件中以static resource的方式配置的。</p>
+istio-p+     <span style="color:#bd93f9">1</span>     <span style="color:#bd93f9">0</span>  <span style="color:#bd93f9">0</span> 10:46 ?        00:00:02 /usr/local/bin/pilot-agent proxy sidecar --domain default.svc.cluster.local --configPath /etc/istio/proxy --binaryPath/usr/local/bin/envoy --serviceCluster productpage.default --drainDuration 45s --parentShutdownDuration 1m0s --discoveryAddress istio-pilot.istio-system:15010 --zipkinAddress zipkin.istio-system:9411 --proxyLogLevel<span style="color:#ff79c6">=</span>warning --proxyComponentLogLevel<span style="color:#ff79c6">=</span>misc:error --connectTimeout 10s --proxyAdminPort <span style="color:#bd93f9">15000</span> --concurrency <span style="color:#bd93f9">2</span> --controlPlaneAuthPolicy NONE --dnsRefreshRate 300s --statusPort <span style="color:#bd93f9">15020</span> --applicationPorts <span style="color:#bd93f9">9080</span> --trust-domain<span style="color:#ff79c6">=</span>cluster.local
+istio-p+    <span style="color:#bd93f9">20</span>     <span style="color:#bd93f9">1</span>  <span style="color:#bd93f9">0</span> 10:46 ?        00:00:07 /usr/local/bin/envoy -c /etc/istio/proxy/envoy-rev0.json --restart-epoch <span style="color:#bd93f9">0</span> --drain-time-s <span style="color:#bd93f9">45</span> --parent-shutdown-time-s <span style="color:#bd93f9">60</span> --service-cluster productpage.default --service-node sidecar~10.40.0.18~productpage-v1-6d8bc58dd7-ts8kw.default~default.svc.cluster.local --max-obj-name-len <span style="color:#bd93f9">189</span> --local-address-ip-version v4 --log-format <span style="color:#ff79c6">[</span>Envoy <span style="color:#ff79c6">(</span>Epoch 0<span style="color:#ff79c6">)</span><span style="color:#ff79c6">]</span> <span style="color:#ff79c6">[</span>%Y-%m-%d %T.%e<span style="color:#ff79c6">]</span><span style="color:#ff79c6">[</span>%t<span style="color:#ff79c6">]</span><span style="color:#ff79c6">[</span>%l<span style="color:#ff79c6">]</span><span style="color:#ff79c6">[</span>%n<span style="color:#ff79c6">]</span> %v -l warning --component-log-level misc:error --concurrency 2
+istio-p+    <span style="color:#bd93f9">68</span>     <span style="color:#bd93f9">0</span>  <span style="color:#bd93f9">0</span> 11:27 ?        00:00:00 ps -ef
+</code></pre></div><p>Envoy的大部分配置都是dynamic resource，包括网格中服务相关的service cluster, listener, route规则等。这些dynamic resource是通过xDS接口从Istio控制面中动态获取的。但Envoy如何知道xDS server的地址呢？这是在Envoy初始化配置文件中以static resource的方式配置的。</p>
 <h4 id="envoy3">Envoy初始配置文件</h4>
 <p>Pilot-agent进程根据启动参数和K8S API Server中的配置信息生成Envoy的初始配置文件，并负责启动Envoy进程。从ps命令输出可以看到Pilot-agent在启动Envoy进程时传入了pilot地址和zipkin地址，并为Envoy生成了一个初始化配置文件envoy-rev0.json。</p>
 <p>可以使用下面的命令将productpage pod中该文件导出来查看其中的内容：</p>
-<pre><code>kubectl exec productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy cat /etc/istio/proxy/envoy-rev0.json &gt; envoy-rev0.json
-</code></pre><p>配置文件的结构如图所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl <span style="color:#8be9fd;font-style:italic">exec</span> productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy cat /etc/istio/proxy/envoy-rev0.json &gt; envoy-rev0.json
+</code></pre></div><p>配置文件的结构如图所示：</p>
 <p><img src="/img/2019-12-05-istio-traffic-management-impl-intro/envoy-rev0.png" alt=""></p>
 <p>其中各个配置节点的内容如下：</p>
 <h5 id="node">Node</h5>
 <p>包含了Envoy所在节点相关信息。</p>
-<pre><code>{
-    &quot;node&quot;: {
-        &quot;id&quot;: &quot;sidecar~10.40.0.18~productpage-v1-6d8bc58dd7-ts8kw.default~default.svc.cluster.local&quot;,
-        &quot;cluster&quot;: &quot;productpage.default&quot;,
-        &quot;locality&quot;: {},
-        &quot;metadata&quot;: {
-            &quot;CLUSTER_ID&quot;: &quot;Kubernetes&quot;,
-            &quot;CONFIG_NAMESPACE&quot;: &quot;default&quot;,
-            &quot;EXCHANGE_KEYS&quot;: &quot;NAME,NAMESPACE,INSTANCE_IPS,LABELS,OWNER,PLATFORM_METADATA,WORKLOAD_NAME,CANONICAL_TELEMETRY_SERVICE,MESH_ID,SERVICE_ACCOUNT&quot;,
-            &quot;INCLUDE_INBOUND_PORTS&quot;: &quot;9080&quot;,
-            &quot;INSTANCE_IPS&quot;: &quot;10.40.0.18,fe80::94df:47ff:fef3:bc99&quot;,
-            &quot;INTERCEPTION_MODE&quot;: &quot;REDIRECT&quot;,
-            &quot;ISTIO_PROXY_SHA&quot;: &quot;istio-proxy:3af92d895f6cb80993fc8bb04dc9b2008183f2ba&quot;,
-            &quot;ISTIO_VERSION&quot;: &quot;1.4.1&quot;,
-            &quot;LABELS&quot;: {
-                &quot;app&quot;: &quot;productpage&quot;,
-                &quot;pod-template-hash&quot;: &quot;6d8bc58dd7&quot;,
-                &quot;security.istio.io/tlsMode&quot;: &quot;istio&quot;,
-                &quot;version&quot;: &quot;v1&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;node&#34;</span>: {
+        <span style="color:#ff79c6">&#34;id&#34;</span>: <span style="color:#f1fa8c">&#34;sidecar~10.40.0.18~productpage-v1-6d8bc58dd7-ts8kw.default~default.svc.cluster.local&#34;</span>,
+        <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;productpage.default&#34;</span>,
+        <span style="color:#ff79c6">&#34;locality&#34;</span>: {},
+        <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+            <span style="color:#ff79c6">&#34;CLUSTER_ID&#34;</span>: <span style="color:#f1fa8c">&#34;Kubernetes&#34;</span>,
+            <span style="color:#ff79c6">&#34;CONFIG_NAMESPACE&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>,
+            <span style="color:#ff79c6">&#34;EXCHANGE_KEYS&#34;</span>: <span style="color:#f1fa8c">&#34;NAME,NAMESPACE,INSTANCE_IPS,LABELS,OWNER,PLATFORM_METADATA,WORKLOAD_NAME,CANONICAL_TELEMETRY_SERVICE,MESH_ID,SERVICE_ACCOUNT&#34;</span>,
+            <span style="color:#ff79c6">&#34;INCLUDE_INBOUND_PORTS&#34;</span>: <span style="color:#f1fa8c">&#34;9080&#34;</span>,
+            <span style="color:#ff79c6">&#34;INSTANCE_IPS&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.18,fe80::94df:47ff:fef3:bc99&#34;</span>,
+            <span style="color:#ff79c6">&#34;INTERCEPTION_MODE&#34;</span>: <span style="color:#f1fa8c">&#34;REDIRECT&#34;</span>,
+            <span style="color:#ff79c6">&#34;ISTIO_PROXY_SHA&#34;</span>: <span style="color:#f1fa8c">&#34;istio-proxy:3af92d895f6cb80993fc8bb04dc9b2008183f2ba&#34;</span>,
+            <span style="color:#ff79c6">&#34;ISTIO_VERSION&#34;</span>: <span style="color:#f1fa8c">&#34;1.4.1&#34;</span>,
+            <span style="color:#ff79c6">&#34;LABELS&#34;</span>: {
+                <span style="color:#ff79c6">&#34;app&#34;</span>: <span style="color:#f1fa8c">&#34;productpage&#34;</span>,
+                <span style="color:#ff79c6">&#34;pod-template-hash&#34;</span>: <span style="color:#f1fa8c">&#34;6d8bc58dd7&#34;</span>,
+                <span style="color:#ff79c6">&#34;security.istio.io/tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>,
+                <span style="color:#ff79c6">&#34;version&#34;</span>: <span style="color:#f1fa8c">&#34;v1&#34;</span>
             },
-            &quot;MESH_ID&quot;: &quot;cluster.local&quot;,
-            &quot;NAME&quot;: &quot;productpage-v1-6d8bc58dd7-ts8kw&quot;,
-            &quot;NAMESPACE&quot;: &quot;default&quot;,
-            &quot;OWNER&quot;: &quot;kubernetes://api/apps/v1/namespaces/default/deployments/productpage-v1&quot;,
-            &quot;POD_NAME&quot;: &quot;productpage-v1-6d8bc58dd7-ts8kw&quot;,
-            &quot;POD_PORTS&quot;: &quot;[{\&quot;containerPort\&quot;:9080,\&quot;protocol\&quot;:\&quot;TCP\&quot;},{\&quot;name\&quot;:\&quot;http-envoy-prom\&quot;,\&quot;containerPort\&quot;:15090,\&quot;protocol\&quot;:\&quot;TCP\&quot;}]&quot;,
-            &quot;SERVICE_ACCOUNT&quot;: &quot;bookinfo-productpage&quot;,
-            &quot;WORKLOAD_NAME&quot;: &quot;productpage-v1&quot;,
-            &quot;app&quot;: &quot;productpage&quot;,
-            &quot;pod-template-hash&quot;: &quot;6d8bc58dd7&quot;,
-            &quot;security.istio.io/tlsMode&quot;: &quot;istio&quot;,
-            &quot;sidecar.istio.io/status&quot;: &quot;{\&quot;version\&quot;:\&quot;8d80e9685defcc00b0d8c9274b60071ba8810537e0ed310ea96c1de0785272c7\&quot;,\&quot;initContainers\&quot;:[\&quot;istio-init\&quot;],\&quot;containers\&quot;:[\&quot;istio-proxy\&quot;],\&quot;volumes\&quot;:[\&quot;istio-envoy\&quot;,\&quot;istio-certs\&quot;],\&quot;imagePullSecrets\&quot;:null}&quot;,
-            &quot;version&quot;: &quot;v1&quot;
+            <span style="color:#ff79c6">&#34;MESH_ID&#34;</span>: <span style="color:#f1fa8c">&#34;cluster.local&#34;</span>,
+            <span style="color:#ff79c6">&#34;NAME&#34;</span>: <span style="color:#f1fa8c">&#34;productpage-v1-6d8bc58dd7-ts8kw&#34;</span>,
+            <span style="color:#ff79c6">&#34;NAMESPACE&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>,
+            <span style="color:#ff79c6">&#34;OWNER&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://api/apps/v1/namespaces/default/deployments/productpage-v1&#34;</span>,
+            <span style="color:#ff79c6">&#34;POD_NAME&#34;</span>: <span style="color:#f1fa8c">&#34;productpage-v1-6d8bc58dd7-ts8kw&#34;</span>,
+            <span style="color:#ff79c6">&#34;POD_PORTS&#34;</span>: <span style="color:#f1fa8c">&#34;[{\&#34;containerPort\&#34;:9080,\&#34;protocol\&#34;:\&#34;TCP\&#34;},{\&#34;name\&#34;:\&#34;http-envoy-prom\&#34;,\&#34;containerPort\&#34;:15090,\&#34;protocol\&#34;:\&#34;TCP\&#34;}]&#34;</span>,
+            <span style="color:#ff79c6">&#34;SERVICE_ACCOUNT&#34;</span>: <span style="color:#f1fa8c">&#34;bookinfo-productpage&#34;</span>,
+            <span style="color:#ff79c6">&#34;WORKLOAD_NAME&#34;</span>: <span style="color:#f1fa8c">&#34;productpage-v1&#34;</span>,
+            <span style="color:#ff79c6">&#34;app&#34;</span>: <span style="color:#f1fa8c">&#34;productpage&#34;</span>,
+            <span style="color:#ff79c6">&#34;pod-template-hash&#34;</span>: <span style="color:#f1fa8c">&#34;6d8bc58dd7&#34;</span>,
+            <span style="color:#ff79c6">&#34;security.istio.io/tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>,
+            <span style="color:#ff79c6">&#34;sidecar.istio.io/status&#34;</span>: <span style="color:#f1fa8c">&#34;{\&#34;version\&#34;:\&#34;8d80e9685defcc00b0d8c9274b60071ba8810537e0ed310ea96c1de0785272c7\&#34;,\&#34;initContainers\&#34;:[\&#34;istio-init\&#34;],\&#34;containers\&#34;:[\&#34;istio-proxy\&#34;],\&#34;volumes\&#34;:[\&#34;istio-envoy\&#34;,\&#34;istio-certs\&#34;],\&#34;imagePullSecrets\&#34;:null}&#34;</span>,
+            <span style="color:#ff79c6">&#34;version&#34;</span>: <span style="color:#f1fa8c">&#34;v1&#34;</span>
         }
     }
 }
-</code></pre><h5 id="admin">Admin</h5>
+</code></pre></div><h5 id="admin">Admin</h5>
 <p>配置Envoy的日志路径以及管理端口。</p>
-<pre><code>    &quot;admin&quot;: {
-        &quot;access_log_path&quot;: &quot;/dev/null&quot;,
-        &quot;address&quot;: {
-            &quot;socket_address&quot;: {
-                &quot;address&quot;: &quot;127.0.0.1&quot;,
-                &quot;port_value&quot;: 15000
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">    <span style="color:#f1fa8c">&#34;admin&#34;</span>: {
+        <span style="color:#ff79c6">&#34;access_log_path&#34;</span>: <span style="color:#f1fa8c">&#34;/dev/null&#34;</span>,
+        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+            <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;127.0.0.1&#34;</span>,
+                <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15000</span>
             }
         }
     }
-</code></pre><h5 id="dynamicresources">Dynamic_resources</h5>
+</code></pre></div><h5 id="dynamicresources">Dynamic_resources</h5>
 <p>配置动态资源,这里配置了ADS服务器。</p>
-<pre><code>{
-    &quot;dynamic_resources&quot;: {
-        &quot;lds_config&quot;: {
-            &quot;ads&quot;: {}
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;dynamic_resources&#34;</span>: {
+        <span style="color:#ff79c6">&#34;lds_config&#34;</span>: {
+            <span style="color:#ff79c6">&#34;ads&#34;</span>: {}
         },
-        &quot;cds_config&quot;: {
-            &quot;ads&quot;: {}
+        <span style="color:#ff79c6">&#34;cds_config&#34;</span>: {
+            <span style="color:#ff79c6">&#34;ads&#34;</span>: {}
         },
-        &quot;ads_config&quot;: {
-            &quot;api_type&quot;: &quot;GRPC&quot;,
-            &quot;grpc_services&quot;: [
+        <span style="color:#ff79c6">&#34;ads_config&#34;</span>: {
+            <span style="color:#ff79c6">&#34;api_type&#34;</span>: <span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+            <span style="color:#ff79c6">&#34;grpc_services&#34;</span>: [
                 {
-                    &quot;envoy_grpc&quot;: {
-                        &quot;cluster_name&quot;: &quot;xds-grpc&quot;
+                    <span style="color:#ff79c6">&#34;envoy_grpc&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;xds-grpc&#34;</span>
                     }
                 }
             ]
         }
     }
 }
-</code></pre><h5 id="staticresources">Static_resources</h5>
+</code></pre></div><h5 id="staticresources">Static_resources</h5>
 <p>配置静态资源，包括了prometheus_stats、xds-grpc和zipkin三个cluster和一个在15090上监听的listener。其中xds-grpc cluster对应前面dynamic_resources中ADS配置，指明了Envoy用于获取动态资源的服务器地址。prometheus_stats cluster和15090 listener用于对外提供兼容prometheus格式的统计指标。zipkin cluster则是外部的zipkin调用跟踪服务器地址，Envoy会向该地址上报兼容zipkin格式的调用跟踪信息。</p>
-<pre><code>{
-    &quot;static_resources&quot;: {
-        &quot;clusters&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;static_resources&#34;</span>: {
+        <span style="color:#ff79c6">&#34;clusters&#34;</span>: [
             {
-                &quot;name&quot;: &quot;prometheus_stats&quot;,
-                &quot;type&quot;: &quot;STATIC&quot;,
-                &quot;connect_timeout&quot;: &quot;0.250s&quot;,
-                &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
-                &quot;hosts&quot;: [
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;prometheus_stats&#34;</span>,
+                <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STATIC&#34;</span>,
+                <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0.250s&#34;</span>,
+                <span style="color:#ff79c6">&#34;lb_policy&#34;</span>: <span style="color:#f1fa8c">&#34;ROUND_ROBIN&#34;</span>,
+                <span style="color:#ff79c6">&#34;hosts&#34;</span>: [
                     {
-                        &quot;socket_address&quot;: {
-                            &quot;protocol&quot;: &quot;TCP&quot;,
-                            &quot;address&quot;: &quot;127.0.0.1&quot;,
-                            &quot;port_value&quot;: 15000
+                        <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;protocol&#34;</span>: <span style="color:#f1fa8c">&#34;TCP&#34;</span>,
+                            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;127.0.0.1&#34;</span>,
+                            <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15000</span>
                         }
                     }
                 ]
             },
             {
-                &quot;name&quot;: &quot;xds-grpc&quot;,
-                &quot;type&quot;: &quot;STRICT_DNS&quot;,
-                &quot;dns_refresh_rate&quot;: &quot;300s&quot;,
-                &quot;dns_lookup_family&quot;: &quot;V4_ONLY&quot;,
-                &quot;connect_timeout&quot;: &quot;10s&quot;,
-                &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
-                &quot;hosts&quot;: [
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;xds-grpc&#34;</span>,
+                <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STRICT_DNS&#34;</span>,
+                <span style="color:#ff79c6">&#34;dns_refresh_rate&#34;</span>: <span style="color:#f1fa8c">&#34;300s&#34;</span>,
+                <span style="color:#ff79c6">&#34;dns_lookup_family&#34;</span>: <span style="color:#f1fa8c">&#34;V4_ONLY&#34;</span>,
+                <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;10s&#34;</span>,
+                <span style="color:#ff79c6">&#34;lb_policy&#34;</span>: <span style="color:#f1fa8c">&#34;ROUND_ROBIN&#34;</span>,
+                <span style="color:#ff79c6">&#34;hosts&#34;</span>: [
                     {
-                        &quot;socket_address&quot;: {
-                            &quot;address&quot;: &quot;istio-pilot.istio-system&quot;,
-                            &quot;port_value&quot;: 15010
+                        <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;istio-pilot.istio-system&#34;</span>,
+                            <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15010</span>
                         }
                     }
                 ],
-                &quot;circuit_breakers&quot;: {
-                    &quot;thresholds&quot;: [
+                <span style="color:#ff79c6">&#34;circuit_breakers&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;thresholds&#34;</span>: [
                         {
-                            &quot;priority&quot;: &quot;DEFAULT&quot;,
-                            &quot;max_connections&quot;: 100000,
-                            &quot;max_pending_requests&quot;: 100000,
-                            &quot;max_requests&quot;: 100000
+                            <span style="color:#ff79c6">&#34;priority&#34;</span>: <span style="color:#f1fa8c">&#34;DEFAULT&#34;</span>,
+                            <span style="color:#ff79c6">&#34;max_connections&#34;</span>: <span style="color:#bd93f9">100000</span>,
+                            <span style="color:#ff79c6">&#34;max_pending_requests&#34;</span>: <span style="color:#bd93f9">100000</span>,
+                            <span style="color:#ff79c6">&#34;max_requests&#34;</span>: <span style="color:#bd93f9">100000</span>
                         },
                         {
-                            &quot;priority&quot;: &quot;HIGH&quot;,
-                            &quot;max_connections&quot;: 100000,
-                            &quot;max_pending_requests&quot;: 100000,
-                            &quot;max_requests&quot;: 100000
+                            <span style="color:#ff79c6">&#34;priority&#34;</span>: <span style="color:#f1fa8c">&#34;HIGH&#34;</span>,
+                            <span style="color:#ff79c6">&#34;max_connections&#34;</span>: <span style="color:#bd93f9">100000</span>,
+                            <span style="color:#ff79c6">&#34;max_pending_requests&#34;</span>: <span style="color:#bd93f9">100000</span>,
+                            <span style="color:#ff79c6">&#34;max_requests&#34;</span>: <span style="color:#bd93f9">100000</span>
                         }
                     ]
                 },
-                &quot;upstream_connection_options&quot;: {
-                    &quot;tcp_keepalive&quot;: {
-                        &quot;keepalive_time&quot;: 300
+                <span style="color:#ff79c6">&#34;upstream_connection_options&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;tcp_keepalive&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;keepalive_time&#34;</span>: <span style="color:#bd93f9">300</span>
                     }
                 },
-                &quot;http2_protocol_options&quot;: {}
+                <span style="color:#ff79c6">&#34;http2_protocol_options&#34;</span>: {}
             },
             {
-                &quot;name&quot;: &quot;zipkin&quot;,
-                &quot;type&quot;: &quot;STRICT_DNS&quot;,
-                &quot;dns_refresh_rate&quot;: &quot;300s&quot;,
-                &quot;dns_lookup_family&quot;: &quot;V4_ONLY&quot;,
-                &quot;connect_timeout&quot;: &quot;1s&quot;,
-                &quot;lb_policy&quot;: &quot;ROUND_ROBIN&quot;,
-                &quot;hosts&quot;: [
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;zipkin&#34;</span>,
+                <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STRICT_DNS&#34;</span>,
+                <span style="color:#ff79c6">&#34;dns_refresh_rate&#34;</span>: <span style="color:#f1fa8c">&#34;300s&#34;</span>,
+                <span style="color:#ff79c6">&#34;dns_lookup_family&#34;</span>: <span style="color:#f1fa8c">&#34;V4_ONLY&#34;</span>,
+                <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;1s&#34;</span>,
+                <span style="color:#ff79c6">&#34;lb_policy&#34;</span>: <span style="color:#f1fa8c">&#34;ROUND_ROBIN&#34;</span>,
+                <span style="color:#ff79c6">&#34;hosts&#34;</span>: [
                     {
-                        &quot;socket_address&quot;: {
-                            &quot;address&quot;: &quot;zipkin.istio-system&quot;,
-                            &quot;port_value&quot;: 9411
+                        <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;zipkin.istio-system&#34;</span>,
+                            <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">9411</span>
                         }
                     }
                 ]
             }
         ],
-        &quot;listeners&quot;: [
+        <span style="color:#ff79c6">&#34;listeners&#34;</span>: [
             {
-                &quot;address&quot;: {
-                    &quot;socket_address&quot;: {
-                        &quot;protocol&quot;: &quot;TCP&quot;,
-                        &quot;address&quot;: &quot;0.0.0.0&quot;,
-                        &quot;port_value&quot;: 15090
+                <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;protocol&#34;</span>: <span style="color:#f1fa8c">&#34;TCP&#34;</span>,
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>,
+                        <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15090</span>
                     }
                 },
-                &quot;filter_chains&quot;: [
+                <span style="color:#ff79c6">&#34;filter_chains&#34;</span>: [
                     {
-                        &quot;filters&quot;: [
+                        <span style="color:#ff79c6">&#34;filters&#34;</span>: [
                             {
-                                &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
-                                &quot;config&quot;: {
-                                    &quot;codec_type&quot;: &quot;AUTO&quot;,
-                                    &quot;stat_prefix&quot;: &quot;stats&quot;,
-                                    &quot;route_config&quot;: {
-                                        &quot;virtual_hosts&quot;: [
+                                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.http_connection_manager&#34;</span>,
+                                <span style="color:#ff79c6">&#34;config&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;codec_type&#34;</span>: <span style="color:#f1fa8c">&#34;AUTO&#34;</span>,
+                                    <span style="color:#ff79c6">&#34;stat_prefix&#34;</span>: <span style="color:#f1fa8c">&#34;stats&#34;</span>,
+                                    <span style="color:#ff79c6">&#34;route_config&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;virtual_hosts&#34;</span>: [
                                             {
-                                                &quot;name&quot;: &quot;backend&quot;,
-                                                &quot;domains&quot;: [
-                                                    &quot;*&quot;
+                                                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;backend&#34;</span>,
+                                                <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                                                    <span style="color:#f1fa8c">&#34;*&#34;</span>
                                                 ],
-                                                &quot;routes&quot;: [
+                                                <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                                                     {
-                                                        &quot;match&quot;: {
-                                                            &quot;prefix&quot;: &quot;/stats/prometheus&quot;
+                                                        <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                                                            <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/stats/prometheus&#34;</span>
                                                         },
-                                                        &quot;route&quot;: {
-                                                            &quot;cluster&quot;: &quot;prometheus_stats&quot;
+                                                        <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                                                            <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;prometheus_stats&#34;</span>
                                                         }
                                                     }
                                                 ]
                                             }
                                         ]
                                     },
-                                    &quot;http_filters&quot;: {
-                                        &quot;name&quot;: &quot;envoy.router&quot;
+                                    <span style="color:#ff79c6">&#34;http_filters&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.router&#34;</span>
                                     }
                                 }
                             }
@@ -839,20 +839,20 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
         ]
     }
 }
-</code></pre><h5 id="tracing">Tracing</h5>
+</code></pre></div><h5 id="tracing">Tracing</h5>
 <p>配置分布式链路跟踪，这里配置的后端cluster是前面static_resources里面定义的zipkin cluster。</p>
-<pre><code>  &quot;tracing&quot;: {
-    &quot;http&quot;: {
-      &quot;name&quot;: &quot;envoy.zipkin&quot;,
-      &quot;config&quot;: {
-        &quot;collector_cluster&quot;: &quot;zipkin&quot;,
-        &quot;collector_endpoint&quot;: &quot;/api/v1/spans&quot;,
-        &quot;trace_id_128bit&quot;: &quot;true&quot;,
-        &quot;shared_span_context&quot;: &quot;false&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">  <span style="color:#f1fa8c">&#34;tracing&#34;</span>: {
+    <span style="color:#ff79c6">&#34;http&#34;</span>: {
+      <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.zipkin&#34;</span>,
+      <span style="color:#ff79c6">&#34;config&#34;</span>: {
+        <span style="color:#ff79c6">&#34;collector_cluster&#34;</span>: <span style="color:#f1fa8c">&#34;zipkin&#34;</span>,
+        <span style="color:#ff79c6">&#34;collector_endpoint&#34;</span>: <span style="color:#f1fa8c">&#34;/api/v1/spans&#34;</span>,
+        <span style="color:#ff79c6">&#34;trace_id_128bit&#34;</span>: <span style="color:#f1fa8c">&#34;true&#34;</span>,
+        <span style="color:#ff79c6">&#34;shared_span_context&#34;</span>: <span style="color:#f1fa8c">&#34;false&#34;</span>
       }
     }
   }
-</code></pre><p>在https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/productpage-envoy-rev0.json中可以查看该配置文件的完整内容。</p>
+</code></pre></div><p>在https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/productpage-envoy-rev0.json中可以查看该配置文件的完整内容。</p>
 <h2 id="envoy4">Envoy配置分析</h2>
 <h3 id="heading6">通过管理接口获取完整配置</h3>
 <p>从Envoy初始化配置文件中，我们可以大致看到Istio通过Envoy来实现服务发现和流量管理的基本原理。即控制面将xDS server信息通过static resource的方式配置到Envoy的初始化配置文件中，Envoy启动后通过xDS server获取到dynamic resource，包括网格中的service信息及路由规则。</p>
@@ -866,8 +866,8 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
 </ol>
 <p>可以看到，Envoy中实际生效的配置是由初始化配置文件中的静态配置和从Pilot获取的动态配置一起组成的。因此只对envoy-rev0
 .json进行分析并不能看到Mesh中流量管理的全貌。那么有没有办法可以看到Envoy中实际生效的完整配置呢？答案是可以的，我们可以通过Envoy的管理接口来获取Envoy的完整配置。</p>
-<pre><code>kubectl exec -it productpage-v1-6d8bc58dd7-ts8kw -c istio-proxy curl http://127.0.0.1:15000/config_dump &gt; config_dump
-</code></pre><p>该文件内容长达近一万行，本文中就不贴出来了，在https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/productpage-config-dump中可以查看到文件的全部内容。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">kubectl exec -it productpage-v<span style="color:#bd93f9">1</span><span style="color:#bd93f9">-6</span>d<span style="color:#bd93f9">8</span>bc<span style="color:#bd93f9">58</span>dd<span style="color:#bd93f9">7</span>-ts<span style="color:#bd93f9">8</span>kw -c istio-proxy curl http://<span style="color:#bd93f9">127.0</span>.<span style="color:#bd93f9">0.1</span>:<span style="color:#bd93f9">15000</span>/config_dump &gt; config_dump
+</code></pre></div><p>该文件内容长达近一万行，本文中就不贴出来了，在https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/productpage-config-dump中可以查看到文件的全部内容。</p>
 <h3 id="envoy5">Envoy配置文件结构</h3>
 <p><img src="/img/2019-12-05-istio-traffic-management-impl-intro/envoy-config.png" alt=""></p>
 <p>从dump文件中可以看到Envoy中包括下述配置：</p>
@@ -882,137 +882,137 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
 <h5 id="outbound-cluster">Outbound Cluster</h5>
 <p>这部分的Cluster占了绝大多数，该类Cluster对应于Envoy所在节点的外部服务。以reviews为例，对于Productpage来说,reviews是一个外部服务，因此其Cluster名称中包含outbound字样。</p>
 <p>从reviews 服务对应的cluster配置中可以看到，其类型为EDS，即表示该Cluster的endpoint来自于动态发现，动态发现中eds_config则指向了ads，最终指向static Resource中配置的xds-grpc cluster,即Pilot的地址。</p>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;cluster&quot;: {
-        &quot;name&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
-        &quot;type&quot;: &quot;EDS&quot;,
-        &quot;eds_cluster_config&quot;: {
-            &quot;eds_config&quot;: {
-                &quot;ads&quot;: {}
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;cluster&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>,
+        <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;EDS&#34;</span>,
+        <span style="color:#ff79c6">&#34;eds_cluster_config&#34;</span>: {
+            <span style="color:#ff79c6">&#34;eds_config&#34;</span>: {
+                <span style="color:#ff79c6">&#34;ads&#34;</span>: {}
             },
-            &quot;service_name&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;
+            <span style="color:#ff79c6">&#34;service_name&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>
         },
-        &quot;connect_timeout&quot;: &quot;1s&quot;,
-        &quot;circuit_breakers&quot;: {
-            &quot;thresholds&quot;: [
+        <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;1s&#34;</span>,
+        <span style="color:#ff79c6">&#34;circuit_breakers&#34;</span>: {
+            <span style="color:#ff79c6">&#34;thresholds&#34;</span>: [
                 {
-                    &quot;max_connections&quot;: 4294967295,
-                    &quot;max_pending_requests&quot;: 4294967295,
-                    &quot;max_requests&quot;: 4294967295,
-                    &quot;max_retries&quot;: 4294967295
+                    <span style="color:#ff79c6">&#34;max_connections&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_pending_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_retries&#34;</span>: <span style="color:#bd93f9">4294967295</span>
                 }
             ]
         }
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.658Z&#34;</span>
 }
-</code></pre><p>可以通过Pilot的调试接口获取该Cluster的endpoint：</p>
-<pre><code>curl http://10.97.222.108:15014/debug/edsz &gt; pilot_eds_dump
-</code></pre><p>导出的文件较长，本文只贴出reviews服务相关的endpoint配置，完整文件参见:https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/pilot_eds_dump</p>
+</code></pre></div><p>可以通过Pilot的调试接口获取该Cluster的endpoint：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">curl http://<span style="color:#bd93f9">10.97</span>.<span style="color:#bd93f9">222.108</span>:<span style="color:#bd93f9">15014</span>/debug/edsz &gt; pilot_eds_dump
+</code></pre></div><p>导出的文件较长，本文只贴出reviews服务相关的endpoint配置，完整文件参见:https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.4.0/pilot_eds_dump</p>
 <p>从下面的文件内容可以看到，reviews cluster配置了3个endpoint地址，是reviews的pod ip。</p>
-<pre><code>{
-    &quot;clusterName&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
-    &quot;endpoints&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;clusterName&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>,
+    <span style="color:#ff79c6">&#34;endpoints&#34;</span>: [
         {
-            &quot;lbEndpoints&quot;: [
+            <span style="color:#ff79c6">&#34;lbEndpoints&#34;</span>: [
                 {
-                    &quot;endpoint&quot;: {
-                        &quot;address&quot;: {
-                            &quot;socketAddress&quot;: {
-                                &quot;address&quot;: &quot;10.40.0.15&quot;,
-                                &quot;portValue&quot;: 9080
+                    <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;socketAddress&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.15&#34;</span>,
+                                <span style="color:#ff79c6">&#34;portValue&#34;</span>: <span style="color:#bd93f9">9080</span>
                             }
                         }
                     },
-                    &quot;metadata&quot;: {
-                        &quot;filterMetadata&quot;: {
-                            &quot;envoy.transport_socket_match&quot;: {
-                                &quot;tlsMode&quot;: &quot;istio&quot;
+                    <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;filterMetadata&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;envoy.transport_socket_match&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
                             },
-                            &quot;istio&quot;: {
-                                &quot;uid&quot;: &quot;kubernetes://reviews-v1-75b979578c-pw8zs.default&quot;
+                            <span style="color:#ff79c6">&#34;istio&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;uid&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://reviews-v1-75b979578c-pw8zs.default&#34;</span>
                             }
                         }
                     },
-                    &quot;loadBalancingWeight&quot;: 1
+                    <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">1</span>
                 },
                 {
-                    &quot;endpoint&quot;: {
-                        &quot;address&quot;: {
-                            &quot;socketAddress&quot;: {
-                                &quot;address&quot;: &quot;10.40.0.16&quot;,
-                                &quot;portValue&quot;: 9080
+                    <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;socketAddress&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.16&#34;</span>,
+                                <span style="color:#ff79c6">&#34;portValue&#34;</span>: <span style="color:#bd93f9">9080</span>
                             }
                         }
                     },
-                    &quot;metadata&quot;: {
-                        &quot;filterMetadata&quot;: {
-                            &quot;envoy.transport_socket_match&quot;: {
-                                &quot;tlsMode&quot;: &quot;istio&quot;
+                    <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;filterMetadata&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;envoy.transport_socket_match&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
                             },
-                            &quot;istio&quot;: {
-                                &quot;uid&quot;: &quot;kubernetes://reviews-v3-54c6c64795-wbls7.default&quot;
+                            <span style="color:#ff79c6">&#34;istio&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;uid&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://reviews-v3-54c6c64795-wbls7.default&#34;</span>
                             }
                         }
                     },
-                    &quot;loadBalancingWeight&quot;: 1
+                    <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">1</span>
                 },
                 {
-                    &quot;endpoint&quot;: {
-                        &quot;address&quot;: {
-                            &quot;socketAddress&quot;: {
-                                &quot;address&quot;: &quot;10.40.0.17&quot;,
-                                &quot;portValue&quot;: 9080
+                    <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;socketAddress&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.17&#34;</span>,
+                                <span style="color:#ff79c6">&#34;portValue&#34;</span>: <span style="color:#bd93f9">9080</span>
                             }
                         }
                     },
-                    &quot;metadata&quot;: {
-                        &quot;filterMetadata&quot;: {
-                            &quot;envoy.transport_socket_match&quot;: {
-                                &quot;tlsMode&quot;: &quot;istio&quot;
+                    <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;filterMetadata&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;envoy.transport_socket_match&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
                             },
-                            &quot;istio&quot;: {
-                                &quot;uid&quot;: &quot;kubernetes://reviews-v2-597bf96c8f-l2fp8.default&quot;
+                            <span style="color:#ff79c6">&#34;istio&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;uid&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://reviews-v2-597bf96c8f-l2fp8.default&#34;</span>
                             }
                         }
                     },
-                    &quot;loadBalancingWeight&quot;: 1
+                    <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">1</span>
                 }
             ],
-            &quot;loadBalancingWeight&quot;: 3
+            <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">3</span>
         }
     ]
 }
-</code></pre><h5 id="inbound-cluster">Inbound Cluster</h5>
+</code></pre></div><h5 id="inbound-cluster">Inbound Cluster</h5>
 <p>该类Cluster对应于Envoy所在节点上的服务。如果该服务接收到请求，当然就是一个入站请求。对于Productpage Pod上的Envoy，其对应的Inbound Cluster只有一个，即productpage。该cluster对应的host为127.0.0.1,即环回地址上productpage的监听端口。由于iptable规则中排除了127.0.0.1,入站请求通过该Inbound cluster处理后将跳过Envoy，直接发送给Productpage进程处理。</p>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;cluster&quot;: {
-        &quot;name&quot;: &quot;inbound|9080|http|productpage.default.svc.cluster.local&quot;,
-        &quot;type&quot;: &quot;STATIC&quot;,
-        &quot;connect_timeout&quot;: &quot;1s&quot;,
-        &quot;circuit_breakers&quot;: {
-            &quot;thresholds&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;cluster&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|9080|http|productpage.default.svc.cluster.local&#34;</span>,
+        <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STATIC&#34;</span>,
+        <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;1s&#34;</span>,
+        <span style="color:#ff79c6">&#34;circuit_breakers&#34;</span>: {
+            <span style="color:#ff79c6">&#34;thresholds&#34;</span>: [
                 {
-                    &quot;max_connections&quot;: 4294967295,
-                    &quot;max_pending_requests&quot;: 4294967295,
-                    &quot;max_requests&quot;: 4294967295,
-                    &quot;max_retries&quot;: 4294967295
+                    <span style="color:#ff79c6">&#34;max_connections&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_pending_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_retries&#34;</span>: <span style="color:#bd93f9">4294967295</span>
                 }
             ]
         },
-        &quot;load_assignment&quot;: {
-            &quot;cluster_name&quot;: &quot;inbound|9080|http|productpage.default.svc.cluster.local&quot;,
-            &quot;endpoints&quot;: [
+        <span style="color:#ff79c6">&#34;load_assignment&#34;</span>: {
+            <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|9080|http|productpage.default.svc.cluster.local&#34;</span>,
+            <span style="color:#ff79c6">&#34;endpoints&#34;</span>: [
                 {
-                    &quot;lb_endpoints&quot;: [
+                    <span style="color:#ff79c6">&#34;lb_endpoints&#34;</span>: [
                         {
-                            &quot;endpoint&quot;: {
-                                &quot;address&quot;: {
-                                    &quot;socket_address&quot;: {
-                                        &quot;address&quot;: &quot;127.0.0.1&quot;,
-                                        &quot;port_value&quot;: 9080
+                            <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;127.0.0.1&#34;</span>,
+                                        <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">9080</span>
                                     }
                                 }
                             }
@@ -1022,42 +1022,42 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
             ]
         }
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.658Z&#34;</span>
 }
-</code></pre><h5 id="blackholecluster">BlackHoleCluster</h5>
+</code></pre></div><h5 id="blackholecluster">BlackHoleCluster</h5>
 <p>这是一个特殊的Cluster，并没有配置后端处理请求的Host。如其名字所暗示的一样，请求进入后将被直接丢弃掉。如果一个请求没有找到其对的目的服务，则被发到cluste。</p>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;cluster&quot;: {
-        &quot;name&quot;: &quot;BlackHoleCluster&quot;,
-        &quot;type&quot;: &quot;STATIC&quot;,
-        &quot;connect_timeout&quot;: &quot;1s&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;cluster&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;BlackHoleCluster&#34;</span>,
+        <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STATIC&#34;</span>,
+        <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;1s&#34;</span>
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.658Z&#34;</span>
 }
-</code></pre><h5 id="passthroughcluster">PassthroughCluster</h5>
+</code></pre></div><h5 id="passthroughcluster">PassthroughCluster</h5>
 <p>和BlackHoleCluter相反，发向PassthroughCluster的请求会被直接发送到其请求中要求的原始目地的，Envoy不会对请求进行重新路由。</p>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;cluster&quot;: {
-        &quot;name&quot;: &quot;PassthroughCluster&quot;,
-        &quot;type&quot;: &quot;ORIGINAL_DST&quot;,
-        &quot;connect_timeout&quot;: &quot;1s&quot;,
-        &quot;lb_policy&quot;: &quot;CLUSTER_PROVIDED&quot;,
-        &quot;circuit_breakers&quot;: {
-            &quot;thresholds&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;cluster&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;PassthroughCluster&#34;</span>,
+        <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;ORIGINAL_DST&#34;</span>,
+        <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;1s&#34;</span>,
+        <span style="color:#ff79c6">&#34;lb_policy&#34;</span>: <span style="color:#f1fa8c">&#34;CLUSTER_PROVIDED&#34;</span>,
+        <span style="color:#ff79c6">&#34;circuit_breakers&#34;</span>: {
+            <span style="color:#ff79c6">&#34;thresholds&#34;</span>: [
                 {
-                    &quot;max_connections&quot;: 4294967295,
-                    &quot;max_pending_requests&quot;: 4294967295,
-                    &quot;max_requests&quot;: 4294967295,
-                    &quot;max_retries&quot;: 4294967295
+                    <span style="color:#ff79c6">&#34;max_connections&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_pending_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_retries&#34;</span>: <span style="color:#bd93f9">4294967295</span>
                 }
             ]
         }
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.658Z&#34;</span>
 }
-</code></pre><h4 id="listeners">Listeners</h4>
+</code></pre></div><h4 id="listeners">Listeners</h4>
 <p>Envoy采用listener来接收并处理downstream发过来的请求，listener采用了插件式的架构，可以通过配置不同的filter在Listener中插入不同的处理逻辑。Istio就在Envoy中加入了用于policy check和metric report的Mixer filter。</p>
 <p>Listener可以绑定到IP Socket或者Unix Domain Socket上，以接收来自客户端的请求;也可以不绑定，而是接收从其他listener转发来的数据。Istio利用了Envoy listener的这一特点，通过VirtualOutboundListener在一个端口接收所有出向请求，然后再按照请求的端口分别转发给不同的listener分别处理。</p>
 <h5 id="virtualoutbound-listener">VirtualOutbound Listener</h5>
@@ -1160,207 +1160,207 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
 <h4 id="routes">Routes</h4>
 <p>配置Envoy的路由规则。Istio下发的缺省路由规则中对每个端口设置了一个路由规则，根据host来对请求进行路由分发。</p>
 <p>下面是Proudctpage服务中9080的路由配置，从文件中可以看到对应了5个virtual host，分别是details、productpage、ratings、reviews和allow_any，前三个virtual host分别对应到不同服务的<a href="#outbound-cluster">outbound cluster</a>。最后一个对应到<a href="#passthroughcluster">PassthroughCluster</a>,即当入向的i请求没有找到对应的服务时，也会让其直接通过。</p>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;route_config&quot;: {
-        &quot;name&quot;: &quot;9080&quot;,
-        &quot;virtual_hosts&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;route_config&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;9080&#34;</span>,
+        <span style="color:#ff79c6">&#34;virtual_hosts&#34;</span>: [
             {
-                &quot;name&quot;: &quot;details.default.svc.cluster.local:9080&quot;,
-                &quot;domains&quot;: [
-                    &quot;details.default.svc.cluster.local&quot;,
-                    &quot;details.default.svc.cluster.local:9080&quot;,
-                    &quot;details&quot;,
-                    &quot;details:9080&quot;,
-                    &quot;details.default.svc.cluster&quot;,
-                    &quot;details.default.svc.cluster:9080&quot;,
-                    &quot;details.default.svc&quot;,
-                    &quot;details.default.svc:9080&quot;,
-                    &quot;details.default&quot;,
-                    &quot;details.default:9080&quot;,
-                    &quot;10.101.41.162&quot;,
-                    &quot;10.101.41.162:9080&quot;
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;details.default.svc.cluster.local:9080&#34;</span>,
+                <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                    <span style="color:#f1fa8c">&#34;details.default.svc.cluster.local&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default.svc.cluster.local:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default.svc.cluster&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default.svc.cluster:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default.svc&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default.svc:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;details.default:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.101.41.162&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.101.41.162:9080&#34;</span>
                 ],
-                &quot;routes&quot;: [
+                <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                     {
-                        &quot;match&quot;: {
-                            &quot;prefix&quot;: &quot;/&quot;
+                        <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
                         },
-                        &quot;route&quot;: {
-                            &quot;cluster&quot;: &quot;outbound|9080||details.default.svc.cluster.local&quot;,
-                            &quot;timeout&quot;: &quot;0s&quot;,
-                            &quot;retry_policy&quot;: {
-                                &quot;retry_on&quot;: &quot;connect-failure,refused-stream,unavailable,cancelled,resource-exhausted,retriable-status-codes&quot;,
-                                &quot;num_retries&quot;: 2,
-                                &quot;retry_host_predicate&quot;: [
+                        <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||details.default.svc.cluster.local&#34;</span>,
+                            <span style="color:#ff79c6">&#34;timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0s&#34;</span>,
+                            <span style="color:#ff79c6">&#34;retry_policy&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;retry_on&#34;</span>: <span style="color:#f1fa8c">&#34;connect-failure,refused-stream,unavailable,cancelled,resource-exhausted,retriable-status-codes&#34;</span>,
+                                <span style="color:#ff79c6">&#34;num_retries&#34;</span>: <span style="color:#bd93f9">2</span>,
+                                <span style="color:#ff79c6">&#34;retry_host_predicate&#34;</span>: [
                                     {
-                                        &quot;name&quot;: &quot;envoy.retry_host_predicates.previous_hosts&quot;
+                                        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.retry_host_predicates.previous_hosts&#34;</span>
                                     }
                                 ],
-                                &quot;host_selection_retry_max_attempts&quot;: &quot;5&quot;,
-                                &quot;retriable_status_codes&quot;: [
-                                    503
+                                <span style="color:#ff79c6">&#34;host_selection_retry_max_attempts&#34;</span>: <span style="color:#f1fa8c">&#34;5&#34;</span>,
+                                <span style="color:#ff79c6">&#34;retriable_status_codes&#34;</span>: [
+                                    <span style="color:#bd93f9">503</span>
                                 ]
                             },
-                            &quot;max_grpc_timeout&quot;: &quot;0s&quot;
+                            <span style="color:#ff79c6">&#34;max_grpc_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0s&#34;</span>
                         },
-                        &quot;decorator&quot;: {
-                            &quot;operation&quot;: &quot;details.default.svc.cluster.local:9080/*&quot;
+                        <span style="color:#ff79c6">&#34;decorator&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;operation&#34;</span>: <span style="color:#f1fa8c">&#34;details.default.svc.cluster.local:9080/*&#34;</span>
                         },
-                        &quot;typed_per_filter_config&quot;: {
-                            &quot;mixer&quot;: {
-                                &quot;@type&quot;: &quot;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&quot;,
-                                &quot;disable_check_calls&quot;: true,
-                                &quot;mixer_attributes&quot;: {
-                                    &quot;attributes&quot;: {
-                                        &quot;destination.service.host&quot;: {
-                                            &quot;string_value&quot;: &quot;details.default.svc.cluster.local&quot;
+                        <span style="color:#ff79c6">&#34;typed_per_filter_config&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;mixer&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&#34;</span>,
+                                <span style="color:#ff79c6">&#34;disable_check_calls&#34;</span>: <span style="color:#ff79c6">true</span>,
+                                <span style="color:#ff79c6">&#34;mixer_attributes&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;attributes&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;destination.service.host&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;details.default.svc.cluster.local&#34;</span>
                                         },
-                                        &quot;destination.service.name&quot;: {
-                                            &quot;string_value&quot;: &quot;details&quot;
+                                        <span style="color:#ff79c6">&#34;destination.service.name&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;details&#34;</span>
                                         },
-                                        &quot;destination.service.namespace&quot;: {
-                                            &quot;string_value&quot;: &quot;default&quot;
+                                        <span style="color:#ff79c6">&#34;destination.service.namespace&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>
                                         },
-                                        &quot;destination.service.uid&quot;: {
-                                            &quot;string_value&quot;: &quot;istio://default/services/details&quot;
+                                        <span style="color:#ff79c6">&#34;destination.service.uid&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;istio://default/services/details&#34;</span>
                                         }
                                     }
                                 },
-                                &quot;forward_attributes&quot;: {
-                                    &quot;attributes&quot;: {
-                                        &quot;destination.service.host&quot;: {
-                                            &quot;string_value&quot;: &quot;details.default.svc.cluster.local&quot;
+                                <span style="color:#ff79c6">&#34;forward_attributes&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;attributes&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;destination.service.host&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;details.default.svc.cluster.local&#34;</span>
                                         },
-                                        &quot;destination.service.name&quot;: {
-                                            &quot;string_value&quot;: &quot;details&quot;
+                                        <span style="color:#ff79c6">&#34;destination.service.name&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;details&#34;</span>
                                         },
-                                        &quot;destination.service.namespace&quot;: {
-                                            &quot;string_value&quot;: &quot;default&quot;
+                                        <span style="color:#ff79c6">&#34;destination.service.namespace&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>
                                         },
-                                        &quot;destination.service.uid&quot;: {
-                                            &quot;string_value&quot;: &quot;istio://default/services/details&quot;
+                                        <span style="color:#ff79c6">&#34;destination.service.uid&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;istio://default/services/details&#34;</span>
                                         }
                                     }
                                 }
                             }
                         },
-                        &quot;name&quot;: &quot;default&quot;
+                        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>
                     }
                 ]
             },
             {
-                &quot;name&quot;: &quot;productpage.default.svc.cluster.local:9080&quot;,
-                &quot;domains&quot;: [
-                    &quot;productpage.default.svc.cluster.local&quot;,
-                    &quot;productpage.default.svc.cluster.local:9080&quot;,
-                    &quot;productpage&quot;,
-                    &quot;productpage:9080&quot;,
-                    &quot;productpage.default.svc.cluster&quot;,
-                    &quot;productpage.default.svc.cluster:9080&quot;,
-                    &quot;productpage.default.svc&quot;,
-                    &quot;productpage.default.svc:9080&quot;,
-                    &quot;productpage.default&quot;,
-                    &quot;productpage.default:9080&quot;,
-                    &quot;10.100.240.212&quot;,
-                    &quot;10.100.240.212:9080&quot;
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;productpage.default.svc.cluster.local:9080&#34;</span>,
+                <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                    <span style="color:#f1fa8c">&#34;productpage.default.svc.cluster.local&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default.svc.cluster.local:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default.svc.cluster&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default.svc.cluster:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default.svc&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default.svc:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;productpage.default:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.100.240.212&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.100.240.212:9080&#34;</span>
                 ],
-                &quot;routes&quot;: [
+                <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                     {
-                        &quot;match&quot;: {
-                            &quot;prefix&quot;: &quot;/&quot;
+                        <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
                         },
-                        &quot;route&quot;: {
-                            &quot;cluster&quot;: &quot;outbound|9080||productpage.default.svc.cluster.local&quot;
+                        <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||productpage.default.svc.cluster.local&#34;</span>
 													
 													......
                         }
                 ]
             },
             {
-                &quot;name&quot;: &quot;ratings.default.svc.cluster.local:9080&quot;,
-                &quot;domains&quot;: [
-                    &quot;ratings.default.svc.cluster.local&quot;,
-                    &quot;ratings.default.svc.cluster.local:9080&quot;,
-                    &quot;ratings&quot;,
-                    &quot;ratings:9080&quot;,
-                    &quot;ratings.default.svc.cluster&quot;,
-                    &quot;ratings.default.svc.cluster:9080&quot;,
-                    &quot;ratings.default.svc&quot;,
-                    &quot;ratings.default.svc:9080&quot;,
-                    &quot;ratings.default&quot;,
-                    &quot;ratings.default:9080&quot;,
-                    &quot;10.101.170.120&quot;,
-                    &quot;10.101.170.120:9080&quot;
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;ratings.default.svc.cluster.local:9080&#34;</span>,
+                <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                    <span style="color:#f1fa8c">&#34;ratings.default.svc.cluster.local&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default.svc.cluster.local:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default.svc.cluster&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default.svc.cluster:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default.svc&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default.svc:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;ratings.default:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.101.170.120&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.101.170.120:9080&#34;</span>
                 ],
-                &quot;routes&quot;: [
+                <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                     {
-                        &quot;match&quot;: {
-                            &quot;prefix&quot;: &quot;/&quot;
+                        <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
                         },
-                        &quot;route&quot;: {
-                            &quot;cluster&quot;: &quot;outbound|9080||ratings.default.svc.cluster.local&quot;,
+                        <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||ratings.default.svc.cluster.local&#34;</span>,
                             													
 													......
                         }
                 ]
             },
             {
-                &quot;name&quot;: &quot;reviews.default.svc.cluster.local:9080&quot;,
-                &quot;domains&quot;: [
-                    &quot;reviews.default.svc.cluster.local&quot;,
-                    &quot;reviews.default.svc.cluster.local:9080&quot;,
-                    &quot;reviews&quot;,
-                    &quot;reviews:9080&quot;,
-                    &quot;reviews.default.svc.cluster&quot;,
-                    &quot;reviews.default.svc.cluster:9080&quot;,
-                    &quot;reviews.default.svc&quot;,
-                    &quot;reviews.default.svc:9080&quot;,
-                    &quot;reviews.default&quot;,
-                    &quot;reviews.default:9080&quot;,
-                    &quot;10.102.108.56&quot;,
-                    &quot;10.102.108.56:9080&quot;
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local:9080&#34;</span>,
+                <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                    <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default.svc&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default.svc:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;reviews.default:9080&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.102.108.56&#34;</span>,
+                    <span style="color:#f1fa8c">&#34;10.102.108.56:9080&#34;</span>
                 ],
-                &quot;routes&quot;: [
+                <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                     {
-                        &quot;match&quot;: {
-                            &quot;prefix&quot;: &quot;/&quot;
+                        <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
                         },
-                        &quot;route&quot;: {
-                            &quot;cluster&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
+                        <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>,
                             													
 													......
                         }
                 ]
             },
             {
-                &quot;name&quot;: &quot;allow_any&quot;,
-                &quot;domains&quot;: [
-                    &quot;*&quot;
+                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;allow_any&#34;</span>,
+                <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                    <span style="color:#f1fa8c">&#34;*&#34;</span>
                 ],
-                &quot;routes&quot;: [
+                <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                     {
-                        &quot;match&quot;: {
-                            &quot;prefix&quot;: &quot;/&quot;
+                        <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
                         },
-                        &quot;route&quot;: {
-                            &quot;cluster&quot;: &quot;PassthroughCluster&quot;
+                        <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;PassthroughCluster&#34;</span>
                         },
-                        &quot;typed_per_filter_config&quot;: {
-                            &quot;mixer&quot;: {
-                                &quot;@type&quot;: &quot;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&quot;,
-                                &quot;disable_check_calls&quot;: true,
-                                &quot;mixer_attributes&quot;: {
-                                    &quot;attributes&quot;: {
-                                        &quot;destination.service.name&quot;: {
-                                            &quot;string_value&quot;: &quot;PassthroughCluster&quot;
+                        <span style="color:#ff79c6">&#34;typed_per_filter_config&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;mixer&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&#34;</span>,
+                                <span style="color:#ff79c6">&#34;disable_check_calls&#34;</span>: <span style="color:#ff79c6">true</span>,
+                                <span style="color:#ff79c6">&#34;mixer_attributes&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;attributes&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;destination.service.name&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;PassthroughCluster&#34;</span>
                                         }
                                     }
                                 },
-                                &quot;forward_attributes&quot;: {
-                                    &quot;attributes&quot;: {
-                                        &quot;destination.service.name&quot;: {
-                                            &quot;string_value&quot;: &quot;PassthroughCluster&quot;
+                                <span style="color:#ff79c6">&#34;forward_attributes&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;attributes&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;destination.service.name&#34;</span>: {
+                                            <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;PassthroughCluster&#34;</span>
                                         }
                                     }
                                 }
@@ -1370,11 +1370,11 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
                 ]
             }
         ],
-        &quot;validate_clusters&quot;: false
+        <span style="color:#ff79c6">&#34;validate_clusters&#34;</span>: <span style="color:#ff79c6">false</span>
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.935Z&quot;
+    <span style="color:#f1fa8c">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.935Z&#34;</span>
 }
-</code></pre><h2 id="bookinfo1">Bookinfo端到端调用分析</h2>
+</code></pre></div><h2 id="bookinfo1">Bookinfo端到端调用分析</h2>
 <p>通过前面章节对Envoy配置文件的分析，我们了解到Istio控制面如何将服务和路由信息通过xDS接口下发到数据面中；并介绍了Envoy上生成的各种配置数据的结构，包括listener,cluster,route和endpoint。</p>
 <p>下面我们来分析一个端到端的调用请求，通过调用请求的流程把这些配置串连起来，以从全局上理解Istio控制面的流量控制能力是如何在数据面的Envoy上实现的。</p>
 <p>下图描述了一个Productpage服务调用Reviews服务的请求流程：</p>
@@ -1398,357 +1398,357 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
 <li>在15001端口上监听的Envoy Virtual Outbound Listener收到了该请求。</li>
 <li>请求被Virtual Outbound Listener根据原目标IP（通配）和端口（9080）转发到0.0.0.0_9080这个 outbound listener。</li>
 </ol>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;listener&quot;: {
-        &quot;name&quot;: &quot;virtualOutbound&quot;,
-        &quot;address&quot;: {
-            &quot;socket_address&quot;: {
-                &quot;address&quot;: &quot;0.0.0.0&quot;,
-                &quot;port_value&quot;: 15001
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;listener&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;virtualOutbound&#34;</span>,
+        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+            <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>,
+                <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15001</span>
             }
         },
         ......
 
-         &quot;use_original_dst&quot;: true //请求转发给和原始目的IP:Port匹配的listener
+         <span style="color:#ff79c6">&#34;use_original_dst&#34;</span>: <span style="color:#ff79c6">true</span> //请求转发给和原始目的IP:Port匹配的listener
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.919Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.919Z&#34;</span>
 }
-</code></pre><ol start="5">
+</code></pre></div><ol start="5">
 <li>根据0.0.0.0_9080 listener的http_connection_manager filter配置,该请求采用“9080” route进行分发。</li>
 </ol>
-<pre><code> {
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;listener&quot;: {
-        &quot;name&quot;: &quot;0.0.0.0_9080&quot;,
-        &quot;address&quot;: {
-            &quot;socket_address&quot;: {
-                &quot;address&quot;: &quot;0.0.0.0&quot;,
-                &quot;port_value&quot;: 9080
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"> {
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;listener&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0_9080&#34;</span>,
+        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+            <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>,
+                <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">9080</span>
             }
         },
-        &quot;filter_chains&quot;: [
+        <span style="color:#ff79c6">&#34;filter_chains&#34;</span>: [
             {
-                &quot;filters&quot;: [
+                <span style="color:#ff79c6">&#34;filters&#34;</span>: [
                     {
-                        &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
-                        &quot;typed_config&quot;: {
-                            &quot;@type&quot;: &quot;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&quot;,
-                            &quot;stat_prefix&quot;: &quot;outbound_0.0.0.0_9080&quot;,
-                            &quot;http_filters&quot;: [
+                        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.http_connection_manager&#34;</span>,
+                        <span style="color:#ff79c6">&#34;typed_config&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&#34;</span>,
+                            <span style="color:#ff79c6">&#34;stat_prefix&#34;</span>: <span style="color:#f1fa8c">&#34;outbound_0.0.0.0_9080&#34;</span>,
+                            <span style="color:#ff79c6">&#34;http_filters&#34;</span>: [
                                 {
-                                    &quot;name&quot;: &quot;mixer&quot;,
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;mixer&#34;</span>,
                                     ......
                                 },
                                 {
-                                    &quot;name&quot;: &quot;envoy.cors&quot;
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.cors&#34;</span>
                                 },
                                 {
-                                    &quot;name&quot;: &quot;envoy.fault&quot;
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.fault&#34;</span>
                                 },
                                 {
-                                    &quot;name&quot;: &quot;envoy.router&quot;
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.router&#34;</span>
                                 }
                             ],
                             ......
                             
-                            &quot;rds&quot;: {
-                                &quot;config_source&quot;: {
-                                    &quot;ads&quot;: {}
+                            <span style="color:#ff79c6">&#34;rds&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;config_source&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;ads&#34;</span>: {}
                                 },
-                                &quot;route_config_name&quot;: &quot;9080&quot; //采用“9080” route进行分发
+                                <span style="color:#ff79c6">&#34;route_config_name&#34;</span>: <span style="color:#f1fa8c">&#34;9080&#34;</span> //采用“<span style="color:#bd93f9">9080</span>” route进行分发
                             }
                         }
                     }
                 ]
             }
         ],
-        &quot;deprecated_v1&quot;: {
-            &quot;bind_to_port&quot;: false
+        <span style="color:#ff79c6">&#34;deprecated_v1&#34;</span>: {
+            <span style="color:#ff79c6">&#34;bind_to_port&#34;</span>: <span style="color:#ff79c6">false</span>
         },
-        &quot;listener_filters_timeout&quot;: &quot;0.100s&quot;,
-        &quot;traffic_direction&quot;: &quot;OUTBOUND&quot;,
-        &quot;continue_on_listener_filters_timeout&quot;: true
+        <span style="color:#ff79c6">&#34;listener_filters_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0.100s&#34;</span>,
+        <span style="color:#ff79c6">&#34;traffic_direction&#34;</span>: <span style="color:#f1fa8c">&#34;OUTBOUND&#34;</span>,
+        <span style="color:#ff79c6">&#34;continue_on_listener_filters_timeout&#34;</span>: <span style="color:#ff79c6">true</span>
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.822Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.822Z&#34;</span>
 }   
-</code></pre><ol start="6">
+</code></pre></div><ol start="6">
 <li>“9080”这个route的配置中，host name为reviews:9080的请求对应的cluster为outbound|9080||reviews.default.svc.cluster.local</li>
 </ol>
-<pre><code>{
-    &quot;name&quot;: &quot;reviews.default.svc.cluster.local:9080&quot;,
-    &quot;domains&quot;: [
-        &quot;reviews.default.svc.cluster.local&quot;,
-        &quot;reviews.default.svc.cluster.local:9080&quot;,
-        &quot;reviews&quot;,
-        &quot;reviews:9080&quot;,
-        &quot;reviews.default.svc.cluster&quot;,
-        &quot;reviews.default.svc.cluster:9080&quot;,
-        &quot;reviews.default.svc&quot;,
-        &quot;reviews.default.svc:9080&quot;,
-        &quot;reviews.default&quot;,
-        &quot;reviews.default:9080&quot;,
-        &quot;10.102.108.56&quot;,
-        &quot;10.102.108.56:9080&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local:9080&#34;</span>,
+    <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+        <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local:9080&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews:9080&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster:9080&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default.svc&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default.svc:9080&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default&#34;</span>,
+        <span style="color:#f1fa8c">&#34;reviews.default:9080&#34;</span>,
+        <span style="color:#f1fa8c">&#34;10.102.108.56&#34;</span>,
+        <span style="color:#f1fa8c">&#34;10.102.108.56:9080&#34;</span>
     ],
-    &quot;routes&quot;: [
+    <span style="color:#ff79c6">&#34;routes&#34;</span>: [
         {
-            &quot;match&quot;: {
-                &quot;prefix&quot;: &quot;/&quot;
+            <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
             },
-            &quot;route&quot;: {
-                &quot;cluster&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
-                &quot;timeout&quot;: &quot;0s&quot;,
-                &quot;retry_policy&quot;: {
-                    &quot;retry_on&quot;: &quot;connect-failure,refused-stream,unavailable,cancelled,resource-exhausted,retriable-status-codes&quot;,
-                    &quot;num_retries&quot;: 2,
-                    &quot;retry_host_predicate&quot;: [
+            <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>,
+                <span style="color:#ff79c6">&#34;timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0s&#34;</span>,
+                <span style="color:#ff79c6">&#34;retry_policy&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;retry_on&#34;</span>: <span style="color:#f1fa8c">&#34;connect-failure,refused-stream,unavailable,cancelled,resource-exhausted,retriable-status-codes&#34;</span>,
+                    <span style="color:#ff79c6">&#34;num_retries&#34;</span>: <span style="color:#bd93f9">2</span>,
+                    <span style="color:#ff79c6">&#34;retry_host_predicate&#34;</span>: [
                         {
-                            &quot;name&quot;: &quot;envoy.retry_host_predicates.previous_hosts&quot;
+                            <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.retry_host_predicates.previous_hosts&#34;</span>
                         }
                     ],
-                    &quot;host_selection_retry_max_attempts&quot;: &quot;5&quot;,
-                    &quot;retriable_status_codes&quot;: [
-                        503
+                    <span style="color:#ff79c6">&#34;host_selection_retry_max_attempts&#34;</span>: <span style="color:#f1fa8c">&#34;5&#34;</span>,
+                    <span style="color:#ff79c6">&#34;retriable_status_codes&#34;</span>: [
+                        <span style="color:#bd93f9">503</span>
                     ]
                 },
-                &quot;max_grpc_timeout&quot;: &quot;0s&quot;
+                <span style="color:#ff79c6">&#34;max_grpc_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0s&#34;</span>
             },
-            &quot;decorator&quot;: {
-                &quot;operation&quot;: &quot;reviews.default.svc.cluster.local:9080/*&quot;
+            <span style="color:#ff79c6">&#34;decorator&#34;</span>: {
+                <span style="color:#ff79c6">&#34;operation&#34;</span>: <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local:9080/*&#34;</span>
             },
-            &quot;typed_per_filter_config&quot;: {
-                &quot;mixer&quot;: {
-                    &quot;@type&quot;: &quot;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&quot;,
-                    &quot;disable_check_calls&quot;: true,
-                    &quot;mixer_attributes&quot;: {
-                        &quot;attributes&quot;: {
-                            &quot;destination.service.host&quot;: {
-                                &quot;string_value&quot;: &quot;reviews.default.svc.cluster.local&quot;
+            <span style="color:#ff79c6">&#34;typed_per_filter_config&#34;</span>: {
+                <span style="color:#ff79c6">&#34;mixer&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/istio.mixer.v1.config.client.ServiceConfig&#34;</span>,
+                    <span style="color:#ff79c6">&#34;disable_check_calls&#34;</span>: <span style="color:#ff79c6">true</span>,
+                    <span style="color:#ff79c6">&#34;mixer_attributes&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;attributes&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;destination.service.host&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local&#34;</span>
                             },
-                            &quot;destination.service.name&quot;: {
-                                &quot;string_value&quot;: &quot;reviews&quot;
+                            <span style="color:#ff79c6">&#34;destination.service.name&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;reviews&#34;</span>
                             },
-                            &quot;destination.service.namespace&quot;: {
-                                &quot;string_value&quot;: &quot;default&quot;
+                            <span style="color:#ff79c6">&#34;destination.service.namespace&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>
                             },
-                            &quot;destination.service.uid&quot;: {
-                                &quot;string_value&quot;: &quot;istio://default/services/reviews&quot;
+                            <span style="color:#ff79c6">&#34;destination.service.uid&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;istio://default/services/reviews&#34;</span>
                             }
                         }
                     },
-                    &quot;forward_attributes&quot;: {
-                        &quot;attributes&quot;: {
-                            &quot;destination.service.host&quot;: {
-                                &quot;string_value&quot;: &quot;reviews.default.svc.cluster.local&quot;
+                    <span style="color:#ff79c6">&#34;forward_attributes&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;attributes&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;destination.service.host&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;reviews.default.svc.cluster.local&#34;</span>
                             },
-                            &quot;destination.service.name&quot;: {
-                                &quot;string_value&quot;: &quot;reviews&quot;
+                            <span style="color:#ff79c6">&#34;destination.service.name&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;reviews&#34;</span>
                             },
-                            &quot;destination.service.namespace&quot;: {
-                                &quot;string_value&quot;: &quot;default&quot;
+                            <span style="color:#ff79c6">&#34;destination.service.namespace&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>
                             },
-                            &quot;destination.service.uid&quot;: {
-                                &quot;string_value&quot;: &quot;istio://default/services/reviews&quot;
+                            <span style="color:#ff79c6">&#34;destination.service.uid&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;string_value&#34;</span>: <span style="color:#f1fa8c">&#34;istio://default/services/reviews&#34;</span>
                             }
                         }
                     }
                 }
             },
-            &quot;name&quot;: &quot;default&quot;
+            <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>
         }
     ]
 }
-</code></pre><ol start="7">
+</code></pre></div><ol start="7">
 <li>outbound|9080||reviews.default.svc.cluster.local cluster为动态资源，通过eds查询得到该cluster中有3个endpoint。</li>
 </ol>
-<pre><code>{
-    &quot;clusterName&quot;: &quot;outbound|9080||reviews.default.svc.cluster.local&quot;,
-    &quot;endpoints&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;clusterName&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>,
+    <span style="color:#ff79c6">&#34;endpoints&#34;</span>: [
         {
-            &quot;lbEndpoints&quot;: [
+            <span style="color:#ff79c6">&#34;lbEndpoints&#34;</span>: [
                 {
-                    &quot;endpoint&quot;: {
-                        &quot;address&quot;: {
-                            &quot;socketAddress&quot;: {
-                                &quot;address&quot;: &quot;10.40.0.15&quot;,
-                                &quot;portValue&quot;: 9080
+                    <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;socketAddress&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.15&#34;</span>,
+                                <span style="color:#ff79c6">&#34;portValue&#34;</span>: <span style="color:#bd93f9">9080</span>
                             }
                         }
                     },
-                    &quot;metadata&quot;: {
-                        &quot;filterMetadata&quot;: {
-                            &quot;envoy.transport_socket_match&quot;: {
-                                &quot;tlsMode&quot;: &quot;istio&quot;
+                    <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;filterMetadata&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;envoy.transport_socket_match&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
                             },
-                            &quot;istio&quot;: {
-                                &quot;uid&quot;: &quot;kubernetes://reviews-v1-75b979578c-pw8zs.default&quot;
+                            <span style="color:#ff79c6">&#34;istio&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;uid&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://reviews-v1-75b979578c-pw8zs.default&#34;</span>
                             }
                         }
                     },
-                    &quot;loadBalancingWeight&quot;: 1
+                    <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">1</span>
                 },
                 {
-                    &quot;endpoint&quot;: {
-                        &quot;address&quot;: {
-                            &quot;socketAddress&quot;: {
-                                &quot;address&quot;: &quot;10.40.0.16&quot;,
-                                &quot;portValue&quot;: 9080
+                    <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;socketAddress&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.16&#34;</span>,
+                                <span style="color:#ff79c6">&#34;portValue&#34;</span>: <span style="color:#bd93f9">9080</span>
                             }
                         }
                     },
-                    &quot;metadata&quot;: {
-                        &quot;filterMetadata&quot;: {
-                            &quot;envoy.transport_socket_match&quot;: {
-                                &quot;tlsMode&quot;: &quot;istio&quot;
+                    <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;filterMetadata&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;envoy.transport_socket_match&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
                             },
-                            &quot;istio&quot;: {
-                                &quot;uid&quot;: &quot;kubernetes://reviews-v3-54c6c64795-wbls7.default&quot;
+                            <span style="color:#ff79c6">&#34;istio&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;uid&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://reviews-v3-54c6c64795-wbls7.default&#34;</span>
                             }
                         }
                     },
-                    &quot;loadBalancingWeight&quot;: 1
+                    <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">1</span>
                 },
                 {
-                    &quot;endpoint&quot;: {
-                        &quot;address&quot;: {
-                            &quot;socketAddress&quot;: {
-                                &quot;address&quot;: &quot;10.40.0.17&quot;,
-                                &quot;portValue&quot;: 9080
+                    <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;socketAddress&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.17&#34;</span>,
+                                <span style="color:#ff79c6">&#34;portValue&#34;</span>: <span style="color:#bd93f9">9080</span>
                             }
                         }
                     },
-                    &quot;metadata&quot;: {
-                        &quot;filterMetadata&quot;: {
-                            &quot;envoy.transport_socket_match&quot;: {
-                                &quot;tlsMode&quot;: &quot;istio&quot;
+                    <span style="color:#ff79c6">&#34;metadata&#34;</span>: {
+                        <span style="color:#ff79c6">&#34;filterMetadata&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;envoy.transport_socket_match&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
                             },
-                            &quot;istio&quot;: {
-                                &quot;uid&quot;: &quot;kubernetes://reviews-v2-597bf96c8f-l2fp8.default&quot;
+                            <span style="color:#ff79c6">&#34;istio&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;uid&#34;</span>: <span style="color:#f1fa8c">&#34;kubernetes://reviews-v2-597bf96c8f-l2fp8.default&#34;</span>
                             }
                         }
                     },
-                    &quot;loadBalancingWeight&quot;: 1
+                    <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">1</span>
                 }
             ],
-            &quot;loadBalancingWeight&quot;: 3
+            <span style="color:#ff79c6">&#34;loadBalancingWeight&#34;</span>: <span style="color:#bd93f9">3</span>
         }
     ]
 }
-</code></pre><ol start="8">
+</code></pre></div><ol start="8">
 <li>请求被转发到其中一个endpoint 10.40.0.15，即Reviews-v1所在的Pod。</li>
 <li>然后该请求被iptable规则拦截，重定向到本地的15006端口。</li>
 <li>在15006端口上监听的Envoy Virtual  Inbound Listener收到了该请求。</li>
 <li>根据匹配条件，请求被Virtual Inbound Listener内部配置的Http connection manager filter处理，该filter设置的路由配置为将其发送给inbound|9080|http|reviews.default.svc.cluster.local这个inbound cluster。</li>
 </ol>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:07:44Z/12&quot;,
-    &quot;listener&quot;: {
-        &quot;name&quot;: &quot;virtualInbound&quot;,
-        &quot;address&quot;: {
-            &quot;socket_address&quot;: {
-                &quot;address&quot;: &quot;0.0.0.0&quot;,
-                &quot;port_value&quot;: 15006
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:07:44Z/12&#34;</span>,
+    <span style="color:#ff79c6">&#34;listener&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;virtualInbound&#34;</span>,
+        <span style="color:#ff79c6">&#34;address&#34;</span>: {
+            <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>,
+                <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15006</span>
             }
         },
-        &quot;filter_chains&quot;: [
+        <span style="color:#ff79c6">&#34;filter_chains&#34;</span>: [
             ......
             {
-                &quot;filter_chain_match&quot;: {
-                    &quot;prefix_ranges&quot;: [
+                <span style="color:#ff79c6">&#34;filter_chain_match&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;prefix_ranges&#34;</span>: [
                         {
-                            &quot;address_prefix&quot;: &quot;10.40.0.15&quot;,
-                            &quot;prefix_len&quot;: 32
+                            <span style="color:#ff79c6">&#34;address_prefix&#34;</span>: <span style="color:#f1fa8c">&#34;10.40.0.15&#34;</span>,
+                            <span style="color:#ff79c6">&#34;prefix_len&#34;</span>: <span style="color:#bd93f9">32</span>
                         }
                     ],
-                    &quot;destination_port&quot;: 9080
+                    <span style="color:#ff79c6">&#34;destination_port&#34;</span>: <span style="color:#bd93f9">9080</span>
                 },
-                &quot;filters&quot;: [
+                <span style="color:#ff79c6">&#34;filters&#34;</span>: [
                     {
-                        &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
-                        &quot;typed_config&quot;: {
-                            &quot;@type&quot;: &quot;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&quot;,
-                            &quot;stat_prefix&quot;: &quot;inbound_10.40.0.15_9080&quot;,
-                            &quot;http_filters&quot;: [
+                        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.http_connection_manager&#34;</span>,
+                        <span style="color:#ff79c6">&#34;typed_config&#34;</span>: {
+                            <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&#34;</span>,
+                            <span style="color:#ff79c6">&#34;stat_prefix&#34;</span>: <span style="color:#f1fa8c">&#34;inbound_10.40.0.15_9080&#34;</span>,
+                            <span style="color:#ff79c6">&#34;http_filters&#34;</span>: [
                                 {
-                                    &quot;name&quot;: &quot;istio_authn&quot;,
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;istio_authn&#34;</span>,
                                     ......
                                 },
                                 {
-                                    &quot;name&quot;: &quot;mixer&quot;,
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;mixer&#34;</span>,
                                     ......
                                 },
                                 {
-                                    &quot;name&quot;: &quot;envoy.cors&quot;
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.cors&#34;</span>
                                 },
                                 {
-                                    &quot;name&quot;: &quot;envoy.fault&quot;
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.fault&#34;</span>
                                 },
                                 {
-                                    &quot;name&quot;: &quot;envoy.router&quot;
+                                    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.router&#34;</span>
                                 }
                             ],
                             ......
-                            &quot;route_config&quot;: {
-                                &quot;name&quot;: &quot;inbound|9080|http|reviews.default.svc.cluster.local&quot;,
-                                &quot;virtual_hosts&quot;: [
+                            <span style="color:#ff79c6">&#34;route_config&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|9080|http|reviews.default.svc.cluster.local&#34;</span>,
+                                <span style="color:#ff79c6">&#34;virtual_hosts&#34;</span>: [
                                     {
-                                        &quot;name&quot;: &quot;inbound|http|9080&quot;,
-                                        &quot;domains&quot;: [
-                                            &quot;*&quot;
+                                        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|http|9080&#34;</span>,
+                                        <span style="color:#ff79c6">&#34;domains&#34;</span>: [
+                                            <span style="color:#f1fa8c">&#34;*&#34;</span>
                                         ],
-                                        &quot;routes&quot;: [
+                                        <span style="color:#ff79c6">&#34;routes&#34;</span>: [
                                             {
-                                                &quot;match&quot;: {
-                                                    &quot;prefix&quot;: &quot;/&quot;
+                                                <span style="color:#ff79c6">&#34;match&#34;</span>: {
+                                                    <span style="color:#ff79c6">&#34;prefix&#34;</span>: <span style="color:#f1fa8c">&#34;/&#34;</span>
                                                 },
                                                 ......
-                                                &quot;route&quot;: {
-                                                    &quot;timeout&quot;: &quot;0s&quot;,
-                                                    &quot;max_grpc_timeout&quot;: &quot;0s&quot;,
-                                                    &quot;cluster&quot;: &quot;inbound|9080|http|reviews.default.svc.cluster.local&quot; //对应的inbound cluster
+                                                <span style="color:#ff79c6">&#34;route&#34;</span>: {
+                                                    <span style="color:#ff79c6">&#34;timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0s&#34;</span>,
+                                                    <span style="color:#ff79c6">&#34;max_grpc_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;0s&#34;</span>,
+                                                    <span style="color:#ff79c6">&#34;cluster&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|9080|http|reviews.default.svc.cluster.local&#34;</span> //对应的inbound cluster
                                                 }
                                             }
                                         ]
                                     }
                                 ],
-                                &quot;validate_clusters&quot;: false
+                                <span style="color:#ff79c6">&#34;validate_clusters&#34;</span>: <span style="color:#ff79c6">false</span>
                             }
                         }
                     }
                 ],
                 ......
 }
-</code></pre><ol start="12">
+</code></pre></div><ol start="12">
 <li>inbound|9080|http|reviews.default.svc.cluster.local cluster配置的host为127.0.0.1：9080。</li>
 </ol>
-<pre><code>{
-    &quot;version_info&quot;: &quot;2019-12-04T03:08:06Z/13&quot;,
-    &quot;cluster&quot;: {
-        &quot;name&quot;: &quot;inbound|9080|http|productpage.default.svc.cluster.local&quot;,
-        &quot;type&quot;: &quot;STATIC&quot;,
-        &quot;connect_timeout&quot;: &quot;1s&quot;,
-        &quot;circuit_breakers&quot;: {
-            &quot;thresholds&quot;: [
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:06Z/13&#34;</span>,
+    <span style="color:#ff79c6">&#34;cluster&#34;</span>: {
+        <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|9080|http|productpage.default.svc.cluster.local&#34;</span>,
+        <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STATIC&#34;</span>,
+        <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;1s&#34;</span>,
+        <span style="color:#ff79c6">&#34;circuit_breakers&#34;</span>: {
+            <span style="color:#ff79c6">&#34;thresholds&#34;</span>: [
                 {
-                    &quot;max_connections&quot;: 4294967295,
-                    &quot;max_pending_requests&quot;: 4294967295,
-                    &quot;max_requests&quot;: 4294967295,
-                    &quot;max_retries&quot;: 4294967295
+                    <span style="color:#ff79c6">&#34;max_connections&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_pending_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_requests&#34;</span>: <span style="color:#bd93f9">4294967295</span>,
+                    <span style="color:#ff79c6">&#34;max_retries&#34;</span>: <span style="color:#bd93f9">4294967295</span>
                 }
             ]
         },
-        &quot;load_assignment&quot;: {
-            &quot;cluster_name&quot;: &quot;inbound|9080|http|productpage.default.svc.cluster.local&quot;,
-            &quot;endpoints&quot;: [
+        <span style="color:#ff79c6">&#34;load_assignment&#34;</span>: {
+            <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;inbound|9080|http|productpage.default.svc.cluster.local&#34;</span>,
+            <span style="color:#ff79c6">&#34;endpoints&#34;</span>: [
                 {
-                    &quot;lb_endpoints&quot;: [
+                    <span style="color:#ff79c6">&#34;lb_endpoints&#34;</span>: [
                         {
-                            &quot;endpoint&quot;: {
-                                &quot;address&quot;: {
-                                    &quot;socket_address&quot;: {
-                                        &quot;address&quot;: &quot;127.0.0.1&quot;, //cluster配置的endpoint地址
-                                        &quot;port_value&quot;: 9080
+                            <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+                                <span style="color:#ff79c6">&#34;address&#34;</span>: {
+                                    <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+                                        <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;127.0.0.1&#34;</span>, //cluster配置的endpoint地址
+                                        <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">9080</span>
                                     }
                                 }
                             }
@@ -1758,9 +1758,9 @@ istio-p+    68     0  0 11:27 ?        00:00:00 ps -ef
             ]
         }
     },
-    &quot;last_updated&quot;: &quot;2019-12-04T03:08:22.658Z&quot;
+    <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2019-12-04T03:08:22.658Z&#34;</span>
 }
-</code></pre><ol start="13">
+</code></pre></div><ol start="13">
 <li>请求被转发到127.0.0.1：9080，即Reviews服务进行业务处理。</li>
 </ol>
 <p>上述调用流程涉及的完整Envoy配置文件参见该github repository：https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/tree/istio1.4.0</p>
