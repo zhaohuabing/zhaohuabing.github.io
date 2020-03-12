@@ -165,7 +165,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://images.pexels.com/photos/1141853/pexels-photo-1141853.jpeg')
+        background-image: url('https://images.pexels.com/photos/1141853/pexels-photo-1141853.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940')
     }
 </style>
 <header class="intro-header">
@@ -415,16 +415,16 @@ $(function() {
 <p><img src="/img/2020-03-12-linux-network-virtualization/veth-pair.jpg" alt=""></p>
 <p>由于network namespace隔离了网络相关的全局资源，因此从网络角度来看，一个network namespace可以看做一个独立的虚机；即使在同一个主机上创建的两个network namespace，相互之间缺省也是不能进行网络通信的。</p>
 <p>veth提供了一种连接两个network namespace的方法。如果我们把上图中网线两端的网卡分别放入两个不同的network namespace，就可以把这两个network namespace连起来，形成一个点对点的二层网络，如下图所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">            +------------------+              +------------------+
-            |        ns1       |              |      ns2         |
-            |                  |  veth pair   |                  |
-            |                +-+              +-+                |
-            | 192.168.1.1/24 | +--------------+ | 192.168.1.2/24 |
-            |   <span style="color:#ff79c6">(</span>veth-ns1<span style="color:#ff79c6">)</span>   +-+              +-+   <span style="color:#ff79c6">(</span>veth-ns2<span style="color:#ff79c6">)</span>   |
-            |                  |              |                  |
-            |                  |              |                  |
-            |                  |              |                  |
-            +------------------+              +------------------+
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> +------------------+              +------------------+
+|        ns1       |              |      ns2         |
+|                  |  veth pair   |                  |
+|                +-+              +-+                |
+| 192.168.1.1/24 | +--------------+ | 192.168.1.2/24 |
+|   <span style="color:#ff79c6">(</span>veth-ns1<span style="color:#ff79c6">)</span>   +-+              +-+   <span style="color:#ff79c6">(</span>veth-ns2<span style="color:#ff79c6">)</span>   |
+|                  |              |                  |
+|                  |              |                  |
+|                  |              |                  |
++------------------+              +------------------+
 </code></pre></div><p>下面我们通过试验来实现上图中的网络拓扑。首先创建两个network namespace ns1和ns2。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip netns add ns1
 ip netns add ns2
@@ -447,26 +447,72 @@ PING 192.168.1.2 <span style="color:#ff79c6">(</span>192.168.1.2<span style="col
 </code></pre></div><h1 id="bridge">Bridge</h1>
 <p>veth实现了点对点的虚拟连接，可以通过veth连接两个namespace，如果我们需要将3个或者多个namespace接入同一个二层网络时，就不能只使用veth了。在物理网络中，如果需要连接多个主机，我们会使用网桥，或者又称为交换机。Linux也提供了网桥的虚拟实现。下面我们试验通过Linux bridge来连接三个namespace。</p>
 <p>该试验的网络拓扑如下图所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">            +------------------+     +------------------+     +------------------+
-            |                  |     |                  |     |                  |
-            |                  |     |                  |     |                  |
-            |                  |     |                  |     |                  |
-            |       ns1        |     |       ns2        |     |       ns3        |
-            |                  |     |                  |     |                  |
-            |                  |     |                  |     |                  |
-            |                  |     |                  |     |                  |
-            |  192.168.1.1/24  |     |  192.168.1.2/24  |     |  192.168.1.3/24  |
-            +----<span style="color:#ff79c6">(</span>veth-ns1<span style="color:#ff79c6">)</span>----+     +----<span style="color:#ff79c6">(</span>veth-ns2<span style="color:#ff79c6">)</span>----+     +----<span style="color:#ff79c6">(</span>veth-ns3<span style="color:#ff79c6">)</span>----+
-                     +                          +                        +
-                     |                          |                        |
-                     |                          |                        |
-                     +                          +                        +
-            +--<span style="color:#ff79c6">(</span>veth-ns1-br<span style="color:#ff79c6">)</span>-------------<span style="color:#ff79c6">(</span>veth-ns2-br<span style="color:#ff79c6">)</span>------------<span style="color:#ff79c6">(</span>veth-ns3-br<span style="color:#ff79c6">)</span>--+
-            |                                                                    |
-            |                           virtual-bridge                           |
-            |                                                                    |
-            +--------------------------------------------------------------------+
-</code></pre></div><h1 id="heading">参考文档</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">+------------------+     +------------------+     +------------------+
+|                  |     |                  |     |                  |
+|                  |     |                  |     |                  |
+|                  |     |                  |     |                  |
+|       ns1        |     |       ns2        |     |       ns3        |
+|                  |     |                  |     |                  |
+|                  |     |                  |     |                  |
+|                  |     |                  |     |                  |
+|  192.168.1.1/24  |     |  192.168.1.2/24  |     |  192.168.1.3/24  |
++----<span style="color:#ff79c6">(</span>veth-ns1<span style="color:#ff79c6">)</span>----+     +----<span style="color:#ff79c6">(</span>veth-ns2<span style="color:#ff79c6">)</span>----+     +----<span style="color:#ff79c6">(</span>veth-ns3<span style="color:#ff79c6">)</span>----+
+        +                          +                        +
+        |                          |                        |
+        |                          |                        |
+        +                          +                        +
++--<span style="color:#ff79c6">(</span>veth-ns1-br<span style="color:#ff79c6">)</span>-------------<span style="color:#ff79c6">(</span>veth-ns2-br<span style="color:#ff79c6">)</span>------------<span style="color:#ff79c6">(</span>veth-ns3-br<span style="color:#ff79c6">)</span>--+
+|                                                                    |
+|                           virtual-bridge                           |
+|                                                                    |
++--------------------------------------------------------------------+
+</code></pre></div><p>创建三个namespace。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip netns add ns1
+ip netns add ns2
+ip netns add ns3
+</code></pre></div><p>创建一个Linux bridge。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brctl addbr virtual-bridge
+</code></pre></div><p>创建veth pair，然后将veth pair一端的虚拟网卡加入到namespace，再将另一端通过brctl addif命令加入到网桥上。这样就相当于用一条网线将三个namespace连接到了网桥上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link add veth-ns1 <span style="color:#8be9fd;font-style:italic">type</span> veth peer name veth-ns1-br
+ip link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns1 netns ns1
+brctl addif virtual-bridge veth-ns1-br
+
+ip link add veth-ns2 <span style="color:#8be9fd;font-style:italic">type</span> veth peer name veth-ns2-br
+ip link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns2 netns ns2
+brctl addif virtual-bridge veth-ns2-br
+
+ip link add veth-ns3 <span style="color:#8be9fd;font-style:italic">type</span> veth peer name veth-ns3-br
+ip link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns3 netns ns3
+brctl addif virtual-bridge veth-ns3-br
+</code></pre></div><p>为三个namespace中的虚拟网卡设置IP地址，这些IP地址位于同一个子网192.168.1.0/24中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip -n ns1 addr add <span style="color:#8be9fd;font-style:italic">local</span> 192.168.1.1/24 dev veth-ns1
+ip -n ns2 addr add <span style="color:#8be9fd;font-style:italic">local</span> 192.168.1.2/24 dev veth-ns2
+ip -n ns3 addr add <span style="color:#8be9fd;font-style:italic">local</span> 192.168.1.3/24 dev veth-ns3
+</code></pre></div><p>设置网桥和虚拟网卡状态为up。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link <span style="color:#8be9fd;font-style:italic">set</span> virtual-bridge up
+ip link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns1-br up
+ip link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns2-br up
+ip link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns3-br up
+ip -n ns1 link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns1 up
+ip -n ns2 link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns2 up
+ip -n ns3 link <span style="color:#8be9fd;font-style:italic">set</span> veth-ns3 up
+</code></pre></div><p>检查几个namespace之间是否可达。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip netns <span style="color:#8be9fd;font-style:italic">exec</span> ns1 ping 192.168.1.2
+PING 192.168.1.2 <span style="color:#ff79c6">(</span>192.168.1.2<span style="color:#ff79c6">)</span> 56<span style="color:#ff79c6">(</span>84<span style="color:#ff79c6">)</span> bytes of data.
+<span style="color:#bd93f9">64</span> bytes from 192.168.1.2: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.153 ms
+<span style="color:#bd93f9">64</span> bytes from 192.168.1.2: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">2</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.148 ms
+<span style="color:#bd93f9">64</span> bytes from 192.168.1.2: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">3</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.116 ms
+^C
+--- 192.168.1.2 ping statistics ---
+<span style="color:#bd93f9">3</span> packets transmitted, <span style="color:#bd93f9">3</span> received, 0% packet loss, <span style="color:#8be9fd;font-style:italic">time</span> 2015ms
+rtt min/avg/max/mdev <span style="color:#ff79c6">=</span> 0.116/0.139/0.153/0.016 ms
+ip netns <span style="color:#8be9fd;font-style:italic">exec</span> ns1 ping 192.168.1.3
+PING 192.168.1.3 <span style="color:#ff79c6">(</span>192.168.1.3<span style="color:#ff79c6">)</span> 56<span style="color:#ff79c6">(</span>84<span style="color:#ff79c6">)</span> bytes of data.
+<span style="color:#bd93f9">64</span> bytes from 192.168.1.3: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.293 ms
+<span style="color:#bd93f9">64</span> bytes from 192.168.1.3: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">2</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.165 ms
+
+</code></pre></div><p>通过上面的试验，我们验证了可以使用Linux bridge来将多个namespace连接到同一个二层网络中。在分配IP地址的时候，我们只为veth在namespace中那一端的虚拟网卡分配了地址，而没有为加入bridge那一端分配地址。这是因为bridge是工作在二层上的，只会处理以太包，包括ARP解析，以太数据包的转发和泛洪；并不会进行三层(IP)的处理，因此不需要三层的IP地址。</p>
+<h1 id="heading">参考文档</h1>
 <ul>
 <li><a href="http://man7.org/linux/man-pages/man7/namespaces.7.html">Linux man page: namespaces</a></li>
 <li><a href="http://man7.org/linux/man-pages/man4/veth.4.html">Linux man page: veth</a></li>
