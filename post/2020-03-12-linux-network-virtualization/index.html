@@ -511,7 +511,7 @@ PING 192.168.1.3 <span style="color:#ff79c6">(</span>192.168.1.3<span style="col
 <span style="color:#bd93f9">64</span> bytes from 192.168.1.3: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">1</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.293 ms
 <span style="color:#bd93f9">64</span> bytes from 192.168.1.3: <span style="color:#8be9fd;font-style:italic">icmp_seq</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">2</span> <span style="color:#8be9fd;font-style:italic">ttl</span><span style="color:#ff79c6">=</span><span style="color:#bd93f9">64</span> <span style="color:#8be9fd;font-style:italic">time</span><span style="color:#ff79c6">=</span>0.165 ms
 
-</code></pre></div><p>通过上面的试验，我们验证了可以使用Linux bridge来将多个namespace连接到同一个二层网络中。在分配IP地址的时候，我们只为veth在namespace中那一端的虚拟网卡分配了地址，而没有为加入bridge那一端分配地址。这是因为bridge是工作在二层上的，只会处理以太包，包括ARP解析，以太数据包的转发和泛洪；并不会进行三层(IP)的处理，因此不需要三层的IP地址。</p>
+</code></pre></div><p>通过上面的试验，我们验证了可以使用Linux bridge来将多个namespace连接到同一个二层网络中。你可能注意到，在分配IP地址的时候，我们只为veth在namespace中那一端的虚拟网卡分配了地址，而没有为加入bridge那一端分配地址。这是因为bridge是工作在二层上的，只会处理以太包，包括ARP解析，以太数据包的转发和泛洪；并不会进行三层(IP)的处理，因此不需要三层的IP地址。</p>
 <h1 id="heading">参考文档</h1>
 <ul>
 <li><a href="http://man7.org/linux/man-pages/man7/namespaces.7.html">Linux man page: namespaces</a></li>
