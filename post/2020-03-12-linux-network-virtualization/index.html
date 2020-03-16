@@ -407,8 +407,32 @@ $(function() {
 </tr>
 </tbody>
 </table>
-<p>Network namespace允许你在Linux中创建相互隔离的网络视图，每个网络名字空间都有独立的网络配置，比如：网络设备、路由表等。新建的网络名字空间与主机默认网络名字空间之间是隔离的。我们平时默认操作的是主机的默认网络名字空间。</p>
-<h1 id="veth">Veth</h1>
+<p>Network namespace允许你在Linux中创建相互隔离的网络视图，每个网络名字空间都有自己独立的网络配置，包括：网络设备、路由表、IPTables规则，路由表、网络协议栈等。新建的网络名字空间与主机默认网络名字空间之间是隔离的。我们平时默认操作的是主机的默认网络名字空间。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">+---------------------------------------------------------------------------------------+
+|                                       Linux Host                                      |
+|                                                                                       |
+|  +--------------------------------------+   +--------------------------------------+  |
+|  |  network namespace1                  |   |  network namespace1                  |  |
+|  | +---------------+  +---------------+ |   | +---------------+  +---------------+ |  |
+|  | |network devices|  |  route table  | |   | |network devices|  |  route table  | |  |
+|  | +---------------+  +---------------+ |   | +---------------+  +---------------+ |  |
+|  | +---------------+  +---------------+ |   | +---------------+  +---------------+ |  |
+|  | |    iptables   |  |protocol stack | |   | |    iptables   |  |protocol stack | |  |
+|  | +---------------+  +---------------+ |   | +---------------+  +---------------+ |  |
+|  +--------------------------------------+   +--------------------------------------+  |
+|                                                                                       |
+|                       +--------------------------------------+                        |
+|                       |        default network namespace     |                        |
+|                       | +---------------+  +---------------+ |                        |
+|                       | |network devices|  |  route table  | |                        |
+|                       | +---------------+  +---------------+ |                        |
+|                       | +---------------+  +---------------+ |                        |
+|                       | |    iptables   |  |protocol stack | |                        |
+|                       | +---------------+  +---------------+ |                        |
+|                       +--------------------------------------+                        |
+|                                                                                       |
++---------------------------------------------------------------------------------------+
+</code></pre></div><h1 id="veth">Veth</h1>
 <p>The veth devices are virtual Ethernet devices.  They can act as tunnels between network namespaces to create a bridge to a physical network device in another namespace, but can also be used as standalone network devices.</p>
 <p>veth devices are always created in interconnected pairs.  A pair can be created using the command:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># ip link add &lt;p1-name&gt; type veth peer name &lt;p2-name&gt;</span> 
@@ -465,7 +489,7 @@ PING 192.168.1.2 <span style="color:#ff79c6">(</span>192.168.1.2<span style="col
         +                          +                        +
 +--<span style="color:#ff79c6">(</span>veth-ns1-br<span style="color:#ff79c6">)</span>-------------<span style="color:#ff79c6">(</span>veth-ns2-br<span style="color:#ff79c6">)</span>------------<span style="color:#ff79c6">(</span>veth-ns3-br<span style="color:#ff79c6">)</span>--+
 |                                                                    |
-|                           virtual-bridge                           |
+|                           linux-bridge                             |
 |                                                                    |
 +--------------------------------------------------------------------+
 </code></pre></div><p>创建三个namespace。</p>
