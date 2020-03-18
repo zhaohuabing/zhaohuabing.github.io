@@ -472,6 +472,11 @@ tcp6       <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9"
 :KUBE-SEP-4CGFRVESQ3AECDE7 - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
 :KUBE-SEP-YLXG4RMKAICGY2B3 - <span style="color:#ff79c6">[</span>0:0<span style="color:#ff79c6">]</span>
 
+<span style="color:#6272a4"># 对进入host上30080端口的外部tcp流量进行SNAT，转换为pod网络上的地址</span>
+-A KUBE-NODEPORTS -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp --dport <span style="color:#bd93f9">30080</span> -j KUBE-MARK-MASQ
+-A KUBE-MARK-MASQ -j MARK --set-xmark 0x4000/0x4000
+-A KUBE-POSTROUTING -m comment --comment <span style="color:#f1fa8c">&#34;kubernetes service traffic requiring SNAT&#34;</span> -m mark --mark 0x4000/0x4000 -j MASQUERADE
+
 <span style="color:#6272a4"># 将host上30080端口的外部tcp流量转到KUBE-SVC-J2DWGRZTH4C2LPA4链</span>
 -A KUBE-NODEPORTS -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp --dport <span style="color:#bd93f9">30080</span> -j KUBE-SVC-J2DWGRZTH4C2LPA4
 
