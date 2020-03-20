@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 19 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>数字证书原理</title>
+      <link>https://zhaohuabing.com/post/2020-03-19-pki/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-03-19-pki/</guid>
+      <description>非对称加密 在传统的加密算法中，通信的双方会采用一个共享秘钥来对数据进行加密和解密。消息发送方先采用秘钥对明文进行加密然后再进行传送，待接收方</description>
+    </item>
     
     <item>
       <title>Linux network namespace， veth， birdge与路由</title>
