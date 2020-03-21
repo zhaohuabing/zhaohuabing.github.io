@@ -360,7 +360,7 @@ $(function() {
         <li><a href="#heading4">自签名证书</a></li>
         <li><a href="#heading5">证书机构</a></li>
         <li><a href="#heading6">证书链</a></li>
-        <li><a href="#heading7">交叉验证</a></li>
+        <li><a href="#heading7">交叉认证</a></li>
       </ul>
     </li>
     <li><a href="#heading8">参考文档</a></li>
@@ -657,12 +657,188 @@ openssl x509 -pubkey -noout -in Alice.crt  &gt; Alice-pub.key
 openssl dgst -sha256 -verify Alice-pub.key -signature alice-contract-sign.sha256 alice-contract
 Verified OK
 </code></pre></div><h2 id="heading6">证书链</h2>
-<h2 id="heading7">交叉验证</h2>
+<p>在Alice和Bob的证书实验中，Alice的证书是采用我们创建的证书机构的根证书签发的。但实际上真正的证书机构不会使用根证书来直接签发用户证书。原因是根证书非常重要，如果根证书的秘钥泄露了，会影响该根证书签发的所有用户证书，导致非常严重的安全风险。为了避免根证书的安全风险，证书机构会采用根证书签发中间证书（intermediate certificate），然后使用中间证书来签发用户证书，这样如果一个中间证书出现了安全问题，可以废弃掉该中间证书而不影响根证书，影响的用户证书范围也小一些。</p>
+<p>因此证书有三种，根证书，中间证书和用户证书，其中中间证书可以有多个层级，这样形成一个链式的证书层级，称为证书链。多层证书链的生成和验证过程和前面试验中的两层（根证书直接生成用户证书）的情况是类似的，只是中间过程会多几个层级。以三层证书链的生成和验证过程举例说明。</p>
+<ul>
+<li>证书生成和使用过程
+<ol>
+<li>证书机构生成自签名根证书</li>
+<li>证书机构采用根证书对应的私钥签名中间证书</li>
+<li>证书机构采用中间证书对应的私钥签名用户证书</li>
+<li>用户采用用户证书对应的私钥签名用户数据</li>
+</ol>
+</li>
+<li>证书使用时的验证过程
+<ol>
+<li>采用中间证书中的公钥验证用户证书的签名</li>
+<li>采用根证书中的公钥验证中间证书的签名</li>
+<li>采用用户证书中的公钥来验证数据中的签名</li>
+</ol>
+</li>
+</ul>
+<p>证书链中证书的关系如下图所示，每一个下级证书中都有其上级证书的DN（Distinguished Name），在进行验证时，每一级都会通过该DN来找到上级证书，并使用上级证书的public Key来验证本机证书的签名，如果中间有多个层级，则会重复该验证过程一直到自签名根证书，由于自签名根证书已经内置在操作系统中，属于系统信任的根证书，到达根证书时就验证完毕，形成了一条从上到下的链状信任关系。
+<img src="/img/2020-03-19-pki/certificate-chain.png" alt="">
+图片来源<a href="https://support.f5.com/csp/article/K41280190">f5</a></p>
+<p>下面我们用openssl来试验一个三层的证书链。</p>
+<p>首先生成根证书和对应的私钥。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -newkey rsa:2048 -nodes -keyout rootCA.key -x509 -days <span style="color:#bd93f9">365</span> -out rootCA.crt
+Generating a RSA private key
+.......+++++
+..................................+++++
+writing new private key to <span style="color:#f1fa8c">&#39;rootCA.key&#39;</span>
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be left blank.
+-----
+Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
+State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Test Root CA
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Test Root CA
+Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:rootca@zhaohuabing.com
+</code></pre></div><p>生成中间证书的私钥和CSR。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -nodes -keyout intermediate.key -out intermediate.csr
+Generating a RSA private key
+...........+++++
+................+++++
+writing new private key to <span style="color:#f1fa8c">&#39;intermediate.key&#39;</span>
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be left blank.
+-----
+Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
+State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Test Intermediate CA
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Test Intermediate CA
+Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:intermediateCA@zhaohuabing.com
+
+Please enter the following <span style="color:#f1fa8c">&#39;extra&#39;</span> attributes
+to be sent with your certificate request
+A challenge password <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+An optional company name <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+</code></pre></div><p>和用户证书不同的是，中间证书需要在证书的basicConstraints中设置CA:true标签，以标明该证书属于证书机构的证书，可以用于签发和验证用户证书。而openssl x509命令不能设置basicConstraints命令，因此我们需要采用openssl ca命令，该命令实现了一个简单的证书机构。</p>
+<p>openssl ca 命令需要采用一个配置文件来配置生成证书的相关参数。我们创建一个intermediateCA.conf文件，其内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span> ca <span style="color:#ff79c6">]</span>
+<span style="color:#8be9fd;font-style:italic">default_ca</span> <span style="color:#ff79c6">=</span> intermediate_ca
+<span style="color:#ff79c6">[</span> intermediate_ca <span style="color:#ff79c6">]</span>
+<span style="color:#8be9fd;font-style:italic">dir</span> <span style="color:#ff79c6">=</span> .
+<span style="color:#8be9fd;font-style:italic">private_key</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$dir</span>/rootCA.key
+<span style="color:#8be9fd;font-style:italic">certificate</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$dir</span>/rootCA.crt
+<span style="color:#8be9fd;font-style:italic">new_certs_dir</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$dir</span>/
+<span style="color:#8be9fd;font-style:italic">serial</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$dir</span>/crt.srl
+<span style="color:#8be9fd;font-style:italic">database</span> <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">$dir</span>/db/index
+<span style="color:#8be9fd;font-style:italic">default_md</span> <span style="color:#ff79c6">=</span> sha256
+<span style="color:#8be9fd;font-style:italic">policy</span> <span style="color:#ff79c6">=</span> policy_any
+<span style="color:#8be9fd;font-style:italic">email_in_dn</span> <span style="color:#ff79c6">=</span> no
+<span style="color:#ff79c6">[</span> policy_any <span style="color:#ff79c6">]</span>
+<span style="color:#8be9fd;font-style:italic">domainComponent</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">countryName</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">stateOrProvinceName</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">localityName</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">organizationName</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">organizationalUnitName</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">commonName</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#8be9fd;font-style:italic">emailAddress</span> <span style="color:#ff79c6">=</span> optional
+<span style="color:#ff79c6">[</span> ca_ext <span style="color:#ff79c6">]</span>
+<span style="color:#8be9fd;font-style:italic">keyUsage</span>                <span style="color:#ff79c6">=</span> critical,keyCertSign,cRLSign
+<span style="color:#6272a4"># 注意这里设置了CA:true，表明使用该配置生成的证书是CA证书，可以用于签发用户证书</span>
+<span style="color:#8be9fd;font-style:italic">basicConstraints</span>        <span style="color:#ff79c6">=</span> critical,CA:true
+<span style="color:#8be9fd;font-style:italic">subjectKeyIdentifier</span>    <span style="color:#ff79c6">=</span> <span style="color:#8be9fd;font-style:italic">hash</span>
+<span style="color:#8be9fd;font-style:italic">authorityKeyIdentifier</span>  <span style="color:#ff79c6">=</span> keyid:always
+</code></pre></div><p>由于openssl ca命令实现了一个简单的证书机构，会使用一个文本数据库来记录生成的证书，我们需要生成该数据库索引文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir db
+touch db/index
+</code></pre></div><p>使用intermediateCA.conf生成中间证书。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl ca -config intermediateCA.conf -days <span style="color:#bd93f9">365</span> -create_serial -in intermediate.csr -out intermediate.crt -extensions ca_ext -notext
+Using configuration from intermediateCA.conf
+Check that the request matches the signature
+Signature ok
+The Subject<span style="color:#f1fa8c">&#39;s Distinguished Name is as follows
+</span><span style="color:#f1fa8c">countryName           :PRINTABLE:&#39;</span>CN<span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">stateOrProvinceName   :ASN.1 12:&#39;</span>Sichuan<span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">localityName          :ASN.1 12:&#39;</span>Chengdu<span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">organizationName      :ASN.1 12:&#39;</span>Test Intermediate CA<span style="color:#f1fa8c">&#39;
+</span><span style="color:#f1fa8c">commonName            :ASN.1 12:&#39;</span>Test Intermediate CA&#39;
+Certificate is to be certified <span style="color:#ff79c6">until</span> Mar <span style="color:#bd93f9">21</span> 02:04:36 <span style="color:#bd93f9">2021</span> GMT <span style="color:#ff79c6">(</span><span style="color:#bd93f9">365</span> days<span style="color:#ff79c6">)</span>
+Sign the certificate? <span style="color:#ff79c6">[</span>y/n<span style="color:#ff79c6">]</span>:y
+
+
+<span style="color:#bd93f9">1</span> out of <span style="color:#bd93f9">1</span> certificate requests certified, commit? <span style="color:#ff79c6">[</span>y/n<span style="color:#ff79c6">]</span>y
+Write out database with <span style="color:#bd93f9">1</span> new entries
+Data Base Updated
+</code></pre></div><p>生成Alice的私钥和CSR。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -nodes -keyout Alice.key -out Alice.csr
+Generating a RSA private key
+........+++++
+......................+++++
+writing new private key to <span style="color:#f1fa8c">&#39;Alice.key&#39;</span>
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be left blank.
+-----
+Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
+State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Make a Lot of Money Ltd
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Alice
+Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+
+Please enter the following <span style="color:#f1fa8c">&#39;extra&#39;</span> attributes
+to be sent with your certificate request
+A challenge password <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+An optional company name <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+</code></pre></div><p>生成Alice的用户证书。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl x509 -req -in Alice.csr -CA intermediate.crt -CAkey intermediate.key -CAcreateserial -out Alice.crt
+Signature ok
+<span style="color:#8be9fd;font-style:italic">subject</span><span style="color:#ff79c6">=</span><span style="color:#8be9fd;font-style:italic">C</span> <span style="color:#ff79c6">=</span> CN, <span style="color:#8be9fd;font-style:italic">ST</span> <span style="color:#ff79c6">=</span> Sichuan, <span style="color:#8be9fd;font-style:italic">L</span> <span style="color:#ff79c6">=</span> Chengdu, <span style="color:#8be9fd;font-style:italic">O</span> <span style="color:#ff79c6">=</span> Make a Lot of Money Ltd, <span style="color:#8be9fd;font-style:italic">CN</span> <span style="color:#ff79c6">=</span> Alice
+Getting CA Private Key
+</code></pre></div><p>对Alice的用户证书进行验证，验证时需要同时指明根证书和中间证书。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl verify -CAfile rootCA.crt -untrusted intermediate.crt Alice.crt
+Alice.crt: OK
+</code></pre></div><p>我们可以把根证书和中间证书的内容一起放到一个证书链文件中，然后使用该证书链文件来验证用户证书。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat rootCA.crt intermediate.crt &gt; chain.crt
+openssl verify -CAfile chain.crt Alice.crt
+Alice.crt: OK
+</code></pre></div><p>在真实场景下，根证书自身就是可信的。我们将根证书导入到操作系统中来模拟该情况。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo cp rootCA.crt /etc/ca-certificates/trust-source/anchors/
+sudo trust extract-compat
+</code></pre></div><p>然后在openssl命令行中只指明中间证书，就可以验证Alice的用户证书。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl verify -CAfile intermediate.crt Alice.crt
+Alice.crt: OK
+</code></pre></div><h2 id="heading7">交叉认证</h2>
+<p>在签发证书时，多个CA可以为同一个公钥签发证书，因此一个证书签名对应的公钥可以存在于多个上级证书中。采用这种方式，一个证书可以存在于多条链中，并且每条链都是合法的，都可以通过验证。</p>
+<p>让我们来看看下面图中的例子：
+<img src="/img/2020-03-19-pki/cross-certification.jpg" alt="">
+在上图中，我们采用了CA1来为User1签发证书，CA1有一个自签名的根证书，同时采用CA2的根证书为CA1签发了一个中间证书，这样User1就处在了两条合法的证书链上（分别用实线和虚线表示）。</p>
+<ul>
+<li>User 1 Certificate -&gt; CA1 Self-signed Certificate</li>
+<li>User 1 Certificate -&gt; CA1 Certificate Issued by CA2 -&gt; CA2 Self-signed Certificate</li>
+</ul>
+<p>这两条链都是合法的，都可以对User1的证书进行验证。同理，也可以用CA1为CA2签发一个中间证书，使CA2颁发的用户证书也处于两条合法的证书链上。这种方式被称为交叉认证，通过交叉认证，可以为两个CA颁布的证书在两个CA之间建立互信关系。</p>
+<p>通过这种方式还可以实现CA的根证书更新，在进行根证书更新时，CA生成一对新的秘钥对和根证书，然后用新的私钥为老的公钥签名生成一个中间证书，并用老的私钥为新的公钥签名生成一个中间证书。这样，无论是新的根证书还是老的根证书颁发的证书在更新期间都可以正常使用，以实现CA新老根证书的平滑过渡。</p>
 <p>本文试验所采用的所有命令已经编写成可以执行的脚本，可以从该<a href="https://github.com/zhaohuabing/kubernetes-mindmap/tree/master/security">github</a>地址下载后自行执行试验。</p>
 <h1 id="heading8">参考文档</h1>
 <ul>
 <li><a href="https://zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/">Hash Pointers and Data Structures</a></li>
 <li><a href="https://zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/">Digital Signature and Public Key as Identities</a></li>
+<li><a href="https://sg.godaddy.com/en/help/what-is-an-intermediate-certificate-868">What is an intermediate certificate?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/X.509">wikipedia X.509</a></li>
 </ul>
 
 
