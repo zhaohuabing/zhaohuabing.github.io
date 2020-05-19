@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="一文带你彻底厘清 Kubernetes 中的证书工作机制" />
+    <meta property="og:title" content="一文带你彻底厘清 Kubernetes 中的证书工作机制" />
+    <meta property="twitter:title" content="一文带你彻底厘清 Kubernetes 中的证书工作机制" />
+    
+
+    
+    <meta name="description" content="在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。">
+    <meta property="og:description" content="在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。" />
+    <meta property="twitter:description" content="在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>一文带你彻底厘清 Kubernetes 中的证书工作机制-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2020-05-19-k8s-certificate/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+    
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/life">life</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/note">note</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/books/">BOOKS</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('https://images.pexels.com/photos/36764/marguerite-daisy-beautiful-beauty.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                    </div>
+                    <h1>一文带你彻底厘清 Kubernetes 中的证书工作机制</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by 
+                        
+                                &#34;赵化冰&#34;
+                         
+                        on 
+                        Tuesday, May 19, 2020
+                        
+                            <span id="/post/2020-05-19-k8s-certificate/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                        
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#kubernetes-">Kubernetes 组件的认证方式</a></li>
+    <li><a href="#kubernetes-ca">Kubernetes 中使用到的CA和证书</a></li>
+    <li><a href="#kubernetes-1">Kubernetes 中的证书配置</a>
+      <ul>
+        <li><a href="#etcd-">etcd 证书配置</a></li>
+        <li><a href="#kubeapiserver-">kube-apiserver 证书配置</a></li>
+        <li><a href="#-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</a></li>
+        <li><a href="#service-account--">Service Account  证书</a></li>
+        <li><a href="#kubernetes-2">Kubernetes 证书签发</a></li>
+        <li><a href="#-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading">小结</a></li>
+    <li><a href="#heading1">参考文档</a></li>
+  </ul>
+</nav>
+                
+                <p>接触 Kubernetes 以来，我经常看到 Kubernetes 在不同的地方使用了证书（Certificate），在 Kubernetes 安装和组件启动参数中也需要配置大量证书相关的参数。但是 Kubernetes 的文档在解释这些证书的工作机制方面做得并不是太好。经过大量的相关阅读和分析工作，我才弄清楚了 Kubernetes 中证书的使用方式。在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。</p>
+<h1 id="kubernetes-">Kubernetes 组件的认证方式</h1>
+<p>首先让我们来看一下 Kubernetes 中的组件：在 Kubernetes 中包含多个以独立进程形式运行的组件，这些组件之间通过 HTTP/GRPC 相互通信，以协同完成集群中应用的部署和管理工作。</p>
+<p><img src="/img/2020-05-19-k8s-certificate/components-of-kubernetes.png" alt="">
+kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/overview/components/">kubernetes.io</a></p>
+<p>从图中可以看到，Kubernetes 控制平面中包含了 etctd，kube-api-server，kube-scheduler，kube-controller-manager，cloud-controller-manage r等组件，这些组件会相互进行远程调用，例如 kube-api-server 会调用 etcd 接口存储数据，kube-controller-manager 会调用 kube-api-server 接口查询集群中的对象状态；同时，kube-api-server 也会和在工作节点上的 kubelet 和 kube-proxy 进行通信，以在工作节点上部署和管理应用。</p>
+<p>以上这些组件之间的相互调用都是通过网络进行的。在进行网络通信时，通信双方需要验证对方的身份，以避免恶意第三方伪造身份窃取信息或者对系统进行攻击。为了相互验证对方的身份，通信双方中的任何一方都需要做下面两件事情：</p>
+<ul>
+<li>向对方提供标明自己身份的一个证书</li>
+<li>验证对方提供的身份证书是否合法，是否伪造的？</li>
+</ul>
+<p>在 Kubernetes 中使用了数字证书来提供身份证明，我们可以把数字证书简单理解为我们在日常生活中使用的“身份证”，上面标注了证书拥有者的身份信息，例如名称，所属组织机构等。为了保证证书的权威性，会采用一个通信双方都信任的 CA（证书机构，Certificate Authority）来颁发证书。这就类似于现实生活中颁发“身份证”的政府机构。数字证书中最重要的内容实际上是证书拥有者的公钥，该公钥代表了用户的身份。本文假设读者已经了解数字证书和 CA 的基本原理，如果你对此不太清楚，或者希望重新温习一下相关知识，可以先阅读一下这篇文章<a href="https://zhaohuabing.com/post/2020-03-19-pki">《数字证书原理》</a>。</p>
+<p><img src="/img/2020-05-19-k8s-certificate/ca.png" alt="">
+CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html"><a href="http://www.trustauth.cn">www.trustauth.cn</a></a></p>
+<p>在 Kubernetes 的组件之间进行通信时，数字证书的验证是在协议层面通过 TLS 完成的，除了需要在建立通信时提供相关的证书和密钥外，在应用层面并不需要进行特殊处理。采用 TLS 进行验证有两种方式：</p>
+<ul>
+<li>服务器单向认证：只需要服务器端提供证书，客户端通过服务器端证书验证服务的身份，但服务器并不验证客户端的身份。这种情况一般适用于对 Internet 开放的服务，例如搜索引擎网站，任何客户端都可以连接到服务器上进行访问，但客户端需要验证服务器的身份，以避免连接到伪造的恶意服务器。</li>
+<li>双向 TLS 认证：除了客户端需要验证服务器的证书，服务器也要通过客户端证书验证客户端的身份。这种情况下服务器提供的是敏感信息，只允许特定身份的客户端访问。</li>
+</ul>
+<p>在 Kubernetes 中，由于组件提供的接口包含了集群的内部信息，因此需要采用双向 TLS 认证。即客户端和服务器端都需要验证对方的身份信息。在两个组件进行双向认证时，会涉及到下面这些证书相关的文件：</p>
+<ul>
+<li>服务器端证书：服务器为了证明自身身份的数字证书，里面主要包含了服务器端的公钥以及服务器的身份信息。</li>
+<li>服务器端私钥：服务器端证书中包含的公钥所对应的私钥。由于公钥和私钥是成对使用的，在进行 TLS 验证时，服务器使用该私钥来向客户端证明自己是服务器端证书的拥有者。</li>
+<li>客户端证书：客户端为了证明自身身份的数字证书，里面主要包含了客户端的公钥以及客户端的身份信息。</li>
+<li>客户端私钥：客户端证书中包含的公钥所对应的私钥，同理，客户端使用该私钥来向服务器端证明自己是客户端证书的拥有者。</li>
+<li>服务器端 CA 根证书：签发服务器端证书的 CA 根证书，客户端使用该 CA 根证书来验证服务器端证书的合法性。</li>
+<li>客户端端 CA 根证书：签发客户端证书的 CA 根证书，服务器端使用该 CA 根证书来验证客户端证书的合法性。</li>
+</ul>
+<p>下面这张来自<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a> 文章中的图形象地解释了双向 TLS 认证的原理。如果你需要了解更多关于 TLS 认证的原理，可以阅读一下 medium 上的原文。</p>
+<p><img src="/img/2020-05-19-k8s-certificate/mutual-tls.png" alt=""></p>
+<p>图片来源<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a></p>
+<h1 id="kubernetes-ca">Kubernetes 中使用到的CA和证书</h1>
+<p>Kubernetes 中使用了大量的证书，本篇文章不会试图覆盖到所有可能使用到的证书，但会尽量讨论主要用到的证书。理解了这些主要证书的使用方法和原理后，也能很快理解其他可能遇到的证书文件。下图标识出了在 kubernetes 中主要使用到的证书和其使用的位置：</p>
+<p><img src="/img/2020-05-19-k8s-certificate/kubernetes-certificate-usage.png" alt=""></p>
+<p>Kubernetes 中使用到的主要证书</p>
+<p>上图中使用序号对证书进行了标注。图中的箭头表明了组件的调用方向，箭头所指方向为服务提供方，另一头为服务调用方。为了实现 TLS 双向认证，服务提供方需要使用一个服务器证书，服务调用方则需要提供一个客户端证书，并且双方都需要使用一个 CA 证书来验证对方提供的证书。为了简明起见，上图中只标注了证书使用方提供的证书，并没有标注证书的验证方验证使用的 CA 证书。图中标注的这些证书的作用分别如下：</p>
+<ol>
+<li>
+<p>etcd 集群中各个节点之间相互通信使用的证书。由于一个 etctd 节点既为其他节点提供服务，又需要作为客户端访问其他节点，因此该证书同时用作服务器证书和客户端证书。</p>
+</li>
+<li>
+<p>etcd 向外提供服务使用的证书。该证书是服务器证书。</p>
+</li>
+<li>
+<p>kube-apiserver 作为客户端访问 etcd 使用的证书。该证书是客户端证书。</p>
+</li>
+<li>
+<p>kube-apiserver 对外提供服务使用的证书。该证书是服务器证书。</p>
+</li>
+<li>
+<p>kube-controller-manager 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
+</li>
+<li>
+<p>kube-scheduler 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
+</li>
+<li>
+<p>kube-proxy 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
+</li>
+<li>
+<p>kubelet 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
+</li>
+<li>
+<p>管理员用户通过 kubectl 访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
+</li>
+<li>
+<p>kubelet 对外提供服务使用的证书。该证书是服务器证书。</p>
+</li>
+<li>
+<p>kube-apiserver 作为客户端访问 kubelet 采用的证书。该证书是客户端证书。</p>
+</li>
+<li>
+<p>kube-controller-manager 用于生成和验证 service-account token 的证书。该证书并不会像其他证书一样用于通过 CA 进行身份认证，而是将证书中的公钥/私钥对用于 service account token 的生成和验证。kube-controller-manager  会用该证书的私钥来生成 service account token，然后以 secret 的方式加载到 pod 中。pod 中的应用可以使用该 token 来访问 kube-apiserver， kube-apiserver 会使用该证书中的公钥来验证请求中的 token。</p>
+</li>
+</ol>
+<p>通过这张图，对证书机制比较了解的读者可能已经看出，我们其实可以使用多个不同的 CA 来颁发这些证书。只要在通信的组件中正确配置用于验证对方证书的 CA 根证书，就可以使用不同的 CA 来颁发不同用途的证书。但我们一般建议采用统一的 CA 来颁发 kubernetes 集群中的所有证书，这是因为采用一个集群根 CA 的方式比采用多个 CA 的方式更容易管理，可以避免多个CA 导致的复杂的证书配置、更新等问题，减少由于证书配置错误导致的集群故障。</p>
+<h1 id="kubernetes-1">Kubernetes 中的证书配置</h1>
+<p>前面我们介绍了 Kubernetes 集群中主要使用到的证书。下面我们分别看一下如何将这些证书及其对应的私钥和 CA 根证书需要配置到 Kubernetes 中各个组件中，以供各个组件进行使用。这里假设使用一个集群根 CA 来颁发所有相关证书，因此涉及到 CA 的配置对应的证书文件名都是相同的。</p>
+<h2 id="etcd-">etcd 证书配置</h2>
+<p>需要在 etcd 的启动命令行中配置其对外提供服务的服务器证书及私钥; etcd 节点之间相互进行认证的 peer 证书，私钥，以及验证 peer 的 CA；etcd 验证访问其服务的客户端的 CA。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/etcd <span style="color:#f1fa8c">\\</span>
+  --cert-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd.pem <span style="color:#f1fa8c">\\</span>                   <span style="color:#6272a4"># 对外提供服务的服务器证书</span>
+  --key-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd-key.pem <span style="color:#f1fa8c">\\</span>                <span style="color:#6272a4"># 服务器证书对应的私钥</span>
+  --peer-cert-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd-peer.pem <span style="color:#f1fa8c">\\</span>         <span style="color:#6272a4"># peer 证书，用于 etcd 节点之间的相互访问</span>
+  --peer-key-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd-peer-key.pem <span style="color:#f1fa8c">\\</span>      <span style="color:#6272a4"># peer 证书对应的私钥</span>
+  --trusted-ca-file<span style="color:#ff79c6">=</span>/etc/etcd/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>       <span style="color:#6272a4"># 用于验证访问 etcd 服务器的客户端证书的 CA 根证书</span>
+  --peer-trusted-ca-file<span style="color:#ff79c6">=</span>/etc/etcd/cluster-root-ca.pem<span style="color:#f1fa8c">\\</span>   <span style="color:#6272a4"># 用于验证 peer 证书的 CA 根证书</span>
+  ...
+</code></pre></div><h2 id="kubeapiserver-">kube-apiserver 证书配置</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/kube-apiserver <span style="color:#f1fa8c">\\</span> 
+  --tls-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver.pem <span style="color:#f1fa8c">\\</span>                             <span style="color:#6272a4"># 用于对外提供服务的服务器证书</span>
+  --tls-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-key.pem <span style="color:#f1fa8c">\\</span>                  <span style="color:#6272a4"># 服务器证书对应的私钥</span>
+  --etcd-certfile<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-etcd-client.pem <span style="color:#f1fa8c">\\</span>                 <span style="color:#6272a4"># 用于访问 etcd 的客户端证书</span>
+  --etcd-keyfile<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-etcd-client-key.pem <span style="color:#f1fa8c">\\</span>              <span style="color:#6272a4"># 用于访问 etcd 的客户端证书的私钥</span>
+  --kubelet-client-certificate<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-kubelet-client.pem <span style="color:#f1fa8c">\\</span> <span style="color:#6272a4"># 用于访问 kubelet 的客户端证书</span>
+  --kubelet-client-key<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-kubelet-client-key.pem <span style="color:#f1fa8c">\\</span>     <span style="color:#6272a4"># 用于访问 kubelet 的客户端证书的私钥</span>
+  --client-ca-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>                           <span style="color:#6272a4"># 用于验证访问 kube-apiserver 的客户端的证书的 CA 根证书</span>
+  --etcd-cafile<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>                               <span style="color:#6272a4"># 用于验证 etcd 服务器证书的 CA 根证书</span>  
+  --kubelet-certificate-authority<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>             <span style="color:#6272a4"># 用于验证 kubelet 服务器证书的 CA 根证书</span>
+  --service-account-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account.pem <span style="color:#f1fa8c">\\</span>                  <span style="color:#6272a4"># 用于验证 service account token 的公钥</span>
+  ...
+</code></pre></div><h2 id="-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</h2>
+<p>Kubernetes 中的各个组件，包括kube-controller-mananger、kube-scheduler、kube-proxy、kubelet等，通过一个kubeconfig 文件中配置的信息来访问 kube-apiserver。该文件中包含了 kube-apiserver 的地址，验证 kube-apiserver 服务器证书的 CA 证书，自己的客户端证书和私钥等访问信息。</p>
+<p>在一个使用 minikube 安装的集群中，生成的 kubeconfig 配置文件如下所示，这四个文件分别为 admin 用户， kube-controller-mananger、kubelet 和 kube-scheduler 的kubeconfig配置文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls /etc/kubernetes/
+admin.conf  controller-manager.conf  kubelet.conf  scheduler.conf
+</code></pre></div><p>我们打开 controller-manager.conf 来看一下。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: v1
+clusters:
+- cluster: 
+    <span style="color:#6272a4"># 用于验证 kube-apiserver 服务器证书的 CA 根证书 </span>
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwdGFXNXAKYTNWaVpVTkJNQjRYRFRJd01ETXdOekF3TXpjeE1Wb1hEVE13TURNd05qQXdNemN4TVZvd0ZURVRNQkVHQTFVRQpBeE1LYldsdWFXdDFZbVZEUVRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTczCkdIMWxqNkxEUm1FLy9hQ2cvNUlmampKYy8zOGcyMVpITXJDMkx5RGVqZWhrdWUwZFB1WTJ0L2JjTjJYM1dGNEsKaWNzNmhhWnBDbFVxL3pteVRITWhhZnlmVVF5MDFJZmhDV2I5NXI4akpHZ2NyU3U3UUtXM3ZOd1Z1TmhJNmd6SApSWW45Ry82VHJKTjdOMWRjejNmMlU1OFRjUHVCQzZOUzVTc1JmemFSczVDZnd0UTNaa2czQUFVYTlQSDZFVmtDCkIvRGR1bXBialZGakMwSllOWlFVNTlGNUxDeHJ0bEYvOUJsSVhnZGw0ZlNCNzQ0ZW1UelcySEZQek9lTklYYnUKYTJPa0FFTDdJc3hSRTFBaEFKZ1h6cFNmdi9paDBuMEJpQ1VaV1hLZjg2UjZJL2xlK2docG51c21kTXUwbkNEUApHMm9laXhRTit5NzFQU2tGcGdzQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUIwR0ExVWRKUVFXCk1CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCaWpXYlpPNU9uaU9lNHRHUlQvRGFXaFBkY2ZwbE8vcVQ5WkFqU1hXZU41TStubExQZQpGV1NLRGRWU1NzajJ6UVdMU3A1Vjc3MkFoa2NYQlM0a2ZiY2ZCTUl2ejVsYXJZeHgxcnduTzZLbVZSTHdkNUNkCnRER2RjUjF0UzdqeTRSV05ISlAyNWZhZHB5TE9KVzJlZkdLRmRiSnZyRjljekV1ODR5a1drdThtVnNNa0RzTXkKbnVFNGtXblNvODgweFpxVG9QN01qM3hkRlNYYWdoNytwK3FMazk1VjhBNTRUNmRKa2VjSGg4SzdNYVRxdWVOVgpzOVhuZDA2WEJGQWFCVXRsSGZybmRXUzhmaTQ5dTY0NEFWOWJHclNYRnR1Q0lydnIxVkY2d0R3dEJYZi9UUStrCkx3Zk1oNVZDVWt1bEJqWEpqK1ZvRnBLZm5Qck9nbEExZzRtUgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    server: https://localhost:<span style="color:#bd93f9">8443</span>
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: system:kube-controller-manager
+  name: system:kube-controller-manager@kubernetes
+current-context: system:kube-controller-manager@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: system:kube-controller-manager
+  user:
+    <span style="color:#6272a4"># 用于访问 kube-apiserver 的客户端证书</span>
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lJZVE4aDNXSlNmZEF3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2JXbHVhV3QxWW1WRFFUQWVGdzB5TURBek1EY3dNRE0zTVRGYUZ3MHlNVEExTVRrd05qVTNNemxhTUNreApKekFsQmdOVkJBTVRIbk41YzNSbGJUcHJkV0psTFdOdmJuUnliMnhzWlhJdGJXRnVZV2RsY2pDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU5DTzJpTEZzNGRTTW9sR2plN2tjY1VFbURDVjEvbWQKV1p1cS9DT0RvV1p2Uy80clNrOXNsaFQvektIVTVkVmg3SFV4TGNWU1RkQXZScGEwN3dXK3h2eWlDR3Y5UmMyVAp0bkFnUFFhQ2VkOC8zZlFpMzI1QmZCZVl4UjRTTm8raEM1b0ZYYkhpdC9OWWlQTVMvM1hFOGVCc0dEZCtjd1pzCnhNTDZzc0pJNzVOSmNXckV3eXlMbzIrb1JSRmJ2TlpJWFRZekJpRGd3QkZxNUkzZVA5QTl2d29rUG5STFBSdlYKQU9SV3hUZDMyblJLOTY1SU9uV25mNzY0bHhSeEV6bHIyS09rSzc5NlVJWTlyL0lYOWdGQjNqbGZFK1lBOE5VLwpuV2x3cElNL0ZpMk9hL1hjNnQzNUJHSnNXcTR4bHQ5RDdqS3V2bTNONmJlanJPOFZNODU5QU44Q0F3RUFBYU1uCk1DVXdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CTUdBMVVkSlFRTU1Bb0dDQ3NHQVFVRkJ3TUNNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCZVg4QmVuTlJoUTVWaVpMMjRxcWxIMjRlMDVyYWVVTFZJQlQzWE90cmdQcXF1WXRGWgptRG9naEpuSW05aVVMcHFTTUxHMlJrQ0RBMEk2Rit0SGVFVHRMRDlNdjA2N1huQ2VCclhkTFVTYzkwaHNZWm1KClNsVG11c21TZGUxUXJsRnFxQVRZY2VCVWgwM0lSbXZIL1BtS21va1FUZDZER0paVVVhM3ducEN6Nko4aGcySGwKWlZFaURKcHNoeXNBaVdCUWZBN01TRlFlb0poSjhUdHgzdEhNZDlaaHlmcVVHOVByUGJkMUlBQTIrRlVudXRsNwpoRmdZdTBxbG5aZFZCWE9JM1dvZndWZ2dDTEQrbFVCeGgzNVhLNStxYXhWNVlDTit0ZTNFeDJERHVmRW1UV0FoCkwwUVNTc0RTZGd0Vi9TNFhvV2xQcXU0Q2lRVnZydUg3WHkxMwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    <span style="color:#6272a4"># 客户端证书对应的私钥</span>
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMEk3YUlzV3poMUl5aVVhTjd1Unh4UVNZTUpYWCtaMVptNnI4STRPaFptOUwvaXRLClQyeVdGUC9Nb2RUbDFXSHNkVEV0eFZKTjBDOUdsclR2QmI3Ry9LSUlhLzFGelpPMmNDQTlCb0o1M3ovZDlDTGYKYmtGOEY1akZIaEkyajZFTG1nVmRzZUszODFpSTh4TC9kY1R4NEd3WU4zNXpCbXpFd3ZxeXdranZrMGx4YXNURApMSXVqYjZoRkVWdTgxa2hkTmpNR0lPREFFV3JramQ0LzBEMi9DaVErZEVzOUc5VUE1RmJGTjNmYWRFcjNya2c2CmRhZC92cmlYRkhFVE9XdllvNlFydjNwUWhqMnY4aGYyQVVIZU9WOFQ1Z0R3MVQrZGFYQ2tnejhXTFk1cjlkenEKM2ZrRVlteGFyakdXMzBQdU1xNitiYzNwdDZPczd4VXp6bjBBM3dJREFRQUJBb0lCQVFDRDVMT2pKZkJoZGVRcgoySWpPT1g2Um9GUTI5YXgrV2JwZnJnU0MyUzNyUUJ1SkJBdWNxd2xIQW5hQktjaW41NlBJZ1c5MnlKUVpRcXliCmhwVmF4c25FM3h3QVgwNFRzb1MvNkVOdnFIZzJiWWVLYTd0dFdOQ0hnNysxUXNOcWxlaG1ZVnBkc3dtdVJhRm0KUis5eXBUaHFPeklkZGtSOEhiRlp0WDN6VEhqbVpYaUhGdlIvMFhYK1BVbDR6SllSWjlCbVBnY2Ric2tSTldScgo0Qk8wUmlQQWRKVEo2VHZLMGhxT1g1UHo4ekl3S1ZzYjdyYndUdXArTGs4eWNCVUd3Q1N3RzEyanVNQW1kYkJJClZmdmlFK1VYRHRIQXdLWXlnMEhCVitJVlEvcVNwSVJ1WXQ4SmY1MWVKN1VEbHhiN3ZRTStEYVNsNjVaMVNyWUcKQU9UTGpPVkJBb0dCQU5PYzB0OG5ybmhUR3V0MGhMdVp6SWs4ekFranhYYWtiSURlZi9XeXlQdW94Z3J2ZGMzcwpsbHV0U3hSOFV4WGVuQjBLZFpnYnNoc1ozeW9GbEI0YThTMzI1UFRsYm9xOVB0TDRaOFBzczQ3L0l1bHYxTk10CnZzZjdKZ1FuaFRCVndkdjN6OXFpdml6bjB4Mk9CdURxdzNSYXcvWEhwRy9RczJ5WmF4S29GNW9SQW9HQkFQeE8KQVBDUXQ2Q2swOFF2WTE4VjFLQXA0d2h1YWEyMS9MeC9rZUZJSURRd0tZZnFHRGdBWUYvQzJUbC9xc29TMXAvTwpFcFVkVkRBNHVpblFVbnFhNGg0a0JOYjRXTFhrSXhRdXdjWHdJNjRMNWR3ZWJHalhxUWUwbnkxQkhkTmU2Z0dqClorbit4OUJLWnJmcEliYkQ2blpYUUREbS9jZWYyWU5NVWRqVWpudnZBb0dBQnlIMUZhSi94ZngvSHNxWm9yMG4KWU1UVTE4WUY1TjdiN1dnU2hoU1ZvNjNucHZ5MVN0Q2JyTkZsZzNaQlVxNWpNck5ralZENXF1SXZYSG85cU5vZApvUC8rYmFiQ0dCa1M0Z2VQYjlJdHB6ZEFWUC80KzNsQ1FmbGNLYTJ2VnBhOVp3MnVTdDlMYTdZUXJxRlg2QUxoCnZhMUZoNlpJQzZETU8yL2NaUStYWkJFQ2dZQnNGMHNGeFNvMlU0YzZISWM1SEZRc2plVnJIa3ArRm1LQnF6R24KVDB3a3I2R0xUZm8wTzgwT0daOFFxQ1pXVGozTzF1MVZIdXlMZ0RJWmFkdDhGVkRjVXRnVDlPK2tkV21sNHVZMwpVOHNsYklsOGhUZ3lybm9IQ0JYTndJRHpwazBnaUk0alRIajBQbnZGUE1hcDAwTm1rYmk1ZXF5czBrblFtMmpSCk9UY1Yxd0tCZ0RNUWZSVlNNNXlGcjVIalJ4UXcwRDdrUWhONDlLbngrMWs2bWRORWJ6VG9rQ1RRcWlSeUJQdGgKcjlqZk0rRXFZcnZ1elRmRVpiS1VBMEZac09yeStxMHpXb29mTURLajFGV3BaTXJBSmdxdDFlcWtFbVFrVi8vSApQMzF3ejZDa1RneDdJby9iZ09PbmhsbUplU3NHaXpqenV2TjFEcWtjNVR3M3oxUSs1dmxmCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+</code></pre></div><p>可以看到，访问 kube-apiserver 所需要的相关证书内容已经被采用 base64 编码写入了文件中。其他几个文件中的内容也是类似的，只是配置的用户名和客户端证书有所不同。</p>
+<p>在启动这些组件时，需要在参数中指出 kubeconfig 文件的路径，例如 kube-controller-manager 的启动命令如下。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
+ --kubeconfig<span style="color:#ff79c6">=</span>/etc/kubernetes/controller-manager.conf 
+ <span style="color:#6272a4"># 下面几个证书和访问 kube-apiserver 无关，我们会在后面介绍到</span>
+ --cluster-signing-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem             <span style="color:#6272a4"># 用于签发证书的 CA 根证书</span>
+ --cluster-signing-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca-key.pem          <span style="color:#6272a4"># 用于签发证书的 CA 根证书的私钥</span>  
+ --service-account-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account-key.pem  <span style="color:#6272a4"># 用于对 service account token 进行签名的私钥</span>
+ ... 
+</code></pre></div><h2 id="service-account--">Service Account  证书</h2>
+<p>Kubernetes 中有两类用户，一类为 user account，一类为 service account。 service account 主要被 pod 用于访问 kube-apiserver。 在为一个 pod 指定了 service account  后，kubernetes 会为该 service account 生成一个 JWT token，并使用 secret 将该 service account token 加载到 pod 上。pod 中的应用可以使用 service account token 来访问 api server。service account 证书被用于生成和验证 service account token。该证书的用法和前面介绍的其他证书是不同的，因为实际上使用的是其公钥和私钥，而并不需要对证书进行验证。</p>
+<p>我们可以看到 service account 证书的公钥和私钥分别被配置到了 kube-apiserver 和 kube-controller-manager 的命令行参数中，如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/kube-apiserver <span style="color:#f1fa8c">\\</span> 
+  --service-account-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account.pem <span style="color:#f1fa8c">\\</span>          <span style="color:#6272a4"># 用于验证 service account token 的公钥</span>
+  ...
+  
+ /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
+ --service-account-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account-key.pem  <span style="color:#6272a4"># 用于对 service account token 进行签名的私钥</span>
+ ... 
+</code></pre></div><p>下图展示了 kubernetes 中生成、使用和验证 service account token  的基本原理。</p>
+<p><img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt=""></p>
+<h2 id="kubernetes-2">Kubernetes 证书签发</h2>
+<p>Kubernetes 提供了一个  <code>certificates.k8s.io</code>  API，可以使用配置的 CA 根证书来签发用户证书。该 API 由 kube-controller-manager 实现，其签发证书使用的根证书在下面的命令行中进行配置。我们希望 Kubernetes 采用集群根 CA 来签发用户证书，因此在  kube-controller-manager  的命令行参数中将相关参数配置为了集群根 CA。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
+ --cluster-signing-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem             <span style="color:#6272a4"># 用于签发证书的 CA 根证书</span>
+ --cluster-signing-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca-key.pem          <span style="color:#6272a4"># 用于签发证书的 CA 根证书的私钥</span>  
+ ... 
+</code></pre></div><p>关于更多 Kubernetes 证书签发 API 的内容，可以参见 <a href="https://kubernetes.io/zh/docs/tasks/tls/managing-tls-in-a-cluster/">管理集群中的 TLS 认证</a>。</p>
+<h2 id="-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</h2>
+<p>在安装 Kubernetes 时，我们需要为每一个工作节点上的 Kubelet 分别生成一个证书。由于工作节点可能很多，手动生成 Kubelet 证书的过程会比较繁琐。为了解决这个问题，Kubernetes 提供了 <a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a> 的方式来简化   Kubelet 证书的生成过程。其原理是预先提供一个 bootstrapping token，kubelet 通过该 kubelet 调用 kube-apiserver 的证书签发 API 来生成 自己需要的证书。要启用该功能，需要在 kube-apiserver 中启用 <code>--enable-bootstrap-token-auth</code> ，并创建一个 kubelet 访问 kube-apiserver 使用的 bootstrap token secret。如果使用 kubeadmin 安装，可以使用 <code>kubeadm token create</code>命令来创建 token。</p>
+<p>采用TLS bootstrapping 生成证书的流程如下：</p>
+<ol>
+<li>调用 kube-apiserver 生成一个 bootstrap token。</li>
+<li>将该 bootstrap token 写入到一个 kubeconfig 文件中，作为 kubelet 调用 kube-apiserver 的客户端验证方式。</li>
+<li>通过  <code>--bootstrap-kubeconfig</code> 启动参数将 bootstrap token 传递给 kubelet 进程。</li>
+<li>Kubelet 采用bootstrap token 调用 kube-apiserver API，生成自己所需的服务器和客户端证书。</li>
+<li>证书生成后，Kubelet 采用生成的证书和 kube-apiserver 进行通信，并删除本地的 kubeconfig 文件，以避免 bootstrap token 泄漏风险。</li>
+</ol>
+<h1 id="heading">小结</h1>
+<p>Kubernetes 中使用了大量的证书来确保集群的安全，弄清楚这些证书的用途和配置方法将有助于我们深入理解 kubernetes 的安装过程和组件的配置。本文是笔者在学习 过程中整理的 Kubernetes 集群中主要使用到的证书，笔者对 Kubernetes 的理解有限，如果文中有部分错误的内容，欢迎指正。</p>
+<h1 id="heading1">参考文档</h1>
+<ul>
+<li><a href="https://kubernetes.io/zh/docs/setup/best-practices/certificates/">Kubernetes PKI 证书和要求</a></li>
+<li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-wa">kubernetes the hard way</a></li>
+<li><a href="https://blog.51cto.com/13210651/2361208">Kubernetes 之 二进制安装(二) 证书详解</a></li>
+</ul>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2020-03-19-pki/" data-toggle="tooltip" data-placement="top" title="数字证书原理">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2020
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

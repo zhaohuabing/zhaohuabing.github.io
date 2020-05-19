@@ -4,31 +4,41 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/</loc>
-    <lastmod>2020-03-19T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/cryptocurrency/</loc>
-    <lastmod>2020-03-19T00:00:00+00:00</lastmod>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2020-03-19T00:00:00+00:00</lastmod>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2020-03-19T00:00:00+00:00</lastmod>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2020-03-19T00:00:00+00:00</lastmod>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2020-05-19-k8s-certificate/</loc>
+    <lastmod>2020-05-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/cryptocurrency/</loc>
     <lastmod>2020-03-19T00:00:00+00:00</lastmod>
   </url>
   
@@ -64,11 +74,6 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/knowledge-graph/</loc>
-    <lastmod>2020-02-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
     <lastmod>2020-02-22T00:00:00+00:00</lastmod>
   </url>
   
