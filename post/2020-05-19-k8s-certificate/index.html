@@ -533,7 +533,7 @@ users:
 </code></pre></div><p>下图展示了 kubernetes 中生成、使用和验证 service account token  的过程。</p>
 <p><img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt=""></p>
 <h3 id="-token-">认证方法：客户端证书还是 token ？</h3>
-<p>我们可以看到，Kubernetes 提供了两种客户端认证的方法，控制面组件采用的是客户端数字证书;而在集群中部署的应用则采用了 service account token 的方式。为什么 Kubernetes 不为 service account 也生成一个证书，并采用该证书进行身份认证呢？ 实际上 Istio 就是这样做的，Istio 会自动为每个 service account 生成一个证书，并使用该证书来在 pod 中的应用之间建立双向 tls 认证。我没有找到 Kubernetes 这个设计决策的相关说明，如果你知道原因，欢迎和我联系探讨。</p>
+<p>我们可以看到，Kubernetes 提供了两种客户端认证的方法，控制面组件采用的是客户端数字证书;而在集群中部署的应用则采用了 service account token 的方式。为什么 Kubernetes 不为 service account 也生成一个证书，并采用该证书进行身份认证呢？ 实际上 Istio 就是这样做的，Istio 会自动为每个 service account 生成一个证书，并使用该证书来在 pod 中的应用之间建立双向 tls 认证。我没有找到 Kubernetes 这个设计决策的相关说明，如果你知道原因或对此有自己的见解，欢迎联系我进行探讨。</p>
 <h2 id="kubernetes-2">Kubernetes 证书签发</h2>
 <p>Kubernetes 提供了一个  <code>certificates.k8s.io</code>  API，可以使用配置的 CA 根证书来签发用户证书。该 API 由 kube-controller-manager 实现，其签发证书使用的根证书在下面的命令行中进行配置。我们希望 Kubernetes 采用集群根 CA 来签发用户证书，因此在  kube-controller-manager  的命令行参数中将相关参数配置为了集群根 CA。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
