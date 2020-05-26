@@ -36,7 +36,7 @@
 
     <title>一文带你彻底厘清 Kubernetes 中的证书工作机制-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2020-05-19-k8s-certificate/">
+    <link rel="canonical" href="/post/2020-05-25-istio-certificate/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -190,7 +190,7 @@
                         on 
                         Tuesday, May 19, 2020
                         
-                            <span id="/post/2020-05-19-k8s-certificate/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2020-05-25-istio-certificate/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -352,15 +352,15 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#kubernetes-">Kubernetes 组件的认证方式</a></li>
+    <li><a href="#istio-">Istio 安全架构</a></li>
     <li><a href="#kubernetes-ca">Kubernetes 中使用到的CA和证书</a></li>
-    <li><a href="#kubernetes-1">Kubernetes 中的证书配置</a>
+    <li><a href="#kubernetes-">Kubernetes 中的证书配置</a>
       <ul>
         <li><a href="#etcd-">etcd 证书配置</a></li>
         <li><a href="#kubeapiserver-">kube-apiserver 证书配置</a></li>
         <li><a href="#-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</a></li>
         <li><a href="#service-account--">Service Account  证书</a></li>
-        <li><a href="#kubernetes-2">Kubernetes 证书签发</a></li>
+        <li><a href="#kubernetes-1">Kubernetes 证书签发</a></li>
         <li><a href="#-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</a></li>
       </ul>
     </li>
@@ -369,11 +369,18 @@ $(function() {
   </ul>
 </nav>
                 
-                <p>接触 Kubernetes 以来，我经常看到 Kubernetes 在不同的地方使用了证书（Certificate），在 Kubernetes 安装和组件启动参数中也需要配置大量证书相关的参数。但是 Kubernetes 的文档在解释这些证书的工作机制方面做得并不是太好。经过大量的相关阅读和分析工作后，我基本弄清楚了 Kubernetes 中证书的使用方式。在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernetes 中证书相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。</p>
-<h1 id="kubernetes-">Kubernetes 组件的认证方式</h1>
-<p>首先让我们来看一下 Kubernetes 中的组件：在 Kubernetes 中包含多个以独立进程形式运行的组件，这些组件之间通过 HTTP/GRPC 相互通信，以协同完成集群中应用的部署和管理工作。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/components-of-kubernetes.png" alt="">
-kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/overview/components/">kubernetes.io</a></p>
+                <p>在上一篇文章<a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/">一文带你彻底厘清 Kubernetes 中的证书工作机制</a>中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的身份认证和安全通信的。</p>
+<h1 id="istio-">Istio 安全架构</h1>
+<p>Istio 以一种对应用无侵入的，可插拔的方式实现了网格中服务之间的双向 TLS 认证。应用不需要修改代码，就可以实现服务之间以及服务和外部系统/用户之间的安全通信。Istio 安全的高层架构如下图所示：</p>
+<p><img src="https://istio.io/docs/concepts/security/arch-sec.svg" alt="">
+Istio Security Architecture，图片来源<a href="https://istio.io/docs/concepts/security/#high-level-architecture">istio.io</a></p>
+<p>图中展示了 Istio 中的服务认证和授权两部分内容。让我们暂时忽略掉授权部分，先关注认证部分。服务认证包含了控制面和数据面的实现：</p>
+<ul>
+<li>控制面：Istiod 中实现了一个 CA （Certificate Authority，证书机构） 服务器。该 CA 服务器负责为网格中的各个服务签发证书，并发送给数据面的边车代理。</li>
+<li>数据面：在网格中的服务相互之间发起 plain HTTP/TCP 通信时，和服务同一个 pod 中的边车代理会拦截服务请求，采用证书和对端服务的边车代理进行双向 TLS 认证并建立一个 TLS 连接，使用该 TLS 连接来在网络中传输数据。</li>
+</ul>
+<p>这实际上一个高度概括的描述，忽略了非常多的细节。如果我们把控制面的交互展开，可以得到下面的图形：</p>
+<p><img src="/img/2020-05-25-istio-certificate/istio-ca.svg" alt=""></p>
 <p>从图中可以看到，Kubernetes 控制平面中包含了 etctd，kube-api-server，kube-scheduler，kube-controller-manager 等组件，这些组件会相互进行远程调用，例如 kube-api-server 会调用 etcd 接口存储数据，kube-controller-manager 会调用 kube-api-server 接口查询集群中的对象状态；同时，kube-api-server 也会和在工作节点上的 kubelet 和 kube-proxy 进行通信，以在工作节点上部署和管理应用。</p>
 <p>以上这些组件之间的相互调用都是通过网络进行的。在进行网络通信时，通信双方需要验证对方的身份，以避免恶意第三方伪造身份窃取信息或者对系统进行攻击。为了相互验证对方的身份，通信双方中的任何一方都需要做下面两件事情：</p>
 <ul>
@@ -381,8 +388,7 @@ kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/
 <li>验证对方提供的身份证书是否合法，是否伪造的？</li>
 </ul>
 <p>在 Kubernetes 中使用了数字证书来提供身份证明，我们可以把数字证书简单理解为我们在日常生活中使用的“身份证”，上面标注了证书拥有者的身份信息，例如名称，所属组织机构等。为了保证证书的权威性，会采用一个通信双方都信任的 CA（证书机构，Certificate Authority）来颁发证书。这就类似于现实生活中颁发“身份证”的政府机构。数字证书中最重要的内容实际上是证书拥有者的公钥，该公钥代表了用户的身份。本文假设读者已经了解数字证书和 CA 的基本原理，如果你对此不太清楚，或者希望重新温习一下相关知识，可以先阅读一下这篇文章<a href="https://zhaohuabing.com/post/2020-03-19-pki">《数字证书原理》</a>。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/ca.png" alt="">
-CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html"><a href="http://www.trustauth.cn">www.trustauth.cn</a></a></p>
+<p>CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html"><a href="http://www.trustauth.cn">www.trustauth.cn</a></a></p>
 <p>在 Kubernetes 的组件之间进行通信时，数字证书的验证是在协议层面通过 TLS 完成的，除了需要在建立通信时提供相关的证书和密钥外，在应用层面并不需要进行特殊处理。采用 TLS 进行验证有两种方式：</p>
 <ul>
 <li>服务器单向认证：只需要服务器端提供证书，客户端通过服务器端证书验证服务的身份，但服务器并不验证客户端的身份。这种情况一般适用于对 Internet 开放的服务，例如搜索引擎网站，任何客户端都可以连接到服务器上进行访问，但客户端需要验证服务器的身份，以避免连接到伪造的恶意服务器。</li>
@@ -444,7 +450,7 @@ CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-questio
 </li>
 </ol>
 <p>通过这张图，对证书机制比较了解的读者可能已经看出，我们其实可以使用多个不同的 CA 来颁发这些证书。只要在通信的组件中正确配置用于验证对方证书的 CA 根证书，就可以使用不同的 CA 来颁发不同用途的证书。但我们一般建议采用统一的 CA 来颁发 kubernetes 集群中的所有证书，这是因为采用一个集群根 CA 的方式比采用多个 CA 的方式更容易管理，可以避免多个CA 导致的复杂的证书配置、更新等问题，减少由于证书配置错误导致的集群故障。</p>
-<h1 id="kubernetes-1">Kubernetes 中的证书配置</h1>
+<h1 id="kubernetes-">Kubernetes 中的证书配置</h1>
 <p>前面我们介绍了 Kubernetes 集群中主要使用到的证书。下面我们分别看一下如何将这些证书及其对应的私钥和 CA 根证书需要配置到 Kubernetes 中各个组件中，以供各个组件进行使用。这里假设使用一个集群根 CA 来颁发所有相关证书，因此涉及到 CA 的配置对应的证书文件名都是相同的。</p>
 <h2 id="etcd-">etcd 证书配置</h2>
 <p>需要在 etcd 的启动命令行中配置以下证书相关参数：</p>
@@ -534,7 +540,7 @@ users:
 <p><img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt=""></p>
 <h3 id="-token-">认证方法：客户端证书还是 token ？</h3>
 <p>我们可以看到，Kubernetes 提供了两种客户端认证的方法，控制面组件采用的是客户端数字证书;而在集群中部署的应用则采用了 service account token 的方式。为什么 Kubernetes 不为 service account 也生成一个证书，并采用该证书进行身份认证呢？ 实际上 Istio 就是这样做的，Istio 会自动为每个 service account 生成一个证书，并使用该证书来在 pod 中的应用之间建立双向 tls 认证。我没有找到 Kubernetes 这个设计决策的相关说明，如果你知道原因或对此有自己的见解，欢迎联系我进行探讨。</p>
-<h2 id="kubernetes-2">Kubernetes 证书签发</h2>
+<h2 id="kubernetes-1">Kubernetes 证书签发</h2>
 <p>Kubernetes 提供了一个  <code>certificates.k8s.io</code>  API，可以使用配置的 CA 根证书来签发用户证书。该 API 由 kube-controller-manager 实现，其签发证书使用的根证书在下面的命令行中进行配置。我们希望 Kubernetes 采用集群根 CA 来签发用户证书，因此在  kube-controller-manager  的命令行参数中将相关参数配置为了集群根 CA。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
  --cluster-signing-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem             <span style="color:#6272a4"># 用于签发证书的 CA 根证书</span>
@@ -542,7 +548,7 @@ users:
  ... 
 </code></pre></div><p>关于更多 Kubernetes 证书签发 API 的内容，可以参见 <a href="https://kubernetes.io/zh/docs/tasks/tls/managing-tls-in-a-cluster/">管理集群中的 TLS 认证</a>。</p>
 <h2 id="-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</h2>
-<p>在安装 Kubernetes 时，我们需要为每一个工作节点上的 Kubelet 分别生成一个证书。由于工作节点可能很多，手动生成 Kubelet 证书的过程会比较繁琐。为了解决这个问题，Kubernetes 提供了 <a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a> 的方式来简化   Kubelet 证书的生成过程。其原理是预先提供一个 bootstrapping token，kubelet 采用该 bootstrapping token 进行客户端验证，调用 kube-apiserver 的证书签发 API 来生成 自己需要的证书。要启用该功能，需要在 kube-apiserver 中启用 <code>--enable-bootstrap-token-auth</code> ，并创建一个 kubelet 访问 kube-apiserver 使用的 bootstrap token secret。如果使用 kubeadmin 安装，可以使用 <code>kubeadm token create</code>命令来创建 token。</p>
+<p>在安装 Kubernetes 时，我们需要为每一个工作节点上的 Kubelet 分别生成一个证书。由于工作节点可能很多，手动生成 Kubelet 证书的过程会比较繁琐。为了解决这个问题，Kubernetes 提供了 <a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a> 的方式来简化   Kubelet 证书的生成过程。其原理是预先提供一个 bootstrapping token，kubelet 通过该 kubelet 调用 kube-apiserver 的证书签发 API 来生成 自己需要的证书。要启用该功能，需要在 kube-apiserver 中启用 <code>--enable-bootstrap-token-auth</code> ，并创建一个 kubelet 访问 kube-apiserver 使用的 bootstrap token secret。如果使用 kubeadmin 安装，可以使用 <code>kubeadm token create</code>命令来创建 token。</p>
 <p>采用TLS bootstrapping 生成证书的流程如下：</p>
 <ol>
 <li>调用 kube-apiserver 生成一个 bootstrap token。</li>
@@ -569,10 +575,15 @@ users:
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2020-05-25-istio-certificate/" data-toggle="tooltip" data-placement="top" title="一文带你彻底厘清 Kubernetes 中的证书工作机制">&larr;
+                        <a href="/post/2020-03-19-pki/" data-toggle="tooltip" data-placement="top" title="数字证书原理">&larr;
                             Previous Post</a>
                     </li>
                     
+                    
+                    <li class="next">
+                        <a href="/post/2020-05-19-k8s-certificate/" data-toggle="tooltip" data-placement="top" title="一文带你彻底厘清 Kubernetes 中的证书工作机制">Next
+                            Post &rarr;</a>
+                    </li>
                     
                 </ul>
 
