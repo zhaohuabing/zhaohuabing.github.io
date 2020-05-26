@@ -21,15 +21,6 @@
     </item>
     
     <item>
-      <title>一文带你彻底厘清 Kubernetes 中的证书工作机制</title>
-      <link>https://zhaohuabing.com/post/2020-05-25-istio-certificate/</link>
-      <pubDate>Tue, 19 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/post/2020-05-25-istio-certificate/</guid>
-      <description>在上一篇文章一文带你彻底厘清 Kubernetes 中的证书工作机制中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的</description>
-    </item>
-    
-    <item>
       <title>Kubernetes知识图谱</title>
       <link>https://zhaohuabing.com/post/2020-02-22-k8s-network-mindmap/</link>
       <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
