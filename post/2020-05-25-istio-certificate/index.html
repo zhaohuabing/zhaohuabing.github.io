@@ -369,7 +369,7 @@ $(function() {
 </nav>
                 
                 <p>在上一篇文章<a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/">一文带你彻底厘清 Kubernetes 中的证书工作机制</a>中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的身份认证和安全通信的。</p>
-<p>本文是对 Istio 认证工作机制的深度分析，因此假设读者已经了解 Service Mesh 以及 Istio 的相关基础概念，在本文对此类基础概念不再解释，如果读者阅读时有疑问，建议先阅读 Istio 的基础介绍<a href="https://istio.io/docs/concepts/what-is-istio/">What is Istio?</a>。</p>
+<p>本文是对 Istio 认证工作机制的深度分析，因此假设读者已经了解 Service Mesh 以及 Istio 的相关基础概念，在本文对此类基础概念不再解释，如果读者阅读时有疑问，建议先阅读 Istio 官方网站上的的这篇基础介绍 <a href="https://istio.io/docs/concepts/what-is-istio/">What is Istio?</a>。</p>
 <h1 id="istio-">Istio 安全架构</h1>
 <p>Istio 以一种对应用无侵入的，可插拔的方式实现了网格中服务之间的双向 TLS 认证。应用不需要修改代码，就可以实现服务之间以及服务和外部系统/用户之间的安全通信。Istio 安全的高层架构如下图所示：</p>
 <p><img src="https://istio.io/docs/concepts/security/arch-sec.svg" alt="">
