@@ -376,23 +376,23 @@ $(function() {
 图1. Istio Security Architecture，图片来源<a href="https://istio.io/docs/concepts/security/#high-level-architecture">istio.io</a></p>
 <p>图中展示了 Istio 中的服务认证和授权两部分内容。让我们暂时忽略掉授权部分，先关注认证部分。服务认证是通过控制面和数据面一起实现的：</p>
 <ul>
-<li>控制面：Istiod 中实现了一个 CA （Certificate Authority，证书机构） 服务器。该 CA 服务器负责为网格中的各个服务签发证书，并发送给数据面的边车代理。</li>
+<li>控制面：Istiod 中实现了一个 CA （Certificate Authority，证书机构） 服务器。该 CA 服务器负责为网格中的各个服务签发证书，并将证书分发给数据面的各个服务的边车代理。</li>
 <li>数据面：在网格中的服务相互之间发起 plain HTTP/TCP 通信时，和服务同一个 pod 中的边车代理会拦截服务请求，采用证书和对端服务的边车代理进行双向 TLS 认证并建立一个 TLS 连接，使用该 TLS 连接来在网络中传输数据。</li>
 </ul>
 <h1 id="heading">控制面证书签发流程</h1>
 <p>图1是对 Istio 安全架构的一个高度概括的描述，让我们把图1中控制面的交互展开，看一下其中的细节。</p>
 <p><img src="/img/2020-05-25-istio-certificate/istio-ca.svg" alt="">
-图2. Istio 证书签发流程</p>
-<p>Istio 控制面向 Envoy 签发证书的流程如下：</p>
+图2. Istio 证书分发流程</p>
+<p>我们先暂时忽略图中右边蓝色虚线的部分（稍后会讲到），图中左半部分描述了 Istio 控制面向 Envoy 签发证书的流程：</p>
 <ol>
 <li>Envoy 向 pilot-agent 发起一个 SDS (Secret Discovery Service) 请求，要求获取自己的证书和私钥。</li>
-<li>Pilot-agent 生成私钥和 CSR （Certificates Signing Request，证书签名请求），向 Istiod 发送 CSR 请求。</li>
-<li>Istiod 根据请求中客户端的 Service Account 为其签发证书，将证书返回给 Pilot-agent。</li>
-<li>Pilot-agent 将证书和私钥返回给 Envoy。</li>
+<li>Pilot-agent 生成私钥和 CSR （Certificates Signing Request，证书签名请求），向 Istiod 发送证书签发请求，请求中包含 CSR 和该 pod 中服务的身份信息。</li>
+<li>Istiod 根据请求中服务的身份信息（Service Account）为其签发证书，将证书返回给 Pilot-agent。</li>
+<li>Pilot-agent 将证书和私钥通过 SDS 接口返回给 Envoy。</li>
 </ol>
 <h2 id="-pilotagent-">为什么要通过 Pilot-agent 中转？</h2>
 <p>从图2可以看到，Istio 证书签发的过程中涉及到了三个组件： Istiod (Istio CA) &mdash;&gt; Pilot-agent &mdash;&gt; Enovy。为什么其他 xDS 接口都是由 Istiod 直接向 Envoy 提供，但 SDS 却要通过 Pilot-agent 进行一次中转，而不是直接由 Envoy 通过 SDS 接口从 Istiod 获取证书呢？这样做主要有两个原因。</p>
-<p>首先，在 Istio 的证书签发流程中，由 Pilot-agent 生成私钥和 CSR，再通过 CSR 向 Istiod 中的 CA 申请证书。在整个过程中，私钥只存在于本地的 Istio-proxy 容器中。如果去掉中间 Pilot-agent 这一步，直接由 Envoy 向 Isitod 申请证书，则需要由 Istio的 生成私钥，并将私钥和证书一起通过网络返回给 Envoy，这将大大增加私钥泄露的风险。</p>
+<p>首先，在 Istio 的证书签发流程中，由 Pilot-agent 生成私钥和 CSR，再通过 CSR 向 Istiod 中的 CA 申请证书。在整个过程中，私钥只存在于本地的 Istio-proxy 容器中。如果去掉中间 Pilot-agent 这一步，直接由 Envoy 向 Isitod 申请证书，则需要由 Istiod 生成私钥，并将私钥和证书一起通过网络返回给 Envoy，这将大大增加私钥泄露的风险。</p>
 <p>另一方面，通过 Pilot-agent 来提供 SDS 服务，由 Pilot-agent 生成标准的 CSR 证书签名请求，可以很容易地对接不同的 CA 服务器，方便 Istio 和其他证书机构进行集成。</p>
 <h2 id="heading1">控制面身份认证</h2>
 <p>要通过服务证书来实现网格中服务的身份认证，必须首先确保服务从控制面获取自身证书的流程是安全的。Istio 通过 Istiod 和 Pilog-agent 之间的 gRPC 通道传递 CSR 和证书，因此在这两个组件进行通信时，双方需要先验证对方的身份，以避免恶意第三方伪造 CSR 请求或者假冒 Istiod CA 服务器。在目前的版本中(Istio1.6)，Pilot-agent 和 Istiod 分布采用了不同的认证方式。</p>
@@ -794,9 +794,9 @@ spec:
   }
  }
 </code></pre></div><p>从配置中可以看出，Ingress Gateway 使用的服务器证书也是通过 SDS 服务获取的。Pilot-agent 在路径<code>unix:/var/run/ingress_gateway/sds</code> 上为 Ingress Gateway 提供了一个基于 unix domain socket 的 SDS 服务。Ingress Gateway 中的 Envoy 向该 SDS 服务器请求上述配置文件中的 secret，Pilot-agent 从 Kubernetes 中查到该 同名 secret，然后转换为 SDS 消息返回给 Envoy。</p>
-<p>备注：Ingress Gateway 用于和网格内其他服务通信的服务身份证书还是由 Istio CA 颁发的，其证书签发的流程同图2。</p>
+<p>备注：Ingress Gateway 用于和网格内其他服务通信的服务身份证书还是由 Istio CA 颁发的，其证书获取的流程同图2。</p>
 <p><img src="/img/2020-05-25-istio-certificate/ingress-gateway-ca-sds.svg" alt="">
-图4. Envoy SDS 服务</p>
+图4. Ingress Gateway 证书获取流程</p>
 <h1 id="heading3">数据面使用的所有证书</h1>
 <p>下图中以 bookinfo 来举例说明 Istio 在数据面使用到的所有证书。为了方便说明 Gateway 的证书配置，我们假设在 Ingress Gateway 上以 bookinfo.example.com 的主机名对外提供服务，并且 ratings 服务通过 Egress Gateway 访问了一个网格外部的第三方 TLS 服务。</p>
 <p>图中不同颜色边框的图标代表了不同的证书。该示例中一共使用了七个不同的证书，分别为3个服务的证书（同时用作服务器和客户端证书），Ingress Gateway 自身的客户端证书，Ingress Gateway 对外部提供服务的服务器证书，Egress Gateway 自身的服务器证书，Egress Gateway 访问外部服务使用的客户端证书。</p>
