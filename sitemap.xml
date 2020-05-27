@@ -13,17 +13,12 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/tags/istio/</loc>
+    <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
     <lastmod>2020-05-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2020-05-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/security/</loc>
     <lastmod>2020-05-25T00:00:00+00:00</lastmod>
   </url>
   
@@ -43,7 +38,7 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/tags/kubernetes/</loc>
+    <loc>https://zhaohuabing.com/tags/security/</loc>
     <lastmod>2020-05-19T00:00:00+00:00</lastmod>
   </url>
   
@@ -95,6 +90,11 @@
   <url>
     <loc>https://zhaohuabing.com/post/2020-02-22-k8s-network-mindmap/</loc>
     <lastmod>2020-02-22T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/istio/</loc>
+    <lastmod>2020-02-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
