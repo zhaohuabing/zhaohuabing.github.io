@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="一文带你彻底厘清 Kubernetes 中的证书工作机制" />
-    <meta property="og:title" content="一文带你彻底厘清 Kubernetes 中的证书工作机制" />
-    <meta property="twitter:title" content="一文带你彻底厘清 Kubernetes 中的证书工作机制" />
+    <meta name="title" content="一文带你彻底厘清 Isito 中的证书工作机制" />
+    <meta property="og:title" content="一文带你彻底厘清 Isito 中的证书工作机制" />
+    <meta property="twitter:title" content="一文带你彻底厘清 Isito 中的证书工作机制" />
     
 
     
-    <meta name="description" content="在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。">
-    <meta property="og:description" content="在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。" />
-    <meta property="twitter:description" content="在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernete s中和证书（Certificate）相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。" />
+    <meta name="description" content="在上一篇文章《一文带你彻底厘清 Kubernetes 中的证书工作机制》中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的身份认证和安全通信的。">
+    <meta property="og:description" content="在上一篇文章《一文带你彻底厘清 Kubernetes 中的证书工作机制》中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的身份认证和安全通信的。" />
+    <meta property="twitter:description" content="在上一篇文章《一文带你彻底厘清 Kubernetes 中的证书工作机制》中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的身份认证和安全通信的。" />
     
 
     
@@ -34,7 +34,7 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>一文带你彻底厘清 Kubernetes 中的证书工作机制-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>一文带你彻底厘清 Isito 中的证书工作机制-赵化冰的博客 | Zhaohuabing Blog</title>
 
     <link rel="canonical" href="/post/2020-05-25-istio-certificate/">
 
@@ -165,7 +165,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/2020-05-19-k8s-certificate/background.jpg')
+        background-image: url('https://images.pexels.com/photos/1482193/pexels-photo-1482193.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940')
     }
 </style>
 <header class="intro-header">
@@ -175,12 +175,16 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/kubernetes" title="kubernetes">
-                            kubernetes
+                        <a class="tag" href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/security" title="security">
+                            security
                         </a>
                         
                     </div>
-                    <h1>一文带你彻底厘清 Kubernetes 中的证书工作机制</h1>
+                    <h1>一文带你彻底厘清 Isito 中的证书工作机制</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
@@ -188,7 +192,7 @@
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Tuesday, May 19, 2020
+                        Monday, May 25, 2020
                         
                             <span id="/post/2020-05-25-istio-certificate/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
@@ -353,19 +357,18 @@ $(function() {
                 <nav id="TableOfContents">
   <ul>
     <li><a href="#istio-">Istio 安全架构</a></li>
-    <li><a href="#kubernetes-ca">Kubernetes 中使用到的CA和证书</a></li>
-    <li><a href="#kubernetes-">Kubernetes 中的证书配置</a>
+    <li><a href="#heading">控制面证书签发流程</a>
       <ul>
-        <li><a href="#etcd-">etcd 证书配置</a></li>
-        <li><a href="#kubeapiserver-">kube-apiserver 证书配置</a></li>
-        <li><a href="#-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</a></li>
-        <li><a href="#service-account--">Service Account  证书</a></li>
-        <li><a href="#kubernetes-1">Kubernetes 证书签发</a></li>
-        <li><a href="#-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</a></li>
+        <li><a href="#-pilotagent-">为什么要通过 Pilot-agent 中转？</a></li>
+        <li><a href="#heading1">控制面身份认证</a></li>
       </ul>
     </li>
-    <li><a href="#heading">小结</a></li>
-    <li><a href="#heading1">参考文档</a></li>
+    <li><a href="#sds-">SDS 工作原理</a></li>
+    <li><a href="#heading2">网格边车证书配置</a></li>
+    <li><a href="#gateway-">Gateway 证书配置</a></li>
+    <li><a href="#heading3">数据面使用的所有证书</a></li>
+    <li><a href="#heading4">小结</a></li>
+    <li><a href="#heading5">参考文档</a></li>
   </ul>
 </nav>
                 
@@ -373,199 +376,442 @@ $(function() {
 <h1 id="istio-">Istio 安全架构</h1>
 <p>Istio 以一种对应用无侵入的，可插拔的方式实现了网格中服务之间的双向 TLS 认证。应用不需要修改代码，就可以实现服务之间以及服务和外部系统/用户之间的安全通信。Istio 安全的高层架构如下图所示：</p>
 <p><img src="https://istio.io/docs/concepts/security/arch-sec.svg" alt="">
-Istio Security Architecture，图片来源<a href="https://istio.io/docs/concepts/security/#high-level-architecture">istio.io</a></p>
-<p>图中展示了 Istio 中的服务认证和授权两部分内容。让我们暂时忽略掉授权部分，先关注认证部分。服务认证包含了控制面和数据面的实现：</p>
+图1. Istio Security Architecture，图片来源<a href="https://istio.io/docs/concepts/security/#high-level-architecture">istio.io</a></p>
+<p>图中展示了 Istio 中的服务认证和授权两部分内容。让我们暂时忽略掉授权部分，先关注认证部分。服务认证是通过控制面和数据面一起实现的：</p>
 <ul>
 <li>控制面：Istiod 中实现了一个 CA （Certificate Authority，证书机构） 服务器。该 CA 服务器负责为网格中的各个服务签发证书，并发送给数据面的边车代理。</li>
 <li>数据面：在网格中的服务相互之间发起 plain HTTP/TCP 通信时，和服务同一个 pod 中的边车代理会拦截服务请求，采用证书和对端服务的边车代理进行双向 TLS 认证并建立一个 TLS 连接，使用该 TLS 连接来在网络中传输数据。</li>
 </ul>
-<p>这实际上一个高度概括的描述，忽略了非常多的细节。如果我们把控制面的交互展开，可以得到下面的图形：</p>
-<p><img src="/img/2020-05-25-istio-certificate/istio-ca.svg" alt=""></p>
-<p>从图中可以看到，Kubernetes 控制平面中包含了 etctd，kube-api-server，kube-scheduler，kube-controller-manager 等组件，这些组件会相互进行远程调用，例如 kube-api-server 会调用 etcd 接口存储数据，kube-controller-manager 会调用 kube-api-server 接口查询集群中的对象状态；同时，kube-api-server 也会和在工作节点上的 kubelet 和 kube-proxy 进行通信，以在工作节点上部署和管理应用。</p>
-<p>以上这些组件之间的相互调用都是通过网络进行的。在进行网络通信时，通信双方需要验证对方的身份，以避免恶意第三方伪造身份窃取信息或者对系统进行攻击。为了相互验证对方的身份，通信双方中的任何一方都需要做下面两件事情：</p>
-<ul>
-<li>向对方提供标明自己身份的一个证书</li>
-<li>验证对方提供的身份证书是否合法，是否伪造的？</li>
-</ul>
-<p>在 Kubernetes 中使用了数字证书来提供身份证明，我们可以把数字证书简单理解为我们在日常生活中使用的“身份证”，上面标注了证书拥有者的身份信息，例如名称，所属组织机构等。为了保证证书的权威性，会采用一个通信双方都信任的 CA（证书机构，Certificate Authority）来颁发证书。这就类似于现实生活中颁发“身份证”的政府机构。数字证书中最重要的内容实际上是证书拥有者的公钥，该公钥代表了用户的身份。本文假设读者已经了解数字证书和 CA 的基本原理，如果你对此不太清楚，或者希望重新温习一下相关知识，可以先阅读一下这篇文章<a href="https://zhaohuabing.com/post/2020-03-19-pki">《数字证书原理》</a>。</p>
-<p>CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html"><a href="http://www.trustauth.cn">www.trustauth.cn</a></a></p>
-<p>在 Kubernetes 的组件之间进行通信时，数字证书的验证是在协议层面通过 TLS 完成的，除了需要在建立通信时提供相关的证书和密钥外，在应用层面并不需要进行特殊处理。采用 TLS 进行验证有两种方式：</p>
-<ul>
-<li>服务器单向认证：只需要服务器端提供证书，客户端通过服务器端证书验证服务的身份，但服务器并不验证客户端的身份。这种情况一般适用于对 Internet 开放的服务，例如搜索引擎网站，任何客户端都可以连接到服务器上进行访问，但客户端需要验证服务器的身份，以避免连接到伪造的恶意服务器。</li>
-<li>双向 TLS 认证：除了客户端需要验证服务器的证书，服务器也要通过客户端证书验证客户端的身份。这种情况下服务器提供的是敏感信息，只允许特定身份的客户端访问。</li>
-</ul>
-<p>在 Kubernetes 中，各个组件提供的接口中包含了集群的内部信息。如果这些接口被非法访问，将影响集群的安全，因此组件之间的通信需要采用双向 TLS 认证。即客户端和服务器端都需要验证对方的身份信息。在两个组件进行双向认证时，会涉及到下面这些证书相关的文件：</p>
-<ul>
-<li>服务器端证书：服务器用于证明自身身份的数字证书，里面主要包含了服务器端的公钥以及服务器的身份信息。</li>
-<li>服务器端私钥：服务器端证书中包含的公钥所对应的私钥。公钥和私钥是成对使用的，在进行 TLS 验证时，服务器使用该私钥来向客户端证明自己是服务器端证书的拥有者。</li>
-<li>客户端证书：客户端用于证明自身身份的数字证书，里面主要包含了客户端的公钥以及客户端的身份信息。</li>
-<li>客户端私钥：客户端证书中包含的公钥所对应的私钥，同理，客户端使用该私钥来向服务器端证明自己是客户端证书的拥有者。</li>
-<li>服务器端 CA 根证书：签发服务器端证书的 CA 根证书，客户端使用该 CA 根证书来验证服务器端证书的合法性。</li>
-<li>客户端端 CA 根证书：签发客户端证书的 CA 根证书，服务器端使用该 CA 根证书来验证客户端证书的合法性。</li>
-</ul>
-<p>下面这张来自<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a> 文章中的图形象地解释了双向 TLS 认证的原理。如果你需要了解更多关于 TLS 认证的原理，可以阅读一下 medium 上的原文。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/mutual-tls.png" alt=""></p>
-<p>图片来源<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a></p>
-<h1 id="kubernetes-ca">Kubernetes 中使用到的CA和证书</h1>
-<p>Kubernetes 中使用了大量的证书，本文不会试图覆盖到所有可能使用到的证书，但会讨论到主要的证书。理解了这些证书的使用方法和原理后，也能很快理解其他可能遇到的证书文件。下图标识出了在 kubernetes 中主要使用到的证书和其使用的位置：</p>
-<p><img src="/img/2020-05-19-k8s-certificate/kubernetes-certificate-usage.png" alt=""></p>
-<p>Kubernetes 中使用到的主要证书</p>
-<p>上图中使用序号对证书进行了标注。图中的箭头表明了组件的调用方向，箭头所指方向为服务提供方，另一头为服务调用方。为了实现 TLS 双向认证，服务提供方需要使用一个服务器证书，服务调用方则需要提供一个客户端证书，并且双方都需要使用一个 CA 证书来验证对方提供的证书。为了简明起见，上图中只标注了证书使用方提供的证书，并没有标注证书的验证方验证使用的 CA 证书。图中标注的这些证书的作用分别如下：</p>
+<h1 id="heading">控制面证书签发流程</h1>
+<p>图1是对 Istio 安全架构的一个高度概括的描述，让我们把图1中控制面的交互展开，看一下其中的细节。</p>
+<p><img src="/img/2020-05-25-istio-certificate/istio-ca.svg" alt="">
+图2. Istio 证书签发流程</p>
+<p>Istio 控制面向 Envoy 签发证书的流程如下：</p>
 <ol>
-<li>
-<p>etcd 集群中各个节点之间相互通信使用的证书。由于一个 etctd 节点既为其他节点提供服务，又需要作为客户端访问其他节点，因此该证书同时用作服务器证书和客户端证书。</p>
-</li>
-<li>
-<p>etcd 集群向外提供服务使用的证书。该证书是服务器证书。</p>
-</li>
-<li>
-<p>kube-apiserver 作为客户端访问 etcd 使用的证书。该证书是客户端证书。</p>
-</li>
-<li>
-<p>kube-apiserver 对外提供服务使用的证书。该证书是服务器证书。</p>
-</li>
-<li>
-<p>kube-controller-manager 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
-</li>
-<li>
-<p>kube-scheduler 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
-</li>
-<li>
-<p>kube-proxy 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
-</li>
-<li>
-<p>kubelet 作为客户端访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
-</li>
-<li>
-<p>管理员用户通过 kubectl 访问 kube-apiserver 使用的证书,该证书是客户端证书。</p>
-</li>
-<li>
-<p>kubelet 对外提供服务使用的证书。该证书是服务器证书。</p>
-</li>
-<li>
-<p>kube-apiserver 作为客户端访问 kubelet 采用的证书。该证书是客户端证书。</p>
-</li>
-<li>
-<p>kube-controller-manager 用于生成和验证 service-account token 的证书。该证书并不会像其他证书一样用于身份认证，而是将证书中的公钥/私钥对用于 service account token 的生成和验证。kube-controller-manager  会用该证书的私钥来生成 service account token，然后以 secret 的方式加载到 pod 中。pod 中的应用可以使用该 token 来访问 kube-apiserver， kube-apiserver 会使用该证书中的公钥来验证请求中的 token。我们将在文中稍后部分详细介绍该证书的使用方法。</p>
-</li>
+<li>Envoy 向 pilot-agent 发起一个 SDS (Secret Discovery Service) 请求，要求获取自己的证书和私钥。</li>
+<li>Pilot-agent 生成私钥和 CSR （Certificates Signing Request，证书签名请求），向 Istiod 发送 CSR 请求。</li>
+<li>Istiod 根据请求中客户端的 Service Account 为其签发证书，将证书返回给 Pilot-agent。</li>
+<li>Pilot-agent 将证书和私钥返回给 Envoy。</li>
 </ol>
-<p>通过这张图，对证书机制比较了解的读者可能已经看出，我们其实可以使用多个不同的 CA 来颁发这些证书。只要在通信的组件中正确配置用于验证对方证书的 CA 根证书，就可以使用不同的 CA 来颁发不同用途的证书。但我们一般建议采用统一的 CA 来颁发 kubernetes 集群中的所有证书，这是因为采用一个集群根 CA 的方式比采用多个 CA 的方式更容易管理，可以避免多个CA 导致的复杂的证书配置、更新等问题，减少由于证书配置错误导致的集群故障。</p>
-<h1 id="kubernetes-">Kubernetes 中的证书配置</h1>
-<p>前面我们介绍了 Kubernetes 集群中主要使用到的证书。下面我们分别看一下如何将这些证书及其对应的私钥和 CA 根证书需要配置到 Kubernetes 中各个组件中，以供各个组件进行使用。这里假设使用一个集群根 CA 来颁发所有相关证书，因此涉及到 CA 的配置对应的证书文件名都是相同的。</p>
-<h2 id="etcd-">etcd 证书配置</h2>
-<p>需要在 etcd 的启动命令行中配置以下证书相关参数：</p>
+<h2 id="-pilotagent-">为什么要通过 Pilot-agent 中转？</h2>
+<p>从图2可以看到，Istio 证书签发的过程中涉及到了三个组件： Istiod (Istio CA) &mdash;&gt; Pilot-agent &mdash;&gt; Enovy。为什么其他 xDS 接口都是由 Istiod 直接向 Envoy 提供，但 SDS 却要通过 Pilot-agent 进行一次中转，而不是直接由 Envoy 通过 SDS 接口从 Istiod 获取证书呢？这样做主要有两个原因。</p>
+<p>首先，在 Istio 的证书签发流程中，由 Pilot-agent 生成私钥和 CSR，再通过 CSR 向 Istiod 中的 CA 申请证书。在整个过程中，私钥只存在于本地的 Istio-proxy 容器中。如果去掉中间 Pilot-agent 这一步，直接由 Envoy 向 Isitod 申请证书，则需要由 Istio的 生成私钥，并将私钥和证书一起通过网络返回给 Envoy，这将大大增加私钥泄露的风险。</p>
+<p>另一方面，通过 Pilot-agent 来提供 SDS 服务，由 Pilot-agent 生成标准的 CSR 证书签名请求，可以很容易地对接不同的 CA 服务器，方便 Istio 和其他证书机构进行集成。</p>
+<h2 id="heading1">控制面身份认证</h2>
+<p>要通过服务证书来实现网格中服务的身份认证，必须首先确保服务从控制面获取自身证书的流程是安全的。Istio 通过 Istiod 和 Pilog-agent 之间的 gRPC 通道传递 CSR 和证书，因此在这两个组件进行通信时，双方需要先验证对方的身份，以避免恶意第三方伪造 CSR 请求或者假冒 Istiod CA 服务器。在目前的版本中(Istio1.6)，Pilot-agent 和 Istiod 分布采用了不同的认证方式。</p>
 <ul>
-<li>etcd 对外提供服务的服务器证书及私钥。</li>
-<li>etcd 节点之间相互进行认证的 peer 证书、私钥以及验证 peer 的 CA。</li>
-<li>etcd 验证访问其服务的客户端的 CA。</li>
+<li>Istiod 身份认证
+<ul>
+<li>Istiod 采用其内置的 CA 服务器为自身签发一个服务器证书（图2中的 Istiod certificate），并采用该服务器证书对外提供基于 TLS 的 gPRC 服务。</li>
+<li>Istiod 调用 Kube-apiserver 生成一个 ConfigMap， 在该 ConfigMap 中放入了 Istiod 的 CA 根证书(图2中的 istio-ca-root-cert)。</li>
+<li>该 ConfigMap 被 Mount 到 Istio-proxy 容器中，被 Pilot-agent 用于验证 Istiod 的服务器证书。</li>
+<li>在 Pilot-agent 和 Istiod 建立 gRPC 连接时，Pilot-agent 采用标准的 TLS 服务器认证流程对 Istiod 的服务器证书进行认证。</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/etcd <span style="color:#f1fa8c">\\</span>
-  --cert-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd.pem <span style="color:#f1fa8c">\\</span>                   <span style="color:#6272a4"># 对外提供服务的服务器证书</span>
-  --key-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd-key.pem <span style="color:#f1fa8c">\\</span>                <span style="color:#6272a4"># 服务器证书对应的私钥</span>
-  --peer-cert-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd-peer.pem <span style="color:#f1fa8c">\\</span>         <span style="color:#6272a4"># peer 证书，用于 etcd 节点之间的相互访问</span>
-  --peer-key-file<span style="color:#ff79c6">=</span>/etc/etcd/kube-etcd-peer-key.pem <span style="color:#f1fa8c">\\</span>      <span style="color:#6272a4"># peer 证书对应的私钥</span>
-  --trusted-ca-file<span style="color:#ff79c6">=</span>/etc/etcd/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>       <span style="color:#6272a4"># 用于验证访问 etcd 服务器的客户端证书的 CA 根证书</span>
-  --peer-trusted-ca-file<span style="color:#ff79c6">=</span>/etc/etcd/cluster-root-ca.pem<span style="color:#f1fa8c">\\</span>   <span style="color:#6272a4"># 用于验证 peer 证书的 CA 根证书</span>
-  ...
-</code></pre></div><h2 id="kubeapiserver-">kube-apiserver 证书配置</h2>
-<p>需要在 kube-apiserver 中配置以下证书相关参数：</p>
+</li>
+<li>Pilot-agent 身份认证
 <ul>
-<li>kube-apiserver 对外提供服务的服务器证书及私钥。</li>
-<li>kube-apiserver 访问 etcd 所需的客户端证书及私钥。</li>
-<li>kube-apiserver 访问 kubelet 所需的客户端证书及私钥。</li>
-<li>验证访问其服务的客户端的 CA。</li>
-<li>验证 etcd 服务器证书的 CA 根证书。</li>
-<li>验证 service account token 的公钥。</li>
+<li>在 Kubernetes 中可以为每一个 pod 关联一个 <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/">Service Account</a>，以表明该 pod 中运行的服务的身份信息。例如 bookinfo 中 reviews 服务的 service accout 是 “bookinfo-reviews” 。</li>
+<li>Kubernetes 会为该 service account 生成一个 jwt token，并将该 token 通过 secret 加载到 pod 中的一个文件。</li>
+<li>Pilot-agent 在向 Istiod 发送 CSR 时，将其所在 pod 的 service account token 也随请求发送给 Istiod。</li>
+<li>Istiod 调用 Kube-apiserver 接口验证请求中附带的 service account token，以确认请求证书的服务身份是否合法。</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/kube-apiserver <span style="color:#f1fa8c">\\</span> 
-  --tls-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver.pem <span style="color:#f1fa8c">\\</span>                             <span style="color:#6272a4"># 用于对外提供服务的服务器证书</span>
-  --tls-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-key.pem <span style="color:#f1fa8c">\\</span>                  <span style="color:#6272a4"># 服务器证书对应的私钥</span>
-  --etcd-certfile<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-etcd-client.pem <span style="color:#f1fa8c">\\</span>                 <span style="color:#6272a4"># 用于访问 etcd 的客户端证书</span>
-  --etcd-keyfile<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-etcd-client-key.pem <span style="color:#f1fa8c">\\</span>              <span style="color:#6272a4"># 用于访问 etcd 的客户端证书的私钥</span>
-  --kubelet-client-certificate<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-kubelet-client.pem <span style="color:#f1fa8c">\\</span> <span style="color:#6272a4"># 用于访问 kubelet 的客户端证书</span>
-  --kubelet-client-key<span style="color:#ff79c6">=</span>/var/lib/kubernetes/kube-apiserver-kubelet-client-key.pem <span style="color:#f1fa8c">\\</span>     <span style="color:#6272a4"># 用于访问 kubelet 的客户端证书的私钥</span>
-  --client-ca-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>                           <span style="color:#6272a4"># 用于验证访问 kube-apiserver 的客户端的证书的 CA 根证书</span>
-  --etcd-cafile<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>                              <span style="color:#6272a4"># 用于验证 etcd 服务器证书的 CA 根证书</span>  
-  --kubelet-certificate-authority<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>            <span style="color:#6272a4"># 用于验证 kubelet 服务器证书的 CA 根证书</span>
-  --service-account-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account.pem <span style="color:#f1fa8c">\\</span>                 <span style="color:#6272a4"># 用于验证 service account token 的公钥</span>
-  ...
-</code></pre></div><h2 id="-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</h2>
-<p>Kubernetes 中的各个组件，包括kube-controller-mananger、kube-scheduler、kube-proxy、kubelet等，采用一个kubeconfig 文件中配置的信息来访问 kube-apiserver。该文件中包含了 kube-apiserver 的地址，验证 kube-apiserver 服务器证书的 CA 证书，自己的客户端证书和私钥等访问信息。</p>
-<p>在一个使用 minikube 安装的集群中，生成的 kubeconfig 配置文件如下所示，这四个文件分别为 admin 用户， kube-controller-mananger、kubelet 和 kube-scheduler 的kubeconfig配置文件。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls /etc/kubernetes/
-admin.conf  controller-manager.conf  kubelet.conf  scheduler.conf
-</code></pre></div><p>我们打开 controller-manager.conf 来看一下。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: v1
-clusters:
-- cluster: 
-    <span style="color:#6272a4"># 用于验证 kube-apiserver 服务器证书的 CA 根证书 </span>
-    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwdGFXNXAKYTNWaVpVTkJNQjRYRFRJd01ETXdOekF3TXpjeE1Wb1hEVE13TURNd05qQXdNemN4TVZvd0ZURVRNQkVHQTFVRQpBeE1LYldsdWFXdDFZbVZEUVRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTczCkdIMWxqNkxEUm1FLy9hQ2cvNUlmampKYy8zOGcyMVpITXJDMkx5RGVqZWhrdWUwZFB1WTJ0L2JjTjJYM1dGNEsKaWNzNmhhWnBDbFVxL3pteVRITWhhZnlmVVF5MDFJZmhDV2I5NXI4akpHZ2NyU3U3UUtXM3ZOd1Z1TmhJNmd6SApSWW45Ry82VHJKTjdOMWRjejNmMlU1OFRjUHVCQzZOUzVTc1JmemFSczVDZnd0UTNaa2czQUFVYTlQSDZFVmtDCkIvRGR1bXBialZGakMwSllOWlFVNTlGNUxDeHJ0bEYvOUJsSVhnZGw0ZlNCNzQ0ZW1UelcySEZQek9lTklYYnUKYTJPa0FFTDdJc3hSRTFBaEFKZ1h6cFNmdi9paDBuMEJpQ1VaV1hLZjg2UjZJL2xlK2docG51c21kTXUwbkNEUApHMm9laXhRTit5NzFQU2tGcGdzQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUIwR0ExVWRKUVFXCk1CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCaWpXYlpPNU9uaU9lNHRHUlQvRGFXaFBkY2ZwbE8vcVQ5WkFqU1hXZU41TStubExQZQpGV1NLRGRWU1NzajJ6UVdMU3A1Vjc3MkFoa2NYQlM0a2ZiY2ZCTUl2ejVsYXJZeHgxcnduTzZLbVZSTHdkNUNkCnRER2RjUjF0UzdqeTRSV05ISlAyNWZhZHB5TE9KVzJlZkdLRmRiSnZyRjljekV1ODR5a1drdThtVnNNa0RzTXkKbnVFNGtXblNvODgweFpxVG9QN01qM3hkRlNYYWdoNytwK3FMazk1VjhBNTRUNmRKa2VjSGg4SzdNYVRxdWVOVgpzOVhuZDA2WEJGQWFCVXRsSGZybmRXUzhmaTQ5dTY0NEFWOWJHclNYRnR1Q0lydnIxVkY2d0R3dEJYZi9UUStrCkx3Zk1oNVZDVWt1bEJqWEpqK1ZvRnBLZm5Qck9nbEExZzRtUgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-    server: https://localhost:<span style="color:#bd93f9">8443</span>
-  name: kubernetes
-contexts:
-- context:
-    cluster: kubernetes
-    user: system:kube-controller-manager
-  name: system:kube-controller-manager@kubernetes
-current-context: system:kube-controller-manager@kubernetes
-kind: Config
-preferences: {}
-users:
-- name: system:kube-controller-manager
-  user:
-    <span style="color:#6272a4"># 用于访问 kube-apiserver 的客户端证书</span>
-    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lJZVE4aDNXSlNmZEF3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2JXbHVhV3QxWW1WRFFUQWVGdzB5TURBek1EY3dNRE0zTVRGYUZ3MHlNVEExTVRrd05qVTNNemxhTUNreApKekFsQmdOVkJBTVRIbk41YzNSbGJUcHJkV0psTFdOdmJuUnliMnhzWlhJdGJXRnVZV2RsY2pDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU5DTzJpTEZzNGRTTW9sR2plN2tjY1VFbURDVjEvbWQKV1p1cS9DT0RvV1p2Uy80clNrOXNsaFQvektIVTVkVmg3SFV4TGNWU1RkQXZScGEwN3dXK3h2eWlDR3Y5UmMyVAp0bkFnUFFhQ2VkOC8zZlFpMzI1QmZCZVl4UjRTTm8raEM1b0ZYYkhpdC9OWWlQTVMvM1hFOGVCc0dEZCtjd1pzCnhNTDZzc0pJNzVOSmNXckV3eXlMbzIrb1JSRmJ2TlpJWFRZekJpRGd3QkZxNUkzZVA5QTl2d29rUG5STFBSdlYKQU9SV3hUZDMyblJLOTY1SU9uV25mNzY0bHhSeEV6bHIyS09rSzc5NlVJWTlyL0lYOWdGQjNqbGZFK1lBOE5VLwpuV2x3cElNL0ZpMk9hL1hjNnQzNUJHSnNXcTR4bHQ5RDdqS3V2bTNONmJlanJPOFZNODU5QU44Q0F3RUFBYU1uCk1DVXdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CTUdBMVVkSlFRTU1Bb0dDQ3NHQVFVRkJ3TUNNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCZVg4QmVuTlJoUTVWaVpMMjRxcWxIMjRlMDVyYWVVTFZJQlQzWE90cmdQcXF1WXRGWgptRG9naEpuSW05aVVMcHFTTUxHMlJrQ0RBMEk2Rit0SGVFVHRMRDlNdjA2N1huQ2VCclhkTFVTYzkwaHNZWm1KClNsVG11c21TZGUxUXJsRnFxQVRZY2VCVWgwM0lSbXZIL1BtS21va1FUZDZER0paVVVhM3ducEN6Nko4aGcySGwKWlZFaURKcHNoeXNBaVdCUWZBN01TRlFlb0poSjhUdHgzdEhNZDlaaHlmcVVHOVByUGJkMUlBQTIrRlVudXRsNwpoRmdZdTBxbG5aZFZCWE9JM1dvZndWZ2dDTEQrbFVCeGgzNVhLNStxYXhWNVlDTit0ZTNFeDJERHVmRW1UV0FoCkwwUVNTc0RTZGd0Vi9TNFhvV2xQcXU0Q2lRVnZydUg3WHkxMwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-    <span style="color:#6272a4"># 客户端证书对应的私钥</span>
-    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMEk3YUlzV3poMUl5aVVhTjd1Unh4UVNZTUpYWCtaMVptNnI4STRPaFptOUwvaXRLClQyeVdGUC9Nb2RUbDFXSHNkVEV0eFZKTjBDOUdsclR2QmI3Ry9LSUlhLzFGelpPMmNDQTlCb0o1M3ovZDlDTGYKYmtGOEY1akZIaEkyajZFTG1nVmRzZUszODFpSTh4TC9kY1R4NEd3WU4zNXpCbXpFd3ZxeXdranZrMGx4YXNURApMSXVqYjZoRkVWdTgxa2hkTmpNR0lPREFFV3JramQ0LzBEMi9DaVErZEVzOUc5VUE1RmJGTjNmYWRFcjNya2c2CmRhZC92cmlYRkhFVE9XdllvNlFydjNwUWhqMnY4aGYyQVVIZU9WOFQ1Z0R3MVQrZGFYQ2tnejhXTFk1cjlkenEKM2ZrRVlteGFyakdXMzBQdU1xNitiYzNwdDZPczd4VXp6bjBBM3dJREFRQUJBb0lCQVFDRDVMT2pKZkJoZGVRcgoySWpPT1g2Um9GUTI5YXgrV2JwZnJnU0MyUzNyUUJ1SkJBdWNxd2xIQW5hQktjaW41NlBJZ1c5MnlKUVpRcXliCmhwVmF4c25FM3h3QVgwNFRzb1MvNkVOdnFIZzJiWWVLYTd0dFdOQ0hnNysxUXNOcWxlaG1ZVnBkc3dtdVJhRm0KUis5eXBUaHFPeklkZGtSOEhiRlp0WDN6VEhqbVpYaUhGdlIvMFhYK1BVbDR6SllSWjlCbVBnY2Ric2tSTldScgo0Qk8wUmlQQWRKVEo2VHZLMGhxT1g1UHo4ekl3S1ZzYjdyYndUdXArTGs4eWNCVUd3Q1N3RzEyanVNQW1kYkJJClZmdmlFK1VYRHRIQXdLWXlnMEhCVitJVlEvcVNwSVJ1WXQ4SmY1MWVKN1VEbHhiN3ZRTStEYVNsNjVaMVNyWUcKQU9UTGpPVkJBb0dCQU5PYzB0OG5ybmhUR3V0MGhMdVp6SWs4ekFranhYYWtiSURlZi9XeXlQdW94Z3J2ZGMzcwpsbHV0U3hSOFV4WGVuQjBLZFpnYnNoc1ozeW9GbEI0YThTMzI1UFRsYm9xOVB0TDRaOFBzczQ3L0l1bHYxTk10CnZzZjdKZ1FuaFRCVndkdjN6OXFpdml6bjB4Mk9CdURxdzNSYXcvWEhwRy9RczJ5WmF4S29GNW9SQW9HQkFQeE8KQVBDUXQ2Q2swOFF2WTE4VjFLQXA0d2h1YWEyMS9MeC9rZUZJSURRd0tZZnFHRGdBWUYvQzJUbC9xc29TMXAvTwpFcFVkVkRBNHVpblFVbnFhNGg0a0JOYjRXTFhrSXhRdXdjWHdJNjRMNWR3ZWJHalhxUWUwbnkxQkhkTmU2Z0dqClorbit4OUJLWnJmcEliYkQ2blpYUUREbS9jZWYyWU5NVWRqVWpudnZBb0dBQnlIMUZhSi94ZngvSHNxWm9yMG4KWU1UVTE4WUY1TjdiN1dnU2hoU1ZvNjNucHZ5MVN0Q2JyTkZsZzNaQlVxNWpNck5ralZENXF1SXZYSG85cU5vZApvUC8rYmFiQ0dCa1M0Z2VQYjlJdHB6ZEFWUC80KzNsQ1FmbGNLYTJ2VnBhOVp3MnVTdDlMYTdZUXJxRlg2QUxoCnZhMUZoNlpJQzZETU8yL2NaUStYWkJFQ2dZQnNGMHNGeFNvMlU0YzZISWM1SEZRc2plVnJIa3ArRm1LQnF6R24KVDB3a3I2R0xUZm8wTzgwT0daOFFxQ1pXVGozTzF1MVZIdXlMZ0RJWmFkdDhGVkRjVXRnVDlPK2tkV21sNHVZMwpVOHNsYklsOGhUZ3lybm9IQ0JYTndJRHpwazBnaUk0alRIajBQbnZGUE1hcDAwTm1rYmk1ZXF5czBrblFtMmpSCk9UY1Yxd0tCZ0RNUWZSVlNNNXlGcjVIalJ4UXcwRDdrUWhONDlLbngrMWs2bWRORWJ6VG9rQ1RRcWlSeUJQdGgKcjlqZk0rRXFZcnZ1elRmRVpiS1VBMEZac09yeStxMHpXb29mTURLajFGV3BaTXJBSmdxdDFlcWtFbVFrVi8vSApQMzF3ejZDa1RneDdJby9iZ09PbmhsbUplU3NHaXpqenV2TjFEcWtjNVR3M3oxUSs1dmxmCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
-</code></pre></div><p>可以看到，访问 kube-apiserver 所需要的相关证书内容已经被采用 base64 编码写入了文件中。其他几个文件中的内容也是类似的，只是配置的用户名和客户端证书有所不同。</p>
-<p>在启动这些组件时，需要在参数中指出 kubeconfig 文件的路径，例如 kube-controller-manager 的启动命令如下。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
- --kubeconfig<span style="color:#ff79c6">=</span>/etc/kubernetes/controller-manager.conf 
- <span style="color:#6272a4"># 下面几个证书和访问 kube-apiserver 无关，我们会在后面介绍到</span>
- --cluster-signing-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem             <span style="color:#6272a4"># 用于签发证书的 CA 根证书</span>
- --cluster-signing-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca-key.pem          <span style="color:#6272a4"># 用于签发证书的 CA 根证书的私钥</span>  
- --service-account-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account-key.pem  <span style="color:#6272a4"># 用于对 service account token 进行签名的私钥</span>
- ... 
-</code></pre></div><h2 id="service-account--">Service Account  证书</h2>
-<p>Kubernetes 中有两类用户，一类为 user account，一类为 service account。 service account 主要被 pod 用于访问 kube-apiserver。 在为一个 pod 指定了 service account  后，kubernetes 会为该 service account 生成一个 JWT token，并使用 secret 将该 service account token 加载到 pod 上。pod 中的应用可以使用 service account token 来访问 api server。service account 证书被用于生成和验证 service account token。该证书的用法和前面介绍的其他证书不同，因为实际上使用的是其公钥和私钥，而并不需要对证书进行验证。</p>
-<p>我们可以看到 service account 证书的公钥和私钥分别被配置到了 kube-apiserver 和 kube-controller-manager 的命令行参数中，如下所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/kube-apiserver <span style="color:#f1fa8c">\\</span> 
-  --service-account-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account.pem <span style="color:#f1fa8c">\\</span>          <span style="color:#6272a4"># 用于验证 service account token 的公钥</span>
-  ...
-  
- /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
- --service-account-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account-key.pem  <span style="color:#6272a4"># 用于对 service account token 进行签名的私钥</span>
- ... 
-</code></pre></div><p>下图展示了 kubernetes 中生成、使用和验证 service account token  的过程。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt=""></p>
-<h3 id="-token-">认证方法：客户端证书还是 token ？</h3>
-<p>我们可以看到，Kubernetes 提供了两种客户端认证的方法，控制面组件采用的是客户端数字证书;而在集群中部署的应用则采用了 service account token 的方式。为什么 Kubernetes 不为 service account 也生成一个证书，并采用该证书进行身份认证呢？ 实际上 Istio 就是这样做的，Istio 会自动为每个 service account 生成一个证书，并使用该证书来在 pod 中的应用之间建立双向 tls 认证。我没有找到 Kubernetes 这个设计决策的相关说明，如果你知道原因或对此有自己的见解，欢迎联系我进行探讨。</p>
-<h2 id="kubernetes-1">Kubernetes 证书签发</h2>
-<p>Kubernetes 提供了一个  <code>certificates.k8s.io</code>  API，可以使用配置的 CA 根证书来签发用户证书。该 API 由 kube-controller-manager 实现，其签发证书使用的根证书在下面的命令行中进行配置。我们希望 Kubernetes 采用集群根 CA 来签发用户证书，因此在  kube-controller-manager  的命令行参数中将相关参数配置为了集群根 CA。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
- --cluster-signing-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem             <span style="color:#6272a4"># 用于签发证书的 CA 根证书</span>
- --cluster-signing-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca-key.pem          <span style="color:#6272a4"># 用于签发证书的 CA 根证书的私钥</span>  
- ... 
-</code></pre></div><p>关于更多 Kubernetes 证书签发 API 的内容，可以参见 <a href="https://kubernetes.io/zh/docs/tasks/tls/managing-tls-in-a-cluster/">管理集群中的 TLS 认证</a>。</p>
-<h2 id="-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</h2>
-<p>在安装 Kubernetes 时，我们需要为每一个工作节点上的 Kubelet 分别生成一个证书。由于工作节点可能很多，手动生成 Kubelet 证书的过程会比较繁琐。为了解决这个问题，Kubernetes 提供了 <a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a> 的方式来简化   Kubelet 证书的生成过程。其原理是预先提供一个 bootstrapping token，kubelet 通过该 kubelet 调用 kube-apiserver 的证书签发 API 来生成 自己需要的证书。要启用该功能，需要在 kube-apiserver 中启用 <code>--enable-bootstrap-token-auth</code> ，并创建一个 kubelet 访问 kube-apiserver 使用的 bootstrap token secret。如果使用 kubeadmin 安装，可以使用 <code>kubeadm token create</code>命令来创建 token。</p>
-<p>采用TLS bootstrapping 生成证书的流程如下：</p>
-<ol>
-<li>调用 kube-apiserver 生成一个 bootstrap token。</li>
-<li>将该 bootstrap token 写入到一个 kubeconfig 文件中，作为 kubelet 调用 kube-apiserver 的客户端验证方式。</li>
-<li>通过  <code>--bootstrap-kubeconfig</code> 启动参数将 bootstrap token 传递给 kubelet 进程。</li>
-<li>Kubelet 采用bootstrap token 调用 kube-apiserver API，生成自己所需的服务器和客户端证书。</li>
-<li>证书生成后，Kubelet 采用生成的证书和 kube-apiserver 进行通信，并删除本地的 kubeconfig 文件，以避免 bootstrap token 泄漏风险。</li>
-</ol>
-<h1 id="heading">小结</h1>
-<p>Kubernetes 中使用了大量的证书来确保集群的安全，弄清楚这些证书的用途和配置方法将有助于我们深入理解 kubernetes 的安装过程和组件的配置。本文是笔者在学习 过程中整理的 Kubernetes 集群中主要使用到的证书，由于笔者对 Kubernetes 的理解有限，文章中难免存在部分错误，欢迎指正。</p>
-<h1 id="heading1">参考文档</h1>
+</li>
+</ul>
+<p>备注：除了 Kubernetes 之外， Istio 也支持虚机部署，在虚机部署的场景下，由于没有 service account，Pilot-agent 和 Pilotd 之间的身份认证方式有所不同。由于 Istio 的主要使用场景还是 Kubernetes，本文只分析 Kubernetes 部署场景。</p>
+<h1 id="sds-">SDS 工作原理</h1>
+<p>和其他 <a href="https://www.envoyproxy.io/docs/envoy/latest/api-docs/xds_protocol">xDS</a> 接口一样，SDS 也是 Envoy 支持的一种动态配置服务接口。Envoy 可以通过 <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/security/secret">SDS（secret discovery service）</a> 接口从 SDS 服务器自动获取证书。和之前的方式相比，SDS 最大的好处就是简化了证书管理。在没有使用 SDS 前，Istio 中的服务证书被创建为 Kubernetes secret，并挂载到代理容器中。如果证书过期了，则需要更新 secret 并重启 Envoy 容器，以启用新的证书。使用SDS后，SDS 服务器（Pilot-agent充当了 SDS 服务器的角色）将向 Envoy 实例主动推送证书。如果证书过期，SDS 服务器只需将新的证书推送到 Envoy 例中，Envoy 会使用新的证书来创建链接，无需重新启动。</p>
+<p><img src="/img/2020-05-25-istio-certificate/envoy-sds.svg" alt="">
+图3. Envoy SDS 服务</p>
+<p>可以看到，Istio 采用 SDS 后，避免了在证书更新后重启 Envoy，大大减少了证书更新对业务的影响。同时，由于 Pilot-agent 和 Envoy 处于同一容器中，私钥只存在于本地容器，避免了在网络中传递私钥，也降低了私钥泄露的安全风险。</p>
+<p>SDS 服务向 Envoy 下发的数据结构为<code>extensions.transport_sockets.tls.v3.Secret</code>,其结构如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;...&#34;</span>,                            // Secret 名称
+  <span style="color:#ff79c6">&#34;tls_certificate&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,               // 数字证书
+  <span style="color:#ff79c6">&#34;session_ticket_keys&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,
+  <span style="color:#ff79c6">&#34;validation_context&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,            // 证书验证信息
+  <span style="color:#ff79c6">&#34;generic_secret&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>
+}
+</code></pre></div><p>其中在 Istio 中用到的主要是 <code>tls_certificate</code> 和 <code>validation_context</code>。 分别用于传递数字证书和验证对方证书使用到的根证书。下面是这两个字段的结构，结构中标注了我们主要需要关注的内容。</p>
+<p><code>tls_certificate</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#ff79c6">&#34;certificate_chain&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,           // 证书内容
+  <span style="color:#ff79c6">&#34;private_key&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,                 // 证书的私钥
+  <span style="color:#ff79c6">&#34;private_key_provider&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,
+  <span style="color:#ff79c6">&#34;password&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>
+}
+</code></pre></div><p><code>validation_context</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#ff79c6">&#34;trusted_ca&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,                 // CA 根证书
+  <span style="color:#ff79c6">&#34;verify_certificate_spki&#34;</span>: [],
+  <span style="color:#ff79c6">&#34;verify_certificate_hash&#34;</span>: [],
+  <span style="color:#ff79c6">&#34;match_subject_alt_names&#34;</span>: [],         // 需要验证的 subject alt name
+  <span style="color:#ff79c6">&#34;crl&#34;</span>: <span style="color:#f1fa8c">&#34;{...}&#34;</span>,
+  <span style="color:#ff79c6">&#34;allow_expired_certificate&#34;</span>: <span style="color:#f1fa8c">&#34;...&#34;</span>,
+  <span style="color:#ff79c6">&#34;trust_chain_verification&#34;</span>: <span style="color:#f1fa8c">&#34;...&#34;</span>
+}
+</code></pre></div><h1 id="heading2">网格边车证书配置</h1>
+<p>在 Istio 的 Enovy 边车配置中，有两处需要通过 SDS 来配置证书：</p>
 <ul>
-<li><a href="https://kubernetes.io/zh/docs/setup/best-practices/certificates/">Kubernetes PKI 证书和要求</a></li>
-<li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-wa">kubernetes the hard way</a></li>
-<li><a href="https://blog.51cto.com/13210651/2361208">Kubernetes 之 二进制安装(二) 证书详解</a></li>
-<li><a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping</a></li>
-<li><a href="https://zhaohuabing.com/post/2020-03-19-pki/">数字证书原理</a></li>
+<li>Inbound Listener：由于Enovy 通过 Listener 对外提供服务，需要通过 SDS 配置服务器证书，服务器证书私钥，以及验证下游客户端证书的 CA 根证书。</li>
+<li>Outbound Cluster：对于上游的 Cluster 而言，Envoy 是客户端的角色，因此需要在 Cluster 中通过 SDS 配置客户端证书，客户端证书私钥，以及验证上游服务器的 CA 根证书。</li>
+</ul>
+<p>下面我们来看一下 bookinfo 示例中 Envoy 边车代理上 reviews 微服务相关的证书配置，以对 Istio 中 SDS 的运作机制有一个更清晰的认识。为了简略起见，本文只显示了部分关键的配置。你也可以查看 Github 上的<a href="https://github.com/zhaohuabing/bookinfo-bookinfo-config-dump/blob/istio1.5.4/reviews-config-dump">完整配置</a>。</p>
+<p>通过 Envoy 的管理端口，可以导出 Envoy 中的当前配置，导出命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl <span style="color:#8be9fd;font-style:italic">exec</span> reviews-v1-6d8bc58dd7-ts8kw -c istio-proxy curl http://127.0.0.1:15000/config_dump &gt; config_dump
+</code></pre></div><p>配置文件中 SDS 服务器的定义如下，Pilot-agent 在 <code>/etc/istio/proxy/SDS</code> 这路径上通过 unix domain socket 提供了一个 SDS 服务器。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>,
+  <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;STATIC&#34;</span>,
+  <span style="color:#ff79c6">&#34;connect_timeout&#34;</span>: <span style="color:#f1fa8c">&#34;10s&#34;</span>,
+  <span style="color:#ff79c6">&#34;hidden_envoy_deprecated_hosts&#34;</span>: [
+   {
+    <span style="color:#ff79c6">&#34;pipe&#34;</span>: {
+     <span style="color:#ff79c6">&#34;path&#34;</span>: <span style="color:#f1fa8c">&#34;/etc/istio/proxy/SDS&#34;</span>
+    }
+   }
+  ],
+  <span style="color:#ff79c6">&#34;http2_protocol_options&#34;</span>: {}
+}
+</code></pre></div><p>Details Pod 在 9080 端口对外提供服务，因此需要通过 SDS 配置 9080 端口上的服务端证书和验证客户端证书的 CA 根证书。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;virtualInbound&#34;</span>,                                // 15006端口上的虚拟入向监听器
+  <span style="color:#ff79c6">&#34;active_state&#34;</span>: {
+  <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-14T03:59:54Z/25&#34;</span>,
+  <span style="color:#ff79c6">&#34;listener&#34;</span>: {
+   <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Listener&#34;</span>,
+   <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;virtualInbound&#34;</span>,
+   <span style="color:#ff79c6">&#34;address&#34;</span>: {
+    <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+     <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>,
+     <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15006</span>
+    }
+   },
+   <span style="color:#ff79c6">&#34;filter_chains&#34;</span>: [
+   {
+     <span style="color:#ff79c6">&#34;filter_chain_match&#34;</span>: {
+      <span style="color:#ff79c6">&#34;prefix_ranges&#34;</span>: [
+       {
+        <span style="color:#ff79c6">&#34;address_prefix&#34;</span>: <span style="color:#f1fa8c">&#34;10.44.0.8&#34;</span>,
+        <span style="color:#ff79c6">&#34;prefix_len&#34;</span>: <span style="color:#bd93f9">32</span>
+       }
+      ],
+      <span style="color:#ff79c6">&#34;destination_port&#34;</span>: <span style="color:#bd93f9">9080</span>                            // 用于处理发向reviews服务<span style="color:#bd93f9">9080</span>端口的业务请求的filter chain
+     },
+     <span style="color:#ff79c6">&#34;filters&#34;</span>: [...],
+     <span style="color:#ff79c6">&#34;transport_socket&#34;</span>: {
+      <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.transport_sockets.tls&#34;</span>,
+      <span style="color:#ff79c6">&#34;typed_config&#34;</span>: {
+       <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext&#34;</span>,
+       <span style="color:#ff79c6">&#34;common_tls_context&#34;</span>: {
+        <span style="color:#ff79c6">&#34;alpn_protocols&#34;</span>: [
+         <span style="color:#f1fa8c">&#34;h2&#34;</span>,
+         <span style="color:#f1fa8c">&#34;http/1.1&#34;</span>
+        ],
+        <span style="color:#ff79c6">&#34;tls_certificate_sds_secret_configs&#34;</span>: [          // 配置服务器端证书
+         {
+          <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>,                             // 服务器证书 Secret 名称
+          <span style="color:#ff79c6">&#34;sds_config&#34;</span>: {
+           <span style="color:#ff79c6">&#34;api_config_source&#34;</span>: {
+            <span style="color:#ff79c6">&#34;api_type&#34;</span>: <span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+            <span style="color:#ff79c6">&#34;grpc_services&#34;</span>: [
+             {
+              <span style="color:#ff79c6">&#34;envoy_grpc&#34;</span>: {
+               <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>               // 配置用于获取服务器端证书的 SDS 服务器
+              }
+             }
+            ]
+           }
+          }
+         }
+        ],
+        <span style="color:#ff79c6">&#34;combined_validation_context&#34;</span>: {
+         <span style="color:#ff79c6">&#34;default_validation_context&#34;</span>: {},
+         <span style="color:#ff79c6">&#34;validation_context_sds_secret_config&#34;</span>: {     // 配置验证客户端证书的 CA 根证书
+          <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;ROOTCA&#34;</span>,                            // CA 根证书 Secret 名称
+          <span style="color:#ff79c6">&#34;sds_config&#34;</span>: {
+           <span style="color:#ff79c6">&#34;api_config_source&#34;</span>: {
+            <span style="color:#ff79c6">&#34;api_type&#34;</span>: <span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+            <span style="color:#ff79c6">&#34;grpc_services&#34;</span>: [
+             {
+              <span style="color:#ff79c6">&#34;envoy_grpc&#34;</span>: {
+               <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>             // 配置用于获取 CA 根证书的 SDS 服务器
+              }
+             }
+            ]
+           }
+          }
+         }
+        }
+       },
+       <span style="color:#ff79c6">&#34;require_client_certificate&#34;</span>: <span style="color:#ff79c6">true</span>
+      }
+     }
+    }
+   ],
+ }
+}
+</code></pre></div><p>客户端 Pod 上的 Enovy 通过 reviews outbound cluster 访问上游 reviews 服务，因此需要在该 cluster 上配置客户端证书以及验证服务器端证书的 CA 根证书。在这里我们需要注意的是，Envoy 在验证服务器端证书时会同时验证证书中的 subject alternative name 字段。该字段中设置的是 reviews 服务 Pod 关联的 Service Account 名称。 由于 Service Account 是 Istio 中认可的一种用户账户，因此通过为 Service Account 设置不同的资源访问权限，可以进一步实现细粒度的权限控制，例如按照 URL 进行授权。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"> {
+  <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-14T03:15:47Z/18&#34;</span>,
+  <span style="color:#ff79c6">&#34;cluster&#34;</span>: {
+   <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Cluster&#34;</span>,
+   <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>,
+   <span style="color:#ff79c6">&#34;type&#34;</span>: <span style="color:#f1fa8c">&#34;EDS&#34;</span>,
+   <span style="color:#ff79c6">&#34;eds_cluster_config&#34;</span>: {
+    <span style="color:#ff79c6">&#34;eds_config&#34;</span>: {
+     <span style="color:#ff79c6">&#34;ads&#34;</span>: {}
+    },
+    <span style="color:#ff79c6">&#34;service_name&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>
+   },
+   <span style="color:#ff79c6">&#34;service_name&#34;</span>: <span style="color:#f1fa8c">&#34;outbound|9080||reviews.default.svc.cluster.local&#34;</span>
+  },
+  <span style="color:#ff79c6">&#34;circuit_breakers&#34;</span>: {...},
+  <span style="color:#ff79c6">&#34;filters&#34;</span>: [...],
+  <span style="color:#ff79c6">&#34;transport_socket_matches&#34;</span>: [
+   {
+    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;tlsMode-istio&#34;</span>,
+    <span style="color:#ff79c6">&#34;match&#34;</span>: {
+     <span style="color:#ff79c6">&#34;tlsMode&#34;</span>: <span style="color:#f1fa8c">&#34;istio&#34;</span>
+    },
+    <span style="color:#ff79c6">&#34;transport_socket&#34;</span>: {
+     <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.transport_sockets.tls&#34;</span>,
+     <span style="color:#ff79c6">&#34;typed_config&#34;</span>: {
+      <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext&#34;</span>,
+      <span style="color:#ff79c6">&#34;common_tls_context&#34;</span>: {
+       <span style="color:#ff79c6">&#34;alpn_protocols&#34;</span>: [
+        <span style="color:#f1fa8c">&#34;istio-peer-exchange&#34;</span>,
+        <span style="color:#f1fa8c">&#34;istio&#34;</span>
+       ],
+       <span style="color:#ff79c6">&#34;tls_certificate_sds_secret_configs&#34;</span>: [
+        {
+         <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>,                                     // 配置用于访问 reviews 服务的客户端证书
+         <span style="color:#ff79c6">&#34;sds_config&#34;</span>: {
+          <span style="color:#ff79c6">&#34;api_config_source&#34;</span>: {
+           <span style="color:#ff79c6">&#34;api_type&#34;</span>: <span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+           <span style="color:#ff79c6">&#34;grpc_services&#34;</span>: [
+            {
+             <span style="color:#ff79c6">&#34;envoy_grpc&#34;</span>: {
+              <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>                        // 配置用于获取客户端证书的 SDS 服务器
+             }
+            }
+           ]
+          }
+         }
+        }
+       ],
+       <span style="color:#ff79c6">&#34;combined_validation_context&#34;</span>: {
+        <span style="color:#ff79c6">&#34;default_validation_context&#34;</span>: {
+         <span style="color:#ff79c6">&#34;verify_subject_alt_name&#34;</span>: [
+          <span style="color:#f1fa8c">&#34;spiffe://cluster.local/ns/default/sa/bookinfo-reviews&#34;</span>  // 验证服务器证书时需要验证 SAN 中的 service account 名称
+         ]
+        },
+        <span style="color:#ff79c6">&#34;validation_context_sds_secret_config&#34;</span>: {
+         <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;ROOTCA&#34;</span>,                                     // 配置验证 reviews 服务器证书的 CA 根证书
+         <span style="color:#ff79c6">&#34;sds_config&#34;</span>: {
+          <span style="color:#ff79c6">&#34;api_config_source&#34;</span>: {
+           <span style="color:#ff79c6">&#34;api_type&#34;</span>: <span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+           <span style="color:#ff79c6">&#34;grpc_services&#34;</span>: [
+            {
+             <span style="color:#ff79c6">&#34;envoy_grpc&#34;</span>: {
+              <span style="color:#ff79c6">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>                       // 配置用于获取 CA 根证书的 SDS 服务器
+             }
+            }
+           ]
+          }
+         }
+        }
+       }
+      },
+      <span style="color:#ff79c6">&#34;sni&#34;</span>: <span style="color:#f1fa8c">&#34;outbound_.9080_._.reviews.default.svc.cluster.local&#34;</span>
+     }
+    }
+   },
+  ]
+ },
+ <span style="color:#f1fa8c">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-14T03:16:33.061Z&#34;</span>
+}
+</code></pre></div><p>上面配置中 SAN 中的 service account 名称来自于 reviews pod 中的 service account 配置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews-v1
+  labels:
+    app: reviews
+    version: v1
+spec:
+  replicas: <span style="color:#bd93f9">1</span>
+  selector:
+    matchLabels:
+      app: reviews
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: reviews
+        version: v1
+    spec:
+      serviceAccountName: bookinfo-reviews                             // 设置 reviews pod 的 service account
+      containers:
+      - name: reviews
+        image: docker.io/istio/examples-bookinfo-reviews-v1:<span style="color:#bd93f9">1.15</span><span style="color:#bd93f9">.0</span>
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: LOG_DIR
+          value: <span style="color:#f1fa8c">&#34;/tmp/logs&#34;</span>
+        ports:
+        - containerPort: <span style="color:#bd93f9">9080</span>
+...
+
+</code></pre></div><p>在导出的配置中可以看到 Envoy 通过 SDS 服务器获取到的证书内容。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"> {
+   <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.admin.v3.SecretsConfigDump&#34;</span>,
+   <span style="color:#ff79c6">&#34;dynamic_active_secrets&#34;</span>: [
+    {
+     <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>,
+     <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;05-14 03:16:30.900&#34;</span>,
+     <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-14T03:16:31.125Z&#34;</span>,
+     <span style="color:#ff79c6">&#34;secret&#34;</span>: {
+      <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret&#34;</span>,
+      <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;default&#34;</span>,
+      <span style="color:#ff79c6">&#34;tls_certificate&#34;</span>: {
+       <span style="color:#ff79c6">&#34;certificate_chain&#34;</span>: {
+        <span style="color:#ff79c6">&#34;inline_bytes&#34;</span>: <span style="color:#f1fa8c">&#34;LS0tLS1CRUdJTiBDRVJUSUZJQ0FUXXXXXXXXXXXXXXUZJQ0FURS0tLS0tCg==&#34;</span>           // details 服务的证书，该证书被同时用作了服务器证书和客户端证书
+       },
+       <span style="color:#ff79c6">&#34;private_key&#34;</span>: {
+        <span style="color:#ff79c6">&#34;inline_bytes&#34;</span>: <span style="color:#f1fa8c">&#34;W3JlZGFjdGVkXQ==&#34;</span>                                                        // detatils 服务证书对应的私钥
+       }
+      }
+     }
+    },
+    {
+     <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;ROOTCA&#34;</span>,
+     <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-14 03:16:31.300416193 +0000 UTC m=+1.537483882&#34;</span>,
+     <span style="color:#ff79c6">&#34;last_updated&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-14T03:16:31.343Z&#34;</span>,
+     <span style="color:#ff79c6">&#34;secret&#34;</span>: {
+      <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret&#34;</span>,
+      <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;ROOTCA&#34;</span>,
+      <span style="color:#ff79c6">&#34;validation_context&#34;</span>: {
+       <span style="color:#ff79c6">&#34;trusted_ca&#34;</span>: {
+        <span style="color:#ff79c6">&#34;inline_bytes&#34;</span>: <span style="color:#f1fa8c">&#34;LS0tLS1CRUdJTiBDRVJUSUZJQ0XXXXXXXXXXXXXXXXXXXXJQ0FURS0tLS0tCg==&#34;</span>       // 用于验证通信对方证书的 CA 根证书
+       }
+      }
+     }
+    }
+   ]
+  }
+</code></pre></div><p>通过上面的配置，我们可以看到，虽然需要在 Enovy 边车配置文件中不同的位置为 Envoy 配置服务器、客户端证书以及验证对方的 CA 根证书，但 Istio 中实际上只采用了一个服务证书和 CA 根证书。Isito 将名称为 default 的证书被同时用于 Inbound Listener 的服务器证书和 Outbound Cluster 的客户端证书，并将名称为 ROOTCA 的证书被用于验证下游客户端证书和上游服务器证书的根证书。</p>
+<h1 id="gateway-">Gateway 证书配置</h1>
+<p>除了需要和网格内部的服务进行通信之外，Ingress Gateway 和 Egress Gateway 还需要连接到网格外部的系统。如果这些外部连接也需要采用 TLS，则 Gateway 中也要配置这些外部系统的相关证书。</p>
+<p>Ingress Gateway 中需要如下证书相关的配置：</p>
+<ul>
+<li>作为客户端和网格内部其他服务进行通信的客户端证书和私钥，和其他服务使用的证书类似，该证书也是由 Istio CA 颁发的。</li>
+<li>验证网格内其他服务证书的 CA 根证书，该根证书是 Istio CA 的根证书。</li>
+<li>作为网关向网格外部提供服务使用的服务器端证书和私钥，该证书一般是由一个权威 CA 或者第三方 CA 签发的。如果有多个 host，需要为每一个 host 分别配置配置不同的证书。</li>
+<li>如果对外提供的服务需要双向 TLS 认证，还需要配置用于验证客户端证书的 CA 根证书。</li>
+</ul>
+<p>Egress Gateway 中需要如下证书相关的配置：</p>
+<ul>
+<li>作为服务器接受网格内部其他服务访问的服务器证书和私钥，和其他服务使用的证书类似，该证书也是由 Istio CA 颁发的。</li>
+<li>验证网格内其他服务证书的 CA 根证书，该根证书是 Istio CA 的根证书。</li>
+<li>作为出口网关访问外部服务时，如果该外部服务采用了 TLS，则需要配置一个验证该服务器证书的 CA 根证书来验证该服务器。该根证书一般是一个权威 CA 或者第三方 CA。</li>
+<li>如果访问的外部服务要求双向 TLS 认证，则还需要网关配置一个该外部服务认可的客户端证书。该证书一般是由一个权威 CA 或者第三方 CA 签发的。</li>
+</ul>
+<p>由于 Gateway 中配置的和外部系统相关的证书不是通过 SDS 从 Istio CA 获取的，而是采用第三方 CA 颁发的，因此到期后并不能自动更新，而需要手动进行更新。因此需要注意这些证书的有效期，在证书过期前及时重新申请证书并更新到 Gateway 配置中，以避免影响业务。</p>
+<p>在 Gateway 上配置第三方证书的方法是采用 Kubernetes Secret 和 Istio Gateway CRD。例如我们可以采用下面的步骤在 Ingress Gateway 上配置对外提供服务使用的服务器证书。</p>
+<p>首先创建一个 secret，该 secret 中包含了服务器证书和私钥：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl create -n istio-system secret tls bookinfo-credential --key<span style="color:#ff79c6">=</span>bookinfo.example.com.key --cert<span style="color:#ff79c6">=</span>bookinfo.example.com.crt
+</code></pre></div><p>然后通过 Gateway CRD 定义一个对外提供服务的虚拟主机，并指定使用刚才定义的 secret。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: mygateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: <span style="color:#bd93f9">443</span>
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: httpbin-credential <span style="color:#6272a4"># 在此处设置包含了服务器证书和私钥的 secret</span>
+    hosts:
+    - bookinfo.example.com
+</code></pre></div><p>Istio 将此配置通过 xDS 接口下发到 Ingress Gateway Pod 中的 Envoy 上，可以在该 Envoy 的配置导出中看到 Ingress 网关对外提供的 443 端口上的证书配置（配置文件中的端口是8443，这是因为 Pod 内使用了8443端口，但对外暴露的 LoadBalancer 上的端口是443）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0_8443&#34;</span>,
+  <span style="color:#ff79c6">&#34;active_state&#34;</span>: {
+   <span style="color:#ff79c6">&#34;version_info&#34;</span>: <span style="color:#f1fa8c">&#34;2020-05-27T07:43:51Z/21&#34;</span>,
+   <span style="color:#ff79c6">&#34;listener&#34;</span>: {
+    <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Listener&#34;</span>,
+    <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0_8443&#34;</span>,
+    <span style="color:#ff79c6">&#34;address&#34;</span>: {
+     <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+      <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;0.0.0.0&#34;</span>,
+      <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">8443</span>
+     }
+    },
+    <span style="color:#ff79c6">&#34;filter_chains&#34;</span>: [
+     {
+      <span style="color:#ff79c6">&#34;filter_chain_match&#34;</span>: {
+       <span style="color:#ff79c6">&#34;server_names&#34;</span>: [
+        <span style="color:#f1fa8c">&#34;bookinfo.example.com&#34;</span>
+       ]
+      },
+      <span style="color:#ff79c6">&#34;filters&#34;</span>: [...],
+      <span style="color:#ff79c6">&#34;transport_socket&#34;</span>: {
+       <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.transport_sockets.tls&#34;</span>,
+       <span style="color:#ff79c6">&#34;typed_config&#34;</span>: {
+        <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext&#34;</span>,
+        <span style="color:#ff79c6">&#34;common_tls_context&#34;</span>: {
+         <span style="color:#ff79c6">&#34;alpn_protocols&#34;</span>: [
+          <span style="color:#f1fa8c">&#34;h2&#34;</span>,
+          <span style="color:#f1fa8c">&#34;http/1.1&#34;</span>
+         ],
+         <span style="color:#ff79c6">&#34;tls_certificate_sds_secret_configs&#34;</span>: [
+          {
+           <span style="color:#ff79c6">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;bookinfo-credential&#34;</span>,                            // Ingress Gateway 中配置的 Kubernetes secret
+           <span style="color:#ff79c6">&#34;sds_config&#34;</span>: {
+            <span style="color:#ff79c6">&#34;api_config_source&#34;</span>: {
+             <span style="color:#ff79c6">&#34;api_type&#34;</span>: <span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+             <span style="color:#ff79c6">&#34;grpc_services&#34;</span>: [
+              {
+               <span style="color:#ff79c6">&#34;google_grpc&#34;</span>: {
+                <span style="color:#ff79c6">&#34;target_uri&#34;</span>: <span style="color:#f1fa8c">&#34;unix:/var/run/ingress_gateway/sds&#34;</span>,   // 从本地 unix domain socket 上的 SDS 服务器获取服务器证书
+                <span style="color:#ff79c6">&#34;stat_prefix&#34;</span>: <span style="color:#f1fa8c">&#34;sdsstat&#34;</span>
+               }
+              }
+             ]
+            }
+           }
+          }
+         ]
+        },
+        <span style="color:#ff79c6">&#34;require_client_certificate&#34;</span>: <span style="color:#ff79c6">false</span>
+       }
+      }
+     }
+    ],
+   },
+  }
+ }
+</code></pre></div><p>从配置中可以看出，Ingress Gateway 使用的服务器证书也是通过 SDS 服务获取的。Pilot-agent 在路径<code>unix:/var/run/ingress_gateway/sds</code> 上为 Ingress Gateway 提供了一个基于 unix domain socket 的 SDS 服务。Ingress Gateway 中的 Envoy 向该 SDS 服务器请求上述配置文件中的 secret，Pilot-agent 从 Kubernetes 中查到该 同名 secret，然后转换为 SDS 消息返回给 Envoy。</p>
+<p>备注：Ingress Gateway 用于和网格内其他服务通信的服务身份证书还是由 Istio CA 颁发的，其证书签发的流程同图2。</p>
+<p><img src="/img/2020-05-25-istio-certificate/ingress-gateway-ca-sds.svg" alt="">
+图4. Envoy SDS 服务</p>
+<h1 id="heading3">数据面使用的所有证书</h1>
+<p>下图中以 bookinfo 来举例说明 Istio 在数据面使用到的所有证书。为了方便说明 Gateway 的证书配置，我们假设在 Ingress Gateway 上以 bookinfo.example.com 的主机名对外提供服务，并且 ratings 服务通过 Egress Gateway 访问了一个网格外部的第三方 TLS 服务。</p>
+<p>图中不同颜色边框的图标代表了不同的证书。该示例中一共使用了七个不同的证书，分别为3个服务的证书（同时用作服务器和客户端证书），Ingress Gateway 自身的客户端证书，Ingress Gateway 对外部提供服务的服务器证书，Egress Gateway 自身的服务器证书，Egress Gateway 访问外部服务使用的客户端证书。</p>
+<p>除了 Ingress Gateway 对外提供服务的服务器证书和 Egress Gateway 访问第三方服务的客户端证书之外，其他证书都是 Envoy 通过 SDS 服务从 Istio CA 获取的，因此都使用 Istio Root CA 证书进行验证。这两个第三方证书则需要采用第三方 CA 根证书进行验证。</p>
+<p><img src="/img/2020-05-25-istio-certificate/bookinfo-ca.svg" alt="">
+图5. Istio 数据面使用到的所有证书</p>
+<h1 id="heading4">小结</h1>
+<p>微服务应用本质上是一个分布式的网络程序，在微服务应用内存在大量的服务间网络通信。在云化部署环境中，服务间的身份认证和安全通信是微服务面临的一大挑战。Istio 建立了一套以数字证书为基础的服务认证安全框架，在不修改应用的前提下提供了服务之间的身份认证和安全通信，并以身份认证为基础提供了强大的授权机制。</p>
+<h1 id="heading5">参考文档</h1>
+<ul>
+<li><a href="https://istio.io/docs/tasks/traffic-management/ingress/secure-ingress/">Istio Secure Gateways</a></li>
+<li><a href="https://istio.io/docs/tasks/traffic-management/egress/egress-gateway-tls-origination/#perform-tls-origination-with-an-egress-gateway">Istio Egress Gateways with TLS Origination</a></li>
 </ul>
 
 
@@ -575,15 +821,10 @@ users:
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2020-03-19-pki/" data-toggle="tooltip" data-placement="top" title="数字证书原理">&larr;
+                        <a href="/post/2020-05-19-k8s-certificate/" data-toggle="tooltip" data-placement="top" title="一文带你彻底厘清 Kubernetes 中的证书工作机制">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2020-05-19-k8s-certificate/" data-toggle="tooltip" data-placement="top" title="一文带你彻底厘清 Kubernetes 中的证书工作机制">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 

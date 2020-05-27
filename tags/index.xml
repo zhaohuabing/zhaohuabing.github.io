@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 19 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 25 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio</title>
+      <link>https://zhaohuabing.com/tags/istio/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security</title>
+      <link>https://zhaohuabing.com/tags/security/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/security/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Kubernetes</title>
@@ -53,15 +71,6 @@
       <pubDate>Mon, 24 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/tun/tap/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Istio</title>
-      <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/istio/</guid>
       <description></description>
     </item>
     
@@ -332,15 +341,6 @@
       <pubDate>Wed, 23 May 2018 18:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/microservice/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Security</title>
-      <link>https://zhaohuabing.com/tags/security/</link>
-      <pubDate>Wed, 23 May 2018 18:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/security/</guid>
       <description></description>
     </item>
     
