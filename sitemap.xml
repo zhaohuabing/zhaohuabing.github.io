@@ -128,6 +128,21 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/tags/envoy/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/pilot/</loc>
+    <lastmod>2019-12-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/tags/ha/</loc>
     <lastmod>2019-11-27T00:00:00+00:00</lastmod>
   </url>
@@ -145,11 +160,6 @@
   <url>
     <loc>https://zhaohuabing.com/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/</loc>
     <lastmod>2019-11-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/envoy/</loc>
-    <lastmod>2019-11-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -324,11 +334,6 @@
   
   <url>
     <loc>https://zhaohuabing.com/tags/paas/</loc>
-    <lastmod>2018-10-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/pilot/</loc>
     <lastmod>2018-10-18T00:00:00+00:00</lastmod>
   </url>
   

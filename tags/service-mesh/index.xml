@@ -30,6 +30,15 @@
     </item>
     
     <item>
+      <title>Istio流量管理实现机制深度解析</title>
+      <link>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</link>
+      <pubDate>Thu, 12 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</guid>
+      <description>前言 Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的</description>
+    </item>
+    
+    <item>
       <title>What Can Service Mesh Learn from SDN?</title>
       <link>https://zhaohuabing.com/post/2019-11-23-what-can-service-mesh-learn-from-sdn-english/</link>
       <pubDate>Sat, 23 Nov 2019 00:00:00 +0000</pubDate>
