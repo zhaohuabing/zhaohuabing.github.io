@@ -6,10 +6,19 @@
     <description>Recent content on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 25 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何将第三方服务注册中心集成到 Istio ？</title>
+      <link>https://zhaohuabing.com/post/2020-06-02-third-party-registry/</link>
+      <pubDate>Tue, 02 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-06-02-third-party-registry/</guid>
+      <description>作为云原生服务网格领域的热门开源项目，Istio 可以为微服务提供无侵入的流量管理、安全通信、服务可见性等服务治理能力。目前越来越多的微服务项</description>
+    </item>
     
     <item>
       <title>一文带你彻底厘清 Isito 中的证书工作机制</title>

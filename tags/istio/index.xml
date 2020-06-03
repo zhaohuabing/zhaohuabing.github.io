@@ -6,10 +6,28 @@
     <description>Recent content in Istio on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 21 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>如何将第三方服务注册中心集成到 Istio ？</title>
+      <link>https://zhaohuabing.com/post/2020-06-02-third-party-registry/</link>
+      <pubDate>Tue, 02 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-06-02-third-party-registry/</guid>
+      <description>作为云原生服务网格领域的热门开源项目，Istio 可以为微服务提供无侵入的流量管理、安全通信、服务可见性等服务治理能力。目前越来越多的微服务项</description>
+    </item>
+    
+    <item>
+      <title>一文带你彻底厘清 Isito 中的证书工作机制</title>
+      <link>https://zhaohuabing.com/post/2020-05-25-istio-certificate/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-05-25-istio-certificate/</guid>
+      <description>在上一篇文章一文带你彻底厘清 Kubernetes 中的证书工作机制中，我们介绍了 Kubernetes 中证书的工作机制。在这篇文章中，我们继续探讨 Istio 是如何使用证书来实现网格中服务的</description>
+    </item>
     
     <item>
       <title>Network Service Mesh: A Big Step Toward Cloud-Native NFV</title>
