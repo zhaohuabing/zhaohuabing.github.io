@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="如何将第三方服务中心注册集成到 Istio ？" />
-    <meta property="og:title" content="如何将第三方服务中心注册集成到 Istio ？" />
-    <meta property="twitter:title" content="如何将第三方服务中心注册集成到 Istio ？" />
+    <meta name="title" content="How to Integrate Your Service Registry with Istio?" />
+    <meta property="og:title" content="How to Integrate Your Service Registry with Istio?" />
+    <meta property="twitter:title" content="How to Integrate Your Service Registry with Istio?" />
     
 
     
-    <meta name="description" content="目前越来越多的微服务项目开始考虑将自己的微服务基础设施向 Istio 进行迁移。然而对于大量使用了 Consul，Eureka 或者自建服务注册中心的项目来说，如何能够以最小的代价快速地将现有微服务项目和 Istio 进行集成，以享受 Istio 提供的各种服务治理能力呢？本文将分析 Istio 服务注册机制的原理，并提出几种 Istio 与第三方服务注册中心集成的可行方案，以供读者参考。">
-    <meta property="og:description" content="目前越来越多的微服务项目开始考虑将自己的微服务基础设施向 Istio 进行迁移。然而对于大量使用了 Consul，Eureka 或者自建服务注册中心的项目来说，如何能够以最小的代价快速地将现有微服务项目和 Istio 进行集成，以享受 Istio 提供的各种服务治理能力呢？本文将分析 Istio 服务注册机制的原理，并提出几种 Istio 与第三方服务注册中心集成的可行方案，以供读者参考。" />
-    <meta property="twitter:description" content="目前越来越多的微服务项目开始考虑将自己的微服务基础设施向 Istio 进行迁移。然而对于大量使用了 Consul，Eureka 或者自建服务注册中心的项目来说，如何能够以最小的代价快速地将现有微服务项目和 Istio 进行集成，以享受 Istio 提供的各种服务治理能力呢？本文将分析 Istio 服务注册机制的原理，并提出几种 Istio 与第三方服务注册中心集成的可行方案，以供读者参考。" />
+    <meta name="description" content="How can we quickly integrate these existing microservices projects with Istio at minimal modifications? In this post, I will first explain the service registry mechanism of Istio, and then propose several possible options to integrate third-party service discovery with Istio.">
+    <meta property="og:description" content="How can we quickly integrate these existing microservices projects with Istio at minimal modifications? In this post, I will first explain the service registry mechanism of Istio, and then propose several possible options to integrate third-party service discovery with Istio." />
+    <meta property="twitter:description" content="How can we quickly integrate these existing microservices projects with Istio at minimal modifications? In this post, I will first explain the service registry mechanism of Istio, and then propose several possible options to integrate third-party service discovery with Istio." />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>如何将第三方服务中心注册集成到 Istio ？-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>How to Integrate Your Service Registry with Istio?-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2020-06-02-third-party-registry/">
+    <link rel="canonical" href="/post/2020-06-12-third-party-registry-english/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -180,17 +180,17 @@
                         </a>
                         
                     </div>
-                    <h1>如何将第三方服务中心注册集成到 Istio ？</h1>
+                    <h1>How to Integrate Your Service Registry with Istio?</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
                         
-                                &#34;赵化冰&#34;
+                                &#34;Huabing Zhao&#34;
                          
                         on 
-                        Tuesday, June 2, 2020
+                        Friday, June 12, 2020
                         
-                            <span id="/post/2020-06-02-third-party-registry/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2020-06-12-third-party-registry-english/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -352,99 +352,65 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#istio-">Istio 服务模型</a></li>
-    <li><a href="#pilot-">Pilot 服务模型源码分析</a></li>
-    <li><a href="#heading">第三方服务注册表集成</a>
+    <li><a href="#istio-service-model">Istio Service Model</a></li>
+    <li><a href="#consul-integration">Consul Integration</a></li>
+    <li><a href="#other-service-registries">Other Service Registries</a>
       <ul>
-        <li><a href="#consul-">Consul 集成</a></li>
-        <li><a href="#heading1">其他服务注册表的集成</a></li>
+        <li><a href="#service-registry-adapter">Service Registry Adapter</a></li>
+        <li><a href="#a-standalone-service-to-watch-service-registry-and-create-serviceentry-and-workloadentry">A Standalone Service to Watch Service Registry and Create ServiceEntry and WorkloadEntry</a></li>
       </ul>
     </li>
-    <li><a href="#heading2">小结</a></li>
-    <li><a href="#heading3">参考文档</a></li>
+    <li><a href="#key-takeaway">Key Takeaway</a></li>
   </ul>
 </nav>
                 
-                <p>作为云原生服务网格领域的热门开源项目，Istio 可以为微服务提供无侵入的流量管理、安全通信、服务可见性等服务治理能力。目前越来越多的微服务项目开始考虑将自己的微服务基础设施向 Istio 进行迁移。</p>
-<p>Istio 对 Kubernetes 具有较强的依赖性，其服务发现就是基于 Kubernetes 实现的。如果要使用 Istio，首先需要迁移到 Kubernetes 上，并使用 Kubernetes 的服务注册发现机制。但是对于大量现存的微服务项目来说，这个前提条件并不成立。很多微服务项目要么还没有迁移到 Kubernetes 上；要么虽然采用了 Kubernetes 来进行部署和管理，但还是使用了 Consul，Eureka 等其他服务注册解决方案或者自建的服务注册中心。</p>
-<p>在这种情况下，我们如何能够以最小的代价快速地将现有微服务项目和 Istio 进行集成，以享受 Istio 提供的各种服务治理能力呢？本文将分析 Istio 服务注册机制的原理，并提出几种 Istio 与第三方服务注册中心集成的可行方案，以供读者参考。</p>
-<h1 id="istio-">Istio 服务模型</h1>
-<p>我们先来看一下 Istio 内部的服务模型。在 Istio 控制面中，Pilot 组件负责管理服务网格内部的服务和流量策略。Pilot 将服务信息和路由策略转换为 xDS 接口的标准数据结构，下发到数据面的 Envoy。但 Pilot 自身并不负责网格中的服务注册，而是通过集成其他服务注册表来获取网格中管理的服务。除此以外，Istio 还支持通过 API 向网格中添加注册表之外的独立服务。</p>
+                <p>Microservice is a powerful software architecture to escalate innovations, and many businesses have been adopting microservice for a long time. However, the transition from monolith to microservice comes with costs. Fundamentally, microservices are distributed systems, often in large scales, which bring the burden of networking such as service discovery, retry, circuit breaker, as well as the observability such as metrics, logging, and distributed tracing.</p>
+<p>Istio helps microservices to offloads these common concerns to a dedicated infrastructure layer, so the microservices themselves can shift the burden of microservices to Istio, and focus on their own business logic. With all the promising benefits, more and more microservices projects begin to consider migrating their own microservices infrastructure to Istio.</p>
+<p>Istio depends on Kubernetes for service discovery, which means you need to deploy your microservices in Kubernetes clusters and use Kubernetes service for discovery before you can offload service communication to Istio. However, many existing microservices projects are still using Consul, Eureka, or other vendor-specific service discovery rather than the Kubernetes service discovery.</p>
+<p>How can we quickly integrate these existing microservices projects with Istio at minimal modifications? In this post, I will first explain the service registry mechanism of Istio, and then propose several possible options to integrate third-party service discovery with Istio.</p>
+<h1 id="istio-service-model">Istio Service Model</h1>
+<p>First, let’s take a look at the service model inside Istio. In the Istio control plane, Pilot is responsible for managing the service within the service mesh. However, Pilot doesn’t handle service discovery by itself. Pilot populates its internal service registry with services from two kinds of data sources.</p>
 <p><img src="/img/2020-06-02-third-party-registry/pilot-services-source.svg" alt="">
-图1 Istio 服务模型数据来源</p>
+Figure 1. Istio service model and data sources</p>
+<p>As shown in figure 1, there are two data sources for the Pilot service model:</p>
 <p>从上图中可以得知， Pilot 中管理的服务数据有两处数据来源：</p>
 <ul>
-<li>Service Registry：来源于各个服务注册表，例如 Kubernetes 中的 Service 和 Consul Catalog 中注册的服务。Istio 通过特定的适配器连接这些服务注册表，由适配器将服务注册表中的私有服务模型转换为 Istio 内部支持的标准服务模型。</li>
-<li>Config Storage：来源于各种配置数据源中的独立服务，通过 Istio 定义的 <a href="https://istio.io/docs/reference/config/networking/service-entry/">ServiceEntry</a> 和 <a href="https://istio.io/docs/reference/config/networking/workload-entry/">WorkloadEntry</a> 资源类型加入到 Pilot 的内部服务模型中。</li>
+<li>&ndash;Service Registry&ndash;: A third party service registry. Theoretically, any service registry could be plugged into Pilot via some adapter codes, but only Kubernetes API Server and Consul Catalog are natively supported at the time of this writing.</li>
+<li>&ndash;Config Storage&ndash;: ServiceEntry and WorkloadEntry are two kinds of Istio configuration resources, which can also be used to add external services into the mesh.</li>
 </ul>
-<h1 id="pilot-">Pilot 服务模型源码分析</h1>
-<p>Pilot 中涉及到服务模型的代码模块如下图所示：</p>
-<p><img src="/img/2020-06-02-third-party-registry/pilot-service-model.svg" alt="">
-图2 Pilot 服务模型相关的代码结构</p>
-<p>Pilot 的入口函数是 pilot/cmd/pilot-discovery/main.go 中的 main 方法。main方法中创建了 Discovery Server，Discovery Server 中和服务模型相关的主要包含三部分内容：</p>
-<ul>
-<li><strong>Config Controller</strong>：用于管理各种配置数据，包括用户创建的流量管理规则和策略。配置数据中有两个 API 对象和服务模型相关，ServiceEntry 和 WorkloadEntry。Istio 目前支持三种类型的 Config Controller：
-<ul>
-<li>Kubernetes：使用 Kubernetes 来作为配置数据的存储，该方式的直接依附于 Kubernetes 强大的 CRD 机制来存储配置数据，简单方便，是 Istio 缺省使用的配置存储方案。</li>
-<li>Memory：一个在内存中的 Config Controller 实现，可以监控一个文件目录，加载该目录中的 yaml 文件中定义的 Istio API 配置对象，该方式主要用于测试。</li>
-<li>MCP：通过 <a href="https://github.com/istio/api/tree/master/mcp">MCP(Mesh Configuration Protocol)</a> 协议，可以接入一个到多个 MCP Server。Pilot 从 MCP server 中获取网格的配置数据，包括 ServiceEntry 和 WorkloadEntry 定义的服务数据，以及 VirtualService，DestinationRule 等路由规则等其他配置。Istio 中有一个 Galley 组件，该组件实现为一个 MCP Server，从 Kubernetes API Server 中获取配置数据，然后通过 MCP 协议提供给 Pilot。</li>
-</ul>
-</li>
-<li><strong>Service Controller</strong>：负责接入各种 Service Registry，从 Service Registry 同步需要在网格中进行管理的服务，目前Istio支持的Service Registry包括：
-<ul>
-<li>Kubernetes：对接 Kubernetes Registry，可以将 Kubernetes 的 Service 和 Endpoint 采集到 Istio 中。</li>
-<li>Consul： 对接Consul Catalog，将注册到 Consul 中的服务数据采集到 Istio 中。</li>
-<li>External Service Discovery：该 Service Registry 比较特殊，后端并未对接到一个服务注册表，而是会监听 Config Controller 的配置变化消息，从 Config Controller 中获取 ServiceEntry 和 WorkloadEntry 资源，然后以 Service Registry 的形式提供给 Service Controller。</li>
-</ul>
-</li>
-<li><strong>Discovery Service</strong>：将服务模型和控制面配置转换为数据面标准数据格式，通过 xDS 接口下发给数据面的代理。主要包含下述逻辑：
-<ul>
-<li>启动GRPC Server并接收来自Envoy端的连接请求。</li>
-<li>接收Envoy端的xDS请求，从Config Controller和Service Controller中获取配置和服务信息，生成响应消息发送给Envoy。</li>
-<li>监听来自Config Controller的配置变化消息和来自Service Controller的服务变化消息，并将配置和服务变化内容通过xDS接口推送到Envoy。</li>
-</ul>
-</li>
-</ul>
-<h1 id="heading">第三方服务注册表集成</h1>
-<h2 id="consul-">Consul 集成</h2>
-<p>鉴于和 Kubernetes 的紧密关系，Istio 在最初只重点关注了 Kubernetes 服务注册的集成。虽然在 Istio 最初的版本中也有 Consul 和 Eureka 的适配代码，但这些代码基本只是处于原型验证的节点，存在较多的故障和性能问题。</p>
-<p>由于在项目中采用了 Consul 作为自研服务注册的后端存储，我们在和 Istio 进行集成时对 Consul 的适配进行了大量测试和研究，并解决了一些功能和性能效率方面的问题。这些 Consul 适配的问题解决后已经合入了 Istio 版本中，参见这些 PR：</p>
+<h1 id="consul-integration">Consul Integration</h1>
+<p>In the beginning, Istio mainly focused on Kubernetes environments. Although Consul and Eureka registries were also available in Istio 1.0, these codes were basically prototypes, with some bugs and performance issues.</p>
+<p>As our team uses Consul for service discovery in our project, we have been trying to solve these bugs and improve the stability and performance of Consul integration since Itsio 1.0. All the fixes have been pushed to Istio and merged into late releases.</p>
 <ul>
 <li><a href="https://github.com/istio/istio/pull/17881">Use watching instead of polling to get update from Consul catalog #17881</a></li>
 <li><a href="https://github.com/istio/istio/pull/15510">Fix: Consul high CPU usage (#15509) #15510</a></li>
 <li><a href="https://github.com/istio/istio/pull/12148">Avoid unnecessary service change events(#11971) #12148</a></li>
 <li><a href="https://github.com/istio/istio/pull/9713">Use ServiceMeta to convey the protocol and other service properties #9713</a></li>
 </ul>
-<p>这些问题处理后，Consul 注册表的集成已经基本可用。要将 Consul 接入到 Pilot 中， 只需要在 pilot-discovery 的启动命令中通过这两个参数指定 registry 类型和 consul 的连接地址即可： <code>--registries Consul</code>   <code>--consulserverURL http://$consul-ip:$port</code>。</p>
-<h2 id="heading1">其他服务注册表的集成</h2>
-<p>虽然在 1.0 中还有 Eureka 的适配代码框架，但在 Istio 后面的版本完全删除了 Eureka 适配的相关代码。除了 Kubernetes 和 Consul 之外，原生 Istio 代码不支持其他服务注册表。但通过前面对 Pilot 服务模型源码的分析，我们可以得出以下三种将其他服务注册表集成到 Istio 的方式。
+<p>To connect Consul to Pilot, you just need to specify the registry type and address of the Consul in pilot-discovery command:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--registries Consul<span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">`</span>   <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">`</span>--consulserverURL http://<span style="color:#8be9fd;font-style:italic">$consul</span>-ip:<span style="color:#8be9fd;font-style:italic">$port</span>
+</code></pre></div><h1 id="other-service-registries">Other Service Registries</h1>
+<p>Although some initial Eureka adapter codes appeared in 1.0, they have been completely removed in later releases. Istio now only natively supports Kubernetes and Consul service registry. For those who are using Eureka or other service registries, there are three possible ways to import services in these registries to Istio.
 <img src="/img/2020-06-02-third-party-registry/service-registry-integration.svg" alt="">
-图3 集成第三方服务注册表的三种方式</p>
-<p>上图中分别用红、绿、三种颜色标识了这三种不同的集成方式。</p>
-<h3 id="-service-registry-">自定义 Service Registry 适配器</h3>
-<p>如图3中红色箭头所示，我们可以编写一个自定义的适配器来集成第三方服务注册表。该自定义适配器从第三方服务注册表中获取服务和服务实例，转换为 Pilot 内部的标准模型，集成到 Service Controller 中。自定义适配器需要实现 <code>serviceregistry.Instance</code> 接口。该方式的原理和 Consul Service Registry 的适配是类似的，可以参照 Consul Service Registry 的适配代码进行编写。</p>
-<p>实施该方案需要熟悉 Pilot 内部服务模型和 Service Registry 适配相关 Istio 源码，并且需要将自定义适配器代码和 Pilot 代码一起编译生成定制的 Pilotd 二进制执行文件。该方案的问题是和 Istio 代码耦合较强，后续 Istio 版本升级时可能需要修改适配器代码并重新编译。</p>
-<h3 id="-mcp-server">自定义 MCP Server</h3>
-<p>这种集成方式的业务流程参见图3中的蓝色箭头。该方案需要编写自定义的 MCP Server 从第三方注册表中获取服务和服务实例，然后转换为 ServiceEntry 和 WorkloadEntry 资源，通过 MCP 协议提供给 Pilot 中的 MCP config Controller。</p>
-<p>采用这种方式，需要在 Global Mesh Options 中通过 <a href="https://istio.io/docs/reference/config/istio.mesh.v1alpha1/#ConfigSource">configSources</a> 参数设置自定义 MCP Server 的地址。需要注意的是，目前1.6的 Config Controller 实现不允许同时使用不同类型的Config controller。这意味着如果采用自定义 MCP Server 来获取第三方注册表中的服务数据，也必须同时采用 Galley 来获取其他控制面的配置。</p>
+Figure 2. Three ways to integrate third-party service registries with Istio</p>
+<p>Figure 2 shows the three ways, colored in red, blue, and green, respectively, to integrate service registries with Istio.</p>
+<h2 id="service-registry-adapter">Service Registry Adapter</h2>
+<p>Like the red arrows show, we can write a custom service registry adapter. The custom adapter gets services and service instances from the third-party service registry, converts them to the standard Pilot service resources, and feeds them to the service controller. The custom adapter needs to implement Pilot serviceregistry.Instance go interface. The implementation codes would be similar to the Consul Service Registry shipped with Pilot.
+In order to write a custom service registry adapter, you need to know Pilot source code very well, because the adapter needs to interact with the internal Pilot service model via various non-public APIs. Besides, the custom adapter codes need to be compiled along with Istio source codes to get your own special Pilotd binary. So the major problem of this approach is the coupling of your codes and Istio codes, which may cause some pains when upgrading Istio.</p>
+<h3 id="mcp-server">MCP Server</h3>
+<p>Blue arrows show the second way: writing your own MCP server to populate Pilot service model with the services from your service registry. The MCP Server fetches services and service instances from the service registry, converts them into ServiceEntry and WorkloadEntry Istio resources, and pushes them to the Pilot MCP config Controller via the MCP protocol.</p>
+<p>In this way, the MCP server is a standalone process, so source code level coupling is avoided. You need to set the address of the MCP Server in  <a href="https://istio.io/docs/reference/config/istio.mesh.v1alpha1/#ConfigSource">configSources</a> parameter of the global mesh options. One thing I’d like to mention is that Istio 1.6 doesn’t support using multiple types of Config controllers together for some unknown reason, implying that you also have to use Galley, the Istio build-in MCP Server, to obtain other configurations instead of directly connecting to Kubernetes API Server.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">configSources:
   - address:istio-galley.istio-system.svc:<span style="color:#bd93f9">9901</span>
   - address:${your-coustom-mcp-server}:<span style="color:#bd93f9">9901</span>
-</code></pre></div><p>而从1.5版本开始，<a href="https://istio.io/news/releases/1.6.x/announcing-1.6/change-notes/">Galley 的功能已经被合并到 Istiod 中，并且缺省被禁用</a>。从 Isito 控制面简化的趋势来看，Galley 后续很可能会被逐渐放弃，其自身功能的稳定性也值得怀疑。因此我不建议在产品中启用 Galley。</p>
-<p>除此以外，根据 Istio 社区中的这个 <a href="https://docs.google.com/document/d/1lHjUzDY-4hxElWN7g6pz-_Ws7yIPt62tmX3iGs_uLyI/edit#heading=h.xw1gqgyqs5b">MCP over XDS</a> proposal，社区正在讨论使用 XDSv3/UDPA 代替目前的 MCP 协议来传输配置数据，因此 MCP server 和 Pilot 的通信机制在 1.7 版本中很可能变化。</p>
-<h3 id="-api-server--serviceentry--workloadentry">向 API Server 写入 ServiceEntry 和 WorkloadEntry</h3>
-<p>该集成方式的业务流程如图3中绿色箭头所示。我们只需要编写一个独立的服务，该服务从第三方法服务注册表中获取服务和服务实例数据，然后转换为 Istio 的 ServiceEntry 和 WorkloadEntry 资源，通过 K8s API Server 的接口写入到 API Server 中。 Pilot 中自带的 Kube Config Controller 会监听 K8s API Server 中和 Istio 相关的资源对象的变化，并将 ServiceEntry 和 WorkloadEntry 转换为 Piolt 的内部服务模型。</p>
-<h1 id="heading2">小结</h1>
-<p>本文分析了 Istio 和第三方服务注册表集成的几种可能的方式。如果你使用的是 Consul，可以通过配置参数设置 Consul 的连接地址，将 Consul 集成到 Istio 中。 对于其他的服务注册表，有以下三种可选的集成方案： 自定义的 Service Registry 适配代码，自定义 MCP Server，或者采用一个独立服务向 API Server 写入 ServiceEntry 和 WorkloadEntry。 有需要的读者可以根据项目的实际情况选择采用哪一种方法。由于第一种和第二种方法目前都存在一些问题，建议先采用第三种方式，待 Istio 对 Galley 和 MCP 的改造彻底完成后再考虑向第二种方式迁移。</p>
-<p>备注：本文的分析和建议都是基于使用 Istio 1.6 的前提下。随着 Istio 版本的不断发展，其服务模型和注册相关机制可能发生变化，和第三方服务注册表的集成方式也可能变化。</p>
-<h1 id="heading3">参考文档</h1>
-<ul>
-<li><a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis">Istio 服务注册插件机制</a></li>
-<li><a href="https://zhaohuabing.com/post/2019-10-21-pilot-discovery-code-analysis">Istio Pilot代码深度解析</a></li>
-<li><a href="https://www.ibm.com/cloud/blog/seamless-integration-istio-and-external-services">Istio and managing microservices</a></li>
-<li><a href="https://istio.io/news/releases/1.6.x/announcing-1.6/change-notes/">Istio 1.6 Change Notes</a></li>
-<li><a href="https://discuss.istio.io/t/the-recommended-way-to-integrate-a-third-party-service-registry-with-istio/6863">The recommended way to integrate a third-party service registry with Istio</a></li>
-</ul>
+</code></pre></div><p>Since 1.5 release, <a href="https://istio.io/news/releases/1.6.x/announcing-1.6/change-notes/">most of Galley’s functionalities have been moved into Istiod, and Galley is disabled by default</a>. It’s highly likely that Galley will be gradually abandoned in the future, so enabling Galley in production seems not a good idea — you will have to move it out of your deployment, sooner or later.</p>
+<p>In addition to this, according to this <a href="https://docs.google.com/document/d/1lHjUzDY-4hxElWN7g6pz-_Ws7yIPt62tmX3iGs_uLyI/edit#heading=h.xw1gqgyqs5b">MCP over XDS</a> proposal, Istio community is discussing replacing the current MCP wire protocol with XDSv3/UDPA. The communication mechanism between the MCP server and Pilot is likely to change in later releases.</p>
+<h2 id="a-standalone-service-to-watch-service-registry-and-create-serviceentry-and-workloadentry">A Standalone Service to Watch Service Registry and Create ServiceEntry and WorkloadEntry</h2>
+<p>This approach is shown by the green arrows. All we need to do is writing a standalone service that watches the service registry and pushes the services into Kubernetes API Server in the form of ServiceEntry and WorkloadEntry resources. Then the Kube Config Controller will pull these resources from Kubernetes API Server and push them to Pilot service model.</p>
+<p>This approach only depends on two APIs, the service registry watch API and the Kubernetes API server API, both of them are relatively stable.</p>
+<h1 id="key-takeaway">Key Takeaway</h1>
+<p>In this post, we discussed how to integrate third-party service registries with Istio. If you are using Consul, you just need to set the registry type to Consul and specify Consul address in the Pilot-discovery command parameters. For other service registries, there’re three options available: service registry adapter, MCP Server, or a standalone service to push ServiceEntry and WorkloadEntry to Kubernetes API server.</p>
+<p>You’re free to choose any one of these approaches for your own microservice project. IMHO, since the first and second approaches have some obvious issues, it makes more sense to start with the third one and consider moving to the MCP server approach after Galley and MCP architecture are stable.</p>
 
 
                 
@@ -453,15 +419,10 @@ $(function() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2020-05-25-istio-certificate/" data-toggle="tooltip" data-placement="top" title="一文带你彻底厘清 Isito 中的证书工作机制">&larr;
+                        <a href="/post/2020-06-02-third-party-registry/" data-toggle="tooltip" data-placement="top" title="如何将第三方服务中心注册集成到 Istio ？">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2020-06-12-third-party-registry-english/" data-toggle="tooltip" data-placement="top" title="How to Integrate Your Service Registry with Istio?">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 

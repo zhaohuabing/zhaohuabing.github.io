@@ -6,10 +6,19 @@
     <description>Recent content in Tech on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 12 Jun 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/categories/tech/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How to Integrate Your Service Registry with Istio?</title>
+      <link>https://zhaohuabing.com/post/2020-06-12-third-party-registry-english/</link>
+      <pubDate>Fri, 12 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-06-12-third-party-registry-english/</guid>
+      <description>Microservice is a powerful software architecture to escalate innovations, and many businesses have been adopting microservice for a long time. However, the transition from monolith to microservice comes with costs. Fundamentally, microservices are distributed systems, often in large scales, which bring the burden of networking such as service discovery, retry, circuit breaker, as well as the observability such as metrics, logging, and distributed tracing. Istio helps microservices to offloads these</description>
+    </item>
     
     <item>
       <title>如何将第三方服务中心注册集成到 Istio ？</title>
