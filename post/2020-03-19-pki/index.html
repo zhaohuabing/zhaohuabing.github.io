@@ -424,7 +424,7 @@ Hello world
 <ul>
 <li>消息发送者生成秘钥对： (sk,pk):= generates(keysize)</li>
 <li>消息发送者生成数字签名： signature := encrypt(sk, hash(message))</li>
-<li>消息接受者验证发送者身份： isValid := isEqual(decrypt(pk, message),hash(message))</li>
+<li>消息接受者验证发送者身份： isValid := isEqual(decrypt(pk, signature),hash(message))</li>
 </ul>
 <p>下图展示了数字签名和验证的流程：
 <img src="/img/2020-03-19-pki/digital-signatures.jpg" alt="">
