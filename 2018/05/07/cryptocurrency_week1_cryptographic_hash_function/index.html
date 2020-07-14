@@ -364,7 +364,7 @@ $(function() {
       <ul>
         <li><a href="#hash-function">Hash Function</a></li>
         <li><a href="#cryptographic-properties">Cryptographic Properties</a></li>
-        <li><a href="#sha256">SHA-256</a></li>
+        <li><a href="#sha-256">SHA-256</a></li>
       </ul>
     </li>
   </ul>
@@ -385,24 +385,24 @@ $(function() {
 <h3 id="collision-free">Collision Free</h3>
 <p><strong>Definition:</strong></p>
 <p>A hash function H is said to be collision free if: <br>
-It's infeasible to find two values X1 and X2, such that <em>X1!=X2</em>, yet <em>H(X1)=H(X2)</em><br>
+It&rsquo;s infeasible to find two values X1 and X2, such that <em>X1!=X2</em>, yet <em>H(X1)=H(X2)</em><br>
 Or in other words,<br>
-It's infeasible to find two inputs which can produce the same outputs.</p>
+It&rsquo;s infeasible to find two inputs which can produce the same outputs.</p>
 <p><strong>Explaination:</strong></p>
 <p>The collision does exist because the inputs can be any data and the outputs are only 2 to 256 possibilities.</p>
-<p>But for a good hash function, it's just impossible to find them in an acceptable time frame even use all the computers to solve this together on the earth.</p>
+<p>But for a good hash function, it&rsquo;s just impossible to find them in an acceptable time frame even use all the computers to solve this together on the earth.</p>
 <p>We can use this property of hash functions to create a digest for a given data.  By comparing the hash digests, we can tell if a big file is modified or corrupted during a transmission, which is often used in downloading a software.</p>
 <h3 id="hiding">Hiding</h3>
 <p><strong>Definition:</strong></p>
 <p>A hash function H is hiding if:<br>
 when a secret value R is chosen from a highly spread-out distribution that, then given the hash result of <em>H( R/|X)</em>, it is infeasible to find X.  /| means concatenation of two strings.</p>
 <p><strong>The Problem We Want to Solve:</strong></p>
-<p>We want a hash function that it's infeasible to find out the input by the output of a hash function.</p>
+<p>We want a hash function that it&rsquo;s infeasible to find out the input by the output of a hash function.</p>
 <p>The problem is that if there are only a few values of inputs, it will be very easy to figure out what the input is by the output by simply trying all the possible values of inputs and see if they match the output.</p>
 <p><strong>Solution:</strong></p>
 <p>Concatenating input with a random R which is randomly chosen from a highly spread-out distribution like this: <em>H( R/|X)</em></p>
 <p><strong>Explanation:</strong></p>
-<p>With R appended to the input, now it's infeasible to figure out what input is by just traversing all the values because there're too many possibilities.</p>
+<p>With R appended to the input, now it&rsquo;s infeasible to figure out what input is by just traversing all the values because there&rsquo;re too many possibilities.</p>
 <p>R is used to hide the input, by using R, the Hash function can hide the input while exposing the output.</p>
 <h4 id="two-uses-of-hiding-property">Two Uses of Hiding Property</h4>
 <h5 id="1-commitment">1. Commitment</h5>
@@ -411,9 +411,9 @@ when a secret value R is chosen from a highly spread-out distribution that, then
 <p>We want to make a commitment, keep it as a secret, and reveal it later to others.</p>
 <p><strong>Requirements:</strong></p>
 <ul>
-<li>The commitment can't be seen until it's revealed</li>
-<li>The commitment can't be changed.</li>
-<li>Other people can verify the commitment once it's revealed</li>
+<li>The commitment can&rsquo;t be seen until it&rsquo;s revealed</li>
+<li>The commitment can&rsquo;t be changed.</li>
+<li>Other people can verify the commitment once it&rsquo;s revealed</li>
 </ul>
 <p><strong>Implementation:</strong></p>
 <p><em>hash(message/|key)=commitment</em></p>
@@ -427,21 +427,21 @@ when a secret value R is chosen from a highly spread-out distribution that, then
 <li>You want to make a commitment, the message, to others. It could be any message.</li>
 <li>You choose a generated key which is used to hide the message.</li>
 <li>You get the hash of the key message combination.</li>
-<li>You publish the hash result, which is the commitment, to others and keep the key and message only to yourself. So other people know you have made a commitment, but they don't know what exactly it is.</li>
+<li>You publish the hash result, which is the commitment, to others and keep the key and message only to yourself. So other people know you have made a commitment, but they don&rsquo;t know what exactly it is.</li>
 <li>After a while, you decide to reveal the commitment, so you publish the key and message.</li>
-<li>Other people can use the hash function <em>hash(message/|key)</em> to calculate the hash result, compare it with the hash(commitment) you previously published. If it's the same, they can verify that you didn't change the commitment you have made.</li>
+<li>Other people can use the hash function <em>hash(message/|key)</em> to calculate the hash result, compare it with the hash(commitment) you previously published. If it&rsquo;s the same, they can verify that you didn&rsquo;t change the commitment you have made.</li>
 </ol>
 <blockquote>
 <ul>
-<li>Because a key is used to hide the message, other people can't figure out what's the message before you reveal it.</li>
-<li>Because of collision-free property, you can't find a message&rsquo; such that <em>hash(message&rsquo;/|key)=hash(message/|key)</em>, so it's impossible to change the committed message after publishing it.</li>
+<li>Because a key is used to hide the message, other people can&rsquo;t figure out what&rsquo;s the message before you reveal it.</li>
+<li>Because of collision-free property, you can&rsquo;t find a message&rsquo; such that <em>hash(message&rsquo;/|key)=hash(message/|key)</em>, so it&rsquo;s impossible to change the committed message after publishing it.</li>
 </ul>
 </blockquote>
 <h5 id="2-secure-password">2. Secure Password</h5>
 <p>Another common use of hiding property of hash is to secure passwords.</p>
 <p><strong>Scenario:</strong></p>
-<p>A website needs to verify the user password when user login. Instead of storing the password in the system, a more secure approach is just storing the hash of the password and compare the hash to verify the user.  By this way, the user password won't be at risk even the system is broken by attackers because the attackers can't get the password by the hash.</p>
-<p>But there's still a problem, many people tend to use simple words as their passwords. Attackers can make a long list of common passwords used by people, calculate the hash of these passwords in advance, and use these hashes to attack the system to figure out what's the password. It's called a rainbow attack.</p>
+<p>A website needs to verify the user password when user login. Instead of storing the password in the system, a more secure approach is just storing the hash of the password and compare the hash to verify the user.  By this way, the user password won&rsquo;t be at risk even the system is broken by attackers because the attackers can&rsquo;t get the password by the hash.</p>
+<p>But there&rsquo;s still a problem, many people tend to use simple words as their passwords. Attackers can make a long list of common passwords used by people, calculate the hash of these passwords in advance, and use these hashes to attack the system to figure out what&rsquo;s the password. It&rsquo;s called a rainbow attack.</p>
 <p><strong>Solution:</strong></p>
 <p>Use a randomly generated &lsquo;salt&rsquo; to safeguard the password.</p>
 <p><em>hash(password/|salt)=output</em></p>
@@ -480,7 +480,7 @@ when a secret value R is chosen from a highly spread-out distribution that, then
 </tbody>
 </table>
 <p>As the table above illustrates, different salt values will create completely different hashed values, even when the plaintext passwords are exactly the same. Additionally, dictionary attacks are mitigated to a degree as an attacker cannot practically precompute the hashes. However, a salt cannot protect against common or easily guessed passwords because the attacker can still combine the salt with all the possible password in the dictionary and try to match the hash of the combinations with the hashed value stored in the attached target. The salt just makes the attack more difficult because attackers need two additional steps: 1. find out the salt of the attacked target 2. Calculate the hash every time</p>
-<h3 id="puzzlefriendly">Puzzle-Friendly</h3>
+<h3 id="puzzle-friendly">Puzzle-Friendly</h3>
 <p><strong>Definition:</strong></p>
 <p>A hash function H is said to be puzzle-friendly if:<br>
 Given an R which is chosen from a highly spread-out distribution and a target set Y.<br>
@@ -489,7 +489,7 @@ There is no solving strategy to find X much better than just trying every possib
 <p><strong>Usage:</strong></p>
 <p>Puzzle-friendly property is used for Bitcoin mining. The miner needs to find out a specific number R, which is concatenated with the data of the block, and the hash of the combination should fall into a certain range. The first one who solves this puzzle can add the outstanding transaction into the blockchain and get Bitcoin as the reward.</p>
 <p>Bitcoin Minding Puzzle: find R such that <em>H(R/|BlockData) $$/in$$ ValidRange</em></p>
-<h2 id="sha256">SHA-256</h2>
+<h2 id="sha-256">SHA-256</h2>
 <p>SHA-256 is the hash function used in Bitcoin which has all the three needed properties.
 <img src="http://img.zhaohuabing.com/in-post/2018-05-09-cryptocurrency-week1-cryptographic-hash-function/sha-256.PNG" alt="SHA-256"></p>
 

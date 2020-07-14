@@ -362,24 +362,24 @@ $(function() {
 </nav>
                 
                 <h2 id="ubuntu">Ubuntu</h2>
-<h3 id="dockerhttp-proxy">设置docker使用http proxy</h3>
+<h3 id="设置docker使用http-proxy">设置docker使用http proxy</h3>
 <pre><code>sudo /etc/default/docker
 
 export http_proxy=&quot;http://127.0.0.1:3128/&quot;
 export https_proxy=&quot;http://127.0.0.1:3128/&quot;
 export HTTP_PROXY=&quot;http://127.0.0.1:3128/&quot;
 export HTTPS_PROXY=&quot;http://127.0.0.1:3128/&quot;
-</code></pre><h3 id="docker">加载配置并重启docker</h3>
+</code></pre><h3 id="加载配置并重启docker">加载配置并重启docker</h3>
 <pre><code>sudo service docker restart
 </code></pre><h2 id="centos">CentOS</h2>
-<h3 id="dockerhttp-proxy1">设置docker使用http proxy</h3>
+<h3 id="设置docker使用http-proxy-1">设置docker使用http proxy</h3>
 <pre><code>sudo mkdir -p /etc/systemd/system/docker.service.d
 
 echo '
 [Service]
 Environment=&quot;HTTP_PROXY=http://proxy.foo.bar.com:80/&quot;
 ' | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
-</code></pre><h3 id="docker1">加载配置并重启docker</h3>
+</code></pre><h3 id="加载配置并重启docker-1">加载配置并重启docker</h3>
 <pre><code>sudo systemctl daemon-reload
 sudo systemctl restart docker
 </code></pre>

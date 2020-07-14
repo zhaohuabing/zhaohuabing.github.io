@@ -371,15 +371,15 @@ $(function() {
 <p>This series of articles are my notes of &ldquo;Bitcoin and Cryptocurrency Technologies&rdquo; online course.</p>
 </blockquote>
 <p>Finally, I got to the most exciting part of week 1 lectures-the programming assignment!</p>
-<p>I'm supposed to submit the assignment earlier because it was due a few weeks ago, however, I'd like to keep my pace relatively slow. I can't invest my full time to this course because I have a job to do, so I only take this course in my spare time. I also would like to digest all the information in one lesson before moving on to the next. Some fundamental technologies such as hash function, hash pointer, blockchain, Merkel tree and digital signature have been well-explained in week 1 lectures. In order to better understand these technologies, I also did some searches and programming practices, which can be found in my previous posts.</p>
+<p>I&rsquo;m supposed to submit the assignment earlier because it was due a few weeks ago, however, I&rsquo;d like to keep my pace relatively slow. I can&rsquo;t invest my full time to this course because I have a job to do, so I only take this course in my spare time. I also would like to digest all the information in one lesson before moving on to the next. Some fundamental technologies such as hash function, hash pointer, blockchain, Merkel tree and digital signature have been well-explained in week 1 lectures. In order to better understand these technologies, I also did some searches and programming practices, which can be found in my previous posts.</p>
 <!-- raw HTML omitted -->
 <p>It turns out that writing posts on my blog is a better way to learn, I have to fully understand the lessons before I can explain them in my posts.</p>
 <h2 id="scrooge-coin-transaction">Scrooge Coin Transaction</h2>
-<p>Scrooge Coin programming assignment is a little bit tricky, the video of this lesson hasn't explained some implementation details. To help you understand the transaction data structure used in Scrooge Coin, I draw this diagram:
+<p>Scrooge Coin programming assignment is a little bit tricky, the video of this lesson hasn&rsquo;t explained some implementation details. To help you understand the transaction data structure used in Scrooge Coin, I draw this diagram:
 <img src="http://img.zhaohuabing.com/in-post/2018-5-20-cryptocurrency_week1_scroogecoin/scroogecoin.png" alt="Scrooge Coin"></p>
 <p>Every transaction has a set of inputs and a set of outputs. An input in a transaction must use a hash pointer to refer to its corresponding output in the previous transaction, and it must be signed with the private key of the owner because the owner needs to prove he/she agrees to spend his/her coins.</p>
 <p>Every output is correlated to the public key of the receiver, which is his/her ScroogeCoin address.</p>
-<p>In the first transaction, we assume that Scrooge has created 10 coins and assigned them to himself, we don't doubt that because the system-Scroogecoin has a building rule which says that Scrooge has right to create coins.</p>
+<p>In the first transaction, we assume that Scrooge has created 10 coins and assigned them to himself, we don&rsquo;t doubt that because the system-Scroogecoin has a building rule which says that Scrooge has right to create coins.</p>
 <p>In the second transaction,  Scrooge transferred 3.9 coins to Alice and 5.9 coins to Bob. The sum of the two outputs is 0.2 less than the input because the transaction fee was 0.2 coin.</p>
 <p>In the third transaction,  there were two inputs and one output, Alice and Bob transferred 9.7 coins to mike, and the transaction fee was 0.1 coin.</p>
 <h2 id="unclaimed-transaction-outputs-pool">Unclaimed transaction outputs pool</h2>

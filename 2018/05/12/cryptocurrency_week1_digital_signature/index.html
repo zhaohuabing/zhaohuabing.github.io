@@ -380,11 +380,11 @@ $(function() {
 <p>This series of articles are my notes of &ldquo;Bitcoin and Cryptocurrency Technologies&rdquo; online course.</p>
 </blockquote>
 <h2 id="digital-signature">Digital Signature</h2>
-<p>Just like a written signature of a document, but it's in digital form. The desired features:</p>
+<p>Just like a written signature of a document, but it&rsquo;s in digital form. The desired features:</p>
 <ul>
 <li>Only you can sign your own signature</li>
 <li>Everyone can verify your signature</li>
-<li>A signature is tied to a certain document, it can't be copied and used with other documents</li>
+<li>A signature is tied to a certain document, it can&rsquo;t be copied and used with other documents</li>
 </ul>
 <!-- raw HTML omitted -->
 <h2 id="how-to-sign-and-verify-a-digital-signature">How to Sign and Verify a Digital Signature</h2>
@@ -396,7 +396,7 @@ Because only you have the private key, so if anyone who receives an encrypted me
 <h3 id="sign-a-message-with-the-private-key">Sign a Message with the Private Key</h3>
 <p><strong>signature: = sign(sk, message)</strong></p>
 <p>We usually sign the hash of the message rather than the message itself.<br>
-It's because singing a fixed size hash(such as 256 bit) is much more efficient than signing a long message, and the collision-free feature of hash function can assure that no one can forge another message which has the same hash. <br>
+It&rsquo;s because singing a fixed size hash(such as 256 bit) is much more efficient than signing a long message, and the collision-free feature of hash function can assure that no one can forge another message which has the same hash. <br>
 So the sign function is like:<br>
 <strong>signature := encrypt(sk, hash(message))</strong></p>
 <h3 id="verify-the-signature-with-message">Verify the Signature with Message</h3>
@@ -413,7 +413,7 @@ They verify the message with the public key of the signer, which has already bee
 <li>Sign the root of a Merkle tree is identical to sign all the transaction  data in the Merkle tree</li>
 </ul>
 <p>Explanation:<br>
-Because modification of any part in the data structure will result inconsistent at the head/root, so as long as we have verified the digital signature of the head/root, we can know for sure that the whole structure can't be forged because no one can create a fake data structure with the same head/root.</p>
+Because modification of any part in the data structure will result inconsistent at the head/root, so as long as we have verified the digital signature of the head/root, we can know for sure that the whole structure can&rsquo;t be forged because no one can create a fake data structure with the same head/root.</p>
 <h2 id="public-key-as-identities">Public Key as Identities</h2>
 <p>Because only the owner of the public key knowns the matching private key, so only the owner can send out a message signed with that private key.</p>
 <p>If we can verify the signature of a message with a public key，we can be sure that message has been sent out on behalf of the person behind of that public key，in other word，the public key is an identity of that person.</p>
@@ -421,14 +421,14 @@ Because modification of any part in the data structure will result inconsistent 
 <h3 id="certificated-identities">Certificated Identities</h3>
 <p>In some cases, such as signing a business contract or sending an email, you need to let the other side know who you are and able to verify your true identity, such as your name, your organization, so they can trust you when doing business with you.</p>
 <p>But how can people make sure the public key they received is the original one it is claimed to be? How can people know that the public key has not been modified by a middleman or it is not forged by an attacker?</p>
-<p>To solve this kind of trust issues in the public key publishing process, we introduced the digital certificate, which is a document consists of a public key, user identity and a signature of a trusted authority. The public key of the trusted authority has already been planted into operating systems or browsers, it's called root certificate.</p>
+<p>To solve this kind of trust issues in the public key publishing process, we introduced the digital certificate, which is a document consists of a public key, user identity and a signature of a trusted authority. The public key of the trusted authority has already been planted into operating systems or browsers, it&rsquo;s called root certificate.</p>
 <p>Obtain a digital certifacte from an authority
 <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/digital-certificate.png" alt="digital certification"> <br>
 Verify a digital signature using a certificate issued by an authority <br>
 <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/verify-signature.jpg" alt="digital certification"></p>
 <h3 id="anonymous-identities">Anonymous Identities</h3>
 <p>Sometimes, you may want to keep anonymous, in that case, you just publish your public key without a certification. One example is the identiy in Bitcoin, you might not want to let others known how many money you have, especially you have a lot and prefer to keep a low profile.</p>
-<p>Even without certification, you can still use that anonymous identity(the public key) to do business with others as long as the people don't care who exactly you are.</p>
+<p>Even without certification, you can still use that anonymous identity(the public key) to do business with others as long as the people don&rsquo;t care who exactly you are.</p>
 <h2 id="example-codes-on-github">Example Codes on GitHub</h2>
 <ul>
 <li><a href="https://github.com/zhaohuabing/digital-signature">Digital Signature example in Java</a></li>

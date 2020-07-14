@@ -394,25 +394,25 @@ If we ignore the trivial details of bridging and routing configuration, the Kube
 <p>As the figure shows, all pods in a Kubernetes cluster can access each other through a flat layer 3 network. The meaning of &ldquo;flat&rdquo; here is that a pod can access any other pod in the same cluster just through layer 3 routing without any NAT in the middle, in other words, the source pod and the destination pod see the same IP addresses in the packages exchanged between them.</p>
 <p>Of course, the layer 3 network is &ldquo;flat&rdquo; only from the perspective of a pod. For actual deployment, the implementation of this L3 network can be an overlay network with complex encapsulating.</p>
 <h1 id="limitation-of-kubernetes-network-innfv">Limitation of Kubernetes Network in NFV</h1>
-<p>The purpose of the Kubernetes network is to handle east-west traffic among pods in a cluster, so it has a very simple, elegant design. For normal IT or enterprise applications, it's more than enough. But this model doesn't fit the needs of telcos, ISPs, and some advanced enterprise network, it has the following limitations:</p>
+<p>The purpose of the Kubernetes network is to handle east-west traffic among pods in a cluster, so it has a very simple, elegant design. For normal IT or enterprise applications, it&rsquo;s more than enough. But this model doesn&rsquo;t fit the needs of telcos, ISPs, and some advanced enterprise network, it has the following limitations:</p>
 <ul>
 <li>Kubernetes network cannot provide some advanced L2 / L3 network features.</li>
 <li>The Kubernetes network cannot meet some dynamic network requirements of pods.</li>
 <li>Kubernetes networks lack support for cross-cluster / multi-cloud/hybrid-cloud connectivity.</li>
 </ul>
 <p>We probably should not take these limitations as issues. Kubernetes is mainly designed as an orchestration tool for enterprise/IT applications, and its current network model has already supported the inter-communication among the pods very well, which is its original intention.</p>
-<p>The Telcom industry has been adopting the cloud-native mindset and technologies such as microservices and containerization for a while. However, when trying to leverage Kubernetes&rsquo; powerful container orchestration capabilities in NFV (Network Function Virtualization) area, the Telcom industry found that Kubernetes&rsquo; network mode can't meet NFV's needs. NFV requires some advanced L2 / L3 networking, which is missing in the static Kubernetes network mode. For NFV, Kubernetes&rsquo; limited network support has become its Achilles&rsquo; Heel.</p>
+<p>The Telcom industry has been adopting the cloud-native mindset and technologies such as microservices and containerization for a while. However, when trying to leverage Kubernetes&rsquo; powerful container orchestration capabilities in NFV (Network Function Virtualization) area, the Telcom industry found that Kubernetes&rsquo; network mode can&rsquo;t meet NFV&rsquo;s needs. NFV requires some advanced L2 / L3 networking, which is missing in the static Kubernetes network mode. For NFV, Kubernetes&rsquo; limited network support has become its Achilles&rsquo; Heel.</p>
 <h1 id="what-is-network-servicemesh">What is Network Service Mesh?</h1>
-<p>Network Service Mesh (NSM) is a CNCF project that provides advanced L2 / L3 networking capabilities for applications deployed in Kubernetes. NSM does not touch the Kubernetes CNI, instead, it's a totally stand-alone mechanism that consists of a number of components that can be deployed in or out of a Kubernetes cluster. It's a cloud-native network solution works across multi-cloud/hybrid-cloud.</p>
+<p>Network Service Mesh (NSM) is a CNCF project that provides advanced L2 / L3 networking capabilities for applications deployed in Kubernetes. NSM does not touch the Kubernetes CNI, instead, it&rsquo;s a totally stand-alone mechanism that consists of a number of components that can be deployed in or out of a Kubernetes cluster. It&rsquo;s a cloud-native network solution works across multi-cloud/hybrid-cloud.</p>
 <p>Before diving into the details of NSM, we need to understand what is a Network Service first.</p>
-<p>It'll be easier to understand Network Service when compared with the Kubernetes service. We can think of a Kubernetes service as an abstract construct providing some kind of application layer(L7) service for clients, such as HTTP or GRPC services. NSM defines Network Service in a similar way, but instead of L7, a Network service provides L2 / L3 service. The differences between Service and Network Service are as follows:：</p>
+<p>It&rsquo;ll be easier to understand Network Service when compared with the Kubernetes service. We can think of a Kubernetes service as an abstract construct providing some kind of application layer(L7) service for clients, such as HTTP or GRPC services. NSM defines Network Service in a similar way, but instead of L7, a Network service provides L2 / L3 service. The differences between Service and Network Service are as follows:：</p>
 <ul>
-<li>Service: It's application workload and provides services at the application layer (L7), such as web services.</li>
+<li>Service: It&rsquo;s application workload and provides services at the application layer (L7), such as web services.</li>
 <li>Network Service: It is a network function and provides services at the L2 / L3 layer, which means Network Service processes and forwards packets, and generally does not terminate these packets. The example of Network Services includes Bridge, Router, Firewall, DPI, VPN Gateway, etc.</li>
 </ul>
 <p>The following figure shows the relationship between Service and Network Service.
 <img src="/img/2020-02-21-network-service-mesh-english/network-service.jpg" alt=""></p>
-<p>There can be multiple endpoints behind the scene to actually provide service in Kubernetes. It's also true for NSM Network Service, multiple pods/endpoints are deployed to share the client loads, and this deployment can be horizontally scaled to meet different workloads.</p>
+<p>There can be multiple endpoints behind the scene to actually provide service in Kubernetes. It&rsquo;s also true for NSM Network Service, multiple pods/endpoints are deployed to share the client loads, and this deployment can be horizontally scaled to meet different workloads.</p>
 <p><img src="/img/2020-02-21-network-service-mesh-english/network-service-endpoint.jpg" alt=""></p>
 <h1 id="network-service-mesh-architecture">Network Service Mesh architecture</h1>
 <p>Network Service Mesh consists of a couple of components, as shown in this figure:</p>
@@ -453,9 +453,9 @@ For example: FD.io (VPP), OvS, Kernel Networking, SRIOV etc.</p>
 <p>NSM deploys an NSMgr on each Node in the cluster. These NSMgrs talk to each other to select appropriate NSE to meet the Network Service requests from clients, and create a virtual wire between the client and the NSE. From the perspective, these NSMgrs form a mesh to provide L2/L3 network services for the applications, similar to a Service Mesh.</p>
 <p><img src="/img/2020-02-21-network-service-mesh-english/network-service-mesh.jpg" alt=""></p>
 <h1 id="vpn-gatewayexample">VPN Gateway Example</h1>
-<p>Let's see how exactly NSM works by using a simple VPN gateway example. Imagining that you need to connect a pod to the corporation intranet to access a service in the private network, as below diagram shows:</p>
+<p>Let&rsquo;s see how exactly NSM works by using a simple VPN gateway example. Imagining that you need to connect a pod to the corporation intranet to access a service in the private network, as below diagram shows:</p>
 <p><img src="/img/2020-02-21-network-service-mesh-english/vpn-usecase.png" alt=""></p>
-<p>So you will need some kind of VPN to accomplish that. In the traditional way to do it, you need to have a VPN gateway installed somewhere you pod can reach to, probably in the same cluster, you also need to manually configure some network details, such as the VPN gateway address, the subnet prefix and IP address, the routes to the corporate intranet, etc, which should not be exposed to the user of VPN Gateway service at all. In this scenario, the client just needs to connect the corporate intranet and do whatever it needs to do, so it shouldn't care about the underlying implementation details of it, such as how the VPN is configured and established.</p>
+<p>So you will need some kind of VPN to accomplish that. In the traditional way to do it, you need to have a VPN gateway installed somewhere you pod can reach to, probably in the same cluster, you also need to manually configure some network details, such as the VPN gateway address, the subnet prefix and IP address, the routes to the corporate intranet, etc, which should not be exposed to the user of VPN Gateway service at all. In this scenario, the client just needs to connect the corporate intranet and do whatever it needs to do, so it shouldn&rsquo;t care about the underlying implementation details of it, such as how the VPN is configured and established.</p>
 <p>In contrast, NSM uses a simple declarative way to provide the VPN service to the clients. This figure shows the YAML definitions of the VPN network service, network service endpoint, and network service client.</p>
 
 
@@ -489,19 +489,19 @@ For example: FD.io (VPP), OvS, Kernel Networking, SRIOV etc.</p>
 <li>NSMgr registers vpng-pod as an NSE to the API Server (Service Registry).</li>
 <li>The NSM init container in the client pod sends a request for vpn-gateway network service to the NSMgr on the same node.</li>
 <li>NSMgr queries API Server (Service Registry) for available network service endpoints.</li>
-<li>The chosen NSE may reside on the same or a different node. If it's on a remote node, the NSMgr calls its peer on that node to forward the request.</li>
+<li>The chosen NSE may reside on the same or a different node. If it&rsquo;s on a remote node, the NSMgr calls its peer on that node to forward the request.</li>
 <li>The NSMgr on the NSE node requests a connection on behalf of the NSC.</li>
 <li>The NSE accepts the request if it still has enough resources to handle it.</li>
-<li>The NSMgr on the NSE node creates a network interface and inject it to the NSE's Pod.</li>
-<li>If the NSE and NSC are on different nodes, the NSMgr on the NSE node notifies the NSMgr on the NSC node that the service request has been The NSMgr on the NSE node creates a network interface and inject it to the NSE's Pod..</li>
-<li>The NSMgr on the NSC node creates a network interface and inject it to the NSC's pod, it also sets the routes to the corporate network.</li>
+<li>The NSMgr on the NSE node creates a network interface and inject it to the NSE&rsquo;s Pod.</li>
+<li>If the NSE and NSC are on different nodes, the NSMgr on the NSE node notifies the NSMgr on the NSC node that the service request has been The NSMgr on the NSE node creates a network interface and inject it to the NSE&rsquo;s Pod..</li>
+<li>The NSMgr on the NSC node creates a network interface and inject it to the NSC&rsquo;s pod, it also sets the routes to the corporate network.</li>
 </ol>
 <p>Note: The two interfaces on the NSC and NSE pods are connected through a virtual wire established by NSM data plane, which could be a block of shared memory or a tunnel, depends on the locations of NSC and NSE.</p>
 <h1 id="network-service-mesh-andcni">Network Service Mesh and CNI</h1>
-<p>As can be seen from the introduction of NSM in the previous section, NSM is not an implementation or extension of Container Networking Interface(CNI), it's a totally different mechanism.</p>
-<p>CNI works in the life cycle of Kubernetes runtime. It only concerns network allocation during a pod's initialization and deletion phases. CNI provides basic Layer 3 network connections between pods in a Cluster. That's it, you can't ask CNI for more advanced networking capabilities.</p>
+<p>As can be seen from the introduction of NSM in the previous section, NSM is not an implementation or extension of Container Networking Interface(CNI), it&rsquo;s a totally different mechanism.</p>
+<p>CNI works in the life cycle of Kubernetes runtime. It only concerns network allocation during a pod&rsquo;s initialization and deletion phases. CNI provides basic Layer 3 network connections between pods in a Cluster. That&rsquo;s it, you can&rsquo;t ask CNI for more advanced networking capabilities.</p>
 <p><img src="/img/2020-02-21-network-service-mesh-english/cni.png" alt=""></p>
-<p>NSM works out of Kubernetes runtime&rsquo; life cycle and it's much more flexible. Various Network Services can be implemented by 3-rd parties and introduced into the Kubernetes world. The implementation details are wrapped into NSE and the complicated network configuration such as IP address, subnet, routes are done by NSM. A client can request and use a Network Service just by a single line of annotation in its YAML deployment file, without noticing all these networking details.</p>
+<p>NSM works out of Kubernetes runtime&rsquo; life cycle and it&rsquo;s much more flexible. Various Network Services can be implemented by 3-rd parties and introduced into the Kubernetes world. The implementation details are wrapped into NSE and the complicated network configuration such as IP address, subnet, routes are done by NSM. A client can request and use a Network Service just by a single line of annotation in its YAML deployment file, without noticing all these networking details.</p>
 <p>In a word, NSM is a powerful complement to the Kubernetes CNI network model. NSM provides dynamic, advanced network services for pods while CNI provides basic L3 connectivity in a cluster.</p>
 <h1 id="network-service-mesh-and-servicemesh">Network Service Mesh and Service Mesh</h1>
 <p>NSM borrows the concept of Service Mesh, but they work on different layers of the OSI model.
@@ -529,7 +529,7 @@ Service Mesh works at Layer 4 and Layer 7 (primarily Layer 7), handling service-
 <h1 id="network-service-mesh-andnfv">Network Service Mesh and NFV</h1>
 <p>Network Functions Virtualization (NFV) is the decoupling of network functions from proprietary hardware appliances and running them as software. These virtualized network functions(VNFs) are normally packaged as virtual machines (VMs).</p>
 <p>However, containers could be much less resource consuming and much more efficient than VMs. It can take minutes to spin up a VM, while only a few seconds for a container.</p>
-<p>The major problem of this solution is that the container orchestrator, Kubernetes, lacks the networking capabilities which is a must for NFV. The emerging of NSM fixed the missing part of this puzzle, provides a cloud-native NFV solution. VNFs could be implemented as NSM Network Service, and these Network Services can be connected to form service function chains (SFC). With Kubernetes's powerful orchestration, VNFs can also be easily horizontally scaled to meet different workloads.</p>
+<p>The major problem of this solution is that the container orchestrator, Kubernetes, lacks the networking capabilities which is a must for NFV. The emerging of NSM fixed the missing part of this puzzle, provides a cloud-native NFV solution. VNFs could be implemented as NSM Network Service, and these Network Services can be connected to form service function chains (SFC). With Kubernetes&rsquo;s powerful orchestration, VNFs can also be easily horizontally scaled to meet different workloads.</p>
 <p>This is an example of SFC implemented with NSM:</p>
 
 
@@ -542,7 +542,7 @@ Service Mesh works at Layer 4 and Layer 7 (primarily Layer 7), handling service-
   </figure>
 </div>
 
-<p>At present, NFV is driven by telecommunications standards (such as the ETSI NFV family). Telecommunication standards are great to ensure interoperability among different vendors or operators, but it's terribly inefficient because of the long process to come out a standard. Open source projects, like NSM, may bring revolutionary changes to NFV in the near future.</p>
+<p>At present, NFV is driven by telecommunications standards (such as the ETSI NFV family). Telecommunication standards are great to ensure interoperability among different vendors or operators, but it&rsquo;s terribly inefficient because of the long process to come out a standard. Open source projects, like NSM, may bring revolutionary changes to NFV in the near future.</p>
 <h1 id="key-takeaways">Key Takeaways</h1>
 <p>Network Service Mesh is a CNCF sandbox project that provides complicated L2/L3 networking capabilities for Kubernetes. It maps the concept of service mesh but works in L2/L3 instead of L4/L7. Network Service Mesh complements Kubernetes&rsquo; original network model, providing a cloud-native way to deploy and use advanced L2/L3 network services. Network Service Mesh can also work with Service Mesh and SDN to provide comprehensive network solutions for applications deployed in the Kubernetes cluster. As a nice way to implement cloud-native Network Functions(CNFs) and SFCs, Network Service Mesh is a big step toward the next generation of NFV, and will have significant impacts on cloud, 5G, and edge computing.</p>
 <h1 id="references">References</h1>

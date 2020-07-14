@@ -354,17 +354,17 @@ $(function() {
   <ul>
     <li>
       <ul>
-        <li><a href="#vip">什么是VIP？</a></li>
-        <li><a href="#vip1">VIP的实现原理</a></li>
-        <li><a href="#keepalivedvip">采用Keepalived实现VIP</a></li>
-        <li><a href="#pacemakervip">采用pacemaker实现VIP</a></li>
-        <li><a href="#heading">参考</a></li>
+        <li><a href="#什么是vip">什么是VIP？</a></li>
+        <li><a href="#vip的实现原理">VIP的实现原理</a></li>
+        <li><a href="#采用keepalived实现vip">采用Keepalived实现VIP</a></li>
+        <li><a href="#采用pacemaker实现vip">采用pacemaker实现VIP</a></li>
+        <li><a href="#参考">参考</a></li>
       </ul>
     </li>
   </ul>
 </nav>
                 
-                <h2 id="vip">什么是VIP？</h2>
+                <h2 id="什么是vip">什么是VIP？</h2>
 <p>VIP即Virtual IP Address，是实现HA（高可用）系统的一种方案，高可用的目的是通过技术手段避免因为系统出现故障而导致停止对外服务，一般实现方式是部署备用服务器，在主服务器出现故障时接管业务。 VIP用于向客户端提供一个固定的“虚拟”访问地址，以避免后端服务器发生切换时对客户端的影响。</p>
 <p>例如在下图的系统中，采用了三个服务器的集群来实现服务的高可用，后端服务器集群通过VIP 193.168.0.6对外提供服务，客户端只知道VIP，并不关注后端服务器的真实地址。</p>
 <p>VIP被加载在Master的网卡上，所有指向VIP的请求会被发向Master，Slave服务器出于Standby状态。如果Master出现故障，集群会通过选举算法从可用的Slave节点中选出一个新的Master节点，并将VIP也迁移到新Master节点的网卡上。这样可以保证服务始终可用，并且对客户端来说访问的IP也不会变化。</p>
@@ -390,7 +390,7 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
                                         |-----| Host IP: 193.168.0.4 |
                                               | Role: Slave          |
                                               |______________________|
-</code></pre><h2 id="vip1">VIP的实现原理</h2>
+</code></pre><h2 id="vip的实现原理">VIP的实现原理</h2>
 <ol>
 <li>Master选举： 集群创建或者Master出现故障时，集群通过选举协议得到一个Master作为对外服务的节点</li>
 <li>配置VIP： HA软件将VIP配置到Master节点的网卡上</li>
@@ -409,14 +409,14 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
        valid_lft forever preferred_lft forever
     inet 193.168.0.6/16 brd 193.168.255.255 scope global secondary br-apidefault
        valid_lft forever preferred_lft forever
-</code></pre></div><h2 id="keepalivedvip">采用Keepalived实现VIP</h2>
+</code></pre></div><h2 id="采用keepalived实现vip">采用Keepalived实现VIP</h2>
 <p>Keepalived的设计目的即是为了管理VIP，因此使用Keepalived实现VIP的配置非常简单。Keepalived采用了<a href="https://rascaldev.io/2017/12/23/vip-management-with-keepalived/">Virtual Router Redundancy Protocol (VRRP)</a>协议来进行实现主备服务器之间的通信以及选举。</p>
 <p>下面介绍如何采用Keepalived配置一个一个两节点的HA集群。</p>
 <p>首先将用于设置VIP的脚本放到主备两个服务器的 /etc/keepalived/notify.sh 路径下</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">#!/bin/bash
 </span><span style="color:#ff79c6"></span>
 <span style="color:#8be9fd;font-style:italic">vipAddress</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;192.168.121.100/24&#34;</span>
-<span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">[</span> <span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">x</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">=</span><span style="color:#ff79c6">=</span> <span style="color:#f1fa8c">&#34;xmaster&#34;</span> <span style="color:#ff79c6">]</span><span style="color:#ff79c6">]</span>; <span style="color:#ff79c6">then</span>
+<span style="color:#ff79c6">if</span> <span style="color:#ff79c6">[[</span> <span style="color:#f1fa8c">&#34;x</span><span style="color:#8be9fd;font-style:italic">$1</span><span style="color:#f1fa8c">&#34;</span> <span style="color:#ff79c6">==</span> <span style="color:#f1fa8c">&#34;xmaster&#34;</span> <span style="color:#ff79c6">]]</span>; <span style="color:#ff79c6">then</span>
  ip address add dev eth1 <span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">vipAddress</span><span style="color:#f1fa8c">}</span>
 <span style="color:#ff79c6">else</span>
   ip address del dev eth1 <span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">vipAddress</span><span style="color:#f1fa8c">}</span>
@@ -463,7 +463,7 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
   notify_master <span style="color:#f1fa8c">&#34;/etc/keepalived/notify.sh master&#34;</span>
   notify_backup <span style="color:#f1fa8c">&#34;/etc/keepalived/notify.sh backup&#34;</span>
 <span style="color:#ff79c6">}</span>
-</code></pre></div><h2 id="pacemakervip">采用pacemaker实现VIP</h2>
+</code></pre></div><h2 id="采用pacemaker实现vip">采用pacemaker实现VIP</h2>
 <p>Pacemaker和Keepalived的定位不同，Keepalived一般用于无状态，可以Active-Active的HA集群；而Pacemaker可以实现有状态，Active-Passive的HA集群。例如采用pacemaker可以将服务状态和数据从出现故障的服务器上迁移到备份机上，例如拷贝配置文件，加载数据库等。因此Pacemaker的内部结构和配置比Keepalived的更复杂。</p>
 <p>Packemaker包括下列组件：</p>
 <ul>
@@ -476,7 +476,7 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
 </ul>
 <p><img src="https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/images/pcmk-internals.png" alt="Pacemaker内部组件"></p>
 <p>采用Pacemaker实现VIP的原理和Keepalived基本相同，也是采用将VIP作为Secondary IP绑定到Master网卡的方式，具体设置步骤略。</p>
-<h2 id="heading">参考</h2>
+<h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://rascaldev.io/2017/12/23/vip-management-with-keepalived/">VIP Management With keepalived</a></li>
 <li><a href="https://tools.ietf.org/html/rfc3768">Virtual Router Redundancy Protocol (VRRP)</a></li>

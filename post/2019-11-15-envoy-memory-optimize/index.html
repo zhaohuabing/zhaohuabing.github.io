@@ -362,17 +362,17 @@ $(function() {
   <ul>
     <li>
       <ul>
-        <li><a href="#envoy">Envoy的内存占用</a></li>
-        <li><a href="#tcmalloc">减少TCMalloc预留系统内存</a></li>
-        <li><a href="#envoy1">通过优化配置降低Envoy内存占用</a></li>
-        <li><a href="#heading1">总结</a></li>
-        <li><a href="#heading2">参考文档</a></li>
+        <li><a href="#envoy的内存占用">Envoy的内存占用</a></li>
+        <li><a href="#减少tcmalloc预留系统内存">减少TCMalloc预留系统内存</a></li>
+        <li><a href="#通过优化配置降低envoy内存占用">通过优化配置降低Envoy内存占用</a></li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#参考文档">参考文档</a></li>
       </ul>
     </li>
   </ul>
 </nav>
                 
-                <h2 id="envoy">Envoy的内存占用</h2>
+                <h2 id="envoy的内存占用">Envoy的内存占用</h2>
 <p>在Istio服务网格中，每个Envoy占用的内存也许并不算多，但所有sidecar增加的内存累积起来则是一个不小的数字。在进行商用部署时，我们需要考虑如何优化并减少服务网格带来的额外内存消耗。</p>
 <p>下面是在我环境中的一个实测数据：</p>
 <p>Envoy配置中的Listener和Cluster数量</p>
@@ -386,7 +386,7 @@ $(function() {
 CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %               NET I/O             BLOCK I/O           PIDS
 2e8fb               0.75%               105.9 MiB / <span style="color:#bd93f9">256</span> MiB   41.39%              <span style="color:#bd93f9">0</span> B / <span style="color:#bd93f9">0</span> B           <span style="color:#bd93f9">0</span> B / <span style="color:#bd93f9">0</span> B           <span style="color:#bd93f9">165</span>
 </code></pre></div><p>从上面的数据可以看到，在一个有325个cluster和175个Listener的服务网格中，一个Envoy的实际内存占用量达到了100M左右；网格中一共有466个实例，则所有Envoy占用的内存达到了466*100M=46.6G，这些增加的内存消耗是一个不容小视的数据。</p>
-<h2 id="tcmalloc">减少TCMalloc预留系统内存</h2>
+<h2 id="减少tcmalloc预留系统内存">减少TCMalloc预留系统内存</h2>
 <p>根据<a href="https://istio.io/docs/concepts/performance-and-scalability/#cpu-and-memory">Istio官方文档</a>，Envoy占用的内存大小和其配置相关，和请求处理速率无关。在一个较大的namespace中，Envoy大约占用50M内存。然而对于多大为“较大”，Istio官方文档并未给出一个明确的数据。</p>
 <p>通过Envoy的管理端口查看上面环境中一个Envoy内存分配的详细情况：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo docker <span style="color:#8be9fd;font-style:italic">exec</span> 2e8fb curl http://127.0.0.1:15000/memory
@@ -400,13 +400,13 @@ CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %             
 </code></pre></div><p>各个指标的详细说明参见<a href="https://www.envoyproxy.io/docs/envoy/latest/api-v2/admin/v2alpha/memory.proto.html">Envoy文档</a>。从上面的数据可以看到Envoy真正使用的内存为50M左右，和官方文档一致。但由于Envoy采用了<a href="https://gperftools.github.io/gperftools/tcmalloc.html">TCMalloc</a>作为内存管理器，导致其占用内存大于Envoy实际使用内存。</p>
 <p>TCMalloc的内存分配效率比glibc的malloc更高，但会预留系统内存，导致程序占用内存大于其实际所需内存。从前面的Envoy admin 接口的输出可以看到TCMalloc预留的内存为100M左右，远远大于了Envoy实际所需的内存数量。</p>
 <p>根据Envoy的实际内存占用情况，将container的最大内存限制调整为60M后再运行，Envoy可以正常启动。再次用docker stat命令查看，其消耗的内存也在60M以内。</p>
-<h2 id="envoy1">通过优化配置降低Envoy内存占用</h2>
+<h2 id="通过优化配置降低envoy内存占用">通过优化配置降低Envoy内存占用</h2>
 <p>即使将内存降低到50M，在一些对资源要求比较严格的环境，例如边缘计算的场景中，网格中这些Envoy内存累加在一起也是不能接受的，因此需要想办法进一步降低Envoy的资源使用。</p>
 <p>根据Envoy的这个github issue<a href="https://github.com/envoyproxy/envoy/issues/4196">（Per listener and per cluster memory overhead is too high #4196）</a>和<a href="https://istio.io/docs/concepts/performance-and-scalability/#cpu-and-memory">Istio文档</a>可以得知，Envoy占用的内存和其配置的Listener和Cluster个数是成线性关系的，Listener和Cluster越多，Envoy占用的内存越大，因此一个自然的想法就是通过减少Pilot为Envoy创建的Listener和Cluster数量来降低Envoy的内存开销。</p>
-<h3 id="nampese">按nampese对配置进行隔离</h3>
+<h3 id="按nampese对配置进行隔离">按nampese对配置进行隔离</h3>
 <p>在Istio 1.3中，Pilot在创建Lister和Cluster时已经按照namespace对Service进行了隔离，Pilot缺省只会为Envoy创建和其代理服务在同一个namespace中的Service相关的Listener和Cluster。按照namespace进行隔离在一定程度上减少了Envoy中的Listener和Cluster数量，但还是太过于粗犷，对内存的优化效果有限。</p>
 <p>在实际的产品部署中，一个namespace中往往会部署大量相关的微服务，这些微服务在逻辑上属于同一个业务系统，但并不是namespace中的任意两个微服务之间都存在访问关系，因此按照namespace进行隔离还是会导致Envoy中存在大量该sidecar不需要的Listener和Cluster配置。</p>
-<h3 id="heading">按服务访问关系进行细粒度隔离</h3>
+<h3 id="按服务访问关系进行细粒度隔离">按服务访问关系进行细粒度隔离</h3>
 <p>在一个微服务运用中，一个服务访问的其他服务一般不会超过10个，而一个namespace中可能部署多达上百个微服务，导致Envoy中存在大量冗余配置，导致不必要的内存消耗。最合理的做法是只为一个sidecar配置该sidecar所代理服务需要访问的外部服务相关的配置。</p>
 <p>Istio提供了<a href="https://istio.io/docs/reference/config/networking/sidecar/">Siedecar</a> CRD，用于对Pilot向sidecar下发的缺省配置进行更细粒度的调整。下面以Bookinfo示例程序说明如何调整一个sidecar的配置。</p>
 <p>在Bookinfo示例程序中，几个微服务之间的调用关系如下：</p>
@@ -421,17 +421,17 @@ outbound|9080<span style="color:#ff79c6">||</span>ratings.default.svc.cluster.lo
 outbound|9080<span style="color:#ff79c6">||</span>productpage.default.svc.cluster.local::added_via_api::true
 </code></pre></div><p>下面通过sidecar来对reviews服务的sidecar进行配置，只为ratings服务创建相关的outbound cluster。</p>
 <p>创建一个sidecar.yaml文件，对reviews服务进行配置。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: networking.istio.io/v1alpha3
-kind: Sidecar
-metadata:
-  name: reviews
-  namespace: default
-spec:
-  workloadSelector:
-    labels:
-      app: reviews
-  egress:
-  - hosts:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: networking.istio.io/v1alpha3
+<span style="color:#ff79c6">kind</span>: Sidecar
+<span style="color:#ff79c6">metadata</span>:
+  <span style="color:#ff79c6">name</span>: reviews
+  <span style="color:#ff79c6">namespace</span>: default
+<span style="color:#ff79c6">spec</span>:
+  <span style="color:#ff79c6">workloadSelector</span>:
+    <span style="color:#ff79c6">labels</span>:
+      <span style="color:#ff79c6">app</span>: reviews
+  <span style="color:#ff79c6">egress</span>:
+  - <span style="color:#ff79c6">hosts</span>:
     - <span style="color:#f1fa8c">&#34;./ratings.default.svc.cluster.local&#34;</span>
 </code></pre></div><p>在Istio中运用该sidecar配置。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl apply -f sidecar.yaml
@@ -441,9 +441,9 @@ sidecar.networking.istio.io/reviews created
 
 outbound|9080<span style="color:#ff79c6">||</span>ratings.default.svc.cluster.local::added_via_api::true
 </code></pre></div><p>在本文开始的环境中再进行测试，通过该方法去掉无关配置，只保留5个左右相关的outbound service，可以把Envoy的内存控制在15M以内。</p>
-<h2 id="heading1">总结</h2>
+<h2 id="总结">总结</h2>
 <p>在Istio服务网格中，伴随应用部署的Envoy sidecar导致了较大的内存占用。通过对sidecar镜像的内存进行限制，并通过Pilot对sidecar的缺省配置按照服务的实际关联关系进行细化调整，可以对Envoy的内存占用进行优化，减少Istio服务网格部署对内存的额外消耗。</p>
-<h2 id="heading2">参考文档</h2>
+<h2 id="参考文档">参考文档</h2>
 <ul>
 <li><a href="https://www.envoyproxy.io/docs/envoy/latest/api-v2/admin/v2alpha/memory.proto.html">Envoy Admin: Memory</a></li>
 <li><a href="https://gperftools.github.io/gperftools/tcmalloc.html">TCMalloc : Thread-Caching Malloc</a></li>

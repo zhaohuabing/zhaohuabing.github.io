@@ -362,16 +362,16 @@ $(function() {
   <ul>
     <li>
       <ul>
-        <li><a href="#heading">微服务架构的演进</a></li>
-        <li><a href="#istio">Istio服务网格</a></li>
-        <li><a href="#heading9">总结</a></li>
-        <li><a href="#heading10">参考</a></li>
+        <li><a href="#微服务架构的演进">微服务架构的演进</a></li>
+        <li><a href="#istio服务网格">Istio服务网格</a></li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#参考">参考</a></li>
       </ul>
     </li>
   </ul>
 </nav>
                 
-                <h2 id="heading">微服务架构的演进</h2>
+                <h2 id="微服务架构的演进">微服务架构的演进</h2>
 <p>作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。</p>
 <p>另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性。</p>
 <p><img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/microservice.PNG" alt=""></p>
@@ -414,7 +414,7 @@ $(function() {
 <p><img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/controlplane.png" alt=""></p>
 <p>这里我们可以类比SDN的概念，控制面就类似于SDN网管中的控制器，负责路由策略的指定和路由规则下发；数据面类似于SDN网络中交换机，负责数据包的转发。</p>
 <p>由于微服务的所有通讯都由服务网格基础设施层提供，通过控制面板和数据面板的配合，可以对这些通讯进行监控、托管和控制，以实现微服务灰度发布，调用分布式追踪，故障注入模拟测试，动态路由规则，微服务闭环控制等管控功能。</p>
-<h2 id="istio">Istio服务网格</h2>
+<h2 id="istio服务网格">Istio服务网格</h2>
 <p>Istio是一个Service Mesh开源项目，是Google继Kubernetes之后的又一力作，主要参与的公司包括Google，IBM和Lyft。</p>
 <p>凭借kubernetes良好的架构设计及其强大的扩展性，Google围绕kubernetes打造一个生态系统。Kubernetes用于微服务的编排（编排是英文Orchestration的直译，用大白话说就是描述一组微服务之间的关联关系，并负责微服务的部署、终止、升级、缩扩容等）。其向下用CNI(容器网络接口），CRI（容器运行时接口）标准接口可以对接不同的网络和容器运行时实现，提供微服务运行的基础设施。向上则用Istio提供了微服务治理功能。</p>
 <p>由下图可见，Istio补充了Kubernetes生态圈的重要一环，是Google的微服务版图里一个里程碑式的扩张。
@@ -427,7 +427,7 @@ $(function() {
 <li>控制面负责管理和配置代理来路由流量，以及在运行时执行策略。</li>
 </ul>
 <p><img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/istio-architecture.png" alt=""></p>
-<h3 id="istio1">Istio控制面</h3>
+<h3 id="istio控制面">Istio控制面</h3>
 <p>Istio控制面板包括3个组件:Pilot, Mixer和Istio-Auth。</p>
 <h4 id="pilot">Pilot</h4>
 <p>Pilot维护了网格中的服务的标准模型，这个标准模型是独立于各种底层平台的。Pilot通过适配器和各底层平台对接，以填充此标准模型。</p>
@@ -453,7 +453,7 @@ $(function() {
 <p>从上图可以看到，Istio在Envoy中增加了一个Mixer Filter，该Filter和控制面的Mixer组件进行通讯，完成策略控制和遥测数据收集功能。Mixer Filter中保存有策略判断所需的数据缓存，因此大部分策略判断在Envoy中就处理了，不需要发送请求到Mixer。另外Envoy收集到的遥测数据会先保存在Envoy的缓存中，每隔一段时间再通过批量的方式上报到Mixer。</p>
 <h4 id="auth">Auth</h4>
 <p>Istio支持双向SSL认证（Mutual SSL Authentication）和基于角色的访问控制（RBAC），以提供端到端的安全解决方案。</p>
-<h5 id="heading1">认证</h5>
+<h5 id="认证">认证</h5>
 <p>Istio提供了一个内部的CA(证书机构),该CA为每个服务颁发证书，提供服务间访问的双向SSL身份认证，并进行通信加密，其架构如下图所示：
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/auth.png" alt=""></p>
 <p>其工作机制如下：
@@ -472,7 +472,7 @@ $(function() {
 <li>客户端的Envoy和服务端的Envoy开始双向SSL握手。在握手阶段，客户端Envoy会验证服务端Envoy证书中的Service Account有没有权限运行该请求的服务，如没有权限，则认为服务端不可信，不能创建链接。</li>
 <li>当加密TSL链接创建好后，请求数据被发送到服务端的Envoy，然后被Envoy通过一个本地的TCP链接发送到服务中。</li>
 </ul>
-<h5 id="heading2">鉴权</h5>
+<h5 id="鉴权">鉴权</h5>
 <p>Istio“基于角色的访问控制”（RBAC）提供了命名空间，服务，方法三个不同大小粒度的服务访问权限控制。其架构如下图所示：
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/authorization.png" alt=""></p>
 <p>管理人员可以定制访问控制的安全策略，这些安全策略保存在Istio Config Store中。 Istio RBAC Engine从Config Store中获取安全策略，根据安全策略对客户端发起的请求进行判断，并返回鉴权结果（允许或者禁止）。</p>
@@ -486,7 +486,7 @@ $(function() {
 <p>ServiceRoleBinding，将角色绑定到一个Subject，可以是一个用户，一组用户或者一个服务。</p>
 </li>
 </ul>
-<h3 id="istio2">Istio数据面</h3>
+<h3 id="istio数据面">Istio数据面</h3>
 <p>Istio数据面以“边车”(sidecar)的方式和微服务一起部署，为微服务提供安全、快速、可靠的服务间通讯。由于Istio的控制面和数据面以标准接口进行交互，因此数据可以有多种实现，Istio缺省使用了Envoy代理的扩展版本。</p>
 <p>Envoy是以C ++开发的高性能代理，用于调解服务网格中所有服务的所有入站和出站流量。Envoy的许多内置功能被Istio发扬光大，例如动态服务发现，负载均衡，TLS加密，HTTP/2 &amp; gRPC代理，熔断器，路由规则，故障注入和遥测等。</p>
 <p>Istio数据面支持的特性如下：</p>
@@ -531,9 +531,9 @@ $(function() {
 <blockquote>
 <p>备注：Outbound特性是指服务请求侧的Sidecar提供的功能特性，而Inbound特性是指服务提供侧Sidecar提供的功能特性。一些特性如遥测和分布式跟踪需要两侧的Sidecar都提供支持；而另一些特性则只需要在一侧提供，例如鉴权只需要在服务提供侧提供，重试只需要在请求侧提供。</p>
 </blockquote>
-<h3 id="heading3">典型应用场景</h3>
+<h3 id="典型应用场景">典型应用场景</h3>
 <p>Istio服务管控包括下列的典型应用场景：</p>
-<h4 id="heading4">分布式调用追踪</h4>
+<h4 id="分布式调用追踪">分布式调用追踪</h4>
 <p>在微服务架构中，业务的调用链非常复杂，一个来自用户的请求可能涉及到几十个服务的协同处理。因此需要一个跟踪系统来记录和分析同一次请求在整个调用链上的相关事件，从而帮助研发和运维人员分析系统瓶颈，快速定位异常和优化调用链路。</p>
 <p>Istio通过在Envoy代理上收集调用相关数据，实现了对应用无侵入的分布式调用跟踪分析。 Istio实现分布式调用追踪的原理如下图所示:
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/distributed-tracing.png" alt="">
@@ -541,11 +541,11 @@ Envoy收集一个端到端调用中的各个分段的数据，并将这些调用
 <blockquote>
 <p>注意：应用仍需要在进行出口调用时将收到的入口请求中tracing相关的header转发出去，传递给调用链中下一个边车进行处理。</p>
 </blockquote>
-<h4 id="heading5">度量收集</h4>
+<h4 id="度量收集">度量收集</h4>
 <p>Istio 实现度量收集的原理如下图所示:
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/metrics-collecting.png" alt=""></p>
 <p>Envoy收集指标相关的原始数据，如请求的服务，HTTP状态码，调用时延等，这些收集到的指标数据被送到Mixer，通过Mixer Adapters 将指标信息转换后发送到后端的监控系统中。由于Mixer使用了插件机制，后端监控系统可以根据需要在运行期进行动态切换。</p>
-<h4 id="heading6">灰度发布</h4>
+<h4 id="灰度发布">灰度发布</h4>
 <p>当应用上线以后，运维面临的一大挑战是如何能够在不影响已上线业务的情况下进行升级。无论进行了多么完善的测试，都无法保证线下测试时发现所有潜在故障。在无法百分百避免版本升级故障的情况下，需要通过一种方式进行可控的版本发布，把故障影响控制在可以接受的范围内，并可以快速回退。</p>
 <p>可以通过灰度发布（又名金丝雀发布）来实现业务从老版本到新版本的平滑过渡，并避免升级过程中出现的问题对用户造成的影响。</p>
 <p>Istio通过高度的抽象和良好的设计采用一致的方式实现了灰度发布。在发布新版本后，运维人员可以通过定制路由规则将特定的流量（如具有指定特征的测试用户）导入新版本服务中以进行测试。通过渐进受控地向新版本导入生产流量，可以最小化升级中出现的故障对用户的影响。</p>
@@ -556,7 +556,7 @@ Envoy收集一个端到端调用中的各个分段的数据，并将这些调用
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/canary-2.png" alt=""></p>
 <p>如果新版本工作正常，则最后将所有流量导入到新版本服务中，并将老版本服务下线；如中间出现问题，则可以将流量重新导回老版本，在新版本中修复故障后采用该流程重新发布。
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/canary-3.png" alt=""></p>
-<h4 id="heading7">断路器</h4>
+<h4 id="断路器">断路器</h4>
 <p>在微服务架构中，存在着许许多多的服务单元，若一个服务出现故障，就会因依赖关系形成故障蔓延，最终导致整个系统的瘫痪，这样的架构相较传统架构就更加的不稳定。为了解决这样的问题，因此产生了断路器模式。</p>
 <p>断路器模式指，在某个服务发生故障时，断路器的故障监控向调用放返回一个及时的错误响应，而不是长时间的等待。这样就不会使得调用线程因调用故障被长时间占用，从而避免了故障在整个系统中的蔓延。</p>
 <p>Istio 实现断路器的原理如下图所示:
@@ -564,17 +564,17 @@ Envoy收集一个端到端调用中的各个分段的数据，并将这些调用
 管理员通过destination policy设置断路触发条件，断路时间等参数。例如设置服务B发生10次5XX错误后断路15分钟。则当服务B的某一实例满足断路条件后，就会被从LB池中移除15分钟。在这段时间内，Envoy将不再把客户端的请求转发到该服务实例。</p>
 <p>Istio的断路器还支持配置最大链接数，最大待处理请求数，最大请求数，每链接最大请求数，重试次数等参数。当达到设置的最大请求数后，新发起的请求会被Envoy直接拒绝。
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/circuitbreaker-parameters.png" alt=""></p>
-<h4 id="heading8">故障注入</h4>
+<h4 id="故障注入">故障注入</h4>
 <p>对于一个大型微服务应用而言，系统的健壮性非常重要。在微服务系统中存在大量的服务实例，当部分服务实例出现问题时，微服务应用需要具有较高的容错性，通过重试，断路，自愈等手段保证系统能够继续对外正常提供服务。因此在应用发布到生产系统强需要对系统进行充分的健壮性测试。</p>
 <p>对微服务应用进行健壮性测试的一个最大的困难是如何对系统故障进行模拟。在一个部署了成百上千微服务的测试环境中，如果想通过对应用，主机或者交换机进行设置来模拟微服务之间的通信故障是非常困难的。</p>
 <p>Istio通过服务网格承载了微服务之间的通信流量，因此可以在网格中通过规则进行故障注入，模拟部分微服务出现故障的情况，对整个应用的健壮性进行测试。</p>
 <p>故障注入的原理如下图所示：
 <img src="http://img.zhaohuabing.com/in-post/2018-03-29-what-is-service-mesh-and-istio/fault-injection.png" alt="">
 测试人员通过Pilot向Envoy注入了一个规则，为发向服务MS-B的请求加入了指定时间的延迟。当客户端请求发向MSB-B时，Envoy会根据该规则为该请求加入时延，引起客户的请求超时。通过设置规则注入故障的方式，测试人员可以很方便地模拟微服务之间的各种通信故障，对微服务应用的健壮性进行较为完整的模拟测试。</p>
-<h2 id="heading9">总结</h2>
+<h2 id="总结">总结</h2>
 <p>服务网格为微服务提供了一个对应用程序透明的安全、可靠的通信基础设施层。采用服务网格后，微服务应用开发人员可以专注于解决业务领域问题，将一些通用问题交给服务网格处理。采用服务网格后，避免了代码库带来的依赖，可以充分发挥微服务的异构优势，开发团队可以根据业务需求和开发人员能力自由选择技术栈。</p>
 <p>Istio具有良好的架构设计，提供了强大的二次开发扩展性和用户定制能力。虽然Istio目前还处于beta阶段，但已经获得众多知名公司和产品的支持，是一个非常具有前景的开源服务网格开源项目。</p>
-<h2 id="heading10">参考</h2>
+<h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://istio.io/docs/">Istio online documentation</a></li>
 <li><a href="http://philcalcado.com/2017/08/03/pattern_service_mesh.html">Pattern: Service Mesh</a></li>

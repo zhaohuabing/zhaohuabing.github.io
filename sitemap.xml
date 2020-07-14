@@ -93,11 +93,6 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/tags/tun/tap/</loc>
-    <lastmod>2020-02-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://zhaohuabing.com/categories/knowledge-graph/</loc>
     <lastmod>2020-02-22T00:00:00+00:00</lastmod>
   </url>
@@ -584,17 +579,14 @@
   
   <url>
     <loc>https://zhaohuabing.com/search/placeholder/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/top/about/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/top/books/</loc>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -603,6 +595,10 @@
   
   <url>
     <loc>https://zhaohuabing.com/top/</loc>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/tun/tap/</loc>
   </url>
   
 </urlset>

@@ -356,8 +356,8 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#istio">Istio服务注册插件机制</a></li>
-    <li><a href="#heading">服务注册相关的对象</a>
+    <li><a href="#istio服务注册插件机制">Istio服务注册插件机制</a></li>
+    <li><a href="#服务注册相关的对象">服务注册相关的对象</a>
       <ul>
         <li><a href="#service">Service</a></li>
         <li><a href="#serviceinstance">ServiceInstance</a></li>
@@ -366,17 +366,17 @@ $(function() {
         <li><a href="#servicediscovery">ServiceDiscovery</a></li>
       </ul>
     </li>
-    <li><a href="#service-registry">Service Registry初始化流程</a></li>
+    <li><a href="#service-registry初始化流程">Service Registry初始化流程</a></li>
   </ul>
 </nav>
                 
-                <h1 id="istio">Istio服务注册插件机制</h1>
+                <h1 id="istio服务注册插件机制">Istio服务注册插件机制</h1>
 <p>在Istio架构中，Pilot组件负责维护网格中的标准服务模型，该标准服务模型独立于各种底层平台，Pilot通过适配器和各底层平台对接，以使用底层平台中的服务数据填充此标准模型。</p>
 <p>例如Pilot中的Kubernetes适配器通过Kubernetes API Server到kubernetes中的Service以及对应的POD实例，将该数据被翻译为标准模型提供给Pilot使用。通过适配器模式，Pilot还可以从Cloud Foundry, Consul中获取服务信息，也可以开发适配器将其他提供服务发现的组件集成到Pilot中。
 <img src="/img/2019-02-18-pilot-service-registry-code-analysis/pilot.png" alt=""></p>
 <p>本文将从代码出发，对Pilot的服务注册机制进行分析。</p>
 <p>备注： 本文分析的代码对应Istio commit 58186e1dc3392de842bc2b2c788f993878e0f123</p>
-<h1 id="heading">服务注册相关的对象</h1>
+<h1 id="服务注册相关的对象">服务注册相关的对象</h1>
 <p>首先我们来了解一下Pilot中关于服务注册的一些基本概念和相关数据结构。</p>
 <p>Istio源码中，和服务注册相关的对象如下面的UML类图所示。</p>
 <p><img src="/img/2019-02-18-pilot-service-registry-code-analysis/class-diagram.png" alt=""></p>
@@ -387,19 +387,19 @@ $(function() {
 <p>例如在Kubernetes中，服务 foo 的FQDN为foo.default.svc.cluster.local， 拥有一个虚拟IP 10.0.1.1，在端口80和8080上监听客户端请求。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> Service <span style="color:#8be9fd;font-style:italic">struct</span> {
         <span style="color:#6272a4">// Hostn/服务器名
-</span><span style="color:#6272a4"></span>        Hostname Hostname <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;hostname&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        Hostname Hostname <span style="color:#f1fa8c">`json:&#34;hostname&#34;`</span>
 
         <span style="color:#6272a4">// 虚拟IP / 负载均衡器 IP
-</span><span style="color:#6272a4"></span>        Address <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;address,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        Address <span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;address,omitempty&#34;`</span>
 
         <span style="color:#6272a4">// 如果服务部署在多个集群中，ClusterVIPs会保存不同集群中该服务对应的VIP
-</span><span style="color:#6272a4"></span>        ClusterVIPs <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;cluster-vips,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        ClusterVIPs <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;cluster-vips,omitempty&#34;`</span>
 
         <span style="color:#6272a4">// 服务端口列表
-</span><span style="color:#6272a4"></span>        Ports PortList <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;ports,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        Ports PortList <span style="color:#f1fa8c">`json:&#34;ports,omitempty&#34;`</span>
 
         <span style="color:#6272a4">// 运行该服务的服务账号
-</span><span style="color:#6272a4"></span>        ServiceAccounts []<span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;serviceaccounts,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        ServiceAccounts []<span style="color:#8be9fd">string</span> <span style="color:#f1fa8c">`json:&#34;serviceaccounts,omitempty&#34;`</span>
 
         <span style="color:#6272a4">// 该服务是否为一个 “外部服务”， 采用 ServiceEntry 定义的服务该标志为true
 </span><span style="color:#6272a4"></span>        MeshExternal <span style="color:#8be9fd">bool</span>
@@ -411,7 +411,7 @@ $(function() {
 </span><span style="color:#6272a4"></span>        Resolution Resolution
 
         <span style="color:#6272a4">// 服务创建时间
-</span><span style="color:#6272a4"></span>        CreationTime time.Time <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;creationTime,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        CreationTime time.Time <span style="color:#f1fa8c">`json:&#34;creationTime,omitempty&#34;`</span>
 
         <span style="color:#6272a4">// 服务的一些附加属性
 </span><span style="color:#6272a4"></span>        Attributes ServiceAttributes
@@ -421,13 +421,13 @@ $(function() {
 <p>SercieInstance中存放了服务实例相关的信息，一个Service可以对应到一到多个Service Instance，Istio在收到客户端请求时，会根据该Service配置的LB策略和路由规则从可用的Service Instance中选择一个来提供服务。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">type</span> ServiceInstance <span style="color:#8be9fd;font-style:italic">struct</span> {
         <span style="color:#6272a4">// Endpoint中包括服务实例的IP：Port，UID等
-</span><span style="color:#6272a4"></span>        Endpoint       NetworkEndpoint <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;endpoint,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        Endpoint       NetworkEndpoint <span style="color:#f1fa8c">`json:&#34;endpoint,omitempty&#34;`</span>
         <span style="color:#6272a4">// 对应的服务
-</span><span style="color:#6272a4"></span>        Service        <span style="color:#ff79c6">*</span>Service        <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;service,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        Service        <span style="color:#ff79c6">*</span>Service        <span style="color:#f1fa8c">`json:&#34;service,omitempty&#34;`</span>
         <span style="color:#6272a4">// 该实例上的标签，例如版本号
-</span><span style="color:#6272a4"></span>        Labels         Labels          <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;labels,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        Labels         Labels          <span style="color:#f1fa8c">`json:&#34;labels,omitempty&#34;`</span>
         <span style="color:#6272a4">// 运行该服务的服务账号
-</span><span style="color:#6272a4"></span>        ServiceAccount <span style="color:#8be9fd">string</span>          <span style="color:#f1fa8c">`</span><span style="color:#f1fa8c">json:&#34;serviceaccount,omitempty&#34;</span><span style="color:#f1fa8c">`</span>
+</span><span style="color:#6272a4"></span>        ServiceAccount <span style="color:#8be9fd">string</span>          <span style="color:#f1fa8c">`json:&#34;serviceaccount,omitempty&#34;`</span>
 }
 </code></pre></div><h2 id="registry">Registry</h2>
 <p>源码文件： pilot/pkg/serviceregistry/aggregate/controller.go</p>
@@ -504,7 +504,7 @@ $(function() {
         <span style="color:#6272a4">// 列出用于监控检查的探针
 </span><span style="color:#6272a4"></span>        <span style="color:#50fa7b">WorkloadHealthCheckInfo</span>(addr <span style="color:#8be9fd">string</span>) ProbeList
 }
-</code></pre></div><h1 id="service-registry">Service Registry初始化流程</h1>
+</code></pre></div><h1 id="service-registry初始化流程">Service Registry初始化流程</h1>
 <p>Service Registry初始化的主要逻辑在Pilot-discovery程序的主函数中，对应的源码为：pilot/cmd/pilot-discovery/main.go和pilot/pkg/bootstrap/server.go。</p>
 <p>在pilot/pkg/bootstrap/server.go中，初始化了各种Service Registry，其流程如下图所示：
 （备注： MCP Registry尚在开发过程中）

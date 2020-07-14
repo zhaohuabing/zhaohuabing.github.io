@@ -360,15 +360,15 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">编译工具</a></li>
-    <li><a href="#envoy">编译Envoy</a></li>
-    <li><a href="#heading1">编译过程分析</a></li>
+    <li><a href="#编译工具">编译工具</a></li>
+    <li><a href="#编译envoy">编译Envoy</a></li>
+    <li><a href="#编译过程分析">编译过程分析</a></li>
   </ul>
 </nav>
                 
                 <p>Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微服务之间的调用流量进行转发。今天我们来分析一下Istio 使用到的Envoy构建流程。</p>
 <p><a href="https://github.com/istio/proxy">https://github.com/istio/proxy</a> 这个库中包含了Istio对Envoy的扩展，包括用于对接Mixer的Filter和安全认证的Filter。但这个库中并不包含Envoy自身的源代码，因此这个库在构建时会从Github上下载Envoy源码进行联合编译。</p>
-<h1 id="heading">编译工具</h1>
+<h1 id="编译工具">编译工具</h1>
 <p>Envoy采用了Bazel进行构建。 Bazel是一种高层构建语言，类似Make，Maven和Gradle。其特点是可读性较好，支持跨语言，跨平台编译；并且可以定义代码库之间的依赖关系，支持跨代码库的联合构建。Bazel定义构建的依赖关系和规则，并管理构建生成的临时文件及二进制文件，具体的编译工作是调用各个语言的编译工具如GCC, JAVAC等完成的。</p>
 <p>为了理解Envoy的编译过程，我们需要先了解Bazel的几个基础概念</p>
 <ul>
@@ -382,7 +382,7 @@ $(function() {
 <p>target: 生成的目标，一般是一个lib或者二进制文件。 target是一个构建规则(build rule)的实例，一般包含构建所需的源文件，构建目标的名称。rule还可以嵌套，一个rule的输出文件可以作为另一个rule的输入文件。例如一个二进制文件编译的target可以依赖另一个target生成的lib。另外target还可以依赖外部Repository中的另一个target，这个外部Repository可以是文件系统上另一个文件夹下的项目，github的项目或者http下载的代码。外部Repository在WORKSPACE文件中进行定义。</p>
 </li>
 </ul>
-<h1 id="envoy">编译Envoy</h1>
+<h1 id="编译envoy">编译Envoy</h1>
 <p>首先参考Bazel的官方文档安装Bazel，并且需要安装gcc等相关工具。</p>
 <p>设置gcc及g++环境变量</p>
 <pre><code>export CC=/usr/bin/gcc-5; export CXX=/usr/bin/g++-5
@@ -392,7 +392,7 @@ cd proxy
 make build_envoy
 </code></pre><p>如果出现错误提示，一般是由于编译所需的软件未安装导致，请根据提示信息进行安装。</p>
 <p>如果一切顺利，bazel会在proxy目录下创建一个目录链接bazel-bin，指向生成的二进制文件。</p>
-<h1 id="heading1">编译过程分析</h1>
+<h1 id="编译过程分析">编译过程分析</h1>
 <p>源码目录结构如下，主要的构建逻辑在引号包含的文件中。</p>
 <pre><code>├── &quot;BUILD&quot;
 ├── &quot;Makefile&quot;

@@ -352,19 +352,19 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#git-">Git 目录结构</a>
+    <li><a href="#git-目录结构">Git 目录结构</a>
       <ul>
-        <li><a href="#git-object">Git Object存储方式</a></li>
-        <li><a href="#git-object2">Git object存储方式</a></li>
-        <li><a href="#heading">总结</a></li>
+        <li><a href="#git-object存储方式">Git Object存储方式</a></li>
+        <li><a href="#git-object存储方式-1">Git object存储方式</a></li>
+        <li><a href="#总结">总结</a></li>
       </ul>
     </li>
-    <li><a href="#heading1">参考</a></li>
+    <li><a href="#参考">参考</a></li>
   </ul>
 </nav>
                 
                 <p>Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。</p>
-<h1 id="git-">Git 目录结构</h1>
+<h1 id="git-目录结构">Git 目录结构</h1>
 <p>Git的本质是一个文件系统，其工作目录中的所有文件的历史版本以及提交记录(Commit)都是以文件对象的方式保存在.git目录中的。</p>
 <p>首先创建一个work目录，并采用git init命令初始化git仓库。该命令会在工作目录下生成一个.git目录，该目录将用于保存工作区中所有的文件历史的历史版本，提交记录，branch，tag等信息。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir work
@@ -394,7 +394,7 @@ $ git init
 └── refs                保存branch和tag对应的commit
     ├── heads           branch对应的commit
     └── tags            tag对应的commit
-</code></pre><h2 id="git-object">Git Object存储方式</h2>
+</code></pre><h2 id="git-object存储方式">Git Object存储方式</h2>
 <p>目前objects目录中还没有任何内容，我们创建一个文件并提交。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;my project&#34;</span> &gt; README
 $ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;hello world&#34;</span> &gt; src/file1.txt
@@ -420,7 +420,7 @@ $ git commit -sm <span style="color:#f1fa8c">&#34;init commit&#34;</span>
 └── pack
 
 </code></pre><p>说明：Git Object目录中存储了三种对象：Commit， tree和blob。Git为对象生成一个文件，并根据文件信息生成一个 SHA-1 哈希值作为文件内容的校验和，创建以该校验和前两个字符为名称的子目录，并以 (校验和) 剩下 38 个字符为文件命名 ，将该文件保存至子目录下。</p>
-<h3 id="git-object1">查看Git Object存储内容</h3>
+<h3 id="查看git-object存储内容">查看Git Object存储内容</h3>
 <p>通过 <code>git cat-file</code>命令可以查看Git Object中存储的内容及对象类型，命令参数为Git Object的SHA-1哈希值，即目录名+文件名。在没有歧义的情况下，不用输入整个Hash，输入前几位即可。</p>
 <p>当前分支的对象引用保存在HEAD文件中，可以查看该文件得到当前HEAD对应的branch，并通过branch查到对应的commit对象。</p>
 <pre><code class="language-hash" data-lang="hash">$ cat .git/HEAD
@@ -470,7 +470,7 @@ hello world
                                                v
                                           3b18e5(blob)
                                              file1.txt                                     
-</code></pre><h3 id="git-branchtag">Git branch和tag</h3>
+</code></pre><h3 id="git-branch和tag">Git branch和tag</h3>
 <p>从refs/heads/master的内容可以看到，branch是一个指向commit的指针，master branch实际是指向了b767d7这个commit。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout -b work
 Switched to a new branch <span style="color:#f1fa8c">&#39;work&#39;</span>
@@ -545,7 +545,7 @@ $ cat .git/refs/tags/v1.0 .git/refs/heads/work
 4f73993cf81931bc15375f0a23d82c40b3ae6789
 4f73993cf81931bc15375f0a23d82c40b3ae6789
 </code></pre></div><p>可以看到新创建的v1.0 tag和work branch都是指向了4f7399这个commit。</p>
-<h3 id="git-stash">Git Stash实现原理</h3>
+<h3 id="git-stash实现原理">Git Stash实现原理</h3>
 <p>Git stash的功能说明：经常有这样的事情发生，当你正在进行项目中某一部分的工作，里面的东西处于一个比较杂乱的状态，而你想转到其他分支上进行一些工作。问题是，你不想提交进行了一半的工作，否则以后你无法回到这个工作点。解决这个问题的办法就是git stash命令。</p>
 <p>“‘储藏”“可以获取你工作目录的中间状态——也就是你修改过的被追踪的文件和暂存的变更——并将它保存到一个未完结变更的堆栈中，随时可以重新应用。</p>
 <p>Git是如何实现Stash的呢？理解了Commit, Tree, Blog这三种Git存储对象，我们就可以很容易理解Git Stash的实现原理。因为和bransh及tag类似，Git Stash其实也是通过Commit来实现的。</p>
@@ -655,7 +655,7 @@ another line
 * b767d71 init commit
 </code></pre></div><p>备注：git stash生成的commit对象有两个parent，一个是前面一次git commit命令生成的commit，另一个对应于保存到stage中的commit。</p>
 <p>从该试验可以得知，git stash也是以commit，tree和object对象实现的。Git stash保存到“堆栈&quot;中的修改其实一个commit对象。</p>
-<h3 id="git-reset-">Git reset 实现原理</h3>
+<h3 id="git-reset-实现原理">Git reset 实现原理</h3>
 <p>在进行一些改动以后并通过git commit 将改动的代码提交到本地的repo后，如果你测试发现刚才的改动不合理，希望回退刚才的改动，应该如何处理？</p>
 <p>我们先提交一个错误的改动：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;I did something wrong&#34;</span> &gt;&gt; src/file1.txt
@@ -717,7 +717,7 @@ HEAD is now at 4f73993 some change
 $ git status
 On branch work
 nothing to commit, working directory clean
-</code></pre><h2 id="git-object2">Git object存储方式</h2>
+</code></pre><h2 id="git-object存储方式-1">Git object存储方式</h2>
 <p>Git object是通过下面的方式处理并存储在git内部的文件系统中的：</p>
 <ol>
 <li>首先创建一个header，header的值为 &ldquo;对象类型 内容长度\0&rdquo;</li>
@@ -745,7 +745,7 @@ irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:
 <span style="color:#ff79c6">=</span>&gt; <span style="color:#f1fa8c">&#34;.git/objects/bd/9dbf5aae1a3862dd1526723246b20206e5fc37&#34;</span>       //通过hash值计算文件存储路径
 irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:009:0&gt; require <span style="color:#f1fa8c">&#39;fileutils&#39;</span>
 <span style="color:#ff79c6">=</span>&gt; <span style="color:#8be9fd;font-style:italic">true</span>
-irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:010:0&gt;  FileUtils.mkdir_p<span style="color:#ff79c6">(</span>File.dirname<span style="color:#ff79c6">(</span>path<span style="color:#ff79c6">)</span><span style="color:#ff79c6">)</span>           //写文件
+irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:010:0&gt;  FileUtils.mkdir_p<span style="color:#ff79c6">(</span>File.dirname<span style="color:#ff79c6">(</span>path<span style="color:#ff79c6">))</span>           //写文件
 <span style="color:#ff79c6">=</span>&gt; <span style="color:#ff79c6">[</span><span style="color:#f1fa8c">&#34;.git/objects/bd&#34;</span><span style="color:#ff79c6">]</span>
 irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:011:0&gt; File.open<span style="color:#ff79c6">(</span>path, <span style="color:#f1fa8c">&#39;w&#39;</span><span style="color:#ff79c6">)</span> <span style="color:#ff79c6">{</span> |f| f.write zlib_content <span style="color:#ff79c6">}</span>
 <span style="color:#ff79c6">=</span>&gt; <span style="color:#bd93f9">32</span>
@@ -754,7 +754,7 @@ irb<span style="color:#ff79c6">(</span>main<span style="color:#ff79c6">)</span>:
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git cat-file -p bd9dbf5aae1a3862dd1526723246b20206e5fc37
 what is up, doc?
 </code></pre></div><p>可以看到，可以通过git cat-file文件读取该文件内容，因此该文件是一个合法的git object，和通过git 命令写入的文件格式相同。</p>
-<h2 id="heading">总结</h2>
+<h2 id="总结">总结</h2>
 <p>Git围绕三种Object来实现了版本控制以及Branch，Tag等机制。</p>
 <ul>
 <li>Commit: Commit可以看作Git中一个Version的所有目录和文件的Snapshot，可以通过git checkout 查看任意一个commit中的内容。</li>
@@ -762,7 +762,7 @@ what is up, doc?
 <li>Blob: 文件对象，对应一个文件</li>
 </ul>
 <p>理解了Git object的存储机制，就可以理解Git的各个命令的实现原理，更好地使用Git来实现源代码管理。</p>
-<h1 id="heading1">参考</h1>
+<h1 id="参考">参考</h1>
 <ul>
 <li><a href="https://git-scm.com/book/en/v2/Git-Internals-Git-Objects">https://git-scm.com/book/en/v2/Git-Internals-Git-Objects</a></li>
 </ul>

@@ -356,25 +356,25 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#kubernetes-">Kubernetes 组件的认证方式</a></li>
-    <li><a href="#kubernetes-ca">Kubernetes 中使用到的CA和证书</a></li>
-    <li><a href="#kubernetes-1">Kubernetes 中的证书配置</a>
+    <li><a href="#kubernetes-组件的认证方式">Kubernetes 组件的认证方式</a></li>
+    <li><a href="#kubernetes-中使用到的ca和证书">Kubernetes 中使用到的CA和证书</a></li>
+    <li><a href="#kubernetes-中的证书配置">Kubernetes 中的证书配置</a>
       <ul>
-        <li><a href="#etcd-">etcd 证书配置</a></li>
-        <li><a href="#kubeapiserver-">kube-apiserver 证书配置</a></li>
-        <li><a href="#-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</a></li>
-        <li><a href="#service-account--">Service Account  证书</a></li>
-        <li><a href="#kubernetes-2">Kubernetes 证书签发</a></li>
-        <li><a href="#-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</a></li>
+        <li><a href="#etcd-证书配置">etcd 证书配置</a></li>
+        <li><a href="#kube-apiserver-证书配置">kube-apiserver 证书配置</a></li>
+        <li><a href="#采用-kubeconfig-访问-kube-apiserver">采用 kubeconfig 访问 kube-apiserver</a></li>
+        <li><a href="#service-account--证书">Service Account  证书</a></li>
+        <li><a href="#kubernetes-证书签发">Kubernetes 证书签发</a></li>
+        <li><a href="#使用-tls-bootstrapping-简化-kubelet-证书制作">使用 TLS bootstrapping 简化 Kubelet 证书制作</a></li>
       </ul>
     </li>
-    <li><a href="#heading">小结</a></li>
-    <li><a href="#heading1">参考文档</a></li>
+    <li><a href="#小结">小结</a></li>
+    <li><a href="#参考文档">参考文档</a></li>
   </ul>
 </nav>
                 
                 <p>接触 Kubernetes 以来，我经常看到 Kubernetes 在不同的地方使用了证书（Certificate），在 Kubernetes 安装和组件启动参数中也需要配置大量证书相关的参数。但是 Kubernetes 的文档在解释这些证书的工作机制方面做得并不是太好。经过大量的相关阅读和分析工作后，我基本弄清楚了 Kubernetes 中证书的使用方式。在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernetes 中证书相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。</p>
-<h1 id="kubernetes-">Kubernetes 组件的认证方式</h1>
+<h1 id="kubernetes-组件的认证方式">Kubernetes 组件的认证方式</h1>
 <p>首先让我们来看一下 Kubernetes 中的组件：在 Kubernetes 中包含多个以独立进程形式运行的组件，这些组件之间通过 HTTP/GRPC 相互通信，以协同完成集群中应用的部署和管理工作。</p>
 <p><img src="/img/2020-05-19-k8s-certificate/components-of-kubernetes.png" alt="">
 kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/overview/components/">kubernetes.io</a></p>
@@ -386,7 +386,7 @@ kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/
 </ul>
 <p>在 Kubernetes 中使用了数字证书来提供身份证明，我们可以把数字证书简单理解为我们在日常生活中使用的“身份证”，上面标注了证书拥有者的身份信息，例如名称，所属组织机构等。为了保证证书的权威性，会采用一个通信双方都信任的 CA（证书机构，Certificate Authority）来颁发证书。这就类似于现实生活中颁发“身份证”的政府机构。数字证书中最重要的内容实际上是证书拥有者的公钥，该公钥代表了用户的身份。本文假设读者已经了解数字证书和 CA 的基本原理，如果你对此不太清楚，或者希望重新温习一下相关知识，可以先阅读一下这篇文章<a href="https://zhaohuabing.com/post/2020-03-19-pki">《数字证书原理》</a>。</p>
 <p><img src="/img/2020-05-19-k8s-certificate/ca.png" alt="">
-CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html"><a href="http://www.trustauth.cn">www.trustauth.cn</a></a></p>
+CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html">www.trustauth.cn</a></p>
 <p>在 Kubernetes 的组件之间进行通信时，数字证书的验证是在协议层面通过 TLS 完成的，除了需要在建立通信时提供相关的证书和密钥外，在应用层面并不需要进行特殊处理。采用 TLS 进行验证有两种方式：</p>
 <ul>
 <li>服务器单向认证：只需要服务器端提供证书，客户端通过服务器端证书验证服务的身份，但服务器并不验证客户端的身份。这种情况一般适用于对 Internet 开放的服务，例如搜索引擎网站，任何客户端都可以连接到服务器上进行访问，但客户端需要验证服务器的身份，以避免连接到伪造的恶意服务器。</li>
@@ -404,7 +404,7 @@ CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-questio
 <p>下面这张来自<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a> 文章中的图形象地解释了双向 TLS 认证的原理。如果你需要了解更多关于 TLS 认证的原理，可以阅读一下 medium 上的原文。</p>
 <p><img src="/img/2020-05-19-k8s-certificate/mutual-tls.png" alt=""></p>
 <p>图片来源<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a></p>
-<h1 id="kubernetes-ca">Kubernetes 中使用到的CA和证书</h1>
+<h1 id="kubernetes-中使用到的ca和证书">Kubernetes 中使用到的CA和证书</h1>
 <p>Kubernetes 中使用了大量的证书，本文不会试图覆盖到所有可能使用到的证书，但会讨论到主要的证书。理解了这些证书的使用方法和原理后，也能很快理解其他可能遇到的证书文件。下图标识出了在 kubernetes 中主要使用到的证书和其使用的位置：</p>
 <p><img src="/img/2020-05-19-k8s-certificate/kubernetes-certificate-usage.png" alt=""></p>
 <p>Kubernetes 中使用到的主要证书</p>
@@ -448,9 +448,9 @@ CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-questio
 </li>
 </ol>
 <p>通过这张图，对证书机制比较了解的读者可能已经看出，我们其实可以使用多个不同的 CA 来颁发这些证书。只要在通信的组件中正确配置用于验证对方证书的 CA 根证书，就可以使用不同的 CA 来颁发不同用途的证书。但我们一般建议采用统一的 CA 来颁发 kubernetes 集群中的所有证书，这是因为采用一个集群根 CA 的方式比采用多个 CA 的方式更容易管理，可以避免多个CA 导致的复杂的证书配置、更新等问题，减少由于证书配置错误导致的集群故障。</p>
-<h1 id="kubernetes-1">Kubernetes 中的证书配置</h1>
+<h1 id="kubernetes-中的证书配置">Kubernetes 中的证书配置</h1>
 <p>前面我们介绍了 Kubernetes 集群中主要使用到的证书。下面我们分别看一下如何将这些证书及其对应的私钥和 CA 根证书需要配置到 Kubernetes 中各个组件中，以供各个组件进行使用。这里假设使用一个集群根 CA 来颁发所有相关证书，因此涉及到 CA 的配置对应的证书文件名都是相同的。</p>
-<h2 id="etcd-">etcd 证书配置</h2>
+<h2 id="etcd-证书配置">etcd 证书配置</h2>
 <p>需要在 etcd 的启动命令行中配置以下证书相关参数：</p>
 <ul>
 <li>etcd 对外提供服务的服务器证书及私钥。</li>
@@ -465,7 +465,7 @@ CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-questio
   --trusted-ca-file<span style="color:#ff79c6">=</span>/etc/etcd/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>       <span style="color:#6272a4"># 用于验证访问 etcd 服务器的客户端证书的 CA 根证书</span>
   --peer-trusted-ca-file<span style="color:#ff79c6">=</span>/etc/etcd/cluster-root-ca.pem<span style="color:#f1fa8c">\\</span>   <span style="color:#6272a4"># 用于验证 peer 证书的 CA 根证书</span>
   ...
-</code></pre></div><h2 id="kubeapiserver-">kube-apiserver 证书配置</h2>
+</code></pre></div><h2 id="kube-apiserver-证书配置">kube-apiserver 证书配置</h2>
 <p>需要在 kube-apiserver 中配置以下证书相关参数：</p>
 <ul>
 <li>kube-apiserver 对外提供服务的服务器证书及私钥。</li>
@@ -487,34 +487,34 @@ CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-questio
   --kubelet-certificate-authority<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem <span style="color:#f1fa8c">\\</span>            <span style="color:#6272a4"># 用于验证 kubelet 服务器证书的 CA 根证书</span>
   --service-account-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account.pem <span style="color:#f1fa8c">\\</span>                 <span style="color:#6272a4"># 用于验证 service account token 的公钥</span>
   ...
-</code></pre></div><h2 id="-kubeconfig--kubeapiserver">采用 kubeconfig 访问 kube-apiserver</h2>
+</code></pre></div><h2 id="采用-kubeconfig-访问-kube-apiserver">采用 kubeconfig 访问 kube-apiserver</h2>
 <p>Kubernetes 中的各个组件，包括kube-controller-mananger、kube-scheduler、kube-proxy、kubelet等，采用一个kubeconfig 文件中配置的信息来访问 kube-apiserver。该文件中包含了 kube-apiserver 的地址，验证 kube-apiserver 服务器证书的 CA 证书，自己的客户端证书和私钥等访问信息。</p>
 <p>在一个使用 minikube 安装的集群中，生成的 kubeconfig 配置文件如下所示，这四个文件分别为 admin 用户， kube-controller-mananger、kubelet 和 kube-scheduler 的kubeconfig配置文件。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls /etc/kubernetes/
 admin.conf  controller-manager.conf  kubelet.conf  scheduler.conf
 </code></pre></div><p>我们打开 controller-manager.conf 来看一下。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: v1
-clusters:
-- cluster: 
-    <span style="color:#6272a4"># 用于验证 kube-apiserver 服务器证书的 CA 根证书 </span>
-    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwdGFXNXAKYTNWaVpVTkJNQjRYRFRJd01ETXdOekF3TXpjeE1Wb1hEVE13TURNd05qQXdNemN4TVZvd0ZURVRNQkVHQTFVRQpBeE1LYldsdWFXdDFZbVZEUVRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTczCkdIMWxqNkxEUm1FLy9hQ2cvNUlmampKYy8zOGcyMVpITXJDMkx5RGVqZWhrdWUwZFB1WTJ0L2JjTjJYM1dGNEsKaWNzNmhhWnBDbFVxL3pteVRITWhhZnlmVVF5MDFJZmhDV2I5NXI4akpHZ2NyU3U3UUtXM3ZOd1Z1TmhJNmd6SApSWW45Ry82VHJKTjdOMWRjejNmMlU1OFRjUHVCQzZOUzVTc1JmemFSczVDZnd0UTNaa2czQUFVYTlQSDZFVmtDCkIvRGR1bXBialZGakMwSllOWlFVNTlGNUxDeHJ0bEYvOUJsSVhnZGw0ZlNCNzQ0ZW1UelcySEZQek9lTklYYnUKYTJPa0FFTDdJc3hSRTFBaEFKZ1h6cFNmdi9paDBuMEJpQ1VaV1hLZjg2UjZJL2xlK2docG51c21kTXUwbkNEUApHMm9laXhRTit5NzFQU2tGcGdzQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUIwR0ExVWRKUVFXCk1CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCaWpXYlpPNU9uaU9lNHRHUlQvRGFXaFBkY2ZwbE8vcVQ5WkFqU1hXZU41TStubExQZQpGV1NLRGRWU1NzajJ6UVdMU3A1Vjc3MkFoa2NYQlM0a2ZiY2ZCTUl2ejVsYXJZeHgxcnduTzZLbVZSTHdkNUNkCnRER2RjUjF0UzdqeTRSV05ISlAyNWZhZHB5TE9KVzJlZkdLRmRiSnZyRjljekV1ODR5a1drdThtVnNNa0RzTXkKbnVFNGtXblNvODgweFpxVG9QN01qM3hkRlNYYWdoNytwK3FMazk1VjhBNTRUNmRKa2VjSGg4SzdNYVRxdWVOVgpzOVhuZDA2WEJGQWFCVXRsSGZybmRXUzhmaTQ5dTY0NEFWOWJHclNYRnR1Q0lydnIxVkY2d0R3dEJYZi9UUStrCkx3Zk1oNVZDVWt1bEJqWEpqK1ZvRnBLZm5Qck9nbEExZzRtUgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-    server: https://localhost:<span style="color:#bd93f9">8443</span>
-  name: kubernetes
-contexts:
-- context:
-    cluster: kubernetes
-    user: system:kube-controller-manager
-  name: system:kube-controller-manager@kubernetes
-current-context: system:kube-controller-manager@kubernetes
-kind: Config
-preferences: {}
-users:
-- name: system:kube-controller-manager
-  user:
-    <span style="color:#6272a4"># 用于访问 kube-apiserver 的客户端证书</span>
-    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lJZVE4aDNXSlNmZEF3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2JXbHVhV3QxWW1WRFFUQWVGdzB5TURBek1EY3dNRE0zTVRGYUZ3MHlNVEExTVRrd05qVTNNemxhTUNreApKekFsQmdOVkJBTVRIbk41YzNSbGJUcHJkV0psTFdOdmJuUnliMnhzWlhJdGJXRnVZV2RsY2pDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU5DTzJpTEZzNGRTTW9sR2plN2tjY1VFbURDVjEvbWQKV1p1cS9DT0RvV1p2Uy80clNrOXNsaFQvektIVTVkVmg3SFV4TGNWU1RkQXZScGEwN3dXK3h2eWlDR3Y5UmMyVAp0bkFnUFFhQ2VkOC8zZlFpMzI1QmZCZVl4UjRTTm8raEM1b0ZYYkhpdC9OWWlQTVMvM1hFOGVCc0dEZCtjd1pzCnhNTDZzc0pJNzVOSmNXckV3eXlMbzIrb1JSRmJ2TlpJWFRZekJpRGd3QkZxNUkzZVA5QTl2d29rUG5STFBSdlYKQU9SV3hUZDMyblJLOTY1SU9uV25mNzY0bHhSeEV6bHIyS09rSzc5NlVJWTlyL0lYOWdGQjNqbGZFK1lBOE5VLwpuV2x3cElNL0ZpMk9hL1hjNnQzNUJHSnNXcTR4bHQ5RDdqS3V2bTNONmJlanJPOFZNODU5QU44Q0F3RUFBYU1uCk1DVXdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CTUdBMVVkSlFRTU1Bb0dDQ3NHQVFVRkJ3TUNNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCZVg4QmVuTlJoUTVWaVpMMjRxcWxIMjRlMDVyYWVVTFZJQlQzWE90cmdQcXF1WXRGWgptRG9naEpuSW05aVVMcHFTTUxHMlJrQ0RBMEk2Rit0SGVFVHRMRDlNdjA2N1huQ2VCclhkTFVTYzkwaHNZWm1KClNsVG11c21TZGUxUXJsRnFxQVRZY2VCVWgwM0lSbXZIL1BtS21va1FUZDZER0paVVVhM3ducEN6Nko4aGcySGwKWlZFaURKcHNoeXNBaVdCUWZBN01TRlFlb0poSjhUdHgzdEhNZDlaaHlmcVVHOVByUGJkMUlBQTIrRlVudXRsNwpoRmdZdTBxbG5aZFZCWE9JM1dvZndWZ2dDTEQrbFVCeGgzNVhLNStxYXhWNVlDTit0ZTNFeDJERHVmRW1UV0FoCkwwUVNTc0RTZGd0Vi9TNFhvV2xQcXU0Q2lRVnZydUg3WHkxMwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-    <span style="color:#6272a4"># 客户端证书对应的私钥</span>
-    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMEk3YUlzV3poMUl5aVVhTjd1Unh4UVNZTUpYWCtaMVptNnI4STRPaFptOUwvaXRLClQyeVdGUC9Nb2RUbDFXSHNkVEV0eFZKTjBDOUdsclR2QmI3Ry9LSUlhLzFGelpPMmNDQTlCb0o1M3ovZDlDTGYKYmtGOEY1akZIaEkyajZFTG1nVmRzZUszODFpSTh4TC9kY1R4NEd3WU4zNXpCbXpFd3ZxeXdranZrMGx4YXNURApMSXVqYjZoRkVWdTgxa2hkTmpNR0lPREFFV3JramQ0LzBEMi9DaVErZEVzOUc5VUE1RmJGTjNmYWRFcjNya2c2CmRhZC92cmlYRkhFVE9XdllvNlFydjNwUWhqMnY4aGYyQVVIZU9WOFQ1Z0R3MVQrZGFYQ2tnejhXTFk1cjlkenEKM2ZrRVlteGFyakdXMzBQdU1xNitiYzNwdDZPczd4VXp6bjBBM3dJREFRQUJBb0lCQVFDRDVMT2pKZkJoZGVRcgoySWpPT1g2Um9GUTI5YXgrV2JwZnJnU0MyUzNyUUJ1SkJBdWNxd2xIQW5hQktjaW41NlBJZ1c5MnlKUVpRcXliCmhwVmF4c25FM3h3QVgwNFRzb1MvNkVOdnFIZzJiWWVLYTd0dFdOQ0hnNysxUXNOcWxlaG1ZVnBkc3dtdVJhRm0KUis5eXBUaHFPeklkZGtSOEhiRlp0WDN6VEhqbVpYaUhGdlIvMFhYK1BVbDR6SllSWjlCbVBnY2Ric2tSTldScgo0Qk8wUmlQQWRKVEo2VHZLMGhxT1g1UHo4ekl3S1ZzYjdyYndUdXArTGs4eWNCVUd3Q1N3RzEyanVNQW1kYkJJClZmdmlFK1VYRHRIQXdLWXlnMEhCVitJVlEvcVNwSVJ1WXQ4SmY1MWVKN1VEbHhiN3ZRTStEYVNsNjVaMVNyWUcKQU9UTGpPVkJBb0dCQU5PYzB0OG5ybmhUR3V0MGhMdVp6SWs4ekFranhYYWtiSURlZi9XeXlQdW94Z3J2ZGMzcwpsbHV0U3hSOFV4WGVuQjBLZFpnYnNoc1ozeW9GbEI0YThTMzI1UFRsYm9xOVB0TDRaOFBzczQ3L0l1bHYxTk10CnZzZjdKZ1FuaFRCVndkdjN6OXFpdml6bjB4Mk9CdURxdzNSYXcvWEhwRy9RczJ5WmF4S29GNW9SQW9HQkFQeE8KQVBDUXQ2Q2swOFF2WTE4VjFLQXA0d2h1YWEyMS9MeC9rZUZJSURRd0tZZnFHRGdBWUYvQzJUbC9xc29TMXAvTwpFcFVkVkRBNHVpblFVbnFhNGg0a0JOYjRXTFhrSXhRdXdjWHdJNjRMNWR3ZWJHalhxUWUwbnkxQkhkTmU2Z0dqClorbit4OUJLWnJmcEliYkQ2blpYUUREbS9jZWYyWU5NVWRqVWpudnZBb0dBQnlIMUZhSi94ZngvSHNxWm9yMG4KWU1UVTE4WUY1TjdiN1dnU2hoU1ZvNjNucHZ5MVN0Q2JyTkZsZzNaQlVxNWpNck5ralZENXF1SXZYSG85cU5vZApvUC8rYmFiQ0dCa1M0Z2VQYjlJdHB6ZEFWUC80KzNsQ1FmbGNLYTJ2VnBhOVp3MnVTdDlMYTdZUXJxRlg2QUxoCnZhMUZoNlpJQzZETU8yL2NaUStYWkJFQ2dZQnNGMHNGeFNvMlU0YzZISWM1SEZRc2plVnJIa3ArRm1LQnF6R24KVDB3a3I2R0xUZm8wTzgwT0daOFFxQ1pXVGozTzF1MVZIdXlMZ0RJWmFkdDhGVkRjVXRnVDlPK2tkV21sNHVZMwpVOHNsYklsOGhUZ3lybm9IQ0JYTndJRHpwazBnaUk0alRIajBQbnZGUE1hcDAwTm1rYmk1ZXF5czBrblFtMmpSCk9UY1Yxd0tCZ0RNUWZSVlNNNXlGcjVIalJ4UXcwRDdrUWhONDlLbngrMWs2bWRORWJ6VG9rQ1RRcWlSeUJQdGgKcjlqZk0rRXFZcnZ1elRmRVpiS1VBMEZac09yeStxMHpXb29mTURLajFGV3BaTXJBSmdxdDFlcWtFbVFrVi8vSApQMzF3ejZDa1RneDdJby9iZ09PbmhsbUplU3NHaXpqenV2TjFEcWtjNVR3M3oxUSs1dmxmCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: v1
+<span style="color:#ff79c6">clusters</span>:
+- <span style="color:#ff79c6">cluster</span>: 
+    <span style="color:#6272a4"># 用于验证 kube-apiserver 服务器证书的 CA 根证书 </span>
+    <span style="color:#ff79c6">certificate-authority-data</span>: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwdGFXNXAKYTNWaVpVTkJNQjRYRFRJd01ETXdOekF3TXpjeE1Wb1hEVE13TURNd05qQXdNemN4TVZvd0ZURVRNQkVHQTFVRQpBeE1LYldsdWFXdDFZbVZEUVRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTczCkdIMWxqNkxEUm1FLy9hQ2cvNUlmampKYy8zOGcyMVpITXJDMkx5RGVqZWhrdWUwZFB1WTJ0L2JjTjJYM1dGNEsKaWNzNmhhWnBDbFVxL3pteVRITWhhZnlmVVF5MDFJZmhDV2I5NXI4akpHZ2NyU3U3UUtXM3ZOd1Z1TmhJNmd6SApSWW45Ry82VHJKTjdOMWRjejNmMlU1OFRjUHVCQzZOUzVTc1JmemFSczVDZnd0UTNaa2czQUFVYTlQSDZFVmtDCkIvRGR1bXBialZGakMwSllOWlFVNTlGNUxDeHJ0bEYvOUJsSVhnZGw0ZlNCNzQ0ZW1UelcySEZQek9lTklYYnUKYTJPa0FFTDdJc3hSRTFBaEFKZ1h6cFNmdi9paDBuMEJpQ1VaV1hLZjg2UjZJL2xlK2docG51c21kTXUwbkNEUApHMm9laXhRTit5NzFQU2tGcGdzQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUIwR0ExVWRKUVFXCk1CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCaWpXYlpPNU9uaU9lNHRHUlQvRGFXaFBkY2ZwbE8vcVQ5WkFqU1hXZU41TStubExQZQpGV1NLRGRWU1NzajJ6UVdMU3A1Vjc3MkFoa2NYQlM0a2ZiY2ZCTUl2ejVsYXJZeHgxcnduTzZLbVZSTHdkNUNkCnRER2RjUjF0UzdqeTRSV05ISlAyNWZhZHB5TE9KVzJlZkdLRmRiSnZyRjljekV1ODR5a1drdThtVnNNa0RzTXkKbnVFNGtXblNvODgweFpxVG9QN01qM3hkRlNYYWdoNytwK3FMazk1VjhBNTRUNmRKa2VjSGg4SzdNYVRxdWVOVgpzOVhuZDA2WEJGQWFCVXRsSGZybmRXUzhmaTQ5dTY0NEFWOWJHclNYRnR1Q0lydnIxVkY2d0R3dEJYZi9UUStrCkx3Zk1oNVZDVWt1bEJqWEpqK1ZvRnBLZm5Qck9nbEExZzRtUgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    <span style="color:#ff79c6">server</span>: https://localhost:<span style="color:#bd93f9">8443</span>
+  <span style="color:#ff79c6">name</span>: kubernetes
+<span style="color:#ff79c6">contexts</span>:
+- <span style="color:#ff79c6">context</span>:
+    <span style="color:#ff79c6">cluster</span>: kubernetes
+    <span style="color:#ff79c6">user</span>: system:kube-controller-manager
+  <span style="color:#ff79c6">name</span>: system:kube-controller-manager@kubernetes
+<span style="color:#ff79c6">current-context</span>: system:kube-controller-manager@kubernetes
+<span style="color:#ff79c6">kind</span>: Config
+<span style="color:#ff79c6">preferences</span>: {}
+<span style="color:#ff79c6">users</span>:
+- <span style="color:#ff79c6">name</span>: system:kube-controller-manager
+  <span style="color:#ff79c6">user</span>:
+    <span style="color:#6272a4"># 用于访问 kube-apiserver 的客户端证书</span>
+    <span style="color:#ff79c6">client-certificate-data</span>: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lJZVE4aDNXSlNmZEF3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2JXbHVhV3QxWW1WRFFUQWVGdzB5TURBek1EY3dNRE0zTVRGYUZ3MHlNVEExTVRrd05qVTNNemxhTUNreApKekFsQmdOVkJBTVRIbk41YzNSbGJUcHJkV0psTFdOdmJuUnliMnhzWlhJdGJXRnVZV2RsY2pDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU5DTzJpTEZzNGRTTW9sR2plN2tjY1VFbURDVjEvbWQKV1p1cS9DT0RvV1p2Uy80clNrOXNsaFQvektIVTVkVmg3SFV4TGNWU1RkQXZScGEwN3dXK3h2eWlDR3Y5UmMyVAp0bkFnUFFhQ2VkOC8zZlFpMzI1QmZCZVl4UjRTTm8raEM1b0ZYYkhpdC9OWWlQTVMvM1hFOGVCc0dEZCtjd1pzCnhNTDZzc0pJNzVOSmNXckV3eXlMbzIrb1JSRmJ2TlpJWFRZekJpRGd3QkZxNUkzZVA5QTl2d29rUG5STFBSdlYKQU9SV3hUZDMyblJLOTY1SU9uV25mNzY0bHhSeEV6bHIyS09rSzc5NlVJWTlyL0lYOWdGQjNqbGZFK1lBOE5VLwpuV2x3cElNL0ZpMk9hL1hjNnQzNUJHSnNXcTR4bHQ5RDdqS3V2bTNONmJlanJPOFZNODU5QU44Q0F3RUFBYU1uCk1DVXdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CTUdBMVVkSlFRTU1Bb0dDQ3NHQVFVRkJ3TUNNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFCZVg4QmVuTlJoUTVWaVpMMjRxcWxIMjRlMDVyYWVVTFZJQlQzWE90cmdQcXF1WXRGWgptRG9naEpuSW05aVVMcHFTTUxHMlJrQ0RBMEk2Rit0SGVFVHRMRDlNdjA2N1huQ2VCclhkTFVTYzkwaHNZWm1KClNsVG11c21TZGUxUXJsRnFxQVRZY2VCVWgwM0lSbXZIL1BtS21va1FUZDZER0paVVVhM3ducEN6Nko4aGcySGwKWlZFaURKcHNoeXNBaVdCUWZBN01TRlFlb0poSjhUdHgzdEhNZDlaaHlmcVVHOVByUGJkMUlBQTIrRlVudXRsNwpoRmdZdTBxbG5aZFZCWE9JM1dvZndWZ2dDTEQrbFVCeGgzNVhLNStxYXhWNVlDTit0ZTNFeDJERHVmRW1UV0FoCkwwUVNTc0RTZGd0Vi9TNFhvV2xQcXU0Q2lRVnZydUg3WHkxMwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    <span style="color:#6272a4"># 客户端证书对应的私钥</span>
+    <span style="color:#ff79c6">client-key-data</span>: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMEk3YUlzV3poMUl5aVVhTjd1Unh4UVNZTUpYWCtaMVptNnI4STRPaFptOUwvaXRLClQyeVdGUC9Nb2RUbDFXSHNkVEV0eFZKTjBDOUdsclR2QmI3Ry9LSUlhLzFGelpPMmNDQTlCb0o1M3ovZDlDTGYKYmtGOEY1akZIaEkyajZFTG1nVmRzZUszODFpSTh4TC9kY1R4NEd3WU4zNXpCbXpFd3ZxeXdranZrMGx4YXNURApMSXVqYjZoRkVWdTgxa2hkTmpNR0lPREFFV3JramQ0LzBEMi9DaVErZEVzOUc5VUE1RmJGTjNmYWRFcjNya2c2CmRhZC92cmlYRkhFVE9XdllvNlFydjNwUWhqMnY4aGYyQVVIZU9WOFQ1Z0R3MVQrZGFYQ2tnejhXTFk1cjlkenEKM2ZrRVlteGFyakdXMzBQdU1xNitiYzNwdDZPczd4VXp6bjBBM3dJREFRQUJBb0lCQVFDRDVMT2pKZkJoZGVRcgoySWpPT1g2Um9GUTI5YXgrV2JwZnJnU0MyUzNyUUJ1SkJBdWNxd2xIQW5hQktjaW41NlBJZ1c5MnlKUVpRcXliCmhwVmF4c25FM3h3QVgwNFRzb1MvNkVOdnFIZzJiWWVLYTd0dFdOQ0hnNysxUXNOcWxlaG1ZVnBkc3dtdVJhRm0KUis5eXBUaHFPeklkZGtSOEhiRlp0WDN6VEhqbVpYaUhGdlIvMFhYK1BVbDR6SllSWjlCbVBnY2Ric2tSTldScgo0Qk8wUmlQQWRKVEo2VHZLMGhxT1g1UHo4ekl3S1ZzYjdyYndUdXArTGs4eWNCVUd3Q1N3RzEyanVNQW1kYkJJClZmdmlFK1VYRHRIQXdLWXlnMEhCVitJVlEvcVNwSVJ1WXQ4SmY1MWVKN1VEbHhiN3ZRTStEYVNsNjVaMVNyWUcKQU9UTGpPVkJBb0dCQU5PYzB0OG5ybmhUR3V0MGhMdVp6SWs4ekFranhYYWtiSURlZi9XeXlQdW94Z3J2ZGMzcwpsbHV0U3hSOFV4WGVuQjBLZFpnYnNoc1ozeW9GbEI0YThTMzI1UFRsYm9xOVB0TDRaOFBzczQ3L0l1bHYxTk10CnZzZjdKZ1FuaFRCVndkdjN6OXFpdml6bjB4Mk9CdURxdzNSYXcvWEhwRy9RczJ5WmF4S29GNW9SQW9HQkFQeE8KQVBDUXQ2Q2swOFF2WTE4VjFLQXA0d2h1YWEyMS9MeC9rZUZJSURRd0tZZnFHRGdBWUYvQzJUbC9xc29TMXAvTwpFcFVkVkRBNHVpblFVbnFhNGg0a0JOYjRXTFhrSXhRdXdjWHdJNjRMNWR3ZWJHalhxUWUwbnkxQkhkTmU2Z0dqClorbit4OUJLWnJmcEliYkQ2blpYUUREbS9jZWYyWU5NVWRqVWpudnZBb0dBQnlIMUZhSi94ZngvSHNxWm9yMG4KWU1UVTE4WUY1TjdiN1dnU2hoU1ZvNjNucHZ5MVN0Q2JyTkZsZzNaQlVxNWpNck5ralZENXF1SXZYSG85cU5vZApvUC8rYmFiQ0dCa1M0Z2VQYjlJdHB6ZEFWUC80KzNsQ1FmbGNLYTJ2VnBhOVp3MnVTdDlMYTdZUXJxRlg2QUxoCnZhMUZoNlpJQzZETU8yL2NaUStYWkJFQ2dZQnNGMHNGeFNvMlU0YzZISWM1SEZRc2plVnJIa3ArRm1LQnF6R24KVDB3a3I2R0xUZm8wTzgwT0daOFFxQ1pXVGozTzF1MVZIdXlMZ0RJWmFkdDhGVkRjVXRnVDlPK2tkV21sNHVZMwpVOHNsYklsOGhUZ3lybm9IQ0JYTndJRHpwazBnaUk0alRIajBQbnZGUE1hcDAwTm1rYmk1ZXF5czBrblFtMmpSCk9UY1Yxd0tCZ0RNUWZSVlNNNXlGcjVIalJ4UXcwRDdrUWhONDlLbngrMWs2bWRORWJ6VG9rQ1RRcWlSeUJQdGgKcjlqZk0rRXFZcnZ1elRmRVpiS1VBMEZac09yeStxMHpXb29mTURLajFGV3BaTXJBSmdxdDFlcWtFbVFrVi8vSApQMzF3ejZDa1RneDdJby9iZ09PbmhsbUplU3NHaXpqenV2TjFEcWtjNVR3M3oxUSs1dmxmCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
 </code></pre></div><p>可以看到，访问 kube-apiserver 所需要的相关证书内容已经被采用 base64 编码写入了文件中。其他几个文件中的内容也是类似的，只是配置的用户名和客户端证书有所不同。</p>
 <p>在启动这些组件时，需要在参数中指出 kubeconfig 文件的路径，例如 kube-controller-manager 的启动命令如下。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
@@ -524,7 +524,7 @@ users:
  --cluster-signing-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca-key.pem          <span style="color:#6272a4"># 用于签发证书的 CA 根证书的私钥</span>  
  --service-account-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account-key.pem  <span style="color:#6272a4"># 用于对 service account token 进行签名的私钥</span>
  ... 
-</code></pre></div><h2 id="service-account--">Service Account  证书</h2>
+</code></pre></div><h2 id="service-account--证书">Service Account  证书</h2>
 <p>Kubernetes 中有两类用户，一类为 user account，一类为 service account。 service account 主要被 pod 用于访问 kube-apiserver。 在为一个 pod 指定了 service account  后，kubernetes 会为该 service account 生成一个 JWT token，并使用 secret 将该 service account token 加载到 pod 上。pod 中的应用可以使用 service account token 来访问 api server。service account 证书被用于生成和验证 service account token。该证书的用法和前面介绍的其他证书不同，因为实际上使用的是其公钥和私钥，而并不需要对证书进行验证。</p>
 <p>我们可以看到 service account 证书的公钥和私钥分别被配置到了 kube-apiserver 和 kube-controller-manager 的命令行参数中，如下所示：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/usr/local/bin/kube-apiserver <span style="color:#f1fa8c">\\</span> 
@@ -536,16 +536,16 @@ users:
  ... 
 </code></pre></div><p>下图展示了 kubernetes 中生成、使用和验证 service account token  的过程。</p>
 <p><img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt=""></p>
-<h3 id="-token-">认证方法：客户端证书还是 token ？</h3>
+<h3 id="认证方法客户端证书还是-token-">认证方法：客户端证书还是 token ？</h3>
 <p>我们可以看到，Kubernetes 提供了两种客户端认证的方法，控制面组件采用的是客户端数字证书;而在集群中部署的应用则采用了 service account token 的方式。为什么 Kubernetes 不为 service account 也生成一个证书，并采用该证书进行身份认证呢？ 实际上 Istio 就是这样做的，Istio 会自动为每个 service account 生成一个证书，并使用该证书来在 pod 中的应用之间建立双向 tls 认证。我没有找到 Kubernetes 这个设计决策的相关说明，如果你知道原因或对此有自己的见解，欢迎联系我进行探讨。</p>
-<h2 id="kubernetes-2">Kubernetes 证书签发</h2>
+<h2 id="kubernetes-证书签发">Kubernetes 证书签发</h2>
 <p>Kubernetes 提供了一个  <code>certificates.k8s.io</code>  API，可以使用配置的 CA 根证书来签发用户证书。该 API 由 kube-controller-manager 实现，其签发证书使用的根证书在下面的命令行中进行配置。我们希望 Kubernetes 采用集群根 CA 来签发用户证书，因此在  kube-controller-manager  的命令行参数中将相关参数配置为了集群根 CA。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> /usr/local/bin/kube-controller-manager <span style="color:#f1fa8c">\\</span>
  --cluster-signing-cert-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca.pem             <span style="color:#6272a4"># 用于签发证书的 CA 根证书</span>
  --cluster-signing-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/cluster-root-ca-key.pem          <span style="color:#6272a4"># 用于签发证书的 CA 根证书的私钥</span>  
  ... 
 </code></pre></div><p>关于更多 Kubernetes 证书签发 API 的内容，可以参见 <a href="https://kubernetes.io/zh/docs/tasks/tls/managing-tls-in-a-cluster/">管理集群中的 TLS 认证</a>。</p>
-<h2 id="-tls-bootstrapping--kubelet-">使用 TLS bootstrapping 简化 Kubelet 证书制作</h2>
+<h2 id="使用-tls-bootstrapping-简化-kubelet-证书制作">使用 TLS bootstrapping 简化 Kubelet 证书制作</h2>
 <p>在安装 Kubernetes 时，我们需要为每一个工作节点上的 Kubelet 分别生成一个证书。由于工作节点可能很多，手动生成 Kubelet 证书的过程会比较繁琐。为了解决这个问题，Kubernetes 提供了 <a href="https://kubernetes.io/zh/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/">TLS bootstrapping </a> 的方式来简化   Kubelet 证书的生成过程。其原理是预先提供一个 bootstrapping token，kubelet 采用该 bootstrapping token 进行客户端验证，调用 kube-apiserver 的证书签发 API 来生成 自己需要的证书。要启用该功能，需要在 kube-apiserver 中启用 <code>--enable-bootstrap-token-auth</code> ，并创建一个 kubelet 访问 kube-apiserver 使用的 bootstrap token secret。如果使用 kubeadmin 安装，可以使用 <code>kubeadm token create</code>命令来创建 token。</p>
 <p>采用TLS bootstrapping 生成证书的流程如下：</p>
 <ol>
@@ -555,9 +555,9 @@ users:
 <li>Kubelet 采用bootstrap token 调用 kube-apiserver API，生成自己所需的服务器和客户端证书。</li>
 <li>证书生成后，Kubelet 采用生成的证书和 kube-apiserver 进行通信，并删除本地的 kubeconfig 文件，以避免 bootstrap token 泄漏风险。</li>
 </ol>
-<h1 id="heading">小结</h1>
+<h1 id="小结">小结</h1>
 <p>Kubernetes 中使用了大量的证书来确保集群的安全，弄清楚这些证书的用途和配置方法将有助于我们深入理解 kubernetes 的安装过程和组件的配置。本文是笔者在学习 过程中整理的 Kubernetes 集群中主要使用到的证书，由于笔者对 Kubernetes 的理解有限，文章中难免存在部分错误，欢迎指正。</p>
-<h1 id="heading1">参考文档</h1>
+<h1 id="参考文档">参考文档</h1>
 <ul>
 <li><a href="https://kubernetes.io/zh/docs/setup/best-practices/certificates/">Kubernetes PKI 证书和要求</a></li>
 <li><a href="https://github.com/kelseyhightower/kubernetes-the-hard-wa">kubernetes the hard way</a></li>

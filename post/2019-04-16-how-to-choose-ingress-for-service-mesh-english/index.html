@@ -404,16 +404,16 @@ $(function() {
                 <p>By default, in a Kubernetes cluster with the Istio service mesh enabled, services can only be accessed inside the cluster. However, some of the services may need to be exposed to external networks as well. Kubernetes and Istio provide a variety of means to get external traffic into your cluster including NodePort, LoadBalancer, Kubernetes Ingress and Istio Gateway. With all these options, which one should be the right choice for your service mesh running in production?</p>
 <p>I will compare all the available options, dig into the technical details, and provide a workable solution at the end of this article. Hopefully, it could be useful for your service mesh production.</p>
 <blockquote>
-<p>Note: To better understand this article, you may need to know some Kubernetes and Istio background knowledge in advance, such as Pod, Service, NodePort, LoadBalancer, Ingress, Gateway and VirtuanlService. In case that you're not familar with these concepts, you can still continue reading and refer to the links at the end of this article for answers when getting questions.</p>
+<p>Note: To better understand this article, you may need to know some Kubernetes and Istio background knowledge in advance, such as Pod, Service, NodePort, LoadBalancer, Ingress, Gateway and VirtuanlService. In case that you&rsquo;re not familar with these concepts, you can still continue reading and refer to the links at the end of this article for answers when getting questions.</p>
 </blockquote>
 <h1 id="access-services-in-thecluster">Access Services in the Cluster</h1>
-<p>First, let's review how the services inside a Kubernetes cluster can be accessed.</p>
+<p>First, let&rsquo;s review how the services inside a Kubernetes cluster can be accessed.</p>
 <h2 id="clusterip">ClusterIP</h2>
-<p>As the smallest deployment unit, Pods are dynamically created, destroyed and migrated among the minion nodes in the cluster. As a result, a pod is ephemeral and its IP changes every time after it's recreated. Therefore, it's difficult to access Pod directly by its IP address.</p>
+<p>As the smallest deployment unit, Pods are dynamically created, destroyed and migrated among the minion nodes in the cluster. As a result, a pod is ephemeral and its IP changes every time after it&rsquo;s recreated. Therefore, it&rsquo;s difficult to access Pod directly by its IP address.</p>
 <p>To solve this problem, Kubernetes uses Service as an abstraction for a group of backend Pods. A Service is bound to a ClusterIP, which is a virtual IP address, and no matter what happens to the backend Pods, the ClusterIP never changes, so a client can always send requests to the ClusterIP of the Service. There is a Kube-proxy which is responsible for routing client requests to a chosen backend Pod in every node.</p>
 <p>Kube-proxy is a go application which can work in three modes:</p>
 <h3 id="userspace">userspace</h3>
-<p>In this mode, Kube-proxy installs iptables rules which capture traffic to a Service's ClusterIP and redirects that traffic to Kube-proxy's listening port. Kube-proxy then chooses a backend Pod and forwards the request to it.kube-proxy serves as an OSI layer 4 load balancer in this model. Since Kube-proxy runs in the userspace, packages need to be copied back and forth between kernelspace and userspace, adding extra latency in the proxy process. The advantage is that Kube-proxy can retry other Pod if the first Pod is not available.</p>
+<p>In this mode, Kube-proxy installs iptables rules which capture traffic to a Service&rsquo;s ClusterIP and redirects that traffic to Kube-proxy&rsquo;s listening port. Kube-proxy then chooses a backend Pod and forwards the request to it.kube-proxy serves as an OSI layer 4 load balancer in this model. Since Kube-proxy runs in the userspace, packages need to be copied back and forth between kernelspace and userspace, adding extra latency in the proxy process. The advantage is that Kube-proxy can retry other Pod if the first Pod is not available.</p>
 <p><img src="https://d33wubrfki0l68.cloudfront.net/e351b830334b8622a700a8da6568cb081c464a9b/13020/images/docs/services-userspace-overview.svg" alt=""></p>
 <!-- raw HTML omitted -->
 <h3 id="iptables">iptables</h3>
@@ -421,20 +421,20 @@ $(function() {
 <p><img src="https://d33wubrfki0l68.cloudfront.net/27b2978647a8d7bdc2a96b213f0c0d3242ef9ce0/e8c9b/images/docs/services-iptables-overview.svg" alt=""></p>
 <!-- raw HTML omitted -->
 <h3 id="ipvs">ipvs</h3>
-<p>This model is similar to iptables because both ipvs and iptables are base on netfilter hook in kernelspace. Ipvs uses hash tables to store rules, meaning it's faster than iptables, especially in a large cluster where there're thousands of services. In addition, ipvs supports more load balancing algorithms.</p>
+<p>This model is similar to iptables because both ipvs and iptables are base on netfilter hook in kernelspace. Ipvs uses hash tables to store rules, meaning it&rsquo;s faster than iptables, especially in a large cluster where there&rsquo;re thousands of services. In addition, ipvs supports more load balancing algorithms.</p>
 <p><img src="https://d33wubrfki0l68.cloudfront.net/2d3d2b521cf7f9ff83238218dac1c019c270b1ed/9ac5c/images/docs/services-ipvs-overview.svg" alt=""></p>
 <!-- raw HTML omitted -->
 <h2 id="istio-sidecarproxy">Istio Sidecar Proxy</h2>
 <p>With service ClusterIP and Kubernetes DNS, service can be easily reached inside a cluster, however, this approach only provides very basic service discovery and limited load balancing policies. If you want more advanced features, such as flexible routing rules, more options for LB, reliable service communication, metrics collection and distributed tracing, etc., then you will need to consider Istio.</p>
-<p>After deploying Istio in a Kubernetes cluster, Istio takes over the communication between services with sidecar proxies. The communication between services is no longer through Kube-proxy but through Istio's sidecar proxies. The request process is like this: First, a client request is captured and redirected to the sidecar proxy by iptables. Then, the sidecar proxy chooses a backend pod according to the service discovery information and routing rules obtained from the control plane, and forwards the request to it.</p>
+<p>After deploying Istio in a Kubernetes cluster, Istio takes over the communication between services with sidecar proxies. The communication between services is no longer through Kube-proxy but through Istio&rsquo;s sidecar proxies. The request process is like this: First, a client request is captured and redirected to the sidecar proxy by iptables. Then, the sidecar proxy chooses a backend pod according to the service discovery information and routing rules obtained from the control plane, and forwards the request to it.</p>
 <p>Istio sidecar proxy works just like Kube-proxy userspace mode. They both work in userspace to proxy the client request and load balance among multiple back-end Pods. The difference is that Kube-proxy only works on OSI layer 4, while Istio sidecar proxy can also handle OSI layer 7 packages. So Istio sidecar proxy is much more powerful. Working with Istio control plane, the mesh of sidecar proxies can support some advanced traffic management scenarios, such as canary deployment, traffic mirroring, chaos testing(fault injection), etc.</p>
 <p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-inter-services-communication.jpg" alt=""></p>
 <!-- raw HTML omitted -->
 <h1 id="access-services-fromthe-outside-of-a-cluster">Access Services from the Outside of a Cluster</h1>
 <p>ClusterIP is only reachable inside a Kubernetes cluster, but what if we need to access some services from outside of the cluster? Kubernetes provides the following ways to expose services to external networks.</p>
 <h2 id="nodeport">NodePort</h2>
-<p>With NodePort, Kubernetes creates a port for a Service on the host, which allows access to the service from the node network. The Kubernetes online document only introduces the concept of NodePort, but it doesn't explain the technical details. Let's find out how it's implemented using an experiment.</p>
-<p><a href="http://www.katacoda.com">www.katacoda.com</a> is an interactive learning and training platform. You can explore almost all the Kubernetes features once registered. I'll use this website to show how NodePort is implemented under the hood. I encourage you to test it by yourself in Katacoda, it's easy to use and totally free!</p>
+<p>With NodePort, Kubernetes creates a port for a Service on the host, which allows access to the service from the node network. The Kubernetes online document only introduces the concept of NodePort, but it doesn&rsquo;t explain the technical details. Let&rsquo;s find out how it&rsquo;s implemented using an experiment.</p>
+<p><a href="http://www.katacoda.com">www.katacoda.com</a> is an interactive learning and training platform. You can explore almost all the Kubernetes features once registered. I&rsquo;ll use this website to show how NodePort is implemented under the hood. I encourage you to test it by yourself in Katacoda, it&rsquo;s easy to use and totally free!</p>
 <p>Enter this URL in your browser: <a href="https://www.katacoda.com/courses/kubernetes/networking-introduction">https://www.katacoda.com/courses/kubernetes/networking-introduction</a>. Katacoda will prepare a Kubernetes cluster for you, then you can connect to the Kubernetes master with a web-based interactive terminal.</p>
 <p>Run the following command to create a NodePort type service.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f nodeport.yaml
@@ -443,15 +443,15 @@ $(function() {
 NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span style="color:#ff79c6">(</span>S<span style="color:#ff79c6">)</span>        AGE
 kubernetes             ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP        36m
 webapp1-nodeport-svc   NodePort    10.103.188.73   &lt;none&gt;        80:30080/TCP   3m
-</code></pre></div><p>Display the created Pods with the following command. There are two backend Pods for the service. The first one's IP is 10.32.0.3, and the other's is 10.32.0.5.</p>
+</code></pre></div><p>Display the created Pods with the following command. There are two backend Pods for the service. The first one&rsquo;s IP is 10.32.0.3, and the other&rsquo;s is 10.32.0.5.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl get pod -o wide
 NAME                                           READY     STATUS    RESTARTS   AGE       IPNODE      NOMINATED NODE
 webapp1-nodeport-deployment-785989576b-cjc5b   1/1       Running   <span style="color:#bd93f9">0</span>          2m        10.32.0.3
 webapp1-nodeport-deployment-785989576b-tpfqr   1/1       Running   <span style="color:#bd93f9">0</span>          2m        10.32.0.5
-</code></pre></div><p>The output of netstat command shows that it's Kube-proxy who is actually listening on 30080 port.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ netstat -lnp|grep 30080
+</code></pre></div><p>The output of netstat command shows that it&rsquo;s Kube-proxy who is actually listening on 30080 port.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ netstat -lnp|grep <span style="color:#bd93f9">30080</span>
 tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0</span>    :::30080   :::*     LISTEN      7427/kube-proxy
-</code></pre></div><p>Kube-proxy also created the corresponding iptables rules to capture traffic sending to 30080 NodePort and redirect that traffic to the two backend pods. All the iptables rules are list below, and I add comments to explain each rule's function.</p>
+</code></pre></div><p>Kube-proxy also created the corresponding iptables rules to capture traffic sending to 30080 NodePort and redirect that traffic to the two backend pods. All the iptables rules are list below, and I add comments to explain each rule&rsquo;s function.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables-save &gt; iptables-dump
 <span style="color:#6272a4"># Generated by iptables-save v1.6.0 on Thu Mar 28 07:33:57 2019</span>
 *nat
@@ -480,10 +480,10 @@ tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0<
 <p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/NodePort.jpg" alt=""></p>
 <!-- raw HTML omitted -->
 <h2 id="loadbalancer">LoadBalancer</h2>
-<p>NodePort is a convenient tool for testing in your local Kubernetes cluster, but it's not suitable for production because of these limitations.</p>
+<p>NodePort is a convenient tool for testing in your local Kubernetes cluster, but it&rsquo;s not suitable for production because of these limitations.</p>
 <ul>
-<li>Any node may crash or be removed from a Kubernetes cluster. When a new one comes in, the IP address of the new node is normally dynamically allocated from an address pool, which means we can't treat node IP as a well-known IP. So it's impractical to configure a node IP address in advance on the client side.</li>
-<li>A single node is a single point of failure for the system. Once the node is down, clients can't access the cluster any more. Of course, you could mitigate risks by configuring multiple node IPs on the client side, but you will never know which one would potentially crash and when you should reconfigure these IPs.</li>
+<li>Any node may crash or be removed from a Kubernetes cluster. When a new one comes in, the IP address of the new node is normally dynamically allocated from an address pool, which means we can&rsquo;t treat node IP as a well-known IP. So it&rsquo;s impractical to configure a node IP address in advance on the client side.</li>
+<li>A single node is a single point of failure for the system. Once the node is down, clients can&rsquo;t access the cluster any more. Of course, you could mitigate risks by configuring multiple node IPs on the client side, but you will never know which one would potentially crash and when you should reconfigure these IPs.</li>
 <li>A single node will be the bottleneck of the system. You could also configure multiple nodes on the client side and load balance from clients, but this solution is much more problematic than server-side load balance.</li>
 </ul>
 <p>A service can be declared as LoadBalancer type to create a layer 4 load balancer in front of multiple nodes. As this layer 4 load balancer is outside of the Kubernetes network, a Cloud Provider Controller is needed for its provision. This Cloud Provider Controller watches the Kubernetes master for the addition and removal of Service resources and configures a layer 4 load balancer in the cloud provider network to proxy the NodePorts on multiple Kubernetes nodes.</p>
@@ -511,7 +511,7 @@ tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0<
 </li>
 </ul>
 <p>Ingress resource only defines requirements to a layer 7 load balancer such as how to route requests to backend services based on HTTP URL/Host, TLS key and certification configuration. In order for the Ingress resource to work, the cluster must have an ingress controller running. Ingress controllers configure a layer 7 proxy to fulfil the ingress rules. Most widely-used ingress controller implementations are based on some popular proxy projects including Nginx, HAProxy, Envoy, etc.</p>
-<p>Ingress controller provides a unified entrance for the HTTP services in a cluster, but it can't be accessed directly from outside because the ingress controller itself is also deployed as Pods inside the cluster. Ingress controller must work together with NodePort and LoadBalancer to provide the full path for the external traffic to enter the cluster.</p>
+<p>Ingress controller provides a unified entrance for the HTTP services in a cluster, but it can&rsquo;t be accessed directly from outside because the ingress controller itself is also deployed as Pods inside the cluster. Ingress controller must work together with NodePort and LoadBalancer to provide the full path for the external traffic to enter the cluster.</p>
 <p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress+Nodeport+LoadBalancer-Topo.png" alt=""></p>
 <!-- raw HTML omitted -->
 <p>From the above diagram, we can see that the whole system is highly scalable. Each of the NodePort, Ingress or Pod layers can be scale out/in accordingly to handle different working loads.</p>
@@ -528,12 +528,12 @@ tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0<
 <p>The IP addresses of each segment in the entry path are the following: 
 Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingress Controller Service(ClusterIP)→ Ingress Controller Pod(Pod IP)→ Backend Service(ClusterIP)→ Backend Pod(Pod IP)</p>
 <h1 id="how-to-choose-the-ingress-gateway-for-your-servicemesh">How to Choose the Ingress Gateway for your Service Mesh?</h1>
-<p>Istio is doing a great job by providing a communication infrastructure layer for all the services running in the service mesh. However, until now, Istio doesn't provide an ingress gateway solution reading for production.</p>
+<p>Istio is doing a great job by providing a communication infrastructure layer for all the services running in the service mesh. However, until now, Istio doesn&rsquo;t provide an ingress gateway solution reading for production.</p>
 <h2 id="kubernetes-ingress">Kubernetes Ingress</h2>
 <p>Before the 0.8 release, Istio used Kubernetes Ingress resources to configure external traffic. Kubernetes Ingress provides a single entrance for external traffic, but it also has some significant shortcomings：</p>
 <ul>
-<li>Kubernetes Ingress can't be managed by the Istio control plane. It needs to be configured with the Kubernetes Ingress rules. As a result, there are two sets of independent routing configurations in the system, one for the entrance and one for the sidecar proxies inside the mesh. The operations of the service mesh are much more complicated in this way.</li>
-<li>Kubernetes Ingress can only provide very basic layer 7 capabilities. It doesn't have the same functionalities as mesh sidecars including advanced routing rules, distributed tracing, policy checking and metrics collections.</li>
+<li>Kubernetes Ingress can&rsquo;t be managed by the Istio control plane. It needs to be configured with the Kubernetes Ingress rules. As a result, there are two sets of independent routing configurations in the system, one for the entrance and one for the sidecar proxies inside the mesh. The operations of the service mesh are much more complicated in this way.</li>
+<li>Kubernetes Ingress can only provide very basic layer 7 capabilities. It doesn&rsquo;t have the same functionalities as mesh sidecars including advanced routing rules, distributed tracing, policy checking and metrics collections.</li>
 </ul>
 <p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/K8s-ingress-and-Istio.jpg" alt=""></p>
 <!-- raw HTML omitted -->
@@ -557,7 +557,7 @@ Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingr
 </ul>
 <p><img src="https://zhaohuabing.com/img/2018-12-27-the-obstacles-to-put-istio-into-production/ingress-comparation.png" alt=""></p>
 <!-- raw HTML omitted -->
-<p>To fulfil these requirements, there's a dozen of API Gateways on the table, including Ambassador, Kong, Traefik, Gloo, etc. All these API Gateways can be used as a Kubernetes ingress controller, but they all add some kinds of extensions to try to fill the gap between Kubernetes ingress and the reality, unfortunately, in an incompatible way. It's a very little chance that these extensions could be standardized and included in Kubernetes Ingress or Istio Gateway in the foreseeable future. In addition to that, as far as I know, no one ingress controller officially declared supporting the integration with Istio control plane to provide Istio routing rules.</p>
+<p>To fulfil these requirements, there&rsquo;s a dozen of API Gateways on the table, including Ambassador, Kong, Traefik, Gloo, etc. All these API Gateways can be used as a Kubernetes ingress controller, but they all add some kinds of extensions to try to fill the gap between Kubernetes ingress and the reality, unfortunately, in an incompatible way. It&rsquo;s a very little chance that these extensions could be standardized and included in Kubernetes Ingress or Istio Gateway in the foreseeable future. In addition to that, as far as I know, no one ingress controller officially declared supporting the integration with Istio control plane to provide Istio routing rules.</p>
 <blockquote>
 <p>Note：</p>
 <ul>
@@ -566,9 +566,9 @@ Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingr
 </ul>
 </blockquote>
 <h2 id="api-gateway--sidecar-proxy-as-the-external-traffic-entrance-for-a-servicemesh">API Gateway + Sidecar Proxy as the External Traffic Entrance for a Service Mesh</h2>
-<p>Now let's come back to the question thrown up at the beginning of this post: Which one is the right choice for the ingress gateway of your service mesh? Kubernetes Ingress, Istio Gateway or API Gateway? My opinion is that neither of them is capable of that by its own due to lack of some  functions.</p>
-<p>Given that it's difficult to find an ideal out-of-box implementation which can provide both the functions of an application-layer API gateway and an Istio ingress gateway, a practical solution could be using a cascade of an API Gateway and a mesh sidecar proxy as the external traffic entrance.</p>
-<p>As the below diagram shows, an API gateway and a sidecar proxy are used as the ingress gateway of the service mesh. Since the API Gateway already has the function of a layer 7 gateway, the sidecar proxy behind it only needs to provide the routing capability of the Istio VirtualService resource and doesn't need to provide the capability of the Istio Gateway resource.</p>
+<p>Now let&rsquo;s come back to the question thrown up at the beginning of this post: Which one is the right choice for the ingress gateway of your service mesh? Kubernetes Ingress, Istio Gateway or API Gateway? My opinion is that neither of them is capable of that by its own due to lack of some  functions.</p>
+<p>Given that it&rsquo;s difficult to find an ideal out-of-box implementation which can provide both the functions of an application-layer API gateway and an Istio ingress gateway, a practical solution could be using a cascade of an API Gateway and a mesh sidecar proxy as the external traffic entrance.</p>
+<p>As the below diagram shows, an API gateway and a sidecar proxy are used as the ingress gateway of the service mesh. Since the API Gateway already has the function of a layer 7 gateway, the sidecar proxy behind it only needs to provide the routing capability of the Istio VirtualService resource and doesn&rsquo;t need to provide the capability of the Istio Gateway resource.</p>
 <p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/API-Gateway-and-Sidecar-Proxy-as-Ingress-for-Istio.png" alt=""></p>
 <!-- raw HTML omitted -->
 <blockquote>
@@ -576,7 +576,7 @@ Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingr
 </blockquote>
 <p>From this diagram, we can see that the sidecar proxy at the entrance is very similar to those inside the mesh. The only difference between them is that the sidecar proxy at the entrance just takes over the outbound traffic of the API Gateway, and the sidecar proxies in the mesh take over both the inbound and outbound traffic of an application pod.</p>
 <p>Performance considerations: This approach introduces an additional hop at the mesh entrance, resulting in small more latency for client requests, but the cost is acceptable compared with the benefits.</p>
-<p>In a service mesh, external requests have to go through a dozen of proxies and microservices to accomplish the business process, so one more proxy at the entrance shouldn't make a significant difference. If your system is very sensitive to the latency time, I'd like to suggest you reconsider whether microservice and service mesh should be used for it. Anyway, no one architecture pattern is a silver bullet for every business scenarios.</p>
+<p>In a service mesh, external requests have to go through a dozen of proxies and microservices to accomplish the business process, so one more proxy at the entrance shouldn&rsquo;t make a significant difference. If your system is very sensitive to the latency time, I&rsquo;d like to suggest you reconsider whether microservice and service mesh should be used for it. Anyway, no one architecture pattern is a silver bullet for every business scenarios.</p>
 <p>If network throughput becomes the bottleneck, we can scale out the mesh ingress by deploying multiple API gateway and sidecar proxy combinations to handle the incoming traffic for load balancing.</p>
 <p>Conclusion: A combination of an API gateway and a sidecar proxy could be a production-ready, full-fledged external traffic ingress for the service mesh. With this solution, we can customize and extend the API gateway to meet various application-level requirements, and leverage the flexible traffic routing, distributed tracing, metric collection and other service mesh capabilities provided by sidecar proxy. This is a production-ready ingress solution for a service mesh.</p>
 <p>What are your thoughts on this? Let me know by leaving comments after the post.</p>

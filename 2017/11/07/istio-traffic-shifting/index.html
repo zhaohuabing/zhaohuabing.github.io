@@ -352,11 +352,11 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">开始之前</a></li>
-    <li><a href="#heading1">基于权重的版本路由</a></li>
-    <li><a href="#heading2">理解原理</a></li>
-    <li><a href="#heading3">清理</a></li>
-    <li><a href="#heading4">进阶阅读</a></li>
+    <li><a href="#开始之前">开始之前</a></li>
+    <li><a href="#基于权重的版本路由">基于权重的版本路由</a></li>
+    <li><a href="#理解原理">理解原理</a></li>
+    <li><a href="#清理">清理</a></li>
+    <li><a href="#进阶阅读">进阶阅读</a></li>
   </ul>
 </nav>
                 
@@ -364,7 +364,7 @@ $(function() {
 <p>原文参见<a href="https://istio.io/docs/tasks/traffic-management/traffic-shifting.html">Traffic Shifting</a>。</p>
 <p>本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。</p>
 <p>为简单起见，本任务将采用两步将流量从<code>reviews:v1</code> 迁移到 <code>reviews:v3</code>，权重分别为50%，100%。</p>
-<h1 id="heading">开始之前</h1>
+<h1 id="开始之前">开始之前</h1>
 <ul>
 <li>
 <p>参照文档<a href="http://istio.doczh.cn/docs/setup/kubernetes/index.html">安装指南</a>中的步骤安装Istio。</p>
@@ -376,7 +376,7 @@ $(function() {
 <blockquote>
 <p>请注意：本文档假设示采用kubernetes部署示例应用程序。所有的示例命令行都采用规则yaml文件（例如<code>samples/bookinfo/kube/route-rule-all-v1.yaml</code>）指定的kubernetes版本。如果在不同的环境下运行本任务，请将<code>kube</code>修改为运行环境中相应的目录（例如，对基于Consul的运行环境，目录就是<code>samples/bookinfo/consul/route-rule-all-v1.yaml</code>）。</p>
 </blockquote>
-<h1 id="heading1">基于权重的版本路由</h1>
+<h1 id="基于权重的版本路由">基于权重的版本路由</h1>
 <ol>
 <li>
 <p>将所有微服务的缺省版本设置为v1.</p>
@@ -408,11 +408,11 @@ $(function() {
 </code></pre></div><p>此时，以任何用户登录到<code>productpage</code>页面，都可以看到带红星的评价信息。</p>
 </li>
 </ol>
-<h1 id="heading2">理解原理</h1>
+<h1 id="理解原理">理解原理</h1>
 <p>在这个任务中，我们使用了Istio的带权重路由的特性将流量从老版本的<code>reviews</code>服务逐渐迁移到了新版本服务中。</p>
 <p>注意该方式和使用容器编排平台的部署特性来进行版本迁移是完全不同的。容器编排平台使用了实例scaling来对流量进行管理。而通过Istio，两个版本的<code>reviews</code>服务可以独立地进行scale up和scale down，并不会影响这两个版本服务之间的流量分发。</p>
 <p>想了解更多支持scaling的按版本路由功能，请查看<a href="https://istio.io/blog/canary-deployments-using-istio.html">Canary Deployments using Istio</a>。</p>
-<h1 id="heading3">清理</h1>
+<h1 id="清理">清理</h1>
 <ul>
 <li>
 <p>删除路由规则。</p>
@@ -422,7 +422,7 @@ $(function() {
 <p>如果不打算尝试后面的任务，请参照<a href="http://istio.doczh.cn/docs/guides/bookinfo.html#cleanup">BookInfo cleanup</a> 中的步骤关闭应用程序。</p>
 </li>
 </ul>
-<h1 id="heading4">进阶阅读</h1>
+<h1 id="进阶阅读">进阶阅读</h1>
 <ul>
 <li>更多的内容请参见<a href="http://istio.doczh.cn/docs/concepts/traffic-management/rules-configuration.html">请求路由</a>。</li>
 </ul>

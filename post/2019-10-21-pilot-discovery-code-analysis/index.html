@@ -356,29 +356,29 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#istio-pilot-">Istio Pilot 组件介绍</a></li>
-    <li><a href="#pilotdiscovery-">Pilot-Discovery 代码结构</a>
+    <li><a href="#istio-pilot-组件介绍">Istio Pilot 组件介绍</a></li>
+    <li><a href="#pilot-discovery-代码结构">Pilot-Discovery 代码结构</a>
       <ul>
         <li><a href="#config-controller">Config Controller</a></li>
         <li><a href="#service-controller">Service Controller</a></li>
         <li><a href="#discovery-service">Discovery Service</a></li>
       </ul>
     </li>
-    <li><a href="#pilotdiscovery-1">Pilot-Discovery 业务流程</a>
+    <li><a href="#pilot-discovery-业务流程">Pilot-Discovery 业务流程</a>
       <ul>
-        <li><a href="#pilotdiscovery">初始化Pilot-Discovery的各个主要组件</a></li>
-        <li><a href="#grpc-serverenvoy">创建GRPC Server并接收Envoy的连接请求</a></li>
-        <li><a href="#envoy">配置变化后向Envoy推送更新</a></li>
-        <li><a href="#envoyxds">响应Envoy主动发起的xDS请求</a></li>
-        <li><a href="#discovery-server">Discovery Server业务处理关键代码片段</a></li>
-        <li><a href="#heading1">完整的业务流程</a></li>
+        <li><a href="#初始化pilot-discovery的各个主要组件">初始化Pilot-Discovery的各个主要组件</a></li>
+        <li><a href="#创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</a></li>
+        <li><a href="#配置变化后向envoy推送更新">配置变化后向Envoy推送更新</a></li>
+        <li><a href="#响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</a></li>
+        <li><a href="#discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</a></li>
+        <li><a href="#完整的业务流程">完整的业务流程</a></li>
       </ul>
     </li>
-    <li><a href="#heading2">参考阅读</a></li>
+    <li><a href="#参考阅读">参考阅读</a></li>
   </ul>
 </nav>
                 
-                <h1 id="istio-pilot-">Istio Pilot 组件介绍</h1>
+                <h1 id="istio-pilot-组件介绍">Istio Pilot 组件介绍</h1>
 <p>在Istio架构中，Pilot组件属于最核心的组件，负责了服务网格中的流量管理以及控制面和数据面之间的配置下发。Pilot内部的代码结构比较复杂，本文中我们将通过对Pilot的代码的深入分析来了解Pilot实现原理。</p>
 <p>首先我们来看一下Pilot在Istio中的功能定位，Pilot将服务信息和配置数据转换为xDS接口的标准数据结构，通过GRPC下发到数据面的Envoy。如果把Pilot看成一个处理数据的黑盒，则其有两个输入，一个输出：</p>
 
@@ -402,7 +402,7 @@ $(function() {
 </ul>
 <p>Pilot的输出为符合xDS接口的数据面配置数据，并通过GRPC Streaming接口将配置数据推送到数据面的Envoy中。</p>
 <p>备注：Istio代码库在不停变化更新中，本文分析所基于的代码commit为: d539abe00c2599d80c6d64296f78d3bb8ab4b033</p>
-<h1 id="pilotdiscovery-">Pilot-Discovery 代码结构</h1>
+<h1 id="pilot-discovery-代码结构">Pilot-Discovery 代码结构</h1>
 <p>Istio Pilot的代码分为Pilot-Discovery和Pilot-Agent,其中Pilot-Agent用于在数据面负责Envoy的生命周期管理，Pilot-Discovery才是控制面进行流量管理的组件，本文将重点分析控制面部分，即Pilot-Discovery的代码。</p>
 <p>下图是Pilot-Discovery组件代码的主要结构：
 
@@ -450,9 +450,9 @@ $(function() {
 <li>接收Envoy端的xDS请求，从Config Controller和Service Controller中获取配置和服务信息，生成响应消息发送给Envoy。</li>
 <li>监听来自Config Controller的配置变化消息和来自Service Controller的服务变化消息，并将配置和服务变化内容通过xDS接口推送到Envoy。（备注：目前Pilot未实现增量变化推送，每次变化推送的是全量配置，在网格中服务较多的情况下可能会有性能问题）。</li>
 </ul>
-<h1 id="pilotdiscovery-1">Pilot-Discovery 业务流程</h1>
+<h1 id="pilot-discovery-业务流程">Pilot-Discovery 业务流程</h1>
 <p>Pilot-Disocvery包括以下主要的几个业务流程：</p>
-<h2 id="pilotdiscovery">初始化Pilot-Discovery的各个主要组件</h2>
+<h2 id="初始化pilot-discovery的各个主要组件">初始化Pilot-Discovery的各个主要组件</h2>
 <p>Pilot-Discovery命令的入口为pilot/cmd/pilot-discovery/main.go中的main方法，在该方法中创建Pilot Server,Server代码位于文件pilot/pkg/bootstrap/server.go中。Server主要做了下面一些初始化工作：</p>
 <ul>
 <li>创建并初始化Config Controller</li>
@@ -471,7 +471,7 @@ $(function() {
   </figure>
 </div>
 
-<h2 id="grpc-serverenvoy">创建GRPC Server并接收Envoy的连接请求</h2>
+<h2 id="创建grpc-server并接收envoy的连接请求">创建GRPC Server并接收Envoy的连接请求</h2>
 <p>Pilot Server创建了一个GRPC Server，用于监听和接收来自Envoy的xDS请求。pilot/pkg/proxy/envoy/v2/ads.go 中的 DiscoveryServer.StreamAggregatedResources方法被注册为GRPC Server的服务处理方法。</p>
 <p>当GRPC Server收到来自Envoy的连接时，会调用DiscoveryServer.StreamAggregatedResources方法，在该方法中创建一个XdsConnection对象，并开启一个goroutine从该connection中接收客户端的xDS请求并进行处理；如果控制面的配置发生变化，Pilot也会通过该connection把配置变化主动推送到Envoy端。</p>
 
@@ -485,7 +485,7 @@ $(function() {
   </figure>
 </div>
 
-<h2 id="envoy">配置变化后向Envoy推送更新</h2>
+<h2 id="配置变化后向envoy推送更新">配置变化后向Envoy推送更新</h2>
 <p>这是Pilot中最复杂的一个业务流程，主要是因为代码中采用了多个channel和queue对变化消息进行合并和转发。该业务流程如下：</p>
 <ol>
 <li>Config Controller或者Service Controller在配置或服务发生变化时通过回调方法通知Discovery Server，Discovery Server将变化消息放入到Push Channel中。</li>
@@ -504,7 +504,7 @@ $(function() {
   </figure>
 </div>
 
-<h2 id="envoyxds">响应Envoy主动发起的xDS请求</h2>
+<h2 id="响应envoy主动发起的xds请求">响应Envoy主动发起的xDS请求</h2>
 <p>Pilot和Envoy之间建立的是一个双向的Streaming GRPC服务调用，因此Pilot可以在配置变化时向Envoy推送，Envoy也可以主动发起xDS调用请求获取配置。Envoy主动发起xDS请求的流程如下：</p>
 <ol>
 <li>Envoy通过创建好的GRPC连接发送一个DiscoveryRequest</li>
@@ -522,9 +522,9 @@ $(function() {
   </figure>
 </div>
 
-<h2 id="discovery-server">Discovery Server业务处理关键代码片段</h2>
+<h2 id="discovery-server业务处理关键代码片段">Discovery Server业务处理关键代码片段</h2>
 <p>下面是Discovery Server的关键代码片段和对应的业务逻辑注解，为方便阅读，代码中只保留了逻辑主干，去掉了一些不重要的细节。</p>
-<h3 id="xds">处理xDS请求和推送的关键代码</h3>
+<h3 id="处理xds请求和推送的关键代码">处理xDS请求和推送的关键代码</h3>
 <p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/ads.go</code> 文件的StreamAggregatedResources 方法中。StreamAggregatedResources方法被注册为GRPC Server的handler，对于每一个客户端连接，GRPC Server会启动一个goroutine来进行处理。</p>
 <p>代码中主要包含以下业务逻辑：</p>
 <ul>
@@ -535,14 +535,14 @@ $(function() {
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// StreamAggregatedResources implements the ADS interface.
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (s <span style="color:#ff79c6">*</span>DiscoveryServer) <span style="color:#50fa7b">StreamAggregatedResources</span>(stream ads.AggregatedDiscoveryService_StreamAggregatedResourcesServer) <span style="color:#8be9fd">error</span> {
         
-    <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
+    <span style="color:#ff79c6">......</span>
 
     <span style="color:#6272a4">//创建一个goroutine来接收来自Envoy的xDS请求，并将请求放到reqChannel中
 </span><span style="color:#6272a4"></span>    con <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">newXdsConnection</span>(peerAddr, stream)
     reqChannel <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#ff79c6">*</span>xdsapi.DiscoveryRequest, <span style="color:#bd93f9">1</span>)
     <span style="color:#ff79c6">go</span> <span style="color:#50fa7b">receiveThread</span>(con, reqChannel, <span style="color:#ff79c6">&amp;</span>receiveError)
 
-     <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
+     <span style="color:#ff79c6">......</span>
     
     <span style="color:#ff79c6">for</span> {
         <span style="color:#ff79c6">select</span>{
@@ -567,7 +567,7 @@ $(function() {
         }            
     }
 }
-</code></pre></div><h3 id="heading">处理服务和配置变化的关键代码</h3>
+</code></pre></div><h3 id="处理服务和配置变化的关键代码">处理服务和配置变化的关键代码</h3>
 <p>该部分关键代码位于 <code>istio.io/istio/pilot/pkg/proxy/envoy/v2/discovery.go</code> 文件中，用于监听服务和配置变化消息，并将变化消息合并后通过Channel发送给前面提到的 StreamAggregatedResources 方法进行处理。</p>
 <p>ConfigUpdate是处理服务和配置变化的回调函数，service controller和config controller在发生变化时会调用该方法通知Discovery Server。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> (s <span style="color:#ff79c6">*</span>DiscoveryServer) <span style="color:#50fa7b">ConfigUpdate</span>(req <span style="color:#ff79c6">*</span>model.PushRequest) {
@@ -580,7 +580,7 @@ $(function() {
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#6272a4">// The debounce helper function is implemented to enable mocking
 </span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">debounce</span>(ch <span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#ff79c6">*</span>model.PushRequest, stopCh <span style="color:#ff79c6">&lt;-</span><span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd;font-style:italic">struct</span>{}, pushFn <span style="color:#8be9fd;font-style:italic">func</span>(req <span style="color:#ff79c6">*</span>model.PushRequest)) {
 
-    <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
+    <span style="color:#ff79c6">......</span>
 
     pushWorker <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
         eventDelay <span style="color:#ff79c6">:=</span> time.<span style="color:#50fa7b">Since</span>(startDebounce)
@@ -606,7 +606,7 @@ $(function() {
     }
     <span style="color:#ff79c6">for</span> {
         <span style="color:#ff79c6">select</span> {
-        <span style="color:#ff79c6">...</span><span style="color:#ff79c6">...</span>
+        <span style="color:#ff79c6">......</span>
 
         <span style="color:#ff79c6">case</span> r <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&lt;-</span>ch:
             lastConfigUpdateTime = time.<span style="color:#50fa7b">Now</span>()
@@ -626,7 +626,7 @@ $(function() {
     }
   }
 }
-</code></pre></div><h2 id="heading1">完整的业务流程</h2>
+</code></pre></div><h2 id="完整的业务流程">完整的业务流程</h2>
 
 
 <div class="box" >
@@ -638,7 +638,7 @@ $(function() {
   </figure>
 </div>
 
-<h1 id="heading2">参考阅读</h1>
+<h1 id="参考阅读">参考阅读</h1>
 <ul>
 <li><a href="https://docs.google.com/document/d/1o2-V4TLJ8fJACXdlsnxKxDv2Luryo48bAhR8ShxE5-k/">Mesh Configuration Protocol (MCP)</a></li>
 <li><a href="https://docs.google.com/document/d/1S5ygkxR1alNI8cWGG4O4iV8zp8dA6Oc23zQCvFxr83U/">Pilot Decomposition</a></li>

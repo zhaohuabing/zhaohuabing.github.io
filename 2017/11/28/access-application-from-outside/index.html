@@ -354,26 +354,26 @@ $(function() {
   <ul>
     <li>
       <ul>
-        <li><a href="#heading">前言</a></li>
-        <li><a href="#podservice">Pod和Service</a></li>
-        <li><a href="#service">Service的类型</a></li>
-        <li><a href="#nodeport">通过NodePort提供外部访问入口</a></li>
-        <li><a href="#load-balancer">通过Load Balancer提供外部访问入口</a></li>
-        <li><a href="#ingressload-balancer">采用Ingress作为七层load balancer</a></li>
-        <li><a href="#heading1">结论</a></li>
-        <li><a href="#heading2">参考</a></li>
+        <li><a href="#前言">前言</a></li>
+        <li><a href="#pod和service">Pod和Service</a></li>
+        <li><a href="#service的类型">Service的类型</a></li>
+        <li><a href="#通过nodeport提供外部访问入口">通过NodePort提供外部访问入口</a></li>
+        <li><a href="#通过load-balancer提供外部访问入口">通过Load Balancer提供外部访问入口</a></li>
+        <li><a href="#采用ingress作为七层load-balancer">采用Ingress作为七层load balancer</a></li>
+        <li><a href="#结论">结论</a></li>
+        <li><a href="#参考">参考</a></li>
       </ul>
     </li>
   </ul>
 </nav>
                 
-                <h2 id="heading">前言</h2>
+                <h2 id="前言">前言</h2>
 <p>我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。</p>
 <blockquote>
 <p>本文尽量试着写得比较容易理解，但要做到“深入浅出”，把复杂的事情用通俗易懂的语言描述出来是非常需要功力的，个人自认尚未达到此境界，唯有不断努力。此外，kubernetes本身是一个比较复杂的系统，无法在本文中详细解释涉及的所有相关概念，否则就可能脱离了文章的主题，因此假设阅读此文之前读者对kubernetes的基本概念如docker，container，pod已有所了解。</p>
 </blockquote>
 <p>另外此文中的一些内容是自己的理解，由于个人的知识范围有限，可能有误，如果读者对文章中的内容有疑问或者勘误，欢迎大家指证。</p>
-<h2 id="podservice">Pod和Service</h2>
+<h2 id="pod和service">Pod和Service</h2>
 <p>我们首先来了解一下Kubernetes中的Pod和Service的概念。</p>
 <p>Pod(容器组),英文中Pod是豆荚的意思，从名字的含义可以看出，Pod是一组有依赖关系的容器，Pod包含的容器都会运行在同一个host节点上，共享相同的volumes和network namespace空间。Kubernetes以Pod为基本操作单元，可以同时启动多个相同的pod用于failover或者load balance。</p>
 <p><img src="http://img.zhaohuabing.com/in-post/access-application-from-outside/pod.PNG" alt="Pod"></p>
@@ -384,9 +384,9 @@ $(function() {
 <blockquote>
 <p>备注：虽然可以通过Service的Cluster IP和服务端口访问到后端Pod提供的服务，但该Cluster IP是Ping不通的，原因是Cluster IP只是iptable中的规则，并不对应到一个网络设备。</p>
 </blockquote>
-<h2 id="service">Service的类型</h2>
+<h2 id="service的类型">Service的类型</h2>
 <p>Service的类型(ServiceType)决定了Service如何对外提供服务，根据类型不同，服务可以只在Kubernetes cluster中可见，也可以暴露到Cluster外部。Service有三种类型，ClusterIP，NodePort和LoadBalancer。其中ClusterIP是Service的缺省类型，这种类型的服务会提供一个只能在Cluster内才能访问的虚拟IP，其实现机制如上面一节所述。</p>
-<h2 id="nodeport">通过NodePort提供外部访问入口</h2>
+<h2 id="通过nodeport提供外部访问入口">通过NodePort提供外部访问入口</h2>
 <p>通过将Service的类型设置为NodePort，可以在Cluster中的主机上通过一个指定端口暴露服务。注意通过Cluster中每台主机上的该指定端口都可以访问到该服务，发送到该主机端口的请求会被kubernetes路由到提供服务的Pod上。采用这种服务类型，可以在kubernetes cluster网络外通过主机IP：端口的方式访问到服务。</p>
 <blockquote>
 <p>注意：官方文档中说明了Kubernetes clusterIp的流量转发到后端Pod有Iptable和kube proxy两种方式。但对Nodeport如何转发流量却语焉不详。该图来自网络，从图来看是通过kube proxy转发的，我没有去研究过源码。欢迎了解的同学跟帖说明。</p>
@@ -417,7 +417,7 @@ spec:
 </li>
 </ul>
 <p>因此，需要通过一个网关来将外部客户端的请求导入到Cluster中的应用中，在kubernetes中，这个网关是一个4层的load balancer。</p>
-<h2 id="load-balancer">通过Load Balancer提供外部访问入口</h2>
+<h2 id="通过load-balancer提供外部访问入口">通过Load Balancer提供外部访问入口</h2>
 <p>通过将Service的类型设置为LoadBalancer，可以为Service创建一个外部Load Balancer。Kubernetes的文档中声明该Service类型需要云服务提供商的支持，其实这里只是在Kubernetes配置文件中提出了一个要求，即为该Service创建Load Balancer，至于如何创建则是由Google Cloud或Amazon Cloud等云服务商提供的，创建的Load Balancer不在Kubernetes Cluster的管理范围中。kubernetes 1.6版本中，WS, Azure, CloudStack, GCE and OpenStack等云提供商已经可以为Kubernetes提供Load Balancer.下面是一个Load balancer类型的Service例子：</p>
 <pre><code>kind: Service
 apiVersion: v1
@@ -496,7 +496,7 @@ $ neutron lb-member-list
 <p>通过设置Service类型提供的是四层Load Balancer，当只需要向外暴露一个服务的时候，可以直接采用这种方式。但在一个应用需要对外提供多个服务时，采用该方式会为每一个服务（IP+Port）都创建一个外部load balancer。如下图所示
 <img src="http://img.zhaohuabing.com/in-post/access-application-from-outside/multiple-load-balancer.PNG" alt="创建多个Load balancer暴露应用的多个服务">
 一般来说，同一个应用的多个服务/资源会放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。直接将服务暴露给外部用户也会导致了前端和后端的耦合，影响了后端架构的灵活性，如果以后由于业务需求对服务进行调整会直接影响到客户端。可以通过使用Kubernetes Ingress进行L7 load balancing来解决该问题。</p>
-<h2 id="ingressload-balancer">采用Ingress作为七层load balancer</h2>
+<h2 id="采用ingress作为七层load-balancer">采用Ingress作为七层load balancer</h2>
 <p>首先看一下引入Ingress后的应用拓扑示意图（注：本图假设Kubernetes Cluster部署在Openstack私有云上）。
 <img src="http://img.zhaohuabing.com/in-post/access-application-from-outside/ingress.PNG" alt="采用Ingress暴露应用的多个服务">
 这里Ingress起到了七层负载均衡器和Http方向代理的作用，可以根据不同的url把入口流量分发到不同的后端Service。外部客户端只看到foo.bar.com这个服务器，屏蔽了内部多个Service的实现方式。采用这种方式，简化了客户端的访问，并增加了后端实现和部署的灵活性，可以在不影响客户端的情况下对后端的服务部署进行调整。</p>
@@ -557,9 +557,9 @@ spec:
 </code></pre><blockquote>
 <p>备注：Google Cloud直接支持Ingress资源，如果应用部署在Google Cloud中，Google Cloud会自动为Ingress资源创建一个7层load balancer，并为之分配一个外部IP，不需要自行部署Ingress Controller。</p>
 </blockquote>
-<h2 id="heading1">结论</h2>
+<h2 id="结论">结论</h2>
 <p>采用Ingress加上Load balancer的方式可以将Kubernetes Cluster中的应用服务暴露给外部客户端。这种方式比较灵活，基本可以满足大部分应用的需要。但如果需要在入口处提供更强大的功能，如有更高的效率要求，需求进行安全认证，日志记录，或者需要一些应用的定制逻辑，则需要考虑采用微服务架构中的API Gateway模式，采用一个更强大的API Gateway来作为应用的流量入口。</p>
-<h2 id="heading2">参考</h2>
+<h2 id="参考">参考</h2>
 <ul>
 <li>
 <p><a href="http://alesnosek.com/blog/2017/02/14/accessing-kubernetes-pods-from-outside-of-the-cluster/">Accessing Kubernetes Pods from Outside of the Cluster</a></p>

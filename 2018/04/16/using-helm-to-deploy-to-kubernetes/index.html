@@ -358,27 +358,27 @@ $(function() {
   <ul>
     <li>
       <ul>
-        <li><a href="#heading">前言</a></li>
-        <li><a href="#kubernetes">Kubernetes应用部署的挑战</a></li>
-        <li><a href="#helm">Helm是什么？</a></li>
-        <li><a href="#helm1">Helm组件及相关术语</a></li>
-        <li><a href="#helm2">安装Helm</a></li>
-        <li><a href="#helm-chart">构建一个Helm chart</a></li>
+        <li><a href="#前言">前言</a></li>
+        <li><a href="#kubernetes应用部署的挑战">Kubernetes应用部署的挑战</a></li>
+        <li><a href="#helm是什么">Helm是什么？</a></li>
+        <li><a href="#helm组件及相关术语">Helm组件及相关术语</a></li>
+        <li><a href="#安装helm">安装Helm</a></li>
+        <li><a href="#构建一个helm-chart">构建一个Helm chart</a></li>
         <li><a href="#helm-repository">Helm Repository</a></li>
-        <li><a href="#kuberneteschart">在kubernetes中部署Chart</a></li>
-        <li><a href="#heading1">升级和回退</a></li>
-        <li><a href="#heading2">总结</a></li>
-        <li><a href="#qa">Q&A</a></li>
-        <li><a href="#heading3">参考</a></li>
+        <li><a href="#在kubernetes中部署chart">在kubernetes中部署Chart</a></li>
+        <li><a href="#升级和回退">升级和回退</a></li>
+        <li><a href="#总结">总结</a></li>
+        <li><a href="#qa">Q&amp;A</a></li>
+        <li><a href="#参考">参考</a></li>
       </ul>
     </li>
   </ul>
 </nav>
                 
-                <h2 id="heading">前言</h2>
+                <h2 id="前言">前言</h2>
 <hr>
 <p>Helm是Kubernetes生态系统中的一个软件包管理工具。本文将介绍为何要使用Helm进行Kubernetes软件包管理，澄清Helm中使用到的相关概念，并通过一个具体的示例学习如何使用Helm打包，分发，安装，升级及回退Kubernetes应用。</p>
-<h2 id="kubernetes">Kubernetes应用部署的挑战</h2>
+<h2 id="kubernetes应用部署的挑战">Kubernetes应用部署的挑战</h2>
 <hr>
 <p>让我们首先来看看Kubernetes，kubernetes提供了基于容器的应用集群管理，为容器化应用提供了部署运行、资源调度、服务发现和动态伸缩等一系列完整功能。</p>
 <p>kubernetes的核心设计理念是: 用户定义应用程序的规格，而kubernetes则负责按照定义的规则部署并运行应用程序，如果应用系统出现问题导致偏离了定义的规格，kubernetes负责对其进行自动修正。例如应用规格要求部署两个实例，其中一个实例异常终止了，kubernetes会检查到并重新启动一个新的实例。</p>
@@ -393,14 +393,14 @@ $(function() {
 <li>如何分发和重用kubernetes的应用配置？</li>
 </ul>
 <p>Helm的引入很好地解决上面这些问题。</p>
-<h2 id="helm">Helm是什么？</h2>
+<h2 id="helm是什么">Helm是什么？</h2>
 <hr>
 <p>很多人都使用过Ubuntu下的ap-get或者CentOS下的yum, 这两者都是Linux系统下的包管理工具。采用apt-get/yum,应用开发者可以管理应用包之间的依赖关系，发布应用；用户则可以以简单的方式查找、安装、升级、卸载应用程序。</p>
 <p>我们可以将Helm看作Kubernetes下的apt-get/yum。Helm是Deis (<a href="https://deis.com/">https://deis.com/</a>) 开发的一个用于kubernetes的包管理器。</p>
 <p>对于应用发布者而言，可以通过Helm打包应用，管理应用依赖关系，管理应用版本并发布应用到软件仓库。</p>
 <p>对于使用者而言，使用Helm后不用需要了解Kubernetes的Yaml语法并编写应用部署文件，可以通过Helm下载并在kubernetes上安装需要的应用。</p>
 <p>除此以外，Helm还提供了kubernetes上的软件部署，删除，升级，回滚应用的强大功能。</p>
-<h2 id="helm1">Helm组件及相关术语</h2>
+<h2 id="helm组件及相关术语">Helm组件及相关术语</h2>
 <hr>
 <p>开始接触Helm时遇到的一个常见问题就是Helm中的一些概念和术语非常让人迷惑，我开始学习Helm就遇到这个问题。</p>
 <p>因此我们先了解一下Helm的这些相关概念和术语。</p>
@@ -418,7 +418,7 @@ $(function() {
 <p>下面这张图描述了Helm的几个关键组件Helm（客户端），Tiller（服务器），Repository（Chart软件仓库），Chart（软件包）之前的关系。</p>
 <p>图2： Helm软件架构
 <img src="http://img.zhaohuabing.com/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/helm-architecture.png" alt=""></p>
-<h2 id="helm2">安装Helm</h2>
+<h2 id="安装helm">安装Helm</h2>
 <hr>
 <p>下面我们通过一个完整的示例来介绍Helm的相关概念，并学习如何使用Helm打包，分发，安装，升级及回退kubernetes应用。</p>
 <p>可以参考Helm的帮助文档https://docs.helm.sh/using_helm/#installing-helm 安装Helm</p>
@@ -430,7 +430,7 @@ $(function() {
 </ol>
 <p>然后使用下面的命令安装服务器端组件Tiller</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Helm init
-</code></pre></div><h2 id="helm-chart">构建一个Helm chart</h2>
+</code></pre></div><h2 id="构建一个helm-chart">构建一个Helm chart</h2>
 <hr>
 <p>让我们在实践中来了解Helm。这里将使用一个Go测试小程序，让我们先为这个小程序创建一个Helm chart。</p>
 <pre><code>git clone https://github.com/zhaohuabing/testapi.git; 
@@ -497,7 +497,7 @@ No results found
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm repo list
 NAME    URL
 stable  https://kubernetes-charts.storage.googleapis.com
-</code></pre></div><p>使用helm serve命令启动一个repo server，该server缺省使用'$HELM_HOME/repository/local'目录作为chart存储，并在8879端口上提供服务。</p>
+</code></pre></div><p>使用helm serve命令启动一个repo server，该server缺省使用'$HELM_HOME/repository/local&rsquo;目录作为chart存储，并在8879端口上提供服务。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm serve&amp;
 Now serving you on 127.0.0.1:8879
 </code></pre></div><p>启动本地repo server后，将其加入helm的repo列表。</p>
@@ -508,7 +508,7 @@ Now serving you on 127.0.0.1:8879
 
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION
 local/testapi-chart     0.0.1                           A Helm chart <span style="color:#ff79c6">for</span> Kubernetes
-</code></pre></div><h2 id="kuberneteschart">在kubernetes中部署Chart</h2>
+</code></pre></div><h2 id="在kubernetes中部署chart">在kubernetes中部署Chart</h2>
 <hr>
 <p>chart被发布到仓储后，可以通过Helm instal命令部署chart，部署时指定chart名及Release（部署的实例）名：</p>
 <pre><code> helm install local/testapi-chart --name testapi
@@ -543,7 +543,7 @@ NOTES:
 <pre><code>NAME    REVISION        UPDATED                         STATUS          CHART                   NAMESPACE
 testapi 1               Mon Apr 16 10:21:44 2018        DEPLOYED        testapi-chart-0.0.1     default
 </code></pre><p>可以看到在输出中有一个Revision（更改历史）字段，该字段用于表示某一Release被更新的次数，可以用该特性对已部署的Release进行回滚。</p>
-<h2 id="heading1">升级和回退</h2>
+<h2 id="升级和回退">升级和回退</h2>
 <hr>
 <p>修改Chart.yaml，将版本号从0.0.1 修改为 1.0.0, 然后使用Helm package命令打包并发布到本地仓库。</p>
 <p>查看本地库中的Chart信息，可以看到在本地仓库中testapi-chart有两个版本</p>
@@ -568,7 +568,7 @@ REVISION        UPDATED                         STATUS          CHART           
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">helm list
 NAME    REVISION        UPDATED                         STATUS          CHART                   NAMESPACE
 testapi <span style="color:#bd93f9">3</span>               Mon Apr <span style="color:#bd93f9">16</span> 10:48:20 <span style="color:#bd93f9">2018</span>        DEPLOYED        testapi-chart-0.0.1     default
-</code></pre></div><h2 id="heading2">总结</h2>
+</code></pre></div><h2 id="总结">总结</h2>
 <hr>
 <p>Helm作为kubernetes应用的包管理以及部署工具，提供了应用打包，发布，版本管理以及部署，升级，回退等功能。Helm以Chart软件包的形式简化Kubernetes的应用管理，提高了对用户的友好性。</p>
 <h2 id="qa">Q&amp;A</h2>
@@ -582,13 +582,13 @@ testapi <span style="color:#bd93f9">3</span>               Mon Apr <span style="
 <strong>A</strong>：Chart是支持参数替换的，可以把业务配置相关的参数设置为模板变量。使用Helm install Chart的时候可以指定一个参数值文件，这样就可以把业务参数从Chart中剥离了。例子： helm install &ndash;values=myvals.yaml wordpress</p>
 <p><strong>Q</strong>: helm能解决服务依赖吗？<!-- raw HTML omitted -->
 <strong>A</strong>：可以的，在chart可以通过requirements.yaml声明对其他chart的依赖关系。如下面声明表明chart依赖apache和mysql这两个第三方chart。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">dependencies:
-  - name: apache
-    version: <span style="color:#bd93f9">1.2</span><span style="color:#bd93f9">.3</span>
-    repository: http://example.com/charts
-  - name: mysql
-    version: <span style="color:#bd93f9">3.2</span><span style="color:#bd93f9">.1</span>
-    repository: http://another.example.com/charts
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">dependencies</span>:
+  - <span style="color:#ff79c6">name</span>: apache
+    <span style="color:#ff79c6">version</span>: <span style="color:#bd93f9">1.2.3</span>
+    <span style="color:#ff79c6">repository</span>: http://example.com/charts
+  - <span style="color:#ff79c6">name</span>: mysql
+    <span style="color:#ff79c6">version</span>: <span style="color:#bd93f9">3.2.1</span>
+    <span style="color:#ff79c6">repository</span>: http://another.example.com/charts
 </code></pre></div><p><strong>Q</strong>: chart的reversion 可以自定义吗？比如跟git的tag<!-- raw HTML omitted -->
 <strong>A</strong>: 这位朋友应该是把chart的version和Release的reversion搞混了，呵呵。 Chart是没有reversion的，Chart部署的一个实例（Release）才有Reversion，Reversion是Release被更新后自动生成的。</p>
 <p><strong>Q</strong>: 没有看到helm指向k8s的配置，怎么确认在哪个K8s集群运行的？<!-- raw HTML omitted -->
@@ -597,7 +597,7 @@ testapi <span style="color:#bd93f9">3</span>               Mon Apr <span style="
 <strong>A</strong>： Helm将kubernetes应用作为一个软件包整体管理，例如一个应用可能有前端服务器，后端服务器，数据库，这样会涉及多个Kubernetes 部署配置文件，Helm就整体管理了。另外Helm还提供了软件包版本，一键安装，升级，回退。Kubectl和Helm就好比你手工下载安装一个应用 和 使用apt-get 安装一个应用的区别。</p>
 <p><strong>Q</strong>: 如何在helm install 时指定命名空间？<!-- raw HTML omitted -->
 <strong>A</strong>: helm install local/testapi-chart &ndash;name testapi &ndash;namespace mynamespace</p>
-<h2 id="heading3">参考</h2>
+<h2 id="参考">参考</h2>
 <hr>
 <ul>
 <li><a href="https://daemonza.github.io/2017/02/20/using-helm-to-deploy-to-kubernetes/">Using Helm to deploy to Kubernetes</a></li>

@@ -376,28 +376,28 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">内部服务间的通信</a>
+    <li><a href="#内部服务间的通信">内部服务间的通信</a>
       <ul>
         <li><a href="#cluster-ip">Cluster IP</a></li>
         <li><a href="#istio-sidecar-proxy">Istio Sidecar Proxy</a></li>
       </ul>
     </li>
-    <li><a href="#heading1">如何从外部网络访问</a>
+    <li><a href="#如何从外部网络访问">如何从外部网络访问</a>
       <ul>
         <li><a href="#nodeport">NodePort</a></li>
         <li><a href="#loadbalancer">LoadBalancer</a></li>
         <li><a href="#ingress">Ingress</a></li>
       </ul>
     </li>
-    <li><a href="#heading2">如何为服务网格选择入口网关？</a>
+    <li><a href="#如何为服务网格选择入口网关">如何为服务网格选择入口网关？</a>
       <ul>
         <li><a href="#k8s-ingress">K8s Ingress</a></li>
         <li><a href="#istio-gateway">Istio Gateway</a></li>
-        <li><a href="#api-gateway">应用对API Gateway的需求</a></li>
-        <li><a href="#api-gateway--sidecar-proxy">采用API Gateway + Sidecar Proxy作为服务网格的流量入口</a></li>
+        <li><a href="#应用对api-gateway的需求">应用对API Gateway的需求</a></li>
+        <li><a href="#采用api-gateway--sidecar-proxy作为服务网格的流量入口">采用API Gateway + Sidecar Proxy作为服务网格的流量入口</a></li>
       </ul>
     </li>
-    <li><a href="#heading3">参考资料</a></li>
+    <li><a href="#参考资料">参考资料</a></li>
   </ul>
 </nav>
                 
@@ -406,7 +406,7 @@ $(function() {
 <blockquote>
 <p>说明：阅读本文要求读者了解Kubernetes和Istio的基本概念，包括Pod、Service、NodePort、LoadBalancer、Ingress、Gateway、VirtualService等。如对这些概念不熟悉，可以在阅读过程中参考文后的相关链接。</p>
 </blockquote>
-<h1 id="heading">内部服务间的通信</h1>
+<h1 id="内部服务间的通信">内部服务间的通信</h1>
 <p>首先，我们来回顾一下Kubernetes集群内部各个服务之间相互访问的方法。</p>
 <h2 id="cluster-ip">Cluster IP</h2>
 <p>Kubernetes以Pod作为应用部署的最小单位。kubernetes会根据Pod的声明对其进行调度，包括创建、销毁、迁移、水平伸缩等，因此Pod 的IP地址不是固定的，不方便直接采用Pod IP对服务进行访问。</p>
@@ -438,7 +438,7 @@ $(function() {
 <p>Istio Sidecar Proxy和Kube-proxy的userspace模式的工作机制类似，都是通过在用户空间的一个代理来实现客户端请求的转发和后端多个Pod之间的负载均衡。两者的不同点是：Kube-Proxy工作在四层，而Sidecar Proxy则是一个七层代理，可以针对HTTP，GRPS等应用层的语义进行处理和转发，因此功能更为强大，可以配合控制面实现更为灵活的路由规则和服务管控功能。
 <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-inter-services-communication.jpg" alt=""></p>
 <!-- raw HTML omitted -->
-<h1 id="heading1">如何从外部网络访问</h1>
+<h1 id="如何从外部网络访问">如何从外部网络访问</h1>
 <p>Kubernetes的Pod IP和Cluster IP都只能在集群内部访问，而我们通常需要从外部网络上访问集群中的某些服务，Kubernetes提供了下述几种方式来为集群提供外部流量入口。</p>
 <h2 id="nodeport">NodePort</h2>
 <p>NodePort在集群中的主机节点上为Service提供一个代理端口，以允许从主机网络上对Service进行访问。Kubernetes官网文档只介绍了NodePort的功能，并未对其实现原理进行解释。下面我们通过实验来分析NodePort的实现机制。</p>
@@ -457,7 +457,7 @@ NAME                                           READY     STATUS    RESTARTS   AG
 webapp1-nodeport-deployment-785989576b-cjc5b   1/1       Running   <span style="color:#bd93f9">0</span>          2m        10.32.0.3
 webapp1-nodeport-deployment-785989576b-tpfqr   1/1       Running   <span style="color:#bd93f9">0</span>          2m        10.32.0.5
 </code></pre></div><p>通过netstat命令可以看到Kube-proxy在主机网络上创建了30080监听端口，用于接收从主机网络进入的外部流量。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ netstat -lnp|grep 30080
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ netstat -lnp|grep <span style="color:#bd93f9">30080</span>
 tcp6       <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span> :::30080                :::*                    LISTEN      7427/kube-proxy
 </code></pre></div><p>下面是Kube-proxy创建的相关iptables规则以及对应的说明。可以看到Kube-proxy为Nodeport创建了相应的IPtable规则，将发向30080这个主机端口上的流量重定向到了后端的两个Pod IP上。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables-save &gt; iptables-dump
@@ -548,7 +548,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
 <li>Service将请求最终导入到后端提供服务的Pod中 (iptabes规则)</li>
 </ol>
 <p>从前面的介绍可以看到，K8S Ingress提供了一个基础的七层网关功能的抽象定义，其作用是对外提供一个七层服务的统一入口，并根据URL/HOST将请求路由到集群内部不同的服务上。</p>
-<h1 id="heading2">如何为服务网格选择入口网关？</h1>
+<h1 id="如何为服务网格选择入口网关">如何为服务网格选择入口网关？</h1>
 <p>在Istio服务网格中，通过为每个Service部署一个sidecar代理，Istio接管了Service之间的请求流量。控制面可以对网格中的所有sidecar代理进行统一配置，实现了对网格内部流量的路由控制，从而可以实现灰度发布，流量镜像，故障注入等服务管控功能。但是，Istio并没有为入口网关提供一个较为完善的解决方案。</p>
 <h2 id="k8s-ingress">K8s Ingress</h2>
 <p>在0.8版本以前，Istio缺省采用K8s Ingress来作为Service Mesh的流量入口。K8s Ingress统一了应用的流量入口，但存在两个问题：</p>
@@ -565,7 +565,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
 <p>通过该方式，Istio控制面用一致的配置模型同时控制了入口网关和内部的sidecar代理。这些配置包括路由规则，策略检查、Telementry收集以及其他服务管控功能。
 <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-Ingress.jpg" alt=""></p>
 <!-- raw HTML omitted -->
-<h2 id="api-gateway">应用对API Gateway的需求</h2>
+<h2 id="应用对api-gateway的需求">应用对API Gateway的需求</h2>
 <p>采用Gateway和VirtualService实现的Istio Ingress Gateway提供了网络入口处的基础通信功能，包括可靠的通信和灵活的路由规则。但对于一个服务化应用来说，网络入口除了基础的通讯功能之外，还有一些其他的应用层功能需求，例如：</p>
 <ul>
 <li>第三方系统对API的访问控制</li>
@@ -586,7 +586,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
 <li>Istio声称支持Istio-Based Route Rule Discovery (尚处于实验阶段) <a href="https://gloo.solo.io/introduction/architecture/">https://gloo.solo.io/introduction/architecture/</a></li>
 </ul>
 </blockquote>
-<h2 id="api-gateway--sidecar-proxy">采用API Gateway + Sidecar Proxy作为服务网格的流量入口</h2>
+<h2 id="采用api-gateway--sidecar-proxy作为服务网格的流量入口">采用API Gateway + Sidecar Proxy作为服务网格的流量入口</h2>
 <p>在目前难以找到一个同时具备API Gateway和Isito Ingress能力的网关的情况下，一个可行的方案是使用API Gateway和Sidecar Proxy一起为服务网格提供外部流量入口。</p>
 <p>由于API Gateway已经具备七层网关的功能，Mesh Ingress中的Sidecar只需要提供VirtualService资源的路由能力，并不需要提供Gateway资源的网关能力，因此采用Sidecar Proxy即可。网络入口处的Sidecar Proxy和网格内部应用Pod中Sidecar Proxy的唯一一点区别是：该Sidecar只接管API Gateway向Mesh内部的流量，并不接管外部流向API Gateway的流量；而应用Pod中的Sidecar需要接管进入应用的所有流量。
 <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/API-Gateway-and-Sidecar-Proxy-as-Ingress-for-Istio.png" alt=""></p>
@@ -598,7 +598,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
 <p>性能方面的考虑：从上图可以看到，采用该方案后，外部请求的处理流程在入口处增加了Sidecar Proxy这一跳，因此该方式会带来少量的性能损失，但该损失是完全可以接受的。</p>
 <p>对于请求时延而言，在服务网格中，一个外部请求本来就要经过较多的代理和应用进程的处理，在Ingress处增加一个代理对整体的时延影响基本忽略不计，而且对于绝大多数应用来说，网络转发所占的时间比例本来就很小，99%的耗时都在业务逻辑。如果系统对于增加的该时延非常敏感，则我建议重新考虑是否应该采用微服务架构和服务网格，毕竟任何架构模式都不是万能的，不能因为有了锤子，看什么都像钉子。</p>
 <p>对于吞吐量而言，如果入口处的网络吞吐量存在瓶颈，则可以通过对API Gateway + Sidecar Proxy组成的Ingress整体进行水平扩展，来对入口流量进行负荷分担，以提高网格入口的网络吞吐量。</p>
-<h1 id="heading3">参考资料</h1>
+<h1 id="参考资料">参考资料</h1>
 <ol>
 <li><!-- raw HTML omitted --><a href="https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies">https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies</a><!-- raw HTML omitted --></li>
 <li><!-- raw HTML omitted --><a href="https://zhaohuabing.com/2017/11/28/access-application-from-outside/#undefined">https://zhaohuabing.com/2017/11/28/access-application-from-outside/#undefined</a><!-- raw HTML omitted --></li>

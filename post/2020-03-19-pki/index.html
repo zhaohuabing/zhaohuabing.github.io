@@ -352,22 +352,22 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">非对称加密</a></li>
-    <li><a href="#heading1">哈希函数</a></li>
-    <li><a href="#heading2">数字签名</a></li>
-    <li><a href="#heading3">数字证书</a>
+    <li><a href="#非对称加密">非对称加密</a></li>
+    <li><a href="#哈希函数">哈希函数</a></li>
+    <li><a href="#数字签名">数字签名</a></li>
+    <li><a href="#数字证书">数字证书</a>
       <ul>
-        <li><a href="#heading4">自签名证书</a></li>
-        <li><a href="#heading5">证书机构</a></li>
-        <li><a href="#heading6">证书链</a></li>
-        <li><a href="#heading7">交叉认证</a></li>
+        <li><a href="#自签名证书">自签名证书</a></li>
+        <li><a href="#证书机构">证书机构</a></li>
+        <li><a href="#证书链">证书链</a></li>
+        <li><a href="#交叉认证">交叉认证</a></li>
       </ul>
     </li>
-    <li><a href="#heading8">参考文档</a></li>
+    <li><a href="#参考文档">参考文档</a></li>
   </ul>
 </nav>
                 
-                <h1 id="heading">非对称加密</h1>
+                <h1 id="非对称加密">非对称加密</h1>
 <p>在传统的加密算法中，通信的双方会采用一个共享秘钥来对数据进行加密和解密。消息发送方先采用秘钥对明文进行加密然后再进行传送，待接收方收到消息后，再采用秘钥对密文进行界面，以得到明文。由于加密和解密采用的秘钥是相同的，这种加密算法也称为对称加密。采用对称加密的通信过程如下图所示：
 <img src="/img/2020-03-19-pki/symmetric-cryptography.png" alt="">
 图片来源<a href="https://www.twilio.com/blog/what-is-public-key-cryptography">twilio</a></p>
@@ -391,7 +391,7 @@ openssl rsautl -encrypt -inkey public_key.pem -pubin -in plain_text -out encrypt
 
 cat encrypted_text
 ?▒▒nC▒▒▒▒K▒߿$▒E▒<span style="color:#ff79c6">{</span><span style="color:#f1fa8c">&#39;▒k▒▒▒
-</span><span style="color:#f1fa8c">▒▒▒▒&gt;▒▒▒~▒▒▒▒p▒&amp;Y▒▒▒▒&#39;</span>▒▒Z▒Z▒O$▒b▒ϒ▒Z▒mh▒*<span style="color:#f1fa8c">&#34;</span><span style="color:#f1fa8c">▒^,▒▒6▒ê2▒▒▒?H▒&amp;▒▒▒g▒5▒▒g▒a
+</span><span style="color:#f1fa8c">▒▒▒▒&gt;▒▒▒~▒▒▒▒p▒&amp;Y▒▒▒▒&#39;</span>▒▒Z▒Z▒O$▒b▒ϒ▒Z▒mh▒*<span style="color:#f1fa8c">&#34;▒^,▒▒6▒ê2▒▒▒?H▒&amp;▒▒▒g▒5▒▒g▒a
 </span><span style="color:#f1fa8c">▒yNs▒r▒75cyq▒P?p▒M[iZ@▒▒b▒*o▒▒?(▒▒M▒▒x▒^▒▒ٱ󊽂Q▒▒@▒jޤ▒K▒▒▒&amp;=)▒▒▒▒y▒▒▒
 </span><span style="color:#f1fa8c"> H▒▒▒B▒0Z▒0▒▒▒~t|&lt;~▒b/Y▒O▒^⫯&amp;a
 </span></code></pre></div><p>使用私钥进行解密,密文被还原为明文“Hello world”。</p>
@@ -400,7 +400,7 @@ openssl rsautl -decrypt -inkey private_key.pem -in encrypted_text -out decrypted
 
 cat  decrypted_text
 Hello world
-</code></pre></div><h1 id="heading1">哈希函数</h1>
+</code></pre></div><h1 id="哈希函数">哈希函数</h1>
 <p>哈希函数是一个具有以下输入和输出的数学函数 H(X)=Y：</p>
 <ul>
 <li>H: 哈希函数，其输入参数为X，输出为Y。</li>
@@ -413,7 +413,7 @@ Hello world
 <li>无法通过输出反推出输入。对于输入值的范围很大的情况来说，这是没有问题的，如果输入值是一个有限的集合，则很容易通过遍历尝试每一个输入值来推断出一个输出对应的输入。在这种情况下，我们可以为输入X加上一个随机值R来隐藏输入值，即 H(R|X)=Y。由于攻击者不知道R的值，因此无法再通过遍历尝试每个输入的方法推断出Y对应的输入。这种做法被称为“加盐”，例如我们在存储密码时就会通过“加盐”的方法来避免彩虹表攻击。</li>
 </ul>
 <p>从上面哈希函数的的特点可以看出，一段数据的哈希值就是该数据的一个固定长度的，独一无二的“特征”，我们可以把哈希值看作该数据的“数字指纹”。</p>
-<h1 id="heading2">数字签名</h1>
+<h1 id="数字签名">数字签名</h1>
 <p>我们在“非对称加密”一节中演示了采用公钥进行加密，私钥进行解密的过程。实际上我们也可以采用私钥进行加密，采用公钥进行解密。秘钥对的拥有者采用私钥对一段数据进行加密，然后公布密文，原文和公钥，任何人都可以使用公钥解密密文，然后核对原文和密文是否一致。由于私钥是不公开的，只有拥有者才能采用私钥对数据加密，所以这种方式可以用于证明发布这条消息的用户拥有消息中的公钥对应的私钥，这就是数字签名的基本原理。在数字证书，区块链，比特币中就采用了这种方法来验证用户身份。采用数学公式来表示数字签名的原理：</p>
 <ul>
 <li>消息发送者生成秘钥对： (sk,pk):= generates(keysize)</li>
@@ -430,7 +430,7 @@ Hello world
 <img src="/img/2020-03-19-pki/digital-signatures.jpg" alt="">
 图片来源<a href="https://www.revasolutions.com/expertise/process-management/digital-signatures/attachment/digital-signatures-methodology/">revasolutions</a></p>
 <p>除了验证公钥拥有者的身份之外，数字签名还可以证明传输的数据没有被人恶意篡改，因为如果数据被篡改了，数据的哈希值就和解密后的签名对不上。</p>
-<h1 id="heading3">数字证书</h1>
+<h1 id="数字证书">数字证书</h1>
 <p>在前面我们讲到可以通过数字签名来证明一个人或者组织拥有一个公钥对应的私钥，因此我们可以把一个公钥看作一个数字身份标识，如果一个人可以发出使用该标识(公钥)签名的数据,则说明该用户是该公钥及对应的私钥的拥有者。</p>
 <p>在现实生活中也有类似的身份证明，身份证明有匿名的，也有实名的。匿名的身份证明只是用于证明你拥有某一项身份或者权益，并不需要声明你到底是谁，例如各种运动俱乐部的会员卡。实名的身份证明则需要你的姓名，住址，出生年月等信息，例如我们的身份证。</p>
 <p>当我们只需要匿名的身份标识时，直接采用公钥就可以了，采用公钥对应的私钥对任意一段数据进行数字签名，并发布原生数据，公钥和签名数据，就可以证明公钥拥有者的身份了。比特币是一个匿名的交易系统，只需要证明你是比特币的拥有者，并不需要公布真实身份，因此在比特币中就直接采用了公钥作为比特币的钱包地址。</p>
@@ -455,11 +455,11 @@ If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be l
 -----
 Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
 State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
-Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Chengdu
 Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Make a Lot of Money Ltd        
-Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:zhaohuabing
-Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:zhaohuabing@gmail.com
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:zhaohuabing
+Email Address <span style="color:#ff79c6">[]</span>:zhaohuabing@gmail.com
 </code></pre></div><p>在证书创建过程中，会要求输入姓名、住址、电子邮件等身份信息。</p>
 <p>查看刚才生成的证书文件中的内容。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl x509 -in certificate.pem -text
@@ -552,7 +552,7 @@ wuIOfTkjtulWF4nViEQurjemULm0
 <li>Subject Public Key Info： 证书拥有者的公钥。</li>
 <li>Signature Algorithm： 签名算法及数字签名。</li>
 </ul>
-<h2 id="heading4">自签名证书</h2>
+<h2 id="自签名证书">自签名证书</h2>
 <p>生成数字证书时会使用证书颁发机构（Issuer）的私钥对证书内容（证书拥有者的公钥和身份信息）进行数字签名。从上面实验的输出可以看到，Issuer和Subject中的信息是相同的。都是“C = CN, ST = Sichuan, L = Chengdu, O = Make a Lot of Money Ltd, CN = zhaohuabing”，这说明对该证书进行签名使用的私钥是证书中公钥对应的私钥。这种采用证书中的公钥对应的私钥进行签名的证书被称为自签名证书，意思是签名者和证书拥有者为同一人。</p>
 <p>下图展示了一个自签名证书的内部结构：
 <img src="/img/2020-03-19-pki/self-signed-certificate.jpg" alt=""></p>
@@ -560,7 +560,7 @@ wuIOfTkjtulWF4nViEQurjemULm0
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl verify -CAfile certificate.pem certificate.pem
 certificate.pem: OK
 </code></pre></div><p>自签名证书可以证明该证书是由证书中公钥（以及对应的私钥）拥有者发布的，并且可以保证证书中包含的信息例如姓名、组织机构、地址等未被第三方篡改过，但是并不能解决证书拥有者和证书使用者之间的信任问题。我们可以把自签名证书理解为一个人给自己印了一张名片，名片中写上了自己的姓名，地址，电子邮件等信息，然后把这张名片分发给别人。如果别人从其他渠道中得知你是可以信任的，则会欣然接受该张名片，并且认可名片中的信息；但如果别人之前并不认识你，那么就会对名片中的信息持怀疑态度：我怎么知道你名片中的姓名等内容是真实的呢？因此自签名证书的使用场合是有限的，只限于一些组织机构的内部系统中（我们可以认为在一个系统内部中，自签名证书所声明的身份是可信的），并不能在互联网上使用。</p>
-<h2 id="heading5">证书机构</h2>
+<h2 id="证书机构">证书机构</h2>
 <p>前面我们讲到自签发证书存在内容的可信度问题，因此在数字证书体系中引入了证书机构来解决该问题。我们可以把证书机构看作真实世界中的权威机构，例如政府部门。我们使用的身份证具有可信度，这是因为有政府部门担保其中信息的正确性。在数字证书体系中也有类似的权威机构，我们称为证书机构。</p>
 <p>引入证书机构后，我们使用证书机构而不是证书拥有者的私钥来对数字证书进行签名，如下图所示：
 <img src="/img/2020-03-19-pki/standard-certificate.jpg" alt="">
@@ -596,11 +596,11 @@ Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</
 string is too long, it needs to be no more than <span style="color:#bd93f9">2</span> bytes long
 Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
 State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
-Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Chengdu
 Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:My Root CA
-Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:My Root CA
-Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:admin@myrootca.com
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:My Root CA
+Email Address <span style="color:#ff79c6">[]</span>:admin@myrootca.com
 </code></pre></div><p>创建Alice的私钥和CSR(证书签名请求)，该CSR中包含了Alice的私钥对应的公钥，以及Alice的姓名，机构等身份信息。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -nodes -keyout Alice.key -out Alice.csr
 Generating a RSA private key
@@ -617,16 +617,16 @@ If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be l
 -----
 Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
 State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
-Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Chengdu
 Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Alice Trade Ltd
-Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Alice
-Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:alice@alicetrade.com
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Alice
+Email Address <span style="color:#ff79c6">[]</span>:alice@alicetrade.com
 
 Please enter the following <span style="color:#f1fa8c">&#39;extra&#39;</span> attributes
 to be sent with your certificate request
-A challenge password <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-An optional company name <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+A challenge password <span style="color:#ff79c6">[]</span>:
+An optional company name <span style="color:#ff79c6">[]</span>:
 </code></pre></div><p>使用证书机构的私钥、根证书和Alice的CSR为Alice创建数字证书。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl x509 -req -in Alice.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out Alice.crt
 Signature ok
@@ -656,7 +656,7 @@ openssl x509 -pubkey -noout -in Alice.crt  &gt; Alice-pub.key
 <span style="color:#6272a4">#使用公钥对合同签名进行验证</span>
 openssl dgst -sha256 -verify Alice-pub.key -signature alice-contract-sign.sha256 alice-contract
 Verified OK
-</code></pre></div><h2 id="heading6">证书链</h2>
+</code></pre></div><h2 id="证书链">证书链</h2>
 <p>在Alice和Bob的证书实验中，Alice的证书是采用我们创建的证书机构的根证书签发的。但实际上真正的证书机构不会使用根证书来直接签发用户证书。原因是根证书非常重要，如果根证书的秘钥泄露了，会影响该根证书签发的所有用户证书，导致非常严重的安全风险。为了避免根证书的安全风险，证书机构会采用根证书签发中间证书（intermediate certificate），然后使用中间证书来签发用户证书，这样如果一个中间证书出现了安全问题，可以废弃掉该中间证书而不影响根证书，影响的用户证书范围也小一些。</p>
 <p>因此证书有三种，根证书，中间证书和用户证书，其中中间证书可以有多个层级，这样形成一个链式的证书层级，称为证书链。多层证书链的生成和验证过程和前面试验中的两层（根证书直接生成用户证书）的情况是类似的，只是中间过程会多几个层级。以三层证书链的生成和验证过程举例说明。</p>
 <ul>
@@ -696,11 +696,11 @@ If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be l
 -----
 Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
 State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
-Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Chengdu
 Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Test Root CA
-Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Test Root CA
-Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:rootca@zhaohuabing.com
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Test Root CA
+Email Address <span style="color:#ff79c6">[]</span>:rootca@zhaohuabing.com
 </code></pre></div><p>生成中间证书的私钥和CSR。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -nodes -keyout intermediate.key -out intermediate.csr
 Generating a RSA private key
@@ -717,16 +717,16 @@ If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be l
 -----
 Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
 State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
-Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Chengdu
 Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Test Intermediate CA
-Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Test Intermediate CA
-Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:intermediateCA@zhaohuabing.com
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Test Intermediate CA
+Email Address <span style="color:#ff79c6">[]</span>:intermediateCA@zhaohuabing.com
 
 Please enter the following <span style="color:#f1fa8c">&#39;extra&#39;</span> attributes
 to be sent with your certificate request
-A challenge password <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-An optional company name <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+A challenge password <span style="color:#ff79c6">[]</span>:
+An optional company name <span style="color:#ff79c6">[]</span>:
 </code></pre></div><p>和用户证书不同的是，中间证书需要在证书的basicConstraints中设置CA:true标签，以标明该证书属于证书机构的证书，可以用于签发和验证用户证书。而openssl x509命令不能设置basicConstraints命令，因此我们需要采用openssl ca命令，该命令实现了一个简单的证书机构。</p>
 <p>openssl ca 命令需要采用一个配置文件来配置生成证书的相关参数。我们创建一个intermediateCA.conf文件，其内容如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span> ca <span style="color:#ff79c6">]</span>
@@ -793,16 +793,16 @@ If you enter <span style="color:#f1fa8c">&#39;.&#39;</span>, the field will be l
 -----
 Country Name <span style="color:#ff79c6">(</span><span style="color:#bd93f9">2</span> letter code<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>AU<span style="color:#ff79c6">]</span>:CN
 State or Province Name <span style="color:#ff79c6">(</span>full name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Some-State<span style="color:#ff79c6">]</span>:Sichuan
-Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Chengdu
+Locality Name <span style="color:#ff79c6">(</span>eg, city<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Chengdu
 Organization Name <span style="color:#ff79c6">(</span>eg, company<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span>Internet Widgits Pty Ltd<span style="color:#ff79c6">]</span>:Make a Lot of Money Ltd
-Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:Alice
-Email Address <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+Organizational Unit Name <span style="color:#ff79c6">(</span>eg, section<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:
+Common Name <span style="color:#ff79c6">(</span>e.g. server FQDN or YOUR name<span style="color:#ff79c6">)</span> <span style="color:#ff79c6">[]</span>:Alice
+Email Address <span style="color:#ff79c6">[]</span>:
 
 Please enter the following <span style="color:#f1fa8c">&#39;extra&#39;</span> attributes
 to be sent with your certificate request
-A challenge password <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
-An optional company name <span style="color:#ff79c6">[</span><span style="color:#ff79c6">]</span>:
+A challenge password <span style="color:#ff79c6">[]</span>:
+An optional company name <span style="color:#ff79c6">[]</span>:
 </code></pre></div><p>生成Alice的用户证书。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl x509 -req -in Alice.csr -CA intermediate.crt -CAkey intermediate.key -CAcreateserial -out Alice.crt
 Signature ok
@@ -821,7 +821,7 @@ sudo trust extract-compat
 </code></pre></div><p>然后在openssl命令行中只指明中间证书，就可以验证Alice的用户证书。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl verify -CAfile intermediate.crt Alice.crt
 Alice.crt: OK
-</code></pre></div><h2 id="heading7">交叉认证</h2>
+</code></pre></div><h2 id="交叉认证">交叉认证</h2>
 <p>在签发证书时，多个CA可以为同一个公钥签发证书，因此一个证书签名对应的公钥可以存在于多个上级证书中。采用这种方式，一个证书可以存在于多条链中，并且每条链都是合法的，都可以通过验证。</p>
 <p>让我们来看看下面图中的例子：
 <img src="/img/2020-03-19-pki/cross-certification.jpg" alt="">
@@ -833,7 +833,7 @@ Alice.crt: OK
 <p>这两条链都是合法的，都可以对User1的证书进行验证。同理，也可以用CA1为CA2签发一个中间证书，使CA2颁发的用户证书也处于两条合法的证书链上。这种方式被称为交叉认证，通过交叉认证，可以为两个CA颁布的证书在两个CA之间建立互信关系。</p>
 <p>通过这种方式还可以实现CA的根证书更新，在进行根证书更新时，CA生成一对新的秘钥对和根证书，然后用新的私钥为老的公钥签名生成一个中间证书，并用老的私钥为新的公钥签名生成一个中间证书。这样，无论是新的根证书还是老的根证书颁发的证书在更新期间都可以正常使用，以实现CA新老根证书的平滑过渡。</p>
 <p>本文试验所采用的所有命令已经编写成可以执行的脚本，可以从该<a href="https://github.com/zhaohuabing/kubernetes-mindmap/tree/master/security">github</a>地址下载后自行执行试验。</p>
-<h1 id="heading8">参考文档</h1>
+<h1 id="参考文档">参考文档</h1>
 <ul>
 <li><a href="https://zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/">Hash Pointers and Data Structures</a></li>
 <li><a href="https://zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/">Digital Signature and Public Key as Identities</a></li>
