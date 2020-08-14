@@ -699,6 +699,7 @@ Anthos Service Mesh关键特性包括：</p>
 <li>需要将 cluster 的网络方案设置为 vpc-native，这样 pod ip 在 vpc 中就是可以路由的，以让两个 cluster 的网络可以互通。</li>
 <li>需要为两个 cluster 中部署的 Istio 控制面设置对方 api server 的 remote secret，以使 stio 获取对方的 Service 信息。</li>
 </ul>
+<p>具体的安装步骤可以参见 Anthos Service Mesh 的<a href="https://cloud.google.com/service-mesh/docs/gke-project-setup">帮助文档</a>。</p>
 <p>从导出的 Envoy sidecar 配置可以看到，其连接的 xds server 为本地集群中的 istiod。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">        <span style="color:#f1fa8c">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;xds-grpc&#34;</span>,
         <span style="color:#f1fa8c">&#34;endpoints&#34;</span>: [
@@ -738,8 +739,7 @@ Anthos Service Mesh关键特性包括：</p>
                 }
                }
               }
-</code></pre></div><p><img src="/img/2019-08-13/anthos-example.png" alt=""></p>
-<h1 id="traffic-director-和-anthos-service-mesh-的定位">Traffic Director 和 Anthos Service Mesh 的定位</h1>
+</code></pre></div><h1 id="traffic-director-和-anthos-service-mesh-的定位">Traffic Director 和 Anthos Service Mesh 的定位</h1>
 <p>从前面的分析可以看出， Google Cloud 推出的 Traffic Director 和 Anthos Service Mesh 这两个服务网格的产品各有侧重点，Traffic Director 关注重点为流量管理，并且支持 K8s 集群和虚拟机的混合部署。Anthos Service Mesh 则支持在多云/混合云场景下的多集群服务网格部署。两者在控制面也采用不同的实现方案。由于 Traffic Director 只需要支持 Google Cloud，处于一个可控的网络环境中，因此采用托管的自定义控制面实现，并对接了 Google Cloud 上的服务发现机制；而 Anthos Service Mesh 考虑到多云/混合云场景下复杂的网络环境和部署限制，采用了开源 Istio 的多控制面方案，在每个集群中都单独安装了一个 Istio，只是接入了 Google Cloud 的遥测数据，以对网格中的服务进行统一监控。</p>
 <p>这两个产品其实是互补的，因此 Google Cloud 会对两个产品持续进行整合。下图为 Traffic Director 的 Road Map，已经明确提出了整合 Anthos 和 Istio 的计划。</p>
 <p><img src="/img/2019-08-13/traffic-director-roadmap.png" alt=""></p>
