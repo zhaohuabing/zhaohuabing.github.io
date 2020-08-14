@@ -739,8 +739,11 @@ Anthos Service Mesh关键特性包括：</p>
                 }
                }
               }
-</code></pre></div><p>尝试从位于 west1-a 集群的 sleep pod 中访问 helloworld 服务，可以看到缺省会访问本集群中的 helloword v1 版本的服务实例，不会跨地域访问。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g********@cloudshell:~ <span style="color:#ff79c6">(</span>huabingzhao-anthos<span style="color:#ff79c6">)</span>$ <span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
+</code></pre></div><p>尝试从位于 west1-a Region 集群的 sleep pod 中访问 helloworld 服务，可以看到缺省会访问本集群中的 helloword v1 版本的服务实例，不会跨地域访问。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g********@cloudshell:~ <span style="color:#ff79c6">(</span>huabingzhao-anthos<span style="color:#ff79c6">)</span>$ 
+<span style="color:#8be9fd;font-style:italic">export</span> <span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#ff79c6">=</span>gke_huabingzhao-anthos_us-west1-a_anthos-mesh-cluster-1
+
+<span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
 &gt; <span style="color:#ff79c6">do</span>
 &gt; kubectl <span style="color:#8be9fd;font-style:italic">exec</span> --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -it -n sample -c sleep  <span style="color:#f1fa8c">\
 </span><span style="color:#f1fa8c"></span>&gt;    <span style="color:#ff79c6">$(</span>kubectl get pod --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -n sample -l    <span style="color:#f1fa8c">\
