@@ -368,13 +368,14 @@ $(function() {
       <ul>
         <li><a href="#traffic-director-架构">Traffic director 架构</a></li>
         <li><a href="#服务注册发现机制">服务注册发现机制</a></li>
+        <li><a href="#流量管理实现原理">流量管理实现原理</a></li>
       </ul>
     </li>
     <li><a href="#参考文档">参考文档</a></li>
   </ul>
 </nav>
                 
-                <p>作为开源 Service Mesh 明星项目 Istio 背后的主要大厂，Google 在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic director 与 Anthos Service Mesh。Google Cloud 首先在2019年3月发布了其第一个 Sercice Mesh 产品 Traffic Director，随后不久在[2019 年9月紧接着发布了另一个 Service Mesh 产品 Anthos Service Mesh，随后两个产品独立并行发展到如今。</p>
+                <p>作为明星开源 Service Mesh 项目 Istio 背后的主要厂商，Google 在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic director 与 Anthos Service Mesh。Google Cloud 首先在2019年3月发布了其第一个 Sercice Mesh 产品 Traffic Director，随后不久在[2019 年9月紧接着发布了另一个 Service Mesh 产品 Anthos Service Mesh，随后两个产品独立并行发展到如今。</p>
 <p>Google CLoud 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？本文将分别分析这两个产品的架构和功能，以试图解答该疑问。</p>
 <h1 id="traffic-director">Traffic Director</h1>
 <p>Traffic Director 是 Google Cloud 专为服务网格打造的全托管式流量控制平面，用户不需要对 Traffic Director 进行部署，维护和管理。可以把 Traffic Director 看作托管的 Pilot，其只提供了流量管理能力，不提供 Istio 控制面的其他能力。用户可以使用 Traffic Director 创建跨区域的、同时支持集群和虚拟机实例的服务网格，并对多个集群和虚拟机的工作负载进行统一的流量控制。Traffic Director 托管控制面 提供了跨地域容灾能力，可以保证99.99%的SLA。</p>
@@ -389,7 +390,7 @@ $(function() {
 <p>Traffic Director 的总体架构和 Istio 类似，也采用了“控制面 + 数据面”的结构，控制面托管在 Google Cloud 中，对用户不可见。用户只需要在创建 project 时启用 Traffic Director API 即可使用 Traffic Director 提供的网格服务。数据面则采用了和 Istio 相同的 Envoy 作为 Sidecar。 控制面和数据面采用标准的 xDS v2 进行通信。控制面对外采用了一套自定义的 API 来实现流量管理，并不支持 Istio API。Traffic Director 也没有采用 Istio/K8s 的服务发现，而是采用了一套 Google Cloud 自己的服务注册发现机制，该服务注册发现机制以统一的模型支持了容器和虚拟机上的服务，并为工作负载提供了健康检测。</p>
 <p><img src="/img/2019-08-13/traffic-director-arch.png" alt=""></p>
 <h2 id="服务注册发现机制">服务注册发现机制</h2>
-<p>Traffic Director 采用了 Google Cloud 的一种称为 Backend Service 的服务注册机制。通过 Backend Service 支持了 GKE 集群中容器工作负载和虚拟机工作负载两种方式的服务注册发现，不过和 Istio 不同的是，Traffic Director 不支持 K8S 原生的服务注册发现机制。</p>
+<p>Traffic Director 采用了 Google Cloud 的一种称为 Backend Service 的服务注册机制。通过 Backend Service 支持了 GKE 集群中容器工作负载和虚拟机工作负载两种方式的服务注册发现，不过和 Istio 不同的是，Traffic Director 并不支持 K8S 原生的服务注册发现机制。</p>
 <h3 id="服务注册发现资源模型">服务注册发现资源模型</h3>
 <p>Traffic Director 的服务注册发现资源模型如下图所示，图中蓝色的图形为 Traffic Director 中使用的资源，桔色的图形为对应的 K8s 中的概念。Backend Service 是一个服务，可以看作 K8s Service，Backend Service 中包含 GKE 集群中的 NEG （Network Endpoint Group）或者 GCE 虚拟机 的 MIG （Managed Instance Group），甚至可以包含无服务的NEG。NEG 中则是工作负载，即服务实例。</p>
 <p><img src="/img/2019-08-13/traffic-director-service-discovery.png" alt=""></p>
@@ -473,7 +474,16 @@ gcloud compute backend-services add-backend td-gke-service <span style="color:#f
   --instance-group td-demo-hello-world-mig <span style="color:#f1fa8c">\ </span> 
   --instance-group-zone us-central1-a <span style="color:#f1fa8c">\ </span> 
   --global
-</code></pre></div><p>&hellip;..TO BE CONTINUE &hellip;</p>
+</code></pre></div><h2 id="流量管理实现原理">流量管理实现原理</h2>
+<p>Traffic Diretor 的主要功能就是跨地域的全局流量管理能力，该能力是建立在 Google Cloud 强大的 VPC 机制基础上的， Google Cloud 的 VPC 可以跨越多个 Region，因此一个 VPC 中的服务网格中可以由位于多个 Region 的服务组成。Traffic Director 并未直接采用 Istio 的 API，而是自定义了一套 API 来对网格中的流量进行管理。</p>
+<h3 id="控制面流量规则定义">控制面流量规则定义</h3>
+<p>Traffic Director 流量规则相关的控制面资源模型如下图所示，图中下半部分是 Istio 中 和这些资源对应的 CRD。
+Traffic Director中控制面的流量规则定义是这样实现的：
+● 通过 Forwarding Rule 定义服务的入口 VIP 和 Port
+● 通过 URL Map 设置路由规则，包括流量拆分、重定向、镜像等
+● 通过 Backend Service 设置流量策略，包括LB策略，断路器配置，实例离线检测等</p>
+<p><img src="/img/traffic-managemetn-resources.png" alt=""></p>
+<p>&hellip;..TO BE CONTINUE &hellip;</p>
 <h1 id="参考文档">参考文档</h1>
 <ul>
 <li><a href="https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips">Creating a VPC-native cluster</a></li>
