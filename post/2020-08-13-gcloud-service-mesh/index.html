@@ -739,7 +739,7 @@ Anthos Service Mesh关键特性包括：</p>
                 }
                }
               }
-</code></pre></div><p>尝试从位于 west1-a 集群的 sleep pod 中访问 helloworld 服务，可以看到缺省会访问本集群中的 helloword 服务实例，不会跨地域访问。</p>
+</code></pre></div><p>尝试从位于 west1-a 集群的 sleep pod 中访问 helloworld 服务，可以看到缺省会访问本集群中的 helloword v1 版本的服务实例，不会跨地域访问。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g********@cloudshell:~ <span style="color:#ff79c6">(</span>huabingzhao-anthos<span style="color:#ff79c6">)</span>$ <span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
 &gt; <span style="color:#ff79c6">do</span>
 &gt; kubectl <span style="color:#8be9fd;font-style:italic">exec</span> --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -it -n sample -c sleep  <span style="color:#f1fa8c">\
@@ -751,7 +751,7 @@ Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
 Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
 Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
 Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
-</code></pre></div><p>将 west1-a 集群中 helloworld deployment 的副本数设置为0，再进行访问，可以看到会访问到部署在 east1-b region 的 helloworld v2。这里需要注意一点：虽然两个集群的 IP 是可路由的，但 Google cloud 的防火墙缺省并不允许集群之间相互访问，需要先创建相应的防火墙规则，以运行跨集群的网格访问流量。</p>
+</code></pre></div><p>将 west1-a 集群中 helloworld deployment 的副本数设置为0，再进行访问，由于本地没有可用实例，会访问到部署在 east1-b region 的 helloworld v2，实现了跨地域的容灾。这里需要注意一点：虽然两个集群的 IP 是可路由的，但 Google cloud 的防火墙缺省并不允许集群之间相互访问，需要先创建相应的防火墙规则，以运行跨集群的网格访问流量。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl edit deployment helloworld-v1 -nsample --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span>
 </code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: apps/v1
 <span style="color:#ff79c6">kind</span>: Deployment
