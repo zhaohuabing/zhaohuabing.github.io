@@ -378,7 +378,7 @@ $(function() {
         <li><a href="#anthos-的整体架构">Anthos 的整体架构</a></li>
         <li><a href="#anthos-gke-集群管理">Anthos GKE 集群管理</a></li>
         <li><a href="#anthos-service-mesh-的混合云多云解决方案">Anthos Service Mesh 的混合云/多云解决方案</a></li>
-        <li><a href="#anthos多集群部署示例">Anthos多集群部署示例</a></li>
+        <li><a href="#anthos-service-mesh-多集群部署示例">Anthos Service Mesh 多集群部署示例</a></li>
       </ul>
     </li>
     <li><a href="#traffic-director-和-anthos-service-mesh-的定位">Traffic Director 和 Anthos Service Mesh 的定位</a></li>
@@ -692,7 +692,7 @@ Anthos Service Mesh关键特性包括：</p>
 <p>在该方案中，多个集群处于同一个扁平三层网络之中，各个集群中的服务可以直接相互访问。如下图所示，两个集群中的 Istio 控制面都通过访问对方的 API server 拿到了对方的服务信息。在这种场景中，通常会在不同集群中部署相同的服务，以实现跨地域的负载均衡和容灾。</p>
 <p>如图中箭头所示，在正常情况下，每个 region 中的服务只会访问自己 region 中的其他服务，以避免跨 region 调用导致时延较长，影响用户体验。当左边 region 中的 ratings 服务由于故障不能访问时，reviews 服务会通过 Istio 提供的 Locality Load Balancing 能力访问右侧 region 中的 ratings 服务，以实现跨 region 的容灾，避免服务中断。</p>
 <p><img src="/img/2019-08-13/single-network-deployment.png" alt=""></p>
-<h2 id="anthos多集群部署示例">Anthos多集群部署示例</h2>
+<h2 id="anthos-service-mesh-多集群部署示例">Anthos Service Mesh 多集群部署示例</h2>
 <p>对于 Istio 来讲，其管理的 Mesh 中的多个集群是否跨云/混合云并不影响集群管理的部署方案，因为本质上都是同一网络/多个网络两种情况下的多集群管理。本示例的两个集群都使用了 GKE 的 Cluster。但只要把网络打通，本示例也适用于跨云/混合云的情况。</p>
 <p>本示例的部署如图“单网络多控制面“所示，在同一个 VPC 中的两个 region 中部署了两个 GKE cluster。部署时需要注意几点：</p>
 <ul>
@@ -751,7 +751,7 @@ Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
 Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
 Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
 Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
-</code></pre></div><p>将 west1-a 集群中 helloworld deployment 的副本数设置为0，再进行访问，由于本地没有可用实例，会访问到部署在 east1-b region 的 helloworld v2，实现了跨地域的容灾。这里需要注意一点：虽然两个集群的 IP 是可路由的，但 Google cloud 的防火墙缺省并不允许集群之间相互访问，需要先创建相应的防火墙规则，以运行跨集群的网格访问流量。</p>
+</code></pre></div><p>将 west1-a 集群中 helloworld deployment 的副本数设置为0，再进行访问，由于本地没有可用实例，会访问到部署在 east1-b region 的 helloworld v2，实现了跨地域的容灾。这里需要注意一点：虽然两个集群的 IP 是可路由的，但 Google cloud 的防火墙缺省并不允许集群之间相互访问，需要先创建相应的防火墙规则，以允许跨集群的网格访问流量。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl edit deployment helloworld-v1 -nsample --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span>
 </code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: apps/v1
 <span style="color:#ff79c6">kind</span>: Deployment
