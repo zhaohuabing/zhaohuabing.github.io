@@ -367,10 +367,44 @@ $(function() {
     <li><a href="#traffic-director">Traffic Director</a>
       <ul>
         <li><a href="#traffic-director-架构">Traffic director 架构</a></li>
-        <li><a href="#服务注册发现机制">服务注册发现机制</a></li>
-        <li><a href="#流量管理实现原理">流量管理实现原理</a></li>
+        <li><a href="#服务注册发现机制">服务注册发现机制</a>
+          <ul>
+            <li><a href="#服务注册发现资源模型">服务注册发现资源模型</a></li>
+            <li><a href="#注册-gke-集群中的容器服务">注册 GKE 集群中的容器服务</a></li>
+            <li><a href="#注册-gce-虚拟机服务">注册 GCE 虚拟机服务</a></li>
+          </ul>
+        </li>
+        <li><a href="#流量管理实现原理">流量管理实现原理</a>
+          <ul>
+            <li><a href="#控制面流量规则定义">控制面流量规则定义</a></li>
+            <li><a href="#数据面-sidecar-配置">数据面 Sidecar 配置</a></li>
+            <li><a href="#高级流量规则">高级流量规则</a></li>
+          </ul>
+        </li>
+        <li><a href="#sidecar-proxy-部署机制">Sidecar Proxy 部署机制</a>
+          <ul>
+            <li><a href="#vm-手动部署">VM 手动部署</a></li>
+            <li><a href="#vm-自动部署">VM 自动部署</a></li>
+            <li><a href="#gke-通过-deployment-部署">GKE 通过 deployment 部署</a></li>
+          </ul>
+        </li>
+        <li><a href="#vm和gke混合部署示例">VM和GKE混合部署示例</a></li>
       </ul>
     </li>
+    <li><a href="#anthos-service-mesh">Anthos Service Mesh</a>
+      <ul>
+        <li><a href="#anthos-的整体架构">Anthos 的整体架构</a></li>
+        <li><a href="#anthos-gke-集群管理">Anthos GKE 集群管理</a></li>
+        <li><a href="#anthos-service-mesh-的混合云多云解决方案">Anthos Service Mesh 的混合云/多云解决方案</a>
+          <ul>
+            <li><a href="#多网络多控制平面">多网络多控制平面</a></li>
+            <li><a href="#单网络多控制平面">单网络多控制平面</a></li>
+          </ul>
+        </li>
+        <li><a href="#anthos多集群部署示例">Anthos多集群部署示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#traffic-director-和-anthos-service-mesh-的定位">Traffic Director 和 Anthos Service Mesh 的定位</a></li>
     <li><a href="#参考文档">参考文档</a></li>
   </ul>
 </nav>
@@ -477,13 +511,262 @@ gcloud compute backend-services add-backend td-gke-service <span style="color:#f
 </code></pre></div><h2 id="流量管理实现原理">流量管理实现原理</h2>
 <p>Traffic Diretor 的主要功能就是跨地域的全局流量管理能力，该能力是建立在 Google Cloud 强大的 VPC 机制基础上的， Google Cloud 的 VPC 可以跨越多个 Region，因此一个 VPC 中的服务网格中可以由位于多个 Region 的服务组成。Traffic Director 并未直接采用 Istio 的 API，而是自定义了一套 API 来对网格中的流量进行管理。</p>
 <h3 id="控制面流量规则定义">控制面流量规则定义</h3>
-<p>Traffic Director 流量规则相关的控制面资源模型如下图所示，图中下半部分是 Istio 中 和这些资源对应的 CRD。
-Traffic Director中控制面的流量规则定义是这样实现的：
-● 通过 Forwarding Rule 定义服务的入口 VIP 和 Port
-● 通过 URL Map 设置路由规则，包括流量拆分、重定向、镜像等
-● 通过 Backend Service 设置流量策略，包括LB策略，断路器配置，实例离线检测等</p>
-<p><img src="/img/traffic-managemetn-resources.png" alt=""></p>
-<p>&hellip;..TO BE CONTINUE &hellip;</p>
+<p>Traffic Director 流量规则相关的控制面资源模型如下图所示，图中下半部分是 Istio 中和这些资源对应的 CRD。</p>
+<ul>
+<li>Forwarding Rule：定义服务的入口 VIP 和 Port</li>
+<li>Target Proxy：用于关联 Forwarding Rule 和 URL Map，可以看作网格中代理的一个资源抽象</li>
+<li>URL Map：用于设置路由规则，包括规则匹配条件和规则动作两部分。匹配条件支持按照 HTTP 的 Host、Path、Header进行匹配。匹配后可以执行 Traffic Splitting、Redirects、URL Rewrites、Traffic Mirroring、Fault Injection、Header Transformation 等动作。</li>
+<li>Backend Service：前面在服务发现中已经介绍了 Backend Service 用于服务发现，其实还可以在 Backen Service 上设置流量策略，包括LB策略，断路器配置，实例离线检测等。可以看到 Backend Service 在 Traffic Director 的流量管理模型中同时承担了 Istio 中的 ServiceEntry 和 Destionation Rule 两个资源等功能。</li>
+</ul>
+<p><img src="/img/2019-08-13/traffic-managemetn-resources.png" alt=""></p>
+<p>下面举例说明这些资源的定义，以及它们是如何相互作用，以实现Service Mesh中的流量管理。</p>
+<p>下图中的forwarding rule定义了一个暴露在 10.0.0.1:80 上的服务，该服务对应的url map 定义了两条路由规则，对应的主机名分别为 * 和 hello-worold，请求将被路由到后端的 td-vm-service backend service 中的服务实例。</p>
+<p><img src="/img/2019-08-13/traffic-managemetn-resources-example.png" alt=""></p>
+<p>Forwarding Rule 定义</p>
+<p><img src="/img/2019-08-13/forwarding-rule.png" alt=""></p>
+<p>Target Proxy 定义</p>
+<p><img src="/img/2019-08-13/target-proxy.png" alt=""></p>
+<p>URL Map 定义</p>
+<p><img src="/img/2019-08-13/url-map.png" alt=""></p>
+<p>Backend Service 定义</p>
+<p><img src="/img/2019-08-13/backend-service.png" alt=""></p>
+<p>Managed Instance Group 定义</p>
+<p><img src="/img/2019-08-13/mig.png" alt=""></p>
+<h3 id="数据面-sidecar-配置">数据面 Sidecar 配置</h3>
+<p>Traffic Director 将服务发现信息和路由规则转换为 Envoy 配置，通过 xDS 下发到 Envoy sidecar，控制面规则和数据面配置的对应关系下：</p>
+<pre><code>Forwarding Rule    -&gt;    Envoy Listener
+URL Map            -&gt;    Envoy Route
+Backend Service    -&gt;    Envoy Cluster
+NEG/MIG            -&gt;    Envoy endpoint
+</code></pre><p>Listener 配置</p>
+<p>Listener 中的 Http Connection Manager filter 配置定义了 IP+Port 层面的入口，这里只接受 Forwarding Rule 中指定的 VIP 10.0.0.1。我们也可以在 Forwarding Rule 中将 VIP 设置为 0.0.0.0，这样的话任何目的 IP 的请求都可以处理。</p>
+<p><img src="/img/2019-08-13/envoy-listener.png" alt=""></p>
+<p>Route 配置</p>
+<p><img src="/img/2019-08-13/envoy-route.png" alt=""></p>
+<p>Cluster 配置</p>
+<p><img src="/img/2019-08-13/envoy-cluster.png" alt=""></p>
+<h3 id="高级流量规则">高级流量规则</h3>
+<p>在 URL Map 中设置 Traffic Splitting</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    <span style="color:#ff79c6">hostRules</span>:
+    - <span style="color:#ff79c6">description</span>: <span style="color:#f1fa8c">&#39;&#39;</span>
+     <span style="color:#ff79c6">hosts</span>:
+      - <span style="color:#f1fa8c">&#39;*&#39;</span>
+    <span style="color:#ff79c6">pathMatcher</span>: matcher1
+    <span style="color:#ff79c6">pathMatchers</span>:
+    - <span style="color:#ff79c6">defaultService</span>: global/backendServices/review1
+      <span style="color:#ff79c6">name</span>: matcher1
+      <span style="color:#ff79c6">routeRules</span>:
+      - <span style="color:#ff79c6">priority</span>: <span style="color:#bd93f9">2</span>
+        <span style="color:#ff79c6">matchRules</span>:
+        - <span style="color:#ff79c6">prefixMatch</span>: <span style="color:#f1fa8c">&#39;&#39;</span>
+        <span style="color:#ff79c6">routeAction</span>:
+         <span style="color:#ff79c6">weightedBackendServices</span>:
+         - <span style="color:#ff79c6">backendService</span>: global/backendServices/review1
+           <span style="color:#ff79c6">weight</span>: <span style="color:#bd93f9">95</span>
+         - <span style="color:#ff79c6">backendService</span>: global/backendServices/review2
+           <span style="color:#ff79c6">weight</span>: <span style="color:#bd93f9">5</span>
+</code></pre></div><p>在 Backend Service 中设置 Circuit Breaker</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"> <span style="color:#ff79c6">affinityCookieTtlSec</span>: <span style="color:#bd93f9">0</span>
+ <span style="color:#ff79c6">backends</span>:
+ - <span style="color:#ff79c6">balancingMode</span>: UTILIZATION
+   <span style="color:#ff79c6">capacityScaler</span>: <span style="color:#bd93f9">1.0</span>
+    group:https://www.googleapis.com/compute/v1/projects/&lt;var&gt;PROJECT_ID&lt;/var&gt;/zones/&lt;var&gt;ZONE&lt;/var&gt;/instanceGroups/&lt;var&gt;INSTANCE_GROUP_NAME&lt;/var<span style="color:#f1fa8c">&gt;
+</span><span style="color:#f1fa8c">   maxUtilization: 0.8</span>
+ <span style="color:#ff79c6">circuitBreakers</span>:
+   <span style="color:#ff79c6">maxConnections</span>: <span style="color:#bd93f9">1000</span>
+   <span style="color:#ff79c6">maxPendingRequests</span>: <span style="color:#bd93f9">200</span>
+   <span style="color:#ff79c6">maxRequests</span>: <span style="color:#bd93f9">1000</span>
+   <span style="color:#ff79c6">maxRequestsPerConnection</span>: <span style="color:#bd93f9">100</span>
+   <span style="color:#ff79c6">maxRetries</span>: <span style="color:#bd93f9">3</span>
+ <span style="color:#ff79c6">connectionDraining</span>:
+   <span style="color:#ff79c6">drainingTimeoutSec</span>: <span style="color:#bd93f9">300</span>
+ <span style="color:#ff79c6">healthChecks</span>:
+   - https://www.googleapis.com/compute/v1/projects/&lt;var&gt;PROJECT_ID&lt;/var&gt;/global/healthChecks/&lt;var&gt;HEALTH_CHECK_NAME&lt;/var<span style="color:#f1fa8c">&gt;
+</span><span style="color:#f1fa8c"> loadBalancingScheme: INTERNAL_SELF_MANAGED</span>
+ <span style="color:#ff79c6">localityLbPolicy</span>: ROUND_ROBIN
+ <span style="color:#ff79c6">name</span>: &lt;var&gt;BACKEND_SERVICE_NAME&lt;/var<span style="color:#f1fa8c">&gt;
+</span><span style="color:#f1fa8c"> port: 80</span>
+ <span style="color:#ff79c6">portName</span>: http
+ <span style="color:#ff79c6">protocol</span>: HTTP
+ <span style="color:#ff79c6">sessionAffinity</span>: NONE
+ <span style="color:#ff79c6">timeoutSec</span>: <span style="color:#bd93f9">30</span>
+</code></pre></div><p>从这两个规则的定义可以看出，虽然文件结构有所差异，但实际上 Traffic Director yaml 路由规则的定义和 Istio 非常相似。</p>
+<h2 id="sidecar-proxy-部署机制">Sidecar Proxy 部署机制</h2>
+<p>Traffic Director 数据面采用了和 Istio 相同的机制，通过 Iptables 规则将应用服务的出入流量重定向到 Envoy sidecar，由 Envoy 进行流量路由。Traffic Director 采用了下面的方式来在 K8s 集群的 Pod 或者虚拟机中安装数据面组件。</p>
+<h3 id="vm-手动部署">VM 手动部署</h3>
+<p>通过脚本从 gcloud 上下载 envoy 二机制，并安装 iptables 流量拦截规则，启动envoy。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># Add a system user to run Envoy binaries. Login is disabled for this user</span>
+sudo adduser --system --disabled-login envoy
+<span style="color:#6272a4"># Download and extract the Traffic Director tar.gz file</span>
+<span style="color:#6272a4"># 下载traffic director相关文件</span>
+sudo wget -P /home/envoy https://storage.googleapis.com/traffic-director/traffic-director.tar.gz
+sudo tar -xzf /home/envoy/traffic-director.tar.gz -C /home/envoy
+<span style="color:#6272a4">#下载 Envoy 的初始化配置，配置中包含了控制面traffic director的地址</span>
+sudo wget -O - https://storage.googleapis.com/traffic-director/demo/observability/envoy_stackdriver_trace_config.yaml &gt;&gt; /home/envoy/traffic-director/bootstrap_template.yaml
+<span style="color:#6272a4"># 设置iptables流量拦截规则的相关参数</span>
+sudo cat <span style="color:#f1fa8c">&lt;&lt; END &gt; /home/envoy/traffic-director/sidecar.env
+</span><span style="color:#f1fa8c">ENVOY_USER=envoy
+</span><span style="color:#f1fa8c"># Exclude the proxy user from redirection so that traffic doesn&#39;t loop back
+</span><span style="color:#f1fa8c"># to the proxy
+</span><span style="color:#f1fa8c">EXCLUDE_ENVOY_USER_FROM_INTERCEPT=&#39;true&#39;
+</span><span style="color:#f1fa8c"># Intercept all traffic by default
+</span><span style="color:#f1fa8c">SERVICE_CIDR=&#39;10.10.10.0/24&#39;
+</span><span style="color:#f1fa8c">GCP_PROJECT_NUMBER=&#39;${GCP_PROJECT_NUMBER}&#39;
+</span><span style="color:#f1fa8c">VPC_NETWORK_NAME=&#39;&#39;
+</span><span style="color:#f1fa8c">ENVOY_PORT=&#39;15001&#39;
+</span><span style="color:#f1fa8c">ENVOY_ADMIN_PORT=&#39;15000&#39;
+</span><span style="color:#f1fa8c">LOG_DIR=&#39;/var/log/envoy/&#39;
+</span><span style="color:#f1fa8c">LOG_LEVEL=&#39;info&#39;
+</span><span style="color:#f1fa8c">XDS_SERVER_CERT=&#39;/etc/ssl/certs/ca-certificates.crt&#39;
+</span><span style="color:#f1fa8c">TRACING_ENABLED=&#39;true&#39;
+</span><span style="color:#f1fa8c">ACCESSLOG_PATH=&#39;/var/log/envoy/access.log&#39;
+</span><span style="color:#f1fa8c">END</span>
+sudo apt-get update -y
+sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+sudo add-apt-repository <span style="color:#f1fa8c">&#39;deb [arch=amd64] https://download.docker.com/linux/debian stretch stable&#39;</span> -y
+sudo apt-get update -y
+sudo apt-get install docker-ce -y
+<span style="color:#6272a4">#下载envoy二机制</span>
+sudo /home/envoy/traffic-director/pull_envoy.sh
+<span style="color:#6272a4">#设置iptables规则，启动envoy</span>
+sudo /home/envoy/traffic-director/run.sh start<span style="color:#f1fa8c">&#34;
+</span><span style="color:#f1fa8c">
+</span></code></pre></div><h3 id="vm-自动部署">VM 自动部署</h3>
+<p>在创建虚拟机模版时添加注入proxy的参数，可以在VM中自动部署Envoy sidecar。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gcloud beta compute instance-templates create td-vm-template-auto <span style="color:#f1fa8c">\ </span>   
+--service-proxy<span style="color:#ff79c6">=</span>enabled
+
+gcloud compute instance-groups managed create td-vm-mig-us-central1 <span style="color:#f1fa8c">\ </span>   
+--zone us-central1-a --size<span style="color:#ff79c6">=</span><span style="color:#bd93f9">2</span> --template<span style="color:#ff79c6">=</span>td-vm-template-auto
+</code></pre></div><h3 id="gke-通过-deployment-部署">GKE 通过 deployment 部署</h3>
+<p>GKE 提供 yaml 模版，需要修改 deployment 文件，在 yaml 中增加 sidecar 相关的镜像。未提供 webhook,参见 Traffic Director 的<a href="https://storage.googleapis.com/traffic-director/trafficdirector_istio_sidecar.yaml">示例文件</a>。</p>
+<h2 id="vm和gke混合部署示例">VM和GKE混合部署示例</h2>
+<p>下面我们创建一个示例程序，将 V 和 GKE 中的服务同时加入到 traffic director 管理的 service mesh 中，以展示 traffic director 的对 VM 和容器服务流量统一管理能力。
+该程序的组成如下图所示。程序中部署了三个服务，在 us-central1-a 中部署了两个 VM MIG 服务，在 us-west1-a 中部署了一个 GKE NEG 服务，这三个服务处于同一个 VPC 中，因此网络是互通的。</p>
+<p><img src="/img/2019-08-13/traffic-director-example.png" alt=""></p>
+<p>通过 us-central1-a region 上的客户端向三个服务分别发送请求。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">echo</span> Access service in VM managed instance group td-demo-hello-world-mig
+<span style="color:#8be9fd;font-style:italic">echo</span> 
+<span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
+<span style="color:#ff79c6">do</span>
+    curl http://10.0.0.1
+    sleep <span style="color:#bd93f9">1</span>
+<span style="color:#ff79c6">done</span>
+<span style="color:#8be9fd;font-style:italic">echo</span> 
+<span style="color:#8be9fd;font-style:italic">echo</span> Access service in VM managed instance group td-observability-service-vm-mig 
+<span style="color:#8be9fd;font-style:italic">echo</span> 
+<span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
+<span style="color:#ff79c6">do</span>
+    curl http://10.10.10.10
+    sleep <span style="color:#bd93f9">1</span>
+<span style="color:#ff79c6">done</span>
+<span style="color:#8be9fd;font-style:italic">echo</span> 
+<span style="color:#8be9fd;font-style:italic">echo</span> Access service in GKE network endpoint group k8s1-e403ff53-default-service-test-80-e849f707 
+<span style="color:#8be9fd;font-style:italic">echo</span> 
+<span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
+<span style="color:#ff79c6">do</span>
+    curl http://10.0.0.2
+    <span style="color:#8be9fd;font-style:italic">echo</span>
+    sleep <span style="color:#bd93f9">1</span>
+<span style="color:#ff79c6">done</span>
+</code></pre></div><p>服务端会在请求响应消息中打印自身的 host name。我们从客户端循环访问三个服务，从命令结果可见每次的输出是不同的，这是因为 envoy 会通过缺省 lb 算法将请求分发到不同的服务实例上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Access service in VM managed instance group td-demo-hello-world-mig
+
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-demo-hello-world-mig-ccx4&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-demo-hello-world-mig-658w&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-demo-hello-world-mig-ccx4&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-demo-hello-world-mig-658w&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+
+Access service in VM managed instance group td-observability-service-vm-mig
+
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-observability-service-vm-mig-50tq&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-observability-service-vm-mig-16pr&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-observability-service-vm-mig-50tq&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;td-observability-service-vm-mig-16pr&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+
+Access service in GKE network endpoint group k8s1-e403ff53-default-service-test-80-e849f707
+
+app1-84996668df-dlccn
+app1-84996668df-t4qmn
+app1-84996668df-dlccn
+app1-84996668df-t4qmn
+</code></pre></div><h1 id="anthos-service-mesh">Anthos Service Mesh</h1>
+<p>Anthos Service Mesh 是 Google 混合云和多云解决方案 Anthos 中负责服务管理的部分。和 Traffic Director 的主要区别是，Anthos Service Mesh 直接采用了开源 Istio， 并且未对控制面进行托管，而是将 Istio 控制面部署在了用户集群中，这是将遥测信息接入了 Google Cloud，并在 Google cloud console 的 Anthos Service Mesh 界面中提供了服务网格的查看和监控界面。
+Anthos Service Mesh关键特性包括：</p>
+<ul>
+<li>原生Istio多集群方案</li>
+<li>支持多云/混合云（不支持虚机）</li>
+<li>集中的服务监控控制台。</li>
+</ul>
+<h2 id="anthos-的整体架构">Anthos 的整体架构</h2>
+<p>Google Cloud Anthos 旨在提供一个跨越 Google Cloud、私有云和其他公有云的整体统一解决方案，为客户在混合云/多云环境下的 IT 基础设施提供一致的管理体验。Anthos 包含了统一的 GKE 集群管理，服务管理和配置管理三大部分功能。其中 Anthos Service Mesh 负责其中统一的服务管理部分，可以将部署在多个不同云环境中的 Istio 集群在 Anthos Service Mesh 控制台中进行统一的管理和监控。</p>
+<p><img src="/img/2019-08-13/anthos.png" alt=""></p>
+<h2 id="anthos-gke-集群管理">Anthos GKE 集群管理</h2>
+<p>Anthos 对 On-Perm 和多云的 K8s 集群的管理采用了代理的方式，Anthos 会在每个加入 Anthos 的集群中安装一个 agent，由 agent 主动建立一个到 Anthos 控制面的连接，以穿透 NAT，连接建立后，Anthos 控制面会连接集群的 API Server，对集群进查看和行管理。</p>
+<p><img src="/img/2019-08-13/anthos-cluster-management.png" alt=""></p>
+<h2 id="anthos-service-mesh-的混合云多云解决方案">Anthos Service Mesh 的混合云/多云解决方案</h2>
+<p>由于采用了开源 Istio，因此 Anthos Service Mesh 的混合云/多云解决方案实际上采用的是 Istio 的多集群方案。Istio 自身的多集群方案是非常灵活的，根据网络模式和控制面的安装模式，可以有多种灵活的搭配组合。Anthos Service Mesh 中推荐使用的是多控制面方案。</p>
+<h3 id="多网络多控制平面">多网络多控制平面</h3>
+<p>该方案中多个集群在不同网络中，不同集群中的 Pod IP 之间是不能通过路由互通的，只能通过网关进行访问。即使在不同集群中部署相同的服务，对远端集群中服务的访问方式也和本地服务不同，即不能采用同一服务名来访问不同集群中的相同服务，因此无法实现跨集群/地域的负载均衡或容灾。</p>
+<p>由于上诉特点，多网络多控制平面的部署方案一般用于需要隔离不同服务的场景，如下图所示，通常会在不同集群中部署不同的服务，跨集群进行服务调用时通过 Ingress Gateway 进行。</p>
+<p><img src="/img/2019-08-13/multi-network-deployment.png" alt=""></p>
+<h3 id="单网络多控制平面">单网络多控制平面</h3>
+<p>在该方案中，多个集群处于同一个扁平三层网络之中，各个集群中的服务可以直接相互访问。如下图所示，两个集群中的 Istio 控制面都通过访问对方的 API server 拿到了对方的服务信息。在这种场景中，通常会在不同集群中部署相同的服务，以实现跨地域的负载均衡和容灾。</p>
+<p>如图中箭头所示，在正常情况下，每个 region 中的服务只会访问自己 region 中的其他服务，以避免跨 region 调用导致时延较长，影响用户体验。当左边 region 中的 ratings 服务由于故障不能访问时，reviews 服务会通过 Istio 提供的 Locality Load Balancing 能力访问右侧 region 中的 ratings 服务，以实现跨 region 的容灾，避免服务中断。</p>
+<p><img src="/img/2019-08-13/single-network-deployment.png" alt=""></p>
+<h2 id="anthos多集群部署示例">Anthos多集群部署示例</h2>
+<p>对于 Istio 来讲，其管理的 Mesh 中的多个集群是否跨云/混合云并不影响集群管理的部署方案，因为本质上都是同一网络/多个网络两种情况下的多集群管理。本示例的两个集群都使用了 GKE 的 Cluster。但只要把网络打通，本示例也适用于跨云/混合云的情况。</p>
+<p>本示例的部署如图“单网络多控制面“所示，在同一个 VPC 中的两个 region 中部署了两个 GKE cluster。部署时需要注意几点：</p>
+<ul>
+<li>需要将 cluster 的网络方案设置为 vpc-native，这样 pod ip 在 vpc 中就是可以路由的，以让两个 cluster 的网络可以互通。</li>
+<li>需要为两个 cluster 中部署的 Istio 控制面设置对方 api server 的 remote secret，以使 stio 获取对方的 Service 信息。</li>
+</ul>
+<p>从导出的 Envoy sidecar 配置可以看到，其连接的 xds server 为本地集群中的 istiod。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">        <span style="color:#f1fa8c">&#34;cluster_name&#34;</span>: <span style="color:#f1fa8c">&#34;xds-grpc&#34;</span>,
+        <span style="color:#f1fa8c">&#34;endpoints&#34;</span>: [
+         {
+          <span style="color:#ff79c6">&#34;lb_endpoints&#34;</span>: [
+           {
+            <span style="color:#ff79c6">&#34;endpoint&#34;</span>: {
+             <span style="color:#ff79c6">&#34;address&#34;</span>: {
+              <span style="color:#ff79c6">&#34;socket_address&#34;</span>: {
+               <span style="color:#ff79c6">&#34;address&#34;</span>: <span style="color:#f1fa8c">&#34;istiod.istio-system.svc&#34;</span>,
+               <span style="color:#ff79c6">&#34;port_value&#34;</span>: <span style="color:#bd93f9">15012</span>
+              }
+             }
+            }
+           }
+          ]
+         }
+        ]
+</code></pre></div><p>Metric，Access log和 tracing 过 Envoy stackdriver http filter 上报到 Google Cloud，以便通过 Anthos Service Mesh 控制台统一查看。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">              <span style="color:#f1fa8c">&#34;name&#34;</span>: <span style="color:#f1fa8c">&#34;istio.stackdriver&#34;</span>,
+              <span style="color:#f1fa8c">&#34;typed_config&#34;</span>: {
+               <span style="color:#ff79c6">&#34;@type&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/udpa.type.v1.TypedStruct&#34;</span>,
+               <span style="color:#ff79c6">&#34;type_url&#34;</span>: <span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm&#34;</span>,
+               <span style="color:#ff79c6">&#34;value&#34;</span>: {
+                <span style="color:#ff79c6">&#34;config&#34;</span>: {
+                 <span style="color:#ff79c6">&#34;root_id&#34;</span>: <span style="color:#f1fa8c">&#34;stackdriver_outbound&#34;</span>,
+                 <span style="color:#ff79c6">&#34;vm_config&#34;</span>: {
+                  <span style="color:#ff79c6">&#34;vm_id&#34;</span>: <span style="color:#f1fa8c">&#34;stackdriver_outbound&#34;</span>,
+                  <span style="color:#ff79c6">&#34;runtime&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.wasm.runtime.null&#34;</span>,
+                  <span style="color:#ff79c6">&#34;code&#34;</span>: {
+                   <span style="color:#ff79c6">&#34;local&#34;</span>: {
+                    <span style="color:#ff79c6">&#34;inline_string&#34;</span>: <span style="color:#f1fa8c">&#34;envoy.wasm.null.stackdriver&#34;</span>
+                   }
+                  }
+                 },
+                 <span style="color:#ff79c6">&#34;configuration&#34;</span>: <span style="color:#f1fa8c">&#34;{\&#34;enable_mesh_edges_reporting\&#34;: true, \&#34;disable_server_access_logging\&#34;: false, \&#34;meshEdgesReportingDuration\&#34;: \&#34;600s\&#34;}\n&#34;</span>
+                }
+               }
+              }
+</code></pre></div><p><img src="/img/2019-08-13/anthos-example.png" alt=""></p>
+<h1 id="traffic-director-和-anthos-service-mesh-的定位">Traffic Director 和 Anthos Service Mesh 的定位</h1>
+<p>从前面的分析可以看出， Google Cloud 推出的 Traffic Director 和 Anthos Service Mesh 这两个服务网格的产品各有侧重点，Traffic Director 关注重点为流量管理，并且支持 K8s 集群和虚拟机的混合部署。Anthos Service Mesh 则支持在多云/混合云场景下的多集群服务网格部署。两者在控制面也采用不同的实现方案。由于 Traffic Director 只需要支持 Google Cloud，处于一个可控的网络环境中，因此采用托管的自定义控制面实现，并对接了 Google Cloud 上的服务发现机制；而 Anthos Service Mesh 考虑到多云/混合云场景下复杂的网络环境和部署限制，采用了开源 Istio 的多控制面方案，在每个集群中都单独安装了一个 Istio，只是接入了 Google Cloud 的遥测数据，以对网格中的服务进行统一监控。</p>
+<p>这两个产品其实是互补的，因此 Google Cloud 会对两个产品持续进行整合。下图为 Traffic Director 的 Road Map，已经明确提出了整合 Anthos 和 Istio 的计划。</p>
+<p><img src="/img/2019-08-13/traffic-director-roadmap.png" alt=""></p>
+<p><img src="/img/2019-08-13/traffic-director-anthos-int.png" alt=""></p>
 <h1 id="参考文档">参考文档</h1>
 <ul>
 <li><a href="https://cloud.google.com/kubernetes-engine/docs/how-to/alias-ips">Creating a VPC-native cluster</a></li>
