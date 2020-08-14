@@ -739,6 +739,59 @@ Anthos Service Mesh关键特性包括：</p>
                 }
                }
               }
+</code></pre></div><p>尝试从位于 west1-a 集群的 sleep pod 中访问 helloworld 服务，可以看到缺省会访问本集群中的 helloword 服务实例，不会跨地域访问。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g********@cloudshell:~ <span style="color:#ff79c6">(</span>huabingzhao-anthos<span style="color:#ff79c6">)</span>$ <span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
+&gt; <span style="color:#ff79c6">do</span>
+&gt; kubectl <span style="color:#8be9fd;font-style:italic">exec</span> --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -it -n sample -c sleep  <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>&gt;    <span style="color:#ff79c6">$(</span>kubectl get pod --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -n sample -l    <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>&gt;    <span style="color:#8be9fd;font-style:italic">app</span><span style="color:#ff79c6">=</span>sleep -o <span style="color:#8be9fd;font-style:italic">jsonpath</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;{.items[0].metadata.name}&#39;</span><span style="color:#ff79c6">)</span>  <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>&gt;    -- curl helloworld.sample:5000/hello
+&gt; <span style="color:#ff79c6">done</span>
+Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
+Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
+Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
+Hello version: v1, instance: helloworld-v1-578dd69f69-c2fmz
+</code></pre></div><p>将 west1-a 集群中 helloworld deployment 的副本数设置为0，再进行访问，可以看到会访问到部署在 east1-b region 的 helloworld v2。这里需要注意一点：虽然两个集群的 IP 是可路由的，但 Google cloud 的防火墙缺省并不允许集群之间相互访问，需要先创建相应的防火墙规则，以运行跨集群的网格访问流量。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl edit deployment helloworld-v1 -nsample --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: apps/v1
+<span style="color:#ff79c6">kind</span>: Deployment
+<span style="color:#ff79c6">metadata</span>:
+  <span style="color:#ff79c6">annotations</span>:
+    <span style="color:#ff79c6">deployment.kubernetes.io/revision</span>: <span style="color:#f1fa8c">&#34;1&#34;</span>
+  <span style="color:#ff79c6">creationTimestamp</span>: <span style="color:#f1fa8c">&#34;2020-08-14T12:00:32Z&#34;</span>
+  <span style="color:#ff79c6">generation</span>: <span style="color:#bd93f9">2</span>
+  <span style="color:#ff79c6">labels</span>:
+    <span style="color:#ff79c6">version</span>: v1
+  <span style="color:#ff79c6">name</span>: helloworld-v1
+  <span style="color:#ff79c6">namespace</span>: sample
+  <span style="color:#ff79c6">resourceVersion</span>: <span style="color:#f1fa8c">&#34;54763&#34;</span>
+  <span style="color:#ff79c6">selfLink</span>: /apis/apps/v1/namespaces/sample/deployments/helloworld-v1
+  <span style="color:#ff79c6">uid</span>: d6c79e00-e62d-411a<span style="color:#bd93f9">-8986</span>-25513d805eeb
+<span style="color:#ff79c6">spec</span>:
+  <span style="color:#ff79c6">progressDeadlineSeconds</span>: <span style="color:#bd93f9">600</span>
+  <span style="color:#ff79c6">replicas</span>: <span style="color:#bd93f9">0</span>
+  <span style="color:#ff79c6">revisionHistoryLimit</span>: <span style="color:#bd93f9">10</span>
+  <span style="color:#ff79c6">selector</span>:
+    <span style="color:#ff79c6">matchLabels</span>:
+      <span style="color:#ff79c6">app</span>: helloworld
+      <span style="color:#ff79c6">version</span>: v1
+  <span style="color:#ff79c6">strategy</span>:
+    <span style="color:#ff79c6">rollingUpdate</span>:
+      <span style="color:#ff79c6">maxSurge</span>: <span style="color:#bd93f9">25</span>%
+      <span style="color:#ff79c6">maxUnavailable</span>: <span style="color:#bd93f9">25</span>%
+    <span style="color:#ff79c6">type</span>: RollingUpdate
+    ......
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g********@cloudshell:~ <span style="color:#ff79c6">(</span>huabingzhao-anthos<span style="color:#ff79c6">)</span>$ <span style="color:#ff79c6">for</span> i in <span style="color:#ff79c6">{</span>1..4<span style="color:#ff79c6">}</span>
+&gt; <span style="color:#ff79c6">do</span>
+&gt; kubectl <span style="color:#8be9fd;font-style:italic">exec</span> --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -it -n sample -c sleep  <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>&gt;    <span style="color:#ff79c6">$(</span>kubectl get pod --context<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">CTX1</span><span style="color:#f1fa8c">}</span> -n sample -l    <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>&gt;    <span style="color:#8be9fd;font-style:italic">app</span><span style="color:#ff79c6">=</span>sleep -o <span style="color:#8be9fd;font-style:italic">jsonpath</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;{.items[0].metadata.name}&#39;</span><span style="color:#ff79c6">)</span>  <span style="color:#f1fa8c">\
+</span><span style="color:#f1fa8c"></span>&gt;    -- curl helloworld.sample:5000/hello
+&gt; <span style="color:#ff79c6">done</span>
+Hello version: v2, instance: helloworld-v2-776f74c475-jws5r
+Hello version: v2, instance: helloworld-v2-776f74c475-jws5r
+Hello version: v2, instance: helloworld-v2-776f74c475-jws5r
+Hello version: v2, instance: helloworld-v2-776f74c475-jws5r
 </code></pre></div><h1 id="traffic-director-和-anthos-service-mesh-的定位">Traffic Director 和 Anthos Service Mesh 的定位</h1>
 <p>从前面的分析可以看出， Google Cloud 推出的 Traffic Director 和 Anthos Service Mesh 这两个服务网格的产品各有侧重点，Traffic Director 关注重点为流量管理，并且支持 K8s 集群和虚拟机的混合部署。Anthos Service Mesh 则支持在多云/混合云场景下的多集群服务网格部署。两者在控制面也采用不同的实现方案。由于 Traffic Director 只需要支持 Google Cloud，处于一个可控的网络环境中，因此采用托管的自定义控制面实现，并对接了 Google Cloud 上的服务发现机制；而 Anthos Service Mesh 考虑到多云/混合云场景下复杂的网络环境和部署限制，采用了开源 Istio 的多控制面方案，在每个集群中都单独安装了一个 Istio，只是接入了 Google Cloud 的遥测数据，以对网格中的服务进行统一监控。</p>
 <p>这两个产品其实是互补的，因此 Google Cloud 会对两个产品持续进行整合。下图为 Traffic Director 的 Road Map，已经明确提出了整合 Anthos 和 Istio 的计划。</p>
