@@ -414,21 +414,33 @@ $(function() {
 <p>Kube-proxy is a go application which can work in three modes:</p>
 <h3 id="userspace">userspace</h3>
 <p>In this mode, Kube-proxy installs iptables rules which capture traffic to a Service&rsquo;s ClusterIP and redirects that traffic to Kube-proxy&rsquo;s listening port. Kube-proxy then chooses a backend Pod and forwards the request to it.kube-proxy serves as an OSI layer 4 load balancer in this model. Since Kube-proxy runs in the userspace, packages need to be copied back and forth between kernelspace and userspace, adding extra latency in the proxy process. The advantage is that Kube-proxy can retry other Pod if the first Pod is not available.</p>
-<p><img src="https://d33wubrfki0l68.cloudfront.net/e351b830334b8622a700a8da6568cb081c464a9b/13020/images/docs/services-userspace-overview.svg" alt=""></p>
+<p>
+  <img src="https://d33wubrfki0l68.cloudfront.net/e351b830334b8622a700a8da6568cb081c464a9b/13020/images/docs/services-userspace-overview.svg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h3 id="iptables">iptables</h3>
 <p>To avoid the additional copies between kernelspace and userspace, Kube-proxy can work on iptables mode. Kube-proxy creates an iptables rule for each of the backend Pods in the Service. After catching the traffic sent to the ClusterIP, iptables forwards that traffic directly to one of the backend Pod using DNAT. In this mode, Kube-proxy no longer serves as the OSI layer 4 proxy. It only creates corresponding iptables rules. Without switching between kernelspace and userspace, the proxy process is more efficient.</p>
-<p><img src="https://d33wubrfki0l68.cloudfront.net/27b2978647a8d7bdc2a96b213f0c0d3242ef9ce0/e8c9b/images/docs/services-iptables-overview.svg" alt=""></p>
+<p>
+  <img src="https://d33wubrfki0l68.cloudfront.net/27b2978647a8d7bdc2a96b213f0c0d3242ef9ce0/e8c9b/images/docs/services-iptables-overview.svg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h3 id="ipvs">ipvs</h3>
 <p>This model is similar to iptables because both ipvs and iptables are base on netfilter hook in kernelspace. Ipvs uses hash tables to store rules, meaning it&rsquo;s faster than iptables, especially in a large cluster where there&rsquo;re thousands of services. In addition, ipvs supports more load balancing algorithms.</p>
-<p><img src="https://d33wubrfki0l68.cloudfront.net/2d3d2b521cf7f9ff83238218dac1c019c270b1ed/9ac5c/images/docs/services-ipvs-overview.svg" alt=""></p>
+<p>
+  <img src="https://d33wubrfki0l68.cloudfront.net/2d3d2b521cf7f9ff83238218dac1c019c270b1ed/9ac5c/images/docs/services-ipvs-overview.svg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="istio-sidecarproxy">Istio Sidecar Proxy</h2>
 <p>With service ClusterIP and Kubernetes DNS, service can be easily reached inside a cluster, however, this approach only provides very basic service discovery and limited load balancing policies. If you want more advanced features, such as flexible routing rules, more options for LB, reliable service communication, metrics collection and distributed tracing, etc., then you will need to consider Istio.</p>
 <p>After deploying Istio in a Kubernetes cluster, Istio takes over the communication between services with sidecar proxies. The communication between services is no longer through Kube-proxy but through Istio&rsquo;s sidecar proxies. The request process is like this: First, a client request is captured and redirected to the sidecar proxy by iptables. Then, the sidecar proxy chooses a backend pod according to the service discovery information and routing rules obtained from the control plane, and forwards the request to it.</p>
 <p>Istio sidecar proxy works just like Kube-proxy userspace mode. They both work in userspace to proxy the client request and load balance among multiple back-end Pods. The difference is that Kube-proxy only works on OSI layer 4, while Istio sidecar proxy can also handle OSI layer 7 packages. So Istio sidecar proxy is much more powerful. Working with Istio control plane, the mesh of sidecar proxies can support some advanced traffic management scenarios, such as canary deployment, traffic mirroring, chaos testing(fault injection), etc.</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-inter-services-communication.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-inter-services-communication.jpg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h1 id="access-services-fromthe-outside-of-a-cluster">Access Services from the Outside of a Cluster</h1>
 <p>ClusterIP is only reachable inside a Kubernetes cluster, but what if we need to access some services from outside of the cluster? Kubernetes provides the following ways to expose services to external networks.</p>
@@ -477,7 +489,10 @@ tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0<
 -A KUBE-SEP-4CGFRVESQ3AECDE7 -p tcp -m comment --comment <span style="color:#f1fa8c">&#34;default/webapp1-nodeport-svc:&#34;</span> -m tcp -j DNAT --to-destination 10.32.0.5:80
 </code></pre></div><p>As you can see from the above experiment, if a Service is declared as NodePort type, Kube-proxy will create a port on the node and listen on that port. But Kube-proxy will not directly accept traffic from node networks, instead, it will create the corresponding iptables rules which will capture the traffic sent to the NodePort and redirect that traffic to the back-end Pods.</p>
 <p>This diagram shows how traffic flows into a Kubernetes cluster with the help of NodePort:</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/NodePort.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/NodePort.jpg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="loadbalancer">LoadBalancer</h2>
 <p>NodePort is a convenient tool for testing in your local Kubernetes cluster, but it&rsquo;s not suitable for production because of these limitations.</p>
@@ -488,7 +503,10 @@ tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0<
 </ul>
 <p>A service can be declared as LoadBalancer type to create a layer 4 load balancer in front of multiple nodes. As this layer 4 load balancer is outside of the Kubernetes network, a Cloud Provider Controller is needed for its provision. This Cloud Provider Controller watches the Kubernetes master for the addition and removal of Service resources and configures a layer 4 load balancer in the cloud provider network to proxy the NodePorts on multiple Kubernetes nodes.</p>
 <p>The below diagram shows how external traffic enters a Kubernetes cluster with the help of a load balancer. Two NodPorts are connected to the load balancer to allow external traffic to come in. There are three Pods in the cluster serving the client requests. The numbers of Nodeports and pods can be scaled out/in accordingly based on the working load of the system.</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Load-Balancer.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Load-Balancer.jpg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <blockquote>
 <p>Note: A Service of LoadBalancer type is just a request to create the load balancer, the actual work is done by cloud providers, such as AWS, Azure, Amzon or Openstack. Pulic cloud provider can also associate a public IP to the created load balancer to accept traffic from the Interet.</p>
@@ -503,20 +521,32 @@ tcp6      <span style="color:#bd93f9">0</span>    <span style="color:#bd93f9">0<
 <ul>
 <li>
 <p>Routing requests to different backend services based on URL 
-<img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress-url-fanout.png" alt=""></p>
+
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress-url-fanout.png" alt="">
+
+</p>
 </li>
 <li>
 <p>Routing requests to different backend services based on Host
-<img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress-name-based-route.png" alt=""></p>
+
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress-name-based-route.png" alt="">
+
+</p>
 </li>
 </ul>
 <p>Ingress resource only defines requirements to a layer 7 load balancer such as how to route requests to backend services based on HTTP URL/Host, TLS key and certification configuration. In order for the Ingress resource to work, the cluster must have an ingress controller running. Ingress controllers configure a layer 7 proxy to fulfil the ingress rules. Most widely-used ingress controller implementations are based on some popular proxy projects including Nginx, HAProxy, Envoy, etc.</p>
 <p>Ingress controller provides a unified entrance for the HTTP services in a cluster, but it can&rsquo;t be accessed directly from outside because the ingress controller itself is also deployed as Pods inside the cluster. Ingress controller must work together with NodePort and LoadBalancer to provide the full path for the external traffic to enter the cluster.</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress+Nodeport+LoadBalancer-Topo.png" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress&#43;Nodeport&#43;LoadBalancer-Topo.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <p>From the above diagram, we can see that the whole system is highly scalable. Each of the NodePort, Ingress or Pod layers can be scale out/in accordingly to handle different working loads.</p>
 <p>The below diagram shows how the full entry path is implemented under the hood:</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress+NodePort+LoadBalancer-deep-dive.png" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress&#43;NodePort&#43;LoadBalancer-deep-dive.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <ol>
 <li>External traffic entry path implementationInternet/External traffic reaches the layer 4 load balancer.</li>
@@ -535,13 +565,19 @@ Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingr
 <li>Kubernetes Ingress can&rsquo;t be managed by the Istio control plane. It needs to be configured with the Kubernetes Ingress rules. As a result, there are two sets of independent routing configurations in the system, one for the entrance and one for the sidecar proxies inside the mesh. The operations of the service mesh are much more complicated in this way.</li>
 <li>Kubernetes Ingress can only provide very basic layer 7 capabilities. It doesn&rsquo;t have the same functionalities as mesh sidecars including advanced routing rules, distributed tracing, policy checking and metrics collections.</li>
 </ul>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/K8s-ingress-and-Istio.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/K8s-ingress-and-Istio.jpg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="istio-gateway">Istio Gateway</h2>
 <p>To address these concerns, Istio Gateway resource has been introduced in the 0.8 release to replace Kubernetes ingress.</p>
 <p>Istio Gateway resource is even simpler than Kubernetes Ingress. It can only configure L4-L6 functions, such as port, host, TLS key and certification. But Gateway can be bound to an Istio VirtualService resource, which is the same resource used for routing configuration inside the mesh.</p>
 <p>By this means, Istio can provide the same capabilities at the entrance of the mesh as inside the mesh. Both the ingress gateway and the sidecar proxies are managed by a unified mesh control plane.</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-Ingress.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-Ingress.jpg" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="api-gateway">API Gateway</h2>
 <p>With all the promising features provided by Istio, Istio Gateway seems like a good choice for the external traffic entrance of a service mesh. However, there is still something missing here.</p>
@@ -555,7 +591,10 @@ Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingr
 <li>Billing</li>
 <li>Other customized requirements ….</li>
 </ul>
-<p><img src="https://zhaohuabing.com/img/2018-12-27-the-obstacles-to-put-istio-into-production/ingress-comparation.png" alt=""></p>
+<p>
+  <img src="https://zhaohuabing.com/img/2018-12-27-the-obstacles-to-put-istio-into-production/ingress-comparation.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <p>To fulfil these requirements, there&rsquo;s a dozen of API Gateways on the table, including Ambassador, Kong, Traefik, Gloo, etc. All these API Gateways can be used as a Kubernetes ingress controller, but they all add some kinds of extensions to try to fill the gap between Kubernetes ingress and the reality, unfortunately, in an incompatible way. It&rsquo;s a very little chance that these extensions could be standardized and included in Kubernetes Ingress or Istio Gateway in the foreseeable future. In addition to that, as far as I know, no one ingress controller officially declared supporting the integration with Istio control plane to provide Istio routing rules.</p>
 <blockquote>
@@ -569,7 +608,10 @@ Client Request→ Load Balancer(External IP)→ Load Balancer (Node IP) → Ingr
 <p>Now let&rsquo;s come back to the question thrown up at the beginning of this post: Which one is the right choice for the ingress gateway of your service mesh? Kubernetes Ingress, Istio Gateway or API Gateway? My opinion is that neither of them is capable of that by its own due to lack of some  functions.</p>
 <p>Given that it&rsquo;s difficult to find an ideal out-of-box implementation which can provide both the functions of an application-layer API gateway and an Istio ingress gateway, a practical solution could be using a cascade of an API Gateway and a mesh sidecar proxy as the external traffic entrance.</p>
 <p>As the below diagram shows, an API gateway and a sidecar proxy are used as the ingress gateway of the service mesh. Since the API Gateway already has the function of a layer 7 gateway, the sidecar proxy behind it only needs to provide the routing capability of the Istio VirtualService resource and doesn&rsquo;t need to provide the capability of the Istio Gateway resource.</p>
-<p><img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/API-Gateway-and-Sidecar-Proxy-as-Ingress-for-Istio.png" alt=""></p>
+<p>
+  <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/API-Gateway-and-Sidecar-Proxy-as-Ingress-for-Istio.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <blockquote>
 <p>Note: NodePort and LoadBalancer should also be deployed to let external traffic in, but they are not displayed in this diagram for simplicity.</p>

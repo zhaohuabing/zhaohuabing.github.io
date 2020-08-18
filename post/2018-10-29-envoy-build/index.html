@@ -462,7 +462,10 @@ http_archive(
 )
 </code></pre><p>该文件通过http_archive定义了一个外部repository，bazel在执行//src/envoy:envoy这个target时，发现该target依赖这个外部repository，根据http_archive中的描述，从指定的url下载该依赖的源码，并进行编译。</p>
 <p>编译过程中的依赖关系如下图所示：</p>
-<p><img src="https://zhaohuabing.com/img/2018-10-29-envoy-build/envoy-build.png" alt=""></p>
+<p>
+  <img src="https://zhaohuabing.com/img/2018-10-29-envoy-build/envoy-build.png" alt="">
+
+</p>
 
 
                 

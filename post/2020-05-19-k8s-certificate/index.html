@@ -376,7 +376,10 @@ $(function() {
                 <p>接触 Kubernetes 以来，我经常看到 Kubernetes 在不同的地方使用了证书（Certificate），在 Kubernetes 安装和组件启动参数中也需要配置大量证书相关的参数。但是 Kubernetes 的文档在解释这些证书的工作机制方面做得并不是太好。经过大量的相关阅读和分析工作后，我基本弄清楚了 Kubernetes 中证书的使用方式。在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernetes 中证书相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。</p>
 <h1 id="kubernetes-组件的认证方式">Kubernetes 组件的认证方式</h1>
 <p>首先让我们来看一下 Kubernetes 中的组件：在 Kubernetes 中包含多个以独立进程形式运行的组件，这些组件之间通过 HTTP/GRPC 相互通信，以协同完成集群中应用的部署和管理工作。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/components-of-kubernetes.png" alt="">
+<p>
+  <img src="/img/2020-05-19-k8s-certificate/components-of-kubernetes.png" alt="">
+
+
 kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/overview/components/">kubernetes.io</a></p>
 <p>从图中可以看到，Kubernetes 控制平面中包含了 etctd，kube-api-server，kube-scheduler，kube-controller-manager 等组件，这些组件会相互进行远程调用，例如 kube-api-server 会调用 etcd 接口存储数据，kube-controller-manager 会调用 kube-api-server 接口查询集群中的对象状态；同时，kube-api-server 也会和在工作节点上的 kubelet 和 kube-proxy 进行通信，以在工作节点上部署和管理应用。</p>
 <p>以上这些组件之间的相互调用都是通过网络进行的。在进行网络通信时，通信双方需要验证对方的身份，以避免恶意第三方伪造身份窃取信息或者对系统进行攻击。为了相互验证对方的身份，通信双方中的任何一方都需要做下面两件事情：</p>
@@ -385,7 +388,10 @@ kubernetes 组件，图片来源<a href="https://kubernetes.io/zh/docs/concepts/
 <li>验证对方提供的身份证书是否合法，是否伪造的？</li>
 </ul>
 <p>在 Kubernetes 中使用了数字证书来提供身份证明，我们可以把数字证书简单理解为我们在日常生活中使用的“身份证”，上面标注了证书拥有者的身份信息，例如名称，所属组织机构等。为了保证证书的权威性，会采用一个通信双方都信任的 CA（证书机构，Certificate Authority）来颁发证书。这就类似于现实生活中颁发“身份证”的政府机构。数字证书中最重要的内容实际上是证书拥有者的公钥，该公钥代表了用户的身份。本文假设读者已经了解数字证书和 CA 的基本原理，如果你对此不太清楚，或者希望重新温习一下相关知识，可以先阅读一下这篇文章<a href="https://zhaohuabing.com/post/2020-03-19-pki">《数字证书原理》</a>。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/ca.png" alt="">
+<p>
+  <img src="/img/2020-05-19-k8s-certificate/ca.png" alt="">
+
+
 CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-question/1791.html">www.trustauth.cn</a></p>
 <p>在 Kubernetes 的组件之间进行通信时，数字证书的验证是在协议层面通过 TLS 完成的，除了需要在建立通信时提供相关的证书和密钥外，在应用层面并不需要进行特殊处理。采用 TLS 进行验证有两种方式：</p>
 <ul>
@@ -402,11 +408,17 @@ CA （证书机构），图片来源<a href="https://www.trustauth.cn/ca-questio
 <li>客户端端 CA 根证书：签发客户端证书的 CA 根证书，服务器端使用该 CA 根证书来验证客户端证书的合法性。</li>
 </ul>
 <p>下面这张来自<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a> 文章中的图形象地解释了双向 TLS 认证的原理。如果你需要了解更多关于 TLS 认证的原理，可以阅读一下 medium 上的原文。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/mutual-tls.png" alt=""></p>
+<p>
+  <img src="/img/2020-05-19-k8s-certificate/mutual-tls.png" alt="">
+
+</p>
 <p>图片来源<a href="https://medium.com/sitewards/the-magic-of-tls-x509-and-mutual-authentication-explained-b2162dec4401">The magic of TLS, X509 and mutual authentication explained</a></p>
 <h1 id="kubernetes-中使用到的ca和证书">Kubernetes 中使用到的CA和证书</h1>
 <p>Kubernetes 中使用了大量的证书，本文不会试图覆盖到所有可能使用到的证书，但会讨论到主要的证书。理解了这些证书的使用方法和原理后，也能很快理解其他可能遇到的证书文件。下图标识出了在 kubernetes 中主要使用到的证书和其使用的位置：</p>
-<p><img src="/img/2020-05-19-k8s-certificate/kubernetes-certificate-usage.png" alt=""></p>
+<p>
+  <img src="/img/2020-05-19-k8s-certificate/kubernetes-certificate-usage.png" alt="">
+
+</p>
 <p>Kubernetes 中使用到的主要证书</p>
 <p>上图中使用序号对证书进行了标注。图中的箭头表明了组件的调用方向，箭头所指方向为服务提供方，另一头为服务调用方。为了实现 TLS 双向认证，服务提供方需要使用一个服务器证书，服务调用方则需要提供一个客户端证书，并且双方都需要使用一个 CA 证书来验证对方提供的证书。为了简明起见，上图中只标注了证书使用方提供的证书，并没有标注证书的验证方验证使用的 CA 证书。图中标注的这些证书的作用分别如下：</p>
 <ol>
@@ -535,7 +547,10 @@ admin.conf  controller-manager.conf  kubelet.conf  scheduler.conf
  --service-account-private-key-file<span style="color:#ff79c6">=</span>/var/lib/kubernetes/service-account-key.pem  <span style="color:#6272a4"># 用于对 service account token 进行签名的私钥</span>
  ... 
 </code></pre></div><p>下图展示了 kubernetes 中生成、使用和验证 service account token  的过程。</p>
-<p><img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt=""></p>
+<p>
+  <img src="/img/2020-05-19-k8s-certificate/service-account-token.png" alt="">
+
+</p>
 <h3 id="认证方法客户端证书还是-token-">认证方法：客户端证书还是 token ？</h3>
 <p>我们可以看到，Kubernetes 提供了两种客户端认证的方法，控制面组件采用的是客户端数字证书;而在集群中部署的应用则采用了 service account token 的方式。为什么 Kubernetes 不为 service account 也生成一个证书，并采用该证书进行身份认证呢？ 实际上 Istio 就是这样做的，Istio 会自动为每个 service account 生成一个证书，并使用该证书来在 pod 中的应用之间建立双向 tls 认证。我没有找到 Kubernetes 这个设计决策的相关说明，如果你知道原因或对此有自己的见解，欢迎联系我进行探讨。</p>
 <h2 id="kubernetes-证书签发">Kubernetes 证书签发</h2>

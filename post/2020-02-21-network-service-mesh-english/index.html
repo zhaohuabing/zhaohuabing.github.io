@@ -390,7 +390,10 @@ $(function() {
 <li>Each pod can communicate directly with any other pod in the same cluster without NAT(Network Address Translation).
 If we ignore the trivial details of bridging and routing configuration, the Kubernetes network can be depicted as below:</li>
 </ul>
-<p><img src="/img/2020-02-21-network-service-mesh-english/kubernetes-network-model.png" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/kubernetes-network-model.png" alt="">
+
+</p>
 <p>As the figure shows, all pods in a Kubernetes cluster can access each other through a flat layer 3 network. The meaning of &ldquo;flat&rdquo; here is that a pod can access any other pod in the same cluster just through layer 3 routing without any NAT in the middle, in other words, the source pod and the destination pod see the same IP addresses in the packages exchanged between them.</p>
 <p>Of course, the layer 3 network is &ldquo;flat&rdquo; only from the perspective of a pod. For actual deployment, the implementation of this L3 network can be an overlay network with complex encapsulating.</p>
 <h1 id="limitation-of-kubernetes-network-innfv">Limitation of Kubernetes Network in NFV</h1>
@@ -411,9 +414,15 @@ If we ignore the trivial details of bridging and routing configuration, the Kube
 <li>Network Service: It is a network function and provides services at the L2 / L3 layer, which means Network Service processes and forwards packets, and generally does not terminate these packets. The example of Network Services includes Bridge, Router, Firewall, DPI, VPN Gateway, etc.</li>
 </ul>
 <p>The following figure shows the relationship between Service and Network Service.
-<img src="/img/2020-02-21-network-service-mesh-english/network-service.jpg" alt=""></p>
+
+  <img src="/img/2020-02-21-network-service-mesh-english/network-service.jpg" alt="">
+
+</p>
 <p>There can be multiple endpoints behind the scene to actually provide service in Kubernetes. It&rsquo;s also true for NSM Network Service, multiple pods/endpoints are deployed to share the client loads, and this deployment can be horizontally scaled to meet different workloads.</p>
-<p><img src="/img/2020-02-21-network-service-mesh-english/network-service-endpoint.jpg" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/network-service-endpoint.jpg" alt="">
+
+</p>
 <h1 id="network-service-mesh-architecture">Network Service Mesh architecture</h1>
 <p>Network Service Mesh consists of a couple of components, as shown in this figure:</p>
 
@@ -451,10 +460,16 @@ For example: FD.io (VPP), OvS, Kernel Networking, SRIOV etc.</p>
 </ul>
 <p>There are a few other components in NSM as well, but what we mentioned here are all we need to know to understand how NSM works.</p>
 <p>NSM deploys an NSMgr on each Node in the cluster. These NSMgrs talk to each other to select appropriate NSE to meet the Network Service requests from clients, and create a virtual wire between the client and the NSE. From the perspective, these NSMgrs form a mesh to provide L2/L3 network services for the applications, similar to a Service Mesh.</p>
-<p><img src="/img/2020-02-21-network-service-mesh-english/network-service-mesh.jpg" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/network-service-mesh.jpg" alt="">
+
+</p>
 <h1 id="vpn-gatewayexample">VPN Gateway Example</h1>
 <p>Let&rsquo;s see how exactly NSM works by using a simple VPN gateway example. Imagining that you need to connect a pod to the corporation intranet to access a service in the private network, as below diagram shows:</p>
-<p><img src="/img/2020-02-21-network-service-mesh-english/vpn-usecase.png" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/vpn-usecase.png" alt="">
+
+</p>
 <p>So you will need some kind of VPN to accomplish that. In the traditional way to do it, you need to have a VPN gateway installed somewhere you pod can reach to, probably in the same cluster, you also need to manually configure some network details, such as the VPN gateway address, the subnet prefix and IP address, the routes to the corporate intranet, etc, which should not be exposed to the user of VPN Gateway service at all. In this scenario, the client just needs to connect the corporate intranet and do whatever it needs to do, so it shouldn&rsquo;t care about the underlying implementation details of it, such as how the VPN is configured and established.</p>
 <p>In contrast, NSM uses a simple declarative way to provide the VPN service to the clients. This figure shows the YAML definitions of the VPN network service, network service endpoint, and network service client.</p>
 
@@ -500,7 +515,10 @@ For example: FD.io (VPP), OvS, Kernel Networking, SRIOV etc.</p>
 <h1 id="network-service-mesh-andcni">Network Service Mesh and CNI</h1>
 <p>As can be seen from the introduction of NSM in the previous section, NSM is not an implementation or extension of Container Networking Interface(CNI), it&rsquo;s a totally different mechanism.</p>
 <p>CNI works in the life cycle of Kubernetes runtime. It only concerns network allocation during a pod&rsquo;s initialization and deletion phases. CNI provides basic Layer 3 network connections between pods in a Cluster. That&rsquo;s it, you can&rsquo;t ask CNI for more advanced networking capabilities.</p>
-<p><img src="/img/2020-02-21-network-service-mesh-english/cni.png" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/cni.png" alt="">
+
+</p>
 <p>NSM works out of Kubernetes runtime&rsquo; life cycle and it&rsquo;s much more flexible. Various Network Services can be implemented by 3-rd parties and introduced into the Kubernetes world. The implementation details are wrapped into NSE and the complicated network configuration such as IP address, subnet, routes are done by NSM. A client can request and use a Network Service just by a single line of annotation in its YAML deployment file, without noticing all these networking details.</p>
 <p>In a word, NSM is a powerful complement to the Kubernetes CNI network model. NSM provides dynamic, advanced network services for pods while CNI provides basic L3 connectivity in a cluster.</p>
 <h1 id="network-service-mesh-and-servicemesh">Network Service Mesh and Service Mesh</h1>
@@ -508,10 +526,16 @@ For example: FD.io (VPP), OvS, Kernel Networking, SRIOV etc.</p>
 Service Mesh works at Layer 4 and Layer 7 (primarily Layer 7), handling service-to-service communication(service discovery, LB, retries, circuit breaker, advanced routing with application layer headers) and also providing security and insight for microservices.</p>
 <p>Network Service Mesh works at layer 2 and layer 3, providing advanced L2/L3 network services such as virtual L2 networks, virtual L3 networks, VPNs, firewalls, and DPI, etc.</p>
 <p>If needed, Service Mesh and Network Service Mesh can actually work together. For example, you can create an overlay L3 network across multiple clouds with NSM, and then build an Istio Service Mesh on top of that L3 network.</p>
-<p><img src="/img/2020-02-21-network-service-mesh-english/istio-on-top-of-nsm.png" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/istio-on-top-of-nsm.png" alt="">
+
+</p>
 <h1 id="network-service-mesh-andsdn">Network Service Mesh and SDN</h1>
 <p>SDN (Soft Defined Network) disaggregates network control and forwarding functions from individual switches and routers, and places them instead in a centralized SDN controller, as this figure shows:</p>
-<p><img src="/img/2020-02-21-network-service-mesh-english/sdn.png" alt=""></p>
+<p>
+  <img src="/img/2020-02-21-network-service-mesh-english/sdn.png" alt="">
+
+</p>
 <p>NSM and SDN do have overlap on OSI layers. SDN works on L1 / L2 / L3, and NSM works on L2 / L3, but in different areas. NSM intends to provide advanced L2 / L3 network services in a cloud-native way for Kubernetes, while SDN is mainly used to facilitate the configuration and management of network gears.</p>
 <p>NSM can wrap the capabilities of SDN into Network Services to be used by pods in Kubernetes. The below figure shows an example of using SDN together with NSM to provide QoE (Quality of Experience) services in a Kubernetes cluster.</p>
 

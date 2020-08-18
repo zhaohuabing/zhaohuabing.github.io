@@ -402,13 +402,19 @@ $(function() {
 <li>在单个网络带宽有限的情况下，通过多个网络接口增加网络的系统带宽。</li>
 </ul>
 <p>在电信的NFV（网络功能虚拟化）领域中，已经有多个针对Kubernetes的多网络平面解决方案。其中一个<a href="https://kubernetes.io/docs/concepts/cluster-administration/networking/">Kubernetes推荐的方案</a>是中兴通讯提供的<a href="https://github.com/ZTE/Knitter/">Knitter</a>开源实现。下图展示了Knitter是如何实现Kubernetes的多网络平面支持的。</p>
-<p><img src="/img/2018-12-19-multi-network-interfaces-for-istio/knitter-network-topology.png" alt=""></p>
+<p>
+  <img src="/img/2018-12-19-multi-network-interfaces-for-istio/knitter-network-topology.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <p>除了NFV的应用场景，Istio也支持除Kubernetes之外的其他部署环境，例如虚机和裸金属部署。在这些场景下，一个Host具有多个网络接口的场景也是很常见的，例如同时需要被内部和外部网络访问的Host就会有两个网络接口。</p>
 <h1 id="istio在多网络平面下的问题">Istio在多网络平面下的问题</h1>
 <p>在1.0版本中，Pilot在创建Inbound listener时未考虑多网络平面的情况，因此在Envoy所在节点存在多个IP时的处理逻辑存在问题。</p>
 <p>下图描述了在多网络平面场景下 Istio 1.1存在的问题。</p>
-<p><img src="/img/2018-12-19-multi-network-interfaces-for-istio/envoy-crash.png" alt=""></p>
+<p>
+  <img src="/img/2018-12-19-multi-network-interfaces-for-istio/envoy-crash.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="服务注册">服务注册</h2>
 <ol>
@@ -433,7 +439,10 @@ $(function() {
 </ol>
 <h1 id="如何支持多网络平面">如何支持多网络平面</h1>
 <p>从上面的描述可以看到，要支持多网络平面，Istio需要修改Pilot生成Outbound Listener的代码实现，下图描述了修改后的处理逻辑。
-<img src="/img/2018-12-19-multi-network-interfaces-for-istio/multi-network-solution.png" alt=""></p>
+
+  <img src="/img/2018-12-19-multi-network-interfaces-for-istio/multi-network-solution.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="服务注册流程不变">服务注册（流程不变）</h2>
 <ol>

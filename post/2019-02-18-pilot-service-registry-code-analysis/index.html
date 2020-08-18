@@ -373,13 +373,19 @@ $(function() {
                 <h1 id="istio服务注册插件机制">Istio服务注册插件机制</h1>
 <p>在Istio架构中，Pilot组件负责维护网格中的标准服务模型，该标准服务模型独立于各种底层平台，Pilot通过适配器和各底层平台对接，以使用底层平台中的服务数据填充此标准模型。</p>
 <p>例如Pilot中的Kubernetes适配器通过Kubernetes API Server到kubernetes中的Service以及对应的POD实例，将该数据被翻译为标准模型提供给Pilot使用。通过适配器模式，Pilot还可以从Cloud Foundry, Consul中获取服务信息，也可以开发适配器将其他提供服务发现的组件集成到Pilot中。
-<img src="/img/2019-02-18-pilot-service-registry-code-analysis/pilot.png" alt=""></p>
+
+  <img src="/img/2019-02-18-pilot-service-registry-code-analysis/pilot.png" alt="">
+
+</p>
 <p>本文将从代码出发，对Pilot的服务注册机制进行分析。</p>
 <p>备注： 本文分析的代码对应Istio commit 58186e1dc3392de842bc2b2c788f993878e0f123</p>
 <h1 id="服务注册相关的对象">服务注册相关的对象</h1>
 <p>首先我们来了解一下Pilot中关于服务注册的一些基本概念和相关数据结构。</p>
 <p>Istio源码中，和服务注册相关的对象如下面的UML类图所示。</p>
-<p><img src="/img/2019-02-18-pilot-service-registry-code-analysis/class-diagram.png" alt=""></p>
+<p>
+  <img src="/img/2019-02-18-pilot-service-registry-code-analysis/class-diagram.png" alt="">
+
+</p>
 <h2 id="service">Service</h2>
 <p>源码文件：pilot/pkg/model/service.go</p>
 <p>Service用于表示Istio服务网格中的一个服务（例如 catalog.mystore.com:8080)。每一个服务有一个全限定域名(FQDN)和一个或者多个接收客户端请求的监听端口。</p>
@@ -508,9 +514,15 @@ $(function() {
 <p>Service Registry初始化的主要逻辑在Pilot-discovery程序的主函数中，对应的源码为：pilot/cmd/pilot-discovery/main.go和pilot/pkg/bootstrap/server.go。</p>
 <p>在pilot/pkg/bootstrap/server.go中，初始化了各种Service Registry，其流程如下图所示：
 （备注： MCP Registry尚在开发过程中）
-<img src="/img/2019-02-18-pilot-service-registry-code-analysis/init-service-registry.png" alt=""></p>
+
+  <img src="/img/2019-02-18-pilot-service-registry-code-analysis/init-service-registry.png" alt="">
+
+</p>
 <p>Pilot将各个Service Registry(Memory, Kube, Consul)保存在serviceregistry.aggreagete.Controller中进行统一管理，Pilot会从所有类型的Registry中查询服务和服务实例，并监控所有Registry的数据变化,当Registry数据变化后，Pilot会清空其内部的缓存并通过ADS接口向Envoy推送更新。
-<img src="/img/2019-02-18-pilot-service-registry-code-analysis/controller.jpg" alt=""></p>
+
+  <img src="/img/2019-02-18-pilot-service-registry-code-analysis/controller.jpg" alt="">
+
+</p>
 <blockquote>
 <p>备注：上图中的controller实际上是Service Registry，aggregate controller和具体的各个类型的controller同时实现了Registry要求的controller和discovery interface。</p>
 </blockquote>

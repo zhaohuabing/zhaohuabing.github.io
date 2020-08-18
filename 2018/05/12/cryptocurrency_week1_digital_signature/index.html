@@ -405,7 +405,10 @@ They verify the message with the public key of the signer, which has already bee
 <strong>isValid := verify(pk, message, signature)</strong></p>
 <p>Like I mentioned before, we usually sign the hash of the message, so the verify function is like: <br>
 <strong>isValid := isEqual(decrypt(pk, hash(message)), signature)</strong>
-<img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/digital-signatures.jpg" alt="digital signature"></p>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/digital-signatures.jpg" alt="digital signature">
+
+</p>
 <h2 id="use-digital-signature-with-cryptocurrency">Use Digital Signature with Cryptocurrency</h2>
 <p>Signing a hash pointer is identical to signing the whole structure of the data in the hash pointer points to.</p>
 <ul>
@@ -423,9 +426,15 @@ Because modification of any part in the data structure will result inconsistent 
 <p>But how can people make sure the public key they received is the original one it is claimed to be? How can people know that the public key has not been modified by a middleman or it is not forged by an attacker?</p>
 <p>To solve this kind of trust issues in the public key publishing process, we introduced the digital certificate, which is a document consists of a public key, user identity and a signature of a trusted authority. The public key of the trusted authority has already been planted into operating systems or browsers, it&rsquo;s called root certificate.</p>
 <p>Obtain a digital certifacte from an authority
-<img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/digital-certificate.png" alt="digital certification"> <br>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/digital-certificate.png" alt="digital certification">
+
+ <br>
 Verify a digital signature using a certificate issued by an authority <br>
-<img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/verify-signature.jpg" alt="digital certification"></p>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_digital_signature/verify-signature.jpg" alt="digital certification">
+
+</p>
 <h3 id="anonymous-identities">Anonymous Identities</h3>
 <p>Sometimes, you may want to keep anonymous, in that case, you just publish your public key without a certification. One example is the identiy in Bitcoin, you might not want to let others known how many money you have, especially you have a lot and prefer to keep a low profile.</p>
 <p>Even without certification, you can still use that anonymous identity(the public key) to do business with others as long as the people don&rsquo;t care who exactly you are.</p>

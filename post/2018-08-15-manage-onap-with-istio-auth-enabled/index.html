@@ -581,14 +581,20 @@ service/vfc-zte-vnfm-driver ClusterIP 10.108.146.237 &lt;none&gt; 8410/TCP 2d
 kubectl apply -f msb-istio-gateway.yaml -n onap
 </code></pre><p>Now you can open the MSB portal http://${INGRESS_IP}:${INGRESS_PORT}/msb in the browser to see all the registered services.</p>
 <p>Note: INGRESS_IP and INGRESS_PORT can be found by executing this command ‘kubectl get svc istio-ingressgateway -n istio-system’</p>
-<p><img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/msb.png" alt=""></p>
+<p>
+  <img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/msb.png" alt="">
+
+</p>
 <h1 id="explore-istio-features">Explore Istio Features</h1>
 <h2 id="distributed-tracing">Distributed Tracing</h2>
 <p>First, let’s generate some traffics in the application, access the following URLs with curl command or open them in the browser</p>
 <p>http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-vio/v0/swagger.json</p>
 <p>http://${INGRESS_IP}:${INGRESS_PORT}/api/multicloud-ocata/v0/swagger.json</p>
 <p>Then open your browser at http://tracing_node_ip:tracing_node_port/, you should see something similar to the following:
-<img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/tracing.png" alt=""></p>
+
+  <img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/tracing.png" alt="">
+
+</p>
 <p>Note</p>
 <ul>
 <li>Tracing_node_port can be found by ‘kubctl get svc -n istio-system’.</li>
@@ -597,11 +603,17 @@ kubectl apply -f msb-istio-gateway.yaml -n onap
 <h2 id="service-graph">Service Graph</h2>
 <p>Istio provides a Servicegraph service which generates and visualizes graph representations of the services in the mesh.</p>
 <p>Open your browser at http://node_ip:30088/dotviz or http://node_ip:30088/force/forcegraph.html, you should see the service graph:</p>
-<p><img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/graph.png" alt=""></p>
+<p>
+  <img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/graph.png" alt="">
+
+</p>
 <h2 id="metrics-visualization">Metrics Visualization</h2>
 <p>Istio automatically gathers telemetry for services in a mesh. A Prometheus adapter is plugged into Mixer to serve the generated metric data. A Grafana addon is pre-configured with a Prometheus data source and has an Istio dashboard installed for the metric visualization.</p>
 <p>Open your browser at http://node_ip:30300, you should see the Grafana Istio dashboard:
-<img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/metrics.png" alt=""></p>
+
+  <img src="https://img.zhaohuabing.com/2018-08-15-manage-onap-with-istio-auth-enabled/metrics.png" alt="">
+
+</p>
 <h2 id="authorizationrbac">Authorization(RBAC)</h2>
 <p>Istio authorization is disabled by default, running the following command to enable it for onap namespace:</p>
 <pre><code>cd /service-mesh/install

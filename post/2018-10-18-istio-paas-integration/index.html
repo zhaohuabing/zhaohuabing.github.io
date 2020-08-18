@@ -408,7 +408,10 @@ $(function() {
 <p>其他未纳入K8S集群的服务，如遗留系统和第三方系统提供的服务。某些业务服务和这些服务之间存在互相访问的需求。</p>
 </li>
 </ul>
-<p><img src="/img/2018-10-18-istio-paas-integration/current_architecture.png" alt=""></p>
+<p>
+  <img src="/img/2018-10-18-istio-paas-integration/current_architecture.png" alt="">
+
+</p>
 <!-- raw HTML omitted -->
 <h2 id="服务注册">服务注册</h2>
 <p>电信领域与IT领域相比有一些特殊性，其中一点就是多网络平面的需求。多网络平面是电信领域的一个术语，通俗来讲就是系统中存在多个网络。采用多个网络的目的一般是为了管理原因，例如管理系统采用一个网络进行通信，而应用之间的通信在另一个网络上，这多个网络之间是相互隔离的。</p>
@@ -441,7 +444,10 @@ $(function() {
 </ul>
 <h1 id="istio集成方案">Istio集成方案</h1>
 <p>引入Istio后，系统架构如下图所示：
-<img src="/img/2018-10-18-istio-paas-integration/integrated_architecture.png" alt=""></p>
+
+  <img src="/img/2018-10-18-istio-paas-integration/integrated_architecture.png" alt="">
+
+</p>
 <h2 id="控制面">控制面</h2>
 <p>引入Istio Pilot提供服务发现和流量规则。Service Registry是基于Consul自研的，由于Pilot已经支持Consul的适配器，因此可以很容易地将我们的Service Registry作为服务信息提供者集成到Pilot中。</p>
 <p>提供用户界面对Mesh中的traffic rule进行配置，规则可以在设计应用蓝图时进行配置，也可以在运行期进行动态修改、添加和删除。</p>

@@ -474,7 +474,10 @@ Public ----(example.com = 193.168.0.6)--|-----| Host IP: 193.168.0.3 |
 <li>Fencing daemon (STONITHd): 爆头守护进程： Shoot the other node in the head,在某些情况下，可能有必要关闭节点，以保护共享数据或完整的资源回收。为此，Pacemaker配备了stonithd设备。STONITH可以将其它节点“爆头”，通常是实现与远程电源开关。</li>
 <li>cluster abstraction layer下面为集群的底层消息系统。</li>
 </ul>
-<p><img src="https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/images/pcmk-internals.png" alt="Pacemaker内部组件"></p>
+<p>
+  <img src="https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/1.1/html/Clusters_from_Scratch/images/pcmk-internals.png" alt="Pacemaker内部组件">
+
+</p>
 <p>采用Pacemaker实现VIP的原理和Keepalived基本相同，也是采用将VIP作为Secondary IP绑定到Master网卡的方式，具体设置步骤略。</p>
 <h2 id="参考">参考</h2>
 <ul>

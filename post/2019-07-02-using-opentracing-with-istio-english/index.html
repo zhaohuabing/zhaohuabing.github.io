@@ -382,7 +382,10 @@ $(function() {
 <p>For now, all that we have been talking is just about synchronous RPC (HTTP/REST), however, we can’t ignore the fact that asynchronous messaging is also widely adopted as an inter-services communication mechanism. So in this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing.</p>
 <h1 id="eshop-demo-application">Eshop Demo Application</h1>
 <p>As depicted in the below diagram, the demo application has been modified to add asynchronous messages related logic. After calling the inventory, billing, and delivery services, the eshop service sends a message to a Kafka topic. The consumer service is listening on this Kafka topic. Once receiving the message, it calls the notification service to send out an email to notify the user that the transaction is successfully done.</p>
-<p><img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt="">
+
+</p>
 <h1 id="kafka-opentracing-instrumentation">Kafka Opentracing Instrumentation</h1>
 <p>The source code can be downloaded from Github.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone git@github.com:zhaohuabing/istio-opentracing-demo.git
@@ -459,7 +462,10 @@ git checkout kafka-tracking
 </code></pre></div><p>Then deploy the application in Kubernetes. The docker images are available in docker hub, you could also build the images yourself from source codes.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f k8s/eshop.yaml
 </code></pre></div><p>Input this URL “http://${NODE_IP}:31380/checkout” in your browser to trigger the Restful API of the application, then you should see the generated trace on the Jaeger UI “http://${NODE_IP}:30088”.</p>
-<p><img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt="">
+
+</p>
 <p>As the above picture shows, two additional spans have been added to the trace, which represents the message handling at Kafka producer and consumer side respectively. We can see that the reference type between From_eshop_topic Span and To_eshop_topic Span is FOLLOWS_FROM instead of CHILD_OF. That’s because it’s an asynchronous message, so Opentracing uses a FOLLOWS_FROM reference type to indicate there’s no direct dependency between these two Spans.</p>
 <h1 id="propagate-tracing-context-from-kafka-to-rest">Propagate Tracing Context from Kafka to REST</h1>
 <p>For now, tracing context has been propagated from REST calls to Kafka messages, but what if we call a REST API of another service in the message consumer? It would be quite helpful if we could also pass the tracing context from Kafka to the called service, unfortunately, Opentracing instrumentation doesn’t behave as we expected.</p>
@@ -531,9 +537,15 @@ A contrived example:
 <span style="color:#ff79c6">}</span>
 </code></pre></div><p>That’s all! Now open this URL “http://${NODE_IP}:31380/checkout ” in your browser to invoke the eshop service, then you’ll able to see the whole trace in the Jaeger UI “ http://${NODE_IP}:30088”.</p>
 <p>From the below diagram, you can see how the client request goes through all the services, no matter it’s a REST call or a Kafka message. With this very nice global view, it would be easy to figure out what’s the bottleneck if there is an abnormal latency, or which service has a problem if the client gets an error response.</p>
-<p><img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt="">
+
+</p>
 <p>You can also switch between the trace timeline and the trace graph in the Jaeger UI.</p>
-<p><img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt="">
+
+</p>
 <h1 id="wrap-up">Wrap Up</h1>
 <p>Istio gives you insights into your service mesh by its build-in distributed tracing capability, however, it might not be enough for troubleshooting just by tracing REST calls across process boundaries.</p>
 <p>By leveraging Opentracing instrumentation, we could avoid the trivial code for passing HTTP trace header, and include method-level and Kafka message tracing to the Istio generated trace to provide fine-grained tracing information.</p>

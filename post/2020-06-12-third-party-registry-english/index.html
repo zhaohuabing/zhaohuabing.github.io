@@ -370,7 +370,10 @@ $(function() {
 <p>How can we quickly integrate these existing microservices projects with Istio at minimal modifications? In this post, I will first explain the service registry mechanism of Istio, and then propose several possible options to integrate third-party service discovery with Istio.</p>
 <h1 id="istio-service-model">Istio Service Model</h1>
 <p>First, let’s take a look at the service model inside Istio. In the Istio control plane, Pilot is responsible for managing the service within the service mesh. However, Pilot doesn’t handle service discovery by itself. Pilot populates its internal service registry with services from two kinds of data sources.</p>
-<p><img src="/img/2020-06-02-third-party-registry/pilot-services-source.svg" alt="">
+<p>
+  <img src="/img/2020-06-02-third-party-registry/pilot-services-source.svg" alt="">
+
+
 Figure 1. Istio service model and data sources</p>
 <p>As shown in figure 1, there are two data sources for the Pilot service model:</p>
 <p>从上图中可以得知， Pilot 中管理的服务数据有两处数据来源：</p>
@@ -391,7 +394,10 @@ Figure 1. Istio service model and data sources</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--registries Consul<span style="color:#f1fa8c">```</span>   <span style="color:#f1fa8c">```</span>--consulserverURL http://<span style="color:#8be9fd;font-style:italic">$consul</span>-ip:<span style="color:#8be9fd;font-style:italic">$port</span>
 </code></pre></div><h1 id="other-service-registries">Other Service Registries</h1>
 <p>Although some initial Eureka adapter codes appeared in 1.0, they have been completely removed in later releases. Istio now only natively supports Kubernetes and Consul service registry. For those who are using Eureka or other service registries, there are three possible ways to import services in these registries to Istio.
-<img src="/img/2020-06-02-third-party-registry/service-registry-integration.svg" alt="">
+
+  <img src="/img/2020-06-02-third-party-registry/service-registry-integration.svg" alt="">
+
+
 Figure 2. Three ways to integrate third-party service registries with Istio</p>
 <p>Figure 2 shows the three ways, colored in red, blue, and green, respectively, to integrate service registries with Istio.</p>
 <h2 id="service-registry-adapter">Service Registry Adapter</h2>
@@ -425,7 +431,7 @@ In order to write a custom service registry adapter, you need to know Pilot sour
                     
                     
                     <li class="next">
-                        <a href="/post/2020-08-13-gcloud-service-mesh/" data-toggle="tooltip" data-placement="top" title="Google 云服务网格：Traffic director 与 Anthos Service Mesh 的左右互搏">Next
+                        <a href="/post/2020-08-13-gcloud-service-mesh/" data-toggle="tooltip" data-placement="top" title="Google Cloud 服务网格产品：Traffic director 与 Anthos Service Mesh 的左右互搏">Next
                             Post &rarr;</a>
                     </li>
                     

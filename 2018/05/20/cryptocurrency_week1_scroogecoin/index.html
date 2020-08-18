@@ -376,7 +376,10 @@ $(function() {
 <p>It turns out that writing posts on my blog is a better way to learn, I have to fully understand the lessons before I can explain them in my posts.</p>
 <h2 id="scrooge-coin-transaction">Scrooge Coin Transaction</h2>
 <p>Scrooge Coin programming assignment is a little bit tricky, the video of this lesson hasn&rsquo;t explained some implementation details. To help you understand the transaction data structure used in Scrooge Coin, I draw this diagram:
-<img src="http://img.zhaohuabing.com/in-post/2018-5-20-cryptocurrency_week1_scroogecoin/scroogecoin.png" alt="Scrooge Coin"></p>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-5-20-cryptocurrency_week1_scroogecoin/scroogecoin.png" alt="Scrooge Coin">
+
+</p>
 <p>Every transaction has a set of inputs and a set of outputs. An input in a transaction must use a hash pointer to refer to its corresponding output in the previous transaction, and it must be signed with the private key of the owner because the owner needs to prove he/she agrees to spend his/her coins.</p>
 <p>Every output is correlated to the public key of the receiver, which is his/her ScroogeCoin address.</p>
 <p>In the first transaction, we assume that Scrooge has created 10 coins and assigned them to himself, we don&rsquo;t doubt that because the system-Scroogecoin has a building rule which says that Scrooge has right to create coins.</p>

@@ -410,7 +410,10 @@ CONTAINER           CPU %               MEM USAGE / LIMIT     MEM %             
 <p>在一个微服务运用中，一个服务访问的其他服务一般不会超过10个，而一个namespace中可能部署多达上百个微服务，导致Envoy中存在大量冗余配置，导致不必要的内存消耗。最合理的做法是只为一个sidecar配置该sidecar所代理服务需要访问的外部服务相关的配置。</p>
 <p>Istio提供了<a href="https://istio.io/docs/reference/config/networking/sidecar/">Siedecar</a> CRD，用于对Pilot向sidecar下发的缺省配置进行更细粒度的调整。下面以Bookinfo示例程序说明如何调整一个sidecar的配置。</p>
 <p>在Bookinfo示例程序中，几个微服务之间的调用关系如下：</p>
-<p><img src="https://istio.io/docs/examples/bookinfo/withistio.svg" alt=""></p>
+<p>
+  <img src="https://istio.io/docs/examples/bookinfo/withistio.svg" alt="">
+
+</p>
 <p>从图中可以看到，reviews服务只需要访问ratings服务，因此在reviews的sidecar中只需要ratings服务相关的outbound配置。</p>
 <p>但是通过查询reviews pod中proxy的配置，可以看到Pilot下发的缺省配置信息中包含了reviews， productpage，details这些它并不需要的outbound cluster信息，这些outbound cluster会导致额外的内存消耗。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master $ kubectl <span style="color:#8be9fd;font-style:italic">exec</span> reviews-v3-54c6c64795-2tzjc -c istio-proxy curl 127.0.0.1:15000/clusters|grep 9080|grep added_via_api::true|grep outbound

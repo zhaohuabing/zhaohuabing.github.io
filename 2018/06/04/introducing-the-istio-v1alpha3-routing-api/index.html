@@ -378,7 +378,10 @@ $(function() {
 </ul>
 <h2 id="v1alpha3中的配置资源">v1alpha3中的配置资源</h2>
 <p>在一个典型的网格中，通常有一个或多个用于终结外部TLS链接，将流量引入网格的负载均衡器（我们称之为gateway）。 然后流量通过边车网关（sidecar gateway）流经内部服务。 应用程序使用外部服务的情况也很常见（例如访问Google Maps API），一些情况下，这些外部服务可能被直接调用；但在某些部署中，网格中所有访问外部服务的流量可能被要求强制通过专用的出口网关（Egress gateway）。 下图描绘了网关在网格中的使用情况。</p>
-<p><img src="http://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/gateways.svg" alt="Gateway"></p>
+<p>
+  <img src="http://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/gateways.svg" alt="Gateway">
+
+</p>
 <p>考虑到上述因素，<code>v1alpha3</code>引入了以下这些新的配置资源来控制进入网格，网格内部和离开网格的流量路由。</p>
 <ol>
 <li><code>Gateway</code></li>
@@ -388,7 +391,10 @@ $(function() {
 </ol>
 <p><code>VirtualService</code>，<code>DestinationRule</code>和<code>ServiceEntry</code>分别替换了原API中的<code>RouteRule</code>，<code>DestinationPolicy</code>和<code>EgressRule</code>。 <code>Gateway</code>是一个独立于平台的抽象，用于对流入专用中间设备的流量进行建模。</p>
 <p>下图描述了跨多个配置资源的控制流程。
-<img src="http://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/virtualservices-destrules.svg" alt="不同配置资源之间的关系"></p>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/virtualservices-destrules.svg" alt="不同配置资源之间的关系">
+
+</p>
 <h3 id="gateway">Gateway</h3>
 <p><a href="https://istio.io/docs/reference/config/istio.networking.v1alpha3/#Gateway">Gateway</a>用于为HTTP / TCP流量配置负载均衡器，并不管该负载均衡器将在哪里运行。 网格中可以存在任意数量的Gateway，并且多个不同的Gateway实现可以共存。 实际上，通过在配置中指定一组工作负载（Pod）标签，可以将Gateway配置绑定到特定的工作负载，从而允许用户通过编写简单的Gateway Controller来重用现成的网络设备。</p>
 <p>对于入口流量管理，您可能会问： 为什么不直接使用Kubernetes Ingress API ？ 原因是Ingress API无法表达Istio的路由需求。 Ingress试图在不同的HTTP代理之间取一个公共的交集，因此只能支持最基本的HTTP路由，最终导致需要将代理的其他高级功能放入到注解（annotation）中，而注解的方式在多个代理之间是不兼容的，无法移植。</p>

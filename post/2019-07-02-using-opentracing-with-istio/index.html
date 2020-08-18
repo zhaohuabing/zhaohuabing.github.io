@@ -386,7 +386,10 @@ $(function() {
 <p>在实际项目中，除了同步调用之外，异步消息也是微服务架构中常见的一种通信方式。在本篇文章中，我将继续利用eshop demo程序来探讨如何通过Opentracing将Kafka异步消息也纳入到Istio的分布式调用跟踪中。</p>
 <h1 id="eshop-示例程序结构">eshop 示例程序结构</h1>
 <p>如下图所示，demo程序中增加了发送和接收Kafka消息的代码。eshop微服务在调用inventory，billing，delivery服务后，发送了一个kafka消息通知，consumer接收到通知后调用notification服务的REST接口向用户发送购买成功的邮件通知。</p>
-<p><img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt=""></p>
+<p>
+  <img src="/img/2019-07-02-using-opentracing-with-istio/eshop-demo.jpg" alt="">
+
+</p>
 <h1 id="将kafka消息处理加入调用链跟踪">将Kafka消息处理加入调用链跟踪</h1>
 <h2 id="植入kafka-opentracing代码">植入Kafka Opentracing代码</h2>
 <p>首先从github下载代码。</p>
@@ -465,7 +468,10 @@ git checkout kafka-tracking
 </code></pre></div><p>然后部署应用程序，相关的镜像可以直接从dockerhub下载，也可以通过源码编译生成。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f k8s/eshop.yaml
 </code></pre></div><p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
-<img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt=""></p>
+
+  <img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka.jpg" alt="">
+
+</p>
 <p>从图中可以看到，在调用链中增加了两个Span，分布对应于Kafka消息发送和接收的两个操作。由于Kafka消息的处理是异步的，消息发送端不直接依赖接收端的处理。根据Opentracing对引用关系的定义，From_eshop_topic Span 对 To_eshop_topic Span 的引用关系是 FOLLOWS_FROM 而不是 CHILD_OF 关系。</p>
 <h1 id="将调用跟踪上下文从kafka传递到rest服务">将调用跟踪上下文从Kafka传递到REST服务</h1>
 <p>现在eshop代码中已经加入了REST和Kafka的Opentracing Instrumentation，可以在进行REST调用和发送Kafka消息时生成调用跟踪信息。但如果需要从Kafka的消息消费者的处理方法中调用一个REST接口呢？</p>
@@ -540,10 +546,16 @@ A contrived example<span style="color:#ff79c6">:</span>
     <span style="color:#ff79c6">......</span>
 <span style="color:#ff79c6">}</span>
 </code></pre></div><p>在浏览器中打开地址：http://${NODE_IP}:31380/checkout ，以触发调用eshop示例程序的REST接口。然后打开Jaeger的界面 http://${NODE_IP}:30088 查看生成的分布式调用跟踪信息。
-<img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt=""></p>
+
+  <img src="/img/2019-07-02-using-opentracing-with-istio/istio-tracing-opentracing-kafka-rest.jpg" alt="">
+
+</p>
 <p>从上图可以看到，调用链中出现了Kafka消费者调用notification服务的sendEmail REST接口的Span。从图中可以看到，由于调用链经过了Kafka消息，sendEmail Span的时间没有包含在checkout Span中。</p>
 <p>在Jaeger UI上将图形切换为trace graph，可以更清晰地表示出各个Span之间的调用关系。
-<img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt=""></p>
+
+  <img src="/img/2019-07-02-using-opentracing-with-istio/trace-graph.jpg" alt="">
+
+</p>
 <h1 id="总结">总结</h1>
 <p>Istio服务网格通过分布式调用跟踪来提高微服务应用的可见性。我们可以使用Opentracing Instrumentation来代替应用编码传递分布式跟踪的相关http header；还可以将方法级的调用跟踪和Kafka消息的调用跟踪加入到Istio生成的调用跟踪链中，以提供更细粒度的调用跟踪信息。</p>
 <p>该方案可以达到分布式调用跟踪的目的，但需要在代码框架层进行一定的改动，以植入调用跟踪的相关代码。理想的方案是由服务网格基础设施层来完成所有调用跟踪的数据收集和生成，这样应用代码只需关注业务逻辑，而不用处理调用跟踪信息的生成。可以在Envoy中加入插件来为Kafka消息生成调用跟踪信息，但目前看来服务网格还没有很好的办法在上下游服务之前传递调用跟踪上下文。</p>

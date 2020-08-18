@@ -390,9 +390,15 @@ $(function() {
 <li>Besides the public key hash, there&rsquo;s also some bitcoin script code in the output, which is called scriptPubkey.</li>
 <li>In transaction 2, Alice wants to spend her coin, so she gives her signature to prove that she approve this transaction. She also specifies her full public key to prove her ownership of these coins. This combination is called scriptSig.</li>
 <li>SctiptPubkey and ScriptSig are concatenated to form a single, completed script. This script will run on Bitcoin nodes, if the output is true, then the transaction is valid and will proceed, otherwise, it&rsquo;s considered as invalid and will be abandoned.
-<img src="http://img.zhaohuabing.com/in-post/2018-06-03-cryptocurrency_week3_bitcoin_script/standard_transaction.png" alt="Bitcoin Transaction"></li>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-06-03-cryptocurrency_week3_bitcoin_script/standard_transaction.png" alt="Bitcoin Transaction">
+
+</li>
 <li>The most simple, standard script essentially does two things when it is executed: first, the script checks if the given public key in ScriptSig matches the public key hash in ScriptPubkey, then it validates the signature with the public key. The below table shows how the script is processed.
-<img src="http://img.zhaohuabing.com/in-post/2018-06-03-cryptocurrency_week3_bitcoin_script/script_execution.png" alt="Bitcoin Transaction"></li>
+
+  <img src="http://img.zhaohuabing.com/in-post/2018-06-03-cryptocurrency_week3_bitcoin_script/script_execution.png" alt="Bitcoin Transaction">
+
+</li>
 </ul>
 <h2 id="check-multi-signatures">Check Multi-Signatures</h2>
 <p>Specifies N public keys, if T out of N signatures are verified as valid, the coins can be redeemed.(T&lt;=N)</p>

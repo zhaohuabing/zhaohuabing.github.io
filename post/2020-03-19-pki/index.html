@@ -369,10 +369,16 @@ $(function() {
                 
                 <h1 id="非对称加密">非对称加密</h1>
 <p>在传统的加密算法中，通信的双方会采用一个共享秘钥来对数据进行加密和解密。消息发送方先采用秘钥对明文进行加密然后再进行传送，待接收方收到消息后，再采用秘钥对密文进行界面，以得到明文。由于加密和解密采用的秘钥是相同的，这种加密算法也称为对称加密。采用对称加密的通信过程如下图所示：
-<img src="/img/2020-03-19-pki/symmetric-cryptography.png" alt="">
+
+  <img src="/img/2020-03-19-pki/symmetric-cryptography.png" alt="">
+
+
 图片来源<a href="https://www.twilio.com/blog/what-is-public-key-cryptography">twilio</a></p>
 <p>与传统的对称加密不同,非对称加密算法采用了两个密钥：公开密钥（publickey:简称公钥）和私有密钥（privatekey:简称私钥）。公钥与私钥是成对使用的，如果用公钥对数据进行加密，只有用对应的私钥才能解密；同样，使用私钥对数据进行加密，只有用对应的公钥才能解密。因为加密和解密使用的是两个不同的密钥，所以这种算法叫作非对称加密算法，也称为公开密钥加密。采用非对称加密的通信过程如下图所示：
-<img src="/img/2020-03-19-pki/public-key-cryptography.png" alt="">
+
+  <img src="/img/2020-03-19-pki/public-key-cryptography.png" alt="">
+
+
 图片来源<a href="https://www.twilio.com/blog/what-is-public-key-cryptography">twilio</a></p>
 <p>使用对称加密算法需要双方事先交换加/解密用的共享秘钥，而交换的过程就存在密码泄露的风险。非对称加密的保密性比较好，因为它消除了通信双方交换秘钥（加密用的私钥）的需要。公钥是不需要进行保密的，可以对外进行公布，但加密后的信息只有私钥的拥有者才能进行解密。</p>
 <p>但是非对称加密的效率比对称加密低，因此在通信过程中一般会结合非对称加密和对称加密来实现数据加密传输。先通过非对称加密协商一个用于对称加密的共享秘钥，后续在传递数据时采用该对称加密秘钥匙来对数据加密，以在保证安全性的同时兼顾加密传输的效率。SSL/TLS就采用了类似的加密传输机制。</p>
@@ -427,7 +433,10 @@ Hello world
 <li>消息接受者验证发送者身份： isValid := isEqual(decrypt(pk, signature),hash(message))</li>
 </ul>
 <p>下图展示了数字签名和验证的流程：
-<img src="/img/2020-03-19-pki/digital-signatures.jpg" alt="">
+
+  <img src="/img/2020-03-19-pki/digital-signatures.jpg" alt="">
+
+
 图片来源<a href="https://www.revasolutions.com/expertise/process-management/digital-signatures/attachment/digital-signatures-methodology/">revasolutions</a></p>
 <p>除了验证公钥拥有者的身份之外，数字签名还可以证明传输的数据没有被人恶意篡改，因为如果数据被篡改了，数据的哈希值就和解密后的签名对不上。</p>
 <h1 id="数字证书">数字证书</h1>
@@ -436,7 +445,10 @@ Hello world
 <p>当我们只需要匿名的身份标识时，直接采用公钥就可以了，采用公钥对应的私钥对任意一段数据进行数字签名，并发布原生数据，公钥和签名数据，就可以证明公钥拥有者的身份了。比特币是一个匿名的交易系统，只需要证明你是比特币的拥有者，并不需要公布真实身份，因此在比特币中就直接采用了公钥作为比特币的钱包地址。</p>
 <p>在大部分的情况下，我们还需要证明公钥拥有者的真实身份，例如姓名，地址，电子邮件等，因此会将这些信息随着公钥一起发布，这就是数字证书。在前面介绍的数字签名中，传输的文本是任意一段数据，在数字证书中的数据则是证书拥有者的真实身份信息。我们可以把数字证书理解为包含“公钥+姓名+地址+电子邮件等个人/组织信息”的一段数据，通过数字签名来证明证书拥有者的身份和确保证书中的信息在传输过程中不被恶意篡改。</p>
 <p><a href="https://www.ietf.org/rfc/rfc5280.txt">RFC5280</a>定义了x.509公钥证书的标准格式，如下图所示：
-<img src="/img/2020-03-19-pki/x509.png" alt="">
+
+  <img src="/img/2020-03-19-pki/x509.png" alt="">
+
+
 图片来源<a href="https://www.researchgate.net/figure/Format-of-X-509-Certificate_fig5_322926088">researchgate</a></p>
 <p>从图中可以看到，除了证书拥有者的公钥，证书拥有者的一些基本信息和数字签名之外，还包含了证书签发者的信息，我们后续会对此进行进一步说明。</p>
 <p>我们可以采用openssl来创建一个数字证书及其对应的私钥：</p>
@@ -555,7 +567,10 @@ wuIOfTkjtulWF4nViEQurjemULm0
 <h2 id="自签名证书">自签名证书</h2>
 <p>生成数字证书时会使用证书颁发机构（Issuer）的私钥对证书内容（证书拥有者的公钥和身份信息）进行数字签名。从上面实验的输出可以看到，Issuer和Subject中的信息是相同的。都是“C = CN, ST = Sichuan, L = Chengdu, O = Make a Lot of Money Ltd, CN = zhaohuabing”，这说明对该证书进行签名使用的私钥是证书中公钥对应的私钥。这种采用证书中的公钥对应的私钥进行签名的证书被称为自签名证书，意思是签名者和证书拥有者为同一人。</p>
 <p>下图展示了一个自签名证书的内部结构：
-<img src="/img/2020-03-19-pki/self-signed-certificate.jpg" alt=""></p>
+
+  <img src="/img/2020-03-19-pki/self-signed-certificate.jpg" alt="">
+
+</p>
 <p>我们可以用openssl verify命令来验证证书，-CAfile参数指明验证证书数字签名使用的公钥。由于这是一个自签名证书，因此需要采用自身证书中的公钥来验证该证书。如下所示：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl verify -CAfile certificate.pem certificate.pem
 certificate.pem: OK
@@ -563,11 +578,17 @@ certificate.pem: OK
 <h2 id="证书机构">证书机构</h2>
 <p>前面我们讲到自签发证书存在内容的可信度问题，因此在数字证书体系中引入了证书机构来解决该问题。我们可以把证书机构看作真实世界中的权威机构，例如政府部门。我们使用的身份证具有可信度，这是因为有政府部门担保其中信息的正确性。在数字证书体系中也有类似的权威机构，我们称为证书机构。</p>
 <p>引入证书机构后，我们使用证书机构而不是证书拥有者的私钥来对数字证书进行签名，如下图所示：
-<img src="/img/2020-03-19-pki/standard-certificate.jpg" alt="">
+
+  <img src="/img/2020-03-19-pki/standard-certificate.jpg" alt="">
+
+
 我们认为证书机构是可信的，那么使用证书机构的私钥对证书进行签名相当于证书机构用自己的信誉来保证了证书中用户身份信息和公钥的真实性。只要使用该证书的用户用证书机构的公钥验证了该证书中的签名，就可以信任该证书中的公钥和用户身份。然后就可以使用该公钥来和证书拥有者进行安全通信了，例如访问证书拥有者的网站。</p>
 <p>看到这里你可能会发现一个问题：在验证证书时我们需要用到证书机构的公钥，那我们如何拿到证书机构的公钥和身份信息，并保证证书机构自身身份的真实性呢？权威证书机构会为自己颁发一个自签名证书，这称为证书机构的根证书，然后操作系统和浏览器会将这些根证书内置到发布的版本中，当验证用户证书时，操作系统和浏览器会认为内置的这些证书机构的证书是可信的，这样就解决了证书机构的信任问题。有时，我们可能想使用一些未被操作系统和浏览器缺省内置的证书机构，则可以把这些证书机构的根证书手动导入到操作系统或者浏览器中。</p>
 <p>假设Alice要发送一个电子商务合同给Bob，为了向Bob表明合同是Alice发送的，Alice使用自己的证书对该合同进行数字签名后再发送，证书的签发、使用和验证过程是这样的：
-<img src="/img//2020-03-19-pki/certificate-verification.svg" alt=""></p>
+
+  <img src="/img//2020-03-19-pki/certificate-verification.svg" alt="">
+
+</p>
 <ol>
 <li>Alice在本地生成Private Key和CSR（Certificate Signing Request）。CSR中包含了Alice的公钥和姓名，机构、地址等身份信息。</li>
 <li>Alice使用该CSR向证书机构发起数字证书申请。</li>
@@ -677,7 +698,10 @@ Verified OK
 </li>
 </ul>
 <p>证书链中证书的关系如下图所示，每一个下级证书中都有其上级证书的DN（Distinguished Name），在进行验证时，每一级都会通过该DN来找到上级证书，并使用上级证书的public Key来验证本机证书的签名，如果中间有多个层级，则会重复该验证过程一直到自签名根证书，由于自签名根证书已经内置在操作系统中，属于系统信任的根证书，到达根证书时就验证完毕，形成了一条从上到下的链状信任关系。
-<img src="/img/2020-03-19-pki/certificate-chain.png" alt="">
+
+  <img src="/img/2020-03-19-pki/certificate-chain.png" alt="">
+
+
 图片来源<a href="https://support.f5.com/csp/article/K41280190">f5</a></p>
 <p>下面我们用openssl来试验一个三层的证书链。</p>
 <p>首先生成根证书和对应的私钥。</p>
@@ -824,7 +848,10 @@ Alice.crt: OK
 </code></pre></div><h2 id="交叉认证">交叉认证</h2>
 <p>在签发证书时，多个CA可以为同一个公钥签发证书，因此一个证书签名对应的公钥可以存在于多个上级证书中。采用这种方式，一个证书可以存在于多条链中，并且每条链都是合法的，都可以通过验证。</p>
 <p>让我们来看看下面图中的例子：
-<img src="/img/2020-03-19-pki/cross-certification.jpg" alt="">
+
+  <img src="/img/2020-03-19-pki/cross-certification.jpg" alt="">
+
+
 在上图中，我们采用了CA1来为User1签发证书，CA1有一个自签名的根证书，同时采用CA2的根证书为CA1签发了一个中间证书，这样User1就处在了两条合法的证书链上（分别用实线和虚线表示）。</p>
 <ul>
 <li>User 1 Certificate -&gt; CA1 Self-signed Certificate</li>

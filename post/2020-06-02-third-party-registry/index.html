@@ -370,7 +370,10 @@ $(function() {
 <p>在这种情况下，我们如何能够以最小的代价快速地将现有微服务项目和 Istio 进行集成，以享受 Istio 提供的各种服务治理能力呢？本文将分析 Istio 服务注册机制的原理，并提出几种 Istio 与第三方服务注册中心集成的可行方案，以供读者参考。</p>
 <h1 id="istio-服务模型">Istio 服务模型</h1>
 <p>我们先来看一下 Istio 内部的服务模型。在 Istio 控制面中，Pilot 组件负责管理服务网格内部的服务和流量策略。Pilot 将服务信息和路由策略转换为 xDS 接口的标准数据结构，下发到数据面的 Envoy。但 Pilot 自身并不负责网格中的服务注册，而是通过集成其他服务注册表来获取网格中管理的服务。除此以外，Istio 还支持通过 API 向网格中添加注册表之外的独立服务。</p>
-<p><img src="/img/2020-06-02-third-party-registry/pilot-services-source.svg" alt="">
+<p>
+  <img src="/img/2020-06-02-third-party-registry/pilot-services-source.svg" alt="">
+
+
 图1 Istio 服务模型数据来源</p>
 <p>从上图中可以得知， Pilot 中管理的服务数据有两处数据来源：</p>
 <ul>
@@ -379,7 +382,10 @@ $(function() {
 </ul>
 <h1 id="pilot-服务模型源码分析">Pilot 服务模型源码分析</h1>
 <p>Pilot 中涉及到服务模型的代码模块如下图所示：</p>
-<p><img src="/img/2020-06-02-third-party-registry/pilot-service-model.svg" alt="">
+<p>
+  <img src="/img/2020-06-02-third-party-registry/pilot-service-model.svg" alt="">
+
+
 图2 Pilot 服务模型相关的代码结构</p>
 <p>Pilot 的入口函数是 pilot/cmd/pilot-discovery/main.go 中的 main 方法。main方法中创建了 Discovery Server，Discovery Server 中和服务模型相关的主要包含三部分内容：</p>
 <ul>
@@ -418,7 +424,10 @@ $(function() {
 <p>这些问题处理后，Consul 注册表的集成已经基本可用。要将 Consul 接入到 Pilot 中， 只需要在 pilot-discovery 的启动命令中通过这两个参数指定 registry 类型和 consul 的连接地址即可： <code>--registries Consul</code>   <code>--consulserverURL http://$consul-ip:$port</code>。</p>
 <h2 id="其他服务注册表的集成">其他服务注册表的集成</h2>
 <p>虽然在 1.0 中还有 Eureka 的适配代码框架，但在 Istio 后面的版本完全删除了 Eureka 适配的相关代码。除了 Kubernetes 和 Consul 之外，原生 Istio 代码不支持其他服务注册表。但通过前面对 Pilot 服务模型源码的分析，我们可以得出以下三种将其他服务注册表集成到 Istio 的方式。
-<img src="/img/2020-06-02-third-party-registry/service-registry-integration.svg" alt="">
+
+  <img src="/img/2020-06-02-third-party-registry/service-registry-integration.svg" alt="">
+
+
 图3 集成第三方服务注册表的三种方式</p>
 <p>上图中分别用红、绿、三种颜色标识了这三种不同的集成方式。</p>
 <h3 id="自定义-service-registry-适配器">自定义 Service Registry 适配器</h3>

@@ -438,7 +438,10 @@ $(function() {
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#6272a4"># ip link add &lt;p1-name&gt; type veth peer name &lt;p2-name&gt;</span> 
 </code></pre></div><p>In the above, p1-name and p2-name are the names assigned to the two connected end points. Packets transmitted on one device in the pair are immediately received on the other device.  When either devices is down the link state of the pair is down.(摘录自<a href="http://man7.org/linux/man-pages/man4/veth.4.html">Linux man page</a>中对veth的介绍)</p>
 <p>从Linux Man page的描述可以看到，veth和tap/tun类似，也是linux提供的一种虚拟网络设备；但与tap/tun不同的是，veth总是成对出现的，从一端进入的数据包将会在另一端出现，因此又常常称为veth pair。我们可以把veth pair看成一条网线两端连接的两张以太网卡，如下图所示：</p>
-<p><img src="/img/2020-03-12-linux-network-virtualization/veth-pair.jpg" alt=""></p>
+<p>
+  <img src="/img/2020-03-12-linux-network-virtualization/veth-pair.jpg" alt="">
+
+</p>
 <p>由于network namespace隔离了网络相关的全局资源，因此从网络角度来看，一个network namespace可以看做一个独立的虚机；即使在同一个主机上创建的两个network namespace，相互之间缺省也是不能进行网络通信的。</p>
 <p>veth提供了一种连接两个network namespace的方法。如果我们把上图中网线两端的网卡分别放入两个不同的network namespace，就可以把这两个network namespace连起来，形成一个点对点的二层网络，如下图所示：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> +------------------+              +------------------+
