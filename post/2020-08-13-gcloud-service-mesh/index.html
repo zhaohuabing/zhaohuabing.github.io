@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Google Cloud 服务网格产品：Traffic director 与 Anthos Service Mesh 的左右互搏" />
-    <meta property="og:title" content="Google Cloud 服务网格产品：Traffic director 与 Anthos Service Mesh 的左右互搏" />
-    <meta property="twitter:title" content="Google Cloud 服务网格产品：Traffic director 与 Anthos Service Mesh 的左右互搏" />
+    <meta name="title" content="Google Cloud 服务网格产品：Traffic Director 与 Anthos Service Mesh 的左右互搏" />
+    <meta property="og:title" content="Google Cloud 服务网格产品：Traffic Director 与 Anthos Service Mesh 的左右互搏" />
+    <meta property="twitter:title" content="Google Cloud 服务网格产品：Traffic Director 与 Anthos Service Mesh 的左右互搏" />
     
 
     
-    <meta name="description" content="作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？">
-    <meta property="og:description" content="作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？" />
-    <meta property="twitter:description" content="作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？" />
+    <meta name="description" content="作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic Director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？">
+    <meta property="og:description" content="作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic Director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？" />
+    <meta property="twitter:description" content="作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic Director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？" />
     
 
     
@@ -34,7 +34,7 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Google Cloud 服务网格产品：Traffic director 与 Anthos Service Mesh 的左右互搏-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Google Cloud 服务网格产品：Traffic Director 与 Anthos Service Mesh 的左右互搏-赵化冰的博客 | Zhaohuabing Blog</title>
 
     <link rel="canonical" href="/post/2020-08-13-gcloud-service-mesh/">
 
@@ -192,7 +192,7 @@
                         </a>
                         
                     </div>
-                    <h1>Google Cloud 服务网格产品：Traffic director 与 Anthos Service Mesh 的左右互搏</h1>
+                    <h1>Google Cloud 服务网格产品：Traffic Director 与 Anthos Service Mesh 的左右互搏</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
@@ -366,7 +366,7 @@ $(function() {
   <ul>
     <li><a href="#traffic-director">Traffic Director</a>
       <ul>
-        <li><a href="#traffic-director-架构">Traffic director 架构</a></li>
+        <li><a href="#traffic-director-架构">Traffic Director 架构</a></li>
         <li><a href="#服务注册发现机制">服务注册发现机制</a></li>
         <li><a href="#流量管理实现原理">流量管理实现原理</a></li>
         <li><a href="#sidecar-proxy-部署机制">Sidecar Proxy 部署机制</a></li>
@@ -386,18 +386,18 @@ $(function() {
   </ul>
 </nav>
                 
-                <p>作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic director 与 Anthos Service Mesh。Google Cloud 首先在2019年3月发布了其第一个 Sercice Mesh 产品 Traffic Director，随后不久在2019 年9月紧接着发布了另一个 Service Mesh 产品 Anthos Service Mesh，随后两个产品独立并行发展，直到如今。</p>
+                <p>作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic Director 与 Anthos Service Mesh。Google Cloud 首先在2019年3月发布了其第一个 Service Mesh 产品 Traffic Director，随后不久在2019 年9月紧接着发布了另一个 Service Mesh 产品 Anthos Service Mesh，随后两个产品独立并行发展，直到如今。</p>
 <p>Google Cloud 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？本文将分别分析这两个产品的架构和功能，以试图解答该疑问。</p>
 <h1 id="traffic-director">Traffic Director</h1>
 <p>Traffic Director 是 Google Cloud 专为服务网格打造的全托管式流量控制平面，用户不需要对 Traffic Director 进行部署，维护和管理。我们可以把 Traffic Director 看作一个托管的 Pilot（备注：并不确定其内部是否使用的 Pilot），其只提供了流量管理能力，不提供 Istio 控制面的其他能力。用户可以使用 Traffic Director 创建跨区域的、同时支持集群和虚拟机实例的服务网格，并对多个集群和虚拟机的工作负载进行统一的流量控制。Traffic Director 托管控制面 提供了跨地域容灾能力，可以保证99.99%的SLA。</p>
-<p>总而言之，Traffic director 的关键特性包括：</p>
+<p>总而言之，Traffic Director 的关键特性包括：</p>
 <ul>
 <li>全托管控制面</li>
 <li>控制面高可用</li>
 <li>同时支持 K8s 集群和虚拟机</li>
 <li>跨地域的流量管理</li>
 </ul>
-<h2 id="traffic-director-架构">Traffic director 架构</h2>
+<h2 id="traffic-director-架构">Traffic Director 架构</h2>
 <p>Traffic Director 的总体架构和 Istio 类似，也采用了“控制面 + 数据面”的结构，控制面托管在 Google Cloud 中，对用户不可见。用户只需要在创建 project 时启用 Traffic Director API，即可使用 Traffic Director 提供的网格服务。数据面则采用了和 Istio 相同的 Envoy 作为 proxy。 控制面和数据面采用标准的 xDS v2 进行通信。控制面对外采用了一套自定义的 API 来实现流量管理，并不支持 Istio API。Traffic Director 也没有采用 Istio/K8s 的服务发现，而是采用了一套 Google Cloud 自己的服务注册发现机制，该服务注册发现机制以统一的模型同时支持了容器和虚拟机上的服务，并为工作负载提供了健康检测。</p>
 <p>
   <figure>
