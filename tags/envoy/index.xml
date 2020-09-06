@@ -6,10 +6,19 @@
     <description>Recent content in Envoy on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 12 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 05 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/envoy/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio 运维实战系列：应用容器与 Envoy Sidecar 的启动依赖问题</title>
+      <link>https://zhaohuabing.com/post/2020-09-05-istio-sidecar-dependency/</link>
+      <pubDate>Sat, 05 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-09-05-istio-sidecar-dependency/</guid>
+      <description>本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方</description>
+    </item>
     
     <item>
       <title>Istio流量管理实现机制深度解析</title>
