@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Istio 运维实战系列：应用容器与 Envoy Sidecar 的启动依赖问题</title>
+      <title>Istio 运维实战系列：应用容器对 Envoy Sidecar 的启动依赖问题</title>
       <link>https://zhaohuabing.com/post/2020-09-05-istio-sidecar-dependency/</link>
       <pubDate>Sat, 05 Sep 2020 00:00:00 +0000</pubDate>
       
