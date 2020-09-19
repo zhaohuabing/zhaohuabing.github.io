@@ -4,41 +4,46 @@
   
   <url>
     <loc>https://zhaohuabing.com/categories/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/envoy/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/post/2020-09-05-istio-sidecar-dependency/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <loc>https://zhaohuabing.com/post/2020-09-11-headless-mtls/</loc>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2020-09-05T00:00:00+00:00</lastmod>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <lastmod>2020-09-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2020-09-05-istio-sidecar-dependency/</loc>
     <lastmod>2020-09-05T00:00:00+00:00</lastmod>
   </url>
   

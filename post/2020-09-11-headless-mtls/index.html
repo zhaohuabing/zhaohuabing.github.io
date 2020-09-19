@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="Istio 运维实战系列（2）：让人头大的『无头服务』-上" />
+    <meta property="og:title" content="Istio 运维实战系列（2）：让人头大的『无头服务』-上" />
+    <meta property="twitter:title" content="Istio 运维实战系列（2）：让人头大的『无头服务』-上" />
+    
+
+    
+    <meta name="description" content="本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。">
+    <meta property="og:description" content="本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。" />
+    <meta property="twitter:description" content="本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Istio 运维实战系列（2）：让人头大的『无头服务』-上-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2020-09-11-headless-mtls/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+    
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/life">life</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/note">note</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/books/">BOOKS</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('/img/post-bg-unix-linux.jpg')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/envoy" title="Envoy">
+                            Envoy
+                        </a>
+                        
+                    </div>
+                    <h1>Istio 运维实战系列（2）：让人头大的『无头服务』-上</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by 
+                        
+                                &#34;赵化冰&#34;
+                         
+                        on 
+                        Friday, September 11, 2020
+                        
+                            <span id="/post/2020-09-11-headless-mtls/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                        
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是无头服务">什么是『无头服务』？</a></li>
+    <li><a href="#istio-中无头服务的-mtls-故障">Istio 中『无头服务』的 mTLS 故障</a></li>
+    <li><a href="#解决方案">解决方案</a></li>
+    <li><a href="#小结">小结</a></li>
+    <li><a href="#参考文档">参考文档</a></li>
+  </ul>
+</nav>
+                
+                <p>本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。</p>
+<h1 id="什么是无头服务">什么是『无头服务』？</h1>
+<p>『无头服务』即 Kubernetes 中的 Headless Service。Service 是 Kubernetes 对后端一组提供相同服务的 Pod 的逻辑抽象和访问入口。Kubernetes 会根据调度算法为 Pod 分配一个运行节点，并随机分配一个 IP 地址；在很多情况下，我们还会对 Pod 进行水平伸缩，启动多个 Pod 来提供相同的服务。在有多个 Pod 并且 Pod IP 地址不固定的情况下，客户端很难通过 Pod 的 IP 地址来直接进行访问。为了解决这个问题，Kubernetes 采用 Service 资源来表示提供相同服务的一组 Pod。</p>
+<p>在缺省情况下，Kubernetes 会为 Service 分配一个 Cluster IP，不管后端的 Pod IP 如何变化，Service 的 Cluster IP 始终是固定的。因此客户端可以通过这个 Cluster IP 来访问这一组 Pod 提供的服务，而无需再关注后端的各个真实的 Pod IP。我们可以将 Service 看做放在一组 Pod 前的一个负载均衡器，而 Cluster IP 就是该负载均衡器的地址，这个负载均衡器会关注后端这组 Pod 的变化，并把发向 Cluster IP 的请求转发到后端的 Pod 上。(备注：这只是对 Service 的一个简化描述，如果对 Service 的内部实现感兴趣，可以参考这篇文章<a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh">如何为服务网格选择入口网关？</a>）</p>
+<p>对于无状态的应用来说，客户端并不在意其连接的是哪一个 Pod，采用 Service 是没有问题的。但在某些特殊情况下，并不能这样做。例如，如果后端的这一组 Pod 是有状态的，需要由客户端根据某种应用相关的算法来选择哪一个 Pod 提供服务；或者客户端需要连接所有的后端 Pod，这时我们就不能在这一组 Pod 前放一个负载均衡器了。这种情况下，我们需要采用 Headless Service，即无头服务（该命名把多个 Pod 前面的负载均衡器比作服务的头，很形象是不是？）。在定义 Headless Service，我们需要把 Service 的 Cluster IP 显示设置为 None，这样 Kubernetes DNS 在解析该 Service 时会直接返回其后端的多个 Pod IP，而不是 Service 的 Cluster IP。</p>
+<p>假设从客户端访问一个 Redis 集群，采用带 Cluster IP 的普通 Service 和 Headless Service 的过程分别如下图所示：</p>
+<p>
+  <img src="/img/2020-09-11-headless-mtls/headless-service.png" alt="">
+
+</p>
+<h1 id="istio-中无头服务的-mtls-故障">Istio 中『无头服务』的 mTLS 故障</h1>
+<p>由于 Headless Service 的特殊性，Istio 中对 Headless Service 的处理和普通 Service 有所不同，在应用迁移到 Isito 的过程中也常常遇到由于 Headless Service 导致的一些问题。下面我们就一个由于 Headless Service 的 mTLS 故障导致的典型案例进行说明。</p>
+<p>故障现象：运维同学反馈从带 Envoy Sidecar 的 Pod 中不能访问 Redis 服务器，但在没有安装 Sidecar 的 Pod 中可以正常访问该 Redis 服务器。</p>
+<p>遇到无法进行出向访问的问题，我们可以首先通过 Envoy 的管理接口来查看 Envoy 的访问日志。在客户端 Pod 中运行下面的命令查看 Envoy 日志：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl logs -f redis-client-6d4c6c975f-bm5w6 -c istio-proxy
+</code></pre></div><p>日志中对 Redis 的访问记录如下，其中 UR，URX 是 Response Flag，表示 upstream connection failure，即连接上游失败。</p>
+<pre><code>[2020-09-12T13:38:23.077Z] &quot;- - -&quot; 0 UF,URX &quot;-&quot; &quot;-&quot; 0 0 1001 - &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;10.1.1.24:6379&quot; outbound|6379||redis.default.svc.cluster.local - 10.1.1.24:6379 10.1.1.25:45940 - -
+</code></pre><p>我们可以通过 Envoy 管理接口导出其 xDS 配置，以进一步分析其失败原因。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl <span style="color:#8be9fd;font-style:italic">exec</span> redis-client-6d4c6c975f-bm5w6 -c istio-proxy curl http://127.0.0.1:15000/config_dump
+</code></pre></div><p>由于是出向访问错误，因此我们主要关注客户端中该出向访问的 Cluster 的配置。在导出的 xDS 配置中，可以看到 Redis Cluster 的配置如下面的 yaml 片段所示（为了方便读者查看，去掉了该 yaml 中一些无关的内容）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">{
+     <span style="color:#ff79c6">&#34;version_info&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-13T00:33:43Z/5&#34;</span>,
+     <span style="color:#ff79c6">&#34;cluster&#34;: </span>{
+      <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Cluster&#34;</span>,
+      <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|6379||redis.default.svc.cluster.local&#34;</span>,
+      <span style="color:#ff79c6">&#34;type&#34;: </span><span style="color:#f1fa8c">&#34;ORIGINAL_DST&#34;</span>,
+      <span style="color:#ff79c6">&#34;connect_timeout&#34;: </span><span style="color:#f1fa8c">&#34;1s&#34;</span>,
+      <span style="color:#ff79c6">&#34;lb_policy&#34;: </span><span style="color:#f1fa8c">&#34;CLUSTER_PROVIDED&#34;</span>,
+      <span style="color:#ff79c6">&#34;circuit_breakers&#34;: </span>{
+        ...
+      },
+
+      <span style="color:#6272a4"># mTLS 相关设置</span>
+      <span style="color:#ff79c6">&#34;transport_socket&#34;: </span>{
+       <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;envoy.transport_sockets.tls&#34;</span>,
+       <span style="color:#ff79c6">&#34;typed_config&#34;: </span>{
+        <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext&#34;</span>,
+        <span style="color:#ff79c6">&#34;common_tls_context&#34;: </span>{
+         <span style="color:#ff79c6">&#34;alpn_protocols&#34;: </span>[
+          <span style="color:#f1fa8c">&#34;istio-peer-exchange&#34;</span>,
+          <span style="color:#f1fa8c">&#34;istio&#34;</span>
+         ],
+
+         <span style="color:#6272a4"># 访问 Redis 使用的客户端证书</span>
+         <span style="color:#ff79c6">&#34;tls_certificate_sds_secret_configs&#34;: </span>[
+          {
+           <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;default&#34;</span>,
+           <span style="color:#ff79c6">&#34;sds_config&#34;: </span>{
+            <span style="color:#ff79c6">&#34;api_config_source&#34;: </span>{
+             <span style="color:#ff79c6">&#34;api_type&#34;: </span><span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+             <span style="color:#ff79c6">&#34;grpc_services&#34;: </span>[
+              {
+                <span style="color:#ff79c6">&#34;envoy_grpc&#34;: </span>{
+                <span style="color:#ff79c6">&#34;cluster_name&#34;: </span><span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>
+               }
+              }
+             ]
+            }
+           }
+          }
+         ],
+
+         <span style="color:#ff79c6">&#34;combined_validation_context&#34;: </span>{
+          <span style="color:#ff79c6">&#34;default_validation_context&#34;: </span>{
+           <span style="color:#6272a4"># 用于验证 Redis 服务器身份的 spiffe indentity</span>
+           <span style="color:#ff79c6">&#34;verify_subject_alt_name&#34;: </span>[
+            <span style="color:#f1fa8c">&#34;spiffe://cluster.local/ns/default/sa/default&#34;</span>
+           ]
+          },
+          <span style="color:#6272a4"># 用于验证 Redis 服务器的根证书</span>
+          <span style="color:#ff79c6">&#34;validation_context_sds_secret_config&#34;: </span>{
+           <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;ROOTCA&#34;</span>,
+           <span style="color:#ff79c6">&#34;sds_config&#34;: </span>{
+            <span style="color:#ff79c6">&#34;api_config_source&#34;: </span>{
+             <span style="color:#ff79c6">&#34;api_type&#34;: </span><span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+             <span style="color:#ff79c6">&#34;grpc_services&#34;: </span>[
+              {
+               <span style="color:#ff79c6">&#34;envoy_grpc&#34;: </span>{
+                <span style="color:#ff79c6">&#34;cluster_name&#34;: </span><span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>
+               }
+              }
+             ]
+            }
+           }
+          }
+         }
+        },
+        <span style="color:#ff79c6">&#34;sni&#34;: </span><span style="color:#f1fa8c">&#34;outbound_.6379_._.redis.default.svc.cluster.local&#34;</span>
+       }
+      },
+      <span style="color:#ff79c6">&#34;filters&#34;: </span>[
+       {
+         ...
+       }
+      ]
+     },
+     <span style="color:#ff79c6">&#34;last_updated&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-13T00:33:43.862Z&#34;</span>
+    }
+</code></pre></div><p>在 transport_socket 部分的配置中，我们可以看到 Envoy 中配置了访问 Redis Cluster 的 tls 证书信息，包括 Envoy Sidecar 用于访问 Redis 使用的客户端证书，用于验证 Redis 服务器证书的根证书，以及采用 spiffe 格式表示的，需验证的服务器端身份信息。 这里的证书相关内容是使用 xDS 协议中的 SDS（Secret discovery service） 获取的，由于篇幅原因在本文中不对此展开进行介绍。如果需要了解 Istio 的证书和 SDS 相关机制，可以参考这篇文章<a href="https://zhaohuabing.com/post/2020-05-25-istio-certificate">一文带你彻底厘清 Isito 中的证书工作机制</a>。从上述配置可以得知，当收到 Redis 客户端发起的请求后，客户端 Pod 中的 Envoy Sidecar 会使用 mTLS 向 Redis 服务器发起请求。</p>
+<p>Redis 客户端中 Envoy Sidecar 的 mTLS 配置本身看来并没有什么问题。但我们之前已经得知该 Redis 服务并未安装 Envoy Sidecar，因此实际上 Redis 服务器端只能接收 plain TCP 请求。这就导致了客户端 Envoy Sidecar 在向 Redis 服务器创建链接时失败了。</p>
+<p>Redis 客户端以为是这样的：</p>
+<p>
+  <img src="/img/2020-09-11-headless-mtls/headless-mtls1.png" alt="">
+
+</p>
+<p>但实际上是这样的：</p>
+<p>
+  <img src="/img/2020-09-11-headless-mtls/headless-mtls2.png" alt="">
+
+</p>
+<p>在服务器端没有安装 Envoy Sidecar，不支持 mTLS 的情况下，按理客户端的 Envoy 不应该采用 mTLS 向服务器端发起连接。这是怎么回事呢？我们对比一下客户端 Envoy 中的其他 Cluster 中的相关配置。</p>
+<p>一个访问正常的 Cluster 的 mTLS 相关配置如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">   {
+     <span style="color:#ff79c6">&#34;version_info&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-13T00:32:39Z/4&#34;</span>,
+     <span style="color:#ff79c6">&#34;cluster&#34;: </span>{
+      <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Cluster&#34;</span>,
+      <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|8080||awesome-app.default.svc.cluster.local&#34;</span>,
+      <span style="color:#ff79c6">&#34;type&#34;: </span><span style="color:#f1fa8c">&#34;EDS&#34;</span>,
+      <span style="color:#ff79c6">&#34;eds_cluster_config&#34;: </span>{
+       <span style="color:#ff79c6">&#34;eds_config&#34;: </span>{
+        <span style="color:#ff79c6">&#34;ads&#34;: </span>{}
+       },
+       <span style="color:#ff79c6">&#34;service_name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|8080||awesome-app.default.svc.cluster.local&#34;</span>
+      },
+      <span style="color:#ff79c6">&#34;connect_timeout&#34;: </span><span style="color:#f1fa8c">&#34;1s&#34;</span>,
+      <span style="color:#ff79c6">&#34;circuit_breakers&#34;: </span>{
+       ...
+      },
+      ...
+
+      <span style="color:#6272a4"># mTLS 相关的配置</span>
+      <span style="color:#ff79c6">&#34;transport_socket_matches&#34;: </span>[
+       {
+        <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;tlsMode-istio&#34;</span>,
+        <span style="color:#ff79c6">&#34;match&#34;: </span>{
+         <span style="color:#ff79c6">&#34;tlsMode&#34;: &#34;istio&#34;  #对带有 &#34;tlsMode&#34;: </span><span style="color:#f1fa8c">&#34;istio&#34;</span> lable 的 endpoint，启用 mTLS
+        },
+        <span style="color:#ff79c6">&#34;transport_socket&#34;: </span>{
+         <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;envoy.transport_sockets.tls&#34;</span>,
+         <span style="color:#ff79c6">&#34;typed_config&#34;: </span>{
+          <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext&#34;</span>,
+          <span style="color:#ff79c6">&#34;common_tls_context&#34;: </span>{
+           <span style="color:#ff79c6">&#34;alpn_protocols&#34;: </span>[
+            <span style="color:#f1fa8c">&#34;istio-peer-exchange&#34;</span>,
+            <span style="color:#f1fa8c">&#34;istio&#34;</span>,
+            <span style="color:#f1fa8c">&#34;h2&#34;</span>
+           ],
+           <span style="color:#ff79c6">&#34;tls_certificate_sds_secret_configs&#34;: </span>[
+            {
+             <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;default&#34;</span>,
+             <span style="color:#ff79c6">&#34;sds_config&#34;: </span>{
+              <span style="color:#ff79c6">&#34;api_config_source&#34;: </span>{
+               <span style="color:#ff79c6">&#34;api_type&#34;: </span><span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+               <span style="color:#ff79c6">&#34;grpc_services&#34;: </span>[
+                {
+                 <span style="color:#ff79c6">&#34;envoy_grpc&#34;: </span>{
+                  <span style="color:#ff79c6">&#34;cluster_name&#34;: </span><span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>
+                 }
+                }
+               ]
+              }
+             }
+            }
+           ],
+           <span style="color:#ff79c6">&#34;combined_validation_context&#34;: </span>{
+            <span style="color:#ff79c6">&#34;default_validation_context&#34;: </span>{},
+            <span style="color:#ff79c6">&#34;validation_context_sds_secret_config&#34;: </span>{
+             <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;ROOTCA&#34;</span>,
+             <span style="color:#ff79c6">&#34;sds_config&#34;: </span>{
+              <span style="color:#ff79c6">&#34;api_config_source&#34;: </span>{
+               <span style="color:#ff79c6">&#34;api_type&#34;: </span><span style="color:#f1fa8c">&#34;GRPC&#34;</span>,
+               <span style="color:#ff79c6">&#34;grpc_services&#34;: </span>[
+                {
+                 <span style="color:#ff79c6">&#34;envoy_grpc&#34;: </span>{
+                  <span style="color:#ff79c6">&#34;cluster_name&#34;: </span><span style="color:#f1fa8c">&#34;sds-grpc&#34;</span>
+                 }
+                }
+               ]
+              }
+             }
+            }
+           }
+          },
+          <span style="color:#ff79c6">&#34;sni&#34;: </span><span style="color:#f1fa8c">&#34;outbound_.6379_._.redis1.dubbo.svc.cluster.local&#34;</span>
+         }
+        }
+       },
+       {
+        <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;tlsMode-disabled&#34;</span>,
+        <span style="color:#ff79c6">&#34;match&#34;: </span>{},   <span style="color:#6272a4"># 对所有其他的 enpoint，不启用 mTLS，使用 plain TCP 进行连接</span>
+        <span style="color:#ff79c6">&#34;transport_socket&#34;: </span>{
+         <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;envoy.transport_sockets.raw_buffer&#34;</span>
+        }
+       }
+      ]
+     },
+     <span style="color:#ff79c6">&#34;last_updated&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-13T00:32:39.535Z&#34;</span>
+    }
+</code></pre></div><p>从配置中可以看到，一个正常的 Cluster 中有两部分 mTLS 相关的配置：tlsMode-istio 和 tlsMode-disabled。tlsMode-istio 部分和 Redis Cluster 的配置类似，但包含一个匹配条件（match部分），该条件表示只对带有 &ldquo;tlsMode&rdquo; : &ldquo;istio&rdquo; lable 的 endpoint 启用 mTLS；对于不带有该标签的 endpoint 则会采用 tlsMode-disabled 部分的配置，使用 raw_buffer，即 plain TCP 进行连接。</p>
+<p>查看 <a href="https://github.com/istio/istio/blob/514fb926e32fb95d8ee9b63d1741bf399c386a5e/pkg/kube/inject/webhook.go#L570">Istio 的相关源代码</a>，可以得知，当 Istio webhook 向 Pod 中注入 Envoy Sidecar 时，会同时为 Pod 添加一系列 label，其中就包括 &ldquo;tlsMode&rdquo; : &ldquo;istio&rdquo; 这个 label，如下面的代码片段所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  patchLabels <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">map</span>[<span style="color:#8be9fd">string</span>]<span style="color:#8be9fd">string</span>{
+		label.TLSMode:                                model.IstioMutualTLSModeLabel,
+		model.IstioCanonicalServiceLabelName:         canonicalSvc,
+		label.IstioRev:                               revision,
+		model.IstioCanonicalServiceRevisionLabelName: canonicalRev,
+	}
+</code></pre></div><p>由于 Pod 在被注入 Envoy Sidecar 的同时被加上了该标签，客户端 Enovy Sidecar 在向该 Pod 发起连接时，根据 endpoint 中的标签匹配到 tlsMode-istio 中的配置，就会采用 mTLS；而如果一个 Pod 没有被注入 Envoy Sidecar，自然不会有该 Label，因此不能满足前面配置所示的匹配条件，客户端的 Envoy Sidecar 会根据 tlsMode-disabled 中的配置，采用 plain TCP 连接该 endpoint。这样同时兼容了服务器端支持和不支持 mTLS 两种情况。</p>
+<p>下图展示了 Istio 中是如何通过 endpoint 的标签来兼容 mTLS 和 plain TCP 两种情况的。</p>
+<p>
+  <img src="/img/2020-09-11-headless-mtls/istio-tlsmode-how.png" alt="">
+
+</p>
+<p>通过和正常 Cluster 的对比，我们可以看到 Redis Cluster 的配置是有问题的，按理 Redis Cluster 的配置也应该通过 endpoint 的 tlsMode 标签进行判断，以决定客户端的 Envoy Sidecar 是通过 mTLS 还是 plain TCP 发起和 Redis 服务器的连接。但实际情况是 Redis Cluster 中只有 mTLS 的配置，导致了前面我们看到的连接失败故障。</p>
+<p>Redis 是一个 Headless Service，通过在社区查找相关资料，发现 Istio 1.6 版本前对 Headless Service 的处理有问题，导致了该故障。参见这个 Issue <a href="https://github.com/istio/istio/issues/21964">Istio 1.5 prevents all connection attempts to Redis (headless) service #21964</a>。</p>
+<h1 id="解决方案">解决方案</h1>
+<p>找到了故障原因后，要解决这个问题就很简单了。我们可以通过一个 Destination Rule 禁用 Redis Service 的 mTLS。如下面的 yaml 片段所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">kind</span>: DestinationRule
+<span style="color:#ff79c6">metadata</span>:
+  <span style="color:#ff79c6">name</span>: redis-disable-mtls
+<span style="color:#ff79c6">spec</span>:
+  <span style="color:#ff79c6">host</span>: redis.default.svc.cluster.local
+  <span style="color:#ff79c6">trafficPolicy</span>:
+    <span style="color:#ff79c6">tls</span>:
+      <span style="color:#ff79c6">mode</span>: DISABLE 
+</code></pre></div><p>再查看客户端 Envoy 中的 Redis Cluster 配置，可以看到 mTLS 已经被禁用，Cluster 中不再有 mTLS 相关的证书配置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">    {
+     <span style="color:#ff79c6">&#34;version_info&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-13T09:02:28Z/7&#34;</span>,
+     <span style="color:#ff79c6">&#34;cluster&#34;: </span>{
+      <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Cluster&#34;</span>,
+      <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|6379||redis.dubbo.svc.cluster.local&#34;</span>,
+      <span style="color:#ff79c6">&#34;type&#34;: </span><span style="color:#f1fa8c">&#34;ORIGINAL_DST&#34;</span>,
+      <span style="color:#ff79c6">&#34;connect_timeout&#34;: </span><span style="color:#f1fa8c">&#34;1s&#34;</span>,
+      <span style="color:#ff79c6">&#34;lb_policy&#34;: </span><span style="color:#f1fa8c">&#34;CLUSTER_PROVIDED&#34;</span>,
+      <span style="color:#ff79c6">&#34;circuit_breakers&#34;: </span>{
+        ...
+      },
+      <span style="color:#ff79c6">&#34;metadata&#34;: </span>{
+       <span style="color:#ff79c6">&#34;filter_metadata&#34;: </span>{
+        <span style="color:#ff79c6">&#34;istio&#34;: </span>{
+         <span style="color:#ff79c6">&#34;config&#34;: </span><span style="color:#f1fa8c">&#34;/apis/networking.istio.io/v1alpha3/namespaces/dubbo/destination-rule/redis-disable-mtls&#34;</span>
+        }
+       }
+      },
+      <span style="color:#ff79c6">&#34;filters&#34;: </span>[
+       {
+        <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;envoy.filters.network.upstream.metadata_exchange&#34;</span>,
+        <span style="color:#ff79c6">&#34;typed_config&#34;: </span>{
+         <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/udpa.type.v1.TypedStruct&#34;</span>,
+         <span style="color:#ff79c6">&#34;type_url&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.tcp.metadataexchange.config.MetadataExchange&#34;</span>,
+         <span style="color:#ff79c6">&#34;value&#34;: </span>{
+          <span style="color:#ff79c6">&#34;protocol&#34;: </span><span style="color:#f1fa8c">&#34;istio-peer-exchange&#34;</span>
+         }
+        }
+       }
+      ]
+     },
+     <span style="color:#ff79c6">&#34;last_updated&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-13T09:02:28.514Z&#34;</span>
+    }
+</code></pre></div><p>此时再尝试从客户端访问 Redis 服务器，一切正常！</p>
+<h1 id="小结">小结</h1>
+<p>Headless Service 是 Kubernetes 中一种没有 Cluster IP 的特殊 Service，Istio 中对 Headless Service 的处理流程和普通 Service 有所不同。由于 Headless Service 的特殊性，我们在将应用迁移到 Istio 的过程中常常会遇到与此相关的问题。这次我们遇到的问题是由于 Istio 1.6 版本前对 Headless Service 处理的一个 Bug 导致无法连接到 Headless Service。该问题是一个高频故障，我们已经遇到过多次。可以通过创建Destination Rule 禁用 Headless Service 的 mTLS 来规避该问题。该故障在1.6版本中已经修复，建议尽快升级到 1.6 版本，以彻底解决本问题。除了这一个故障以外，我们还在迁移过程中遇到了其他一些关于 Headless Service 的有意思的问题，在下一篇文章中再继续和大家分享。</p>
+<h1 id="参考文档">参考文档</h1>
+<ul>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh">如何为服务网格选择入口网关？</a></li>
+<li><a href="https://blog.getambassador.io/understanding-envoy-proxy-and-ambassador-http-access-logs-fee7802a2ec5">Understanding Envoy Proxy HTTP Access Logs</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-05-25-istio-certificate">一文带你彻底厘清 Isito 中的证书工作机制</a></li>
+</ul>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2020-09-05-istio-sidecar-dependency/" data-toggle="tooltip" data-placement="top" title="Istio 运维实战系列（1）：应用容器对 Envoy Sidecar 的启动依赖问题">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2020
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>
