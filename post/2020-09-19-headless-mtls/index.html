@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="Istio 运维实战系列（3）：让人头大的『无头服务』-下" />
+    <meta property="og:title" content="Istio 运维实战系列（3）：让人头大的『无头服务』-下" />
+    <meta property="twitter:title" content="Istio 运维实战系列（3）：让人头大的『无头服务』-下" />
+    
+
+    
+    <meta name="description" content="本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。">
+    <meta property="og:description" content="本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。" />
+    <meta property="twitter:description" content="本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Istio 运维实战系列（3）：让人头大的『无头服务』-下-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2020-09-19-headless-mtls/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+    
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/life">life</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/note">note</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/books/">BOOKS</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('https://images.pexels.com/photos/356043/pexels-photo-356043.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/envoy" title="Envoy">
+                            Envoy
+                        </a>
+                        
+                    </div>
+                    <h1>Istio 运维实战系列（3）：让人头大的『无头服务』-下</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by 
+                        
+                                &#34;赵化冰&#34;
+                         
+                        on 
+                        Saturday, September 19, 2020
+                        
+                            <span id="/post/2020-09-19-headless-mtls/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                        
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#失败的-eureka-心跳通知">失败的 Eureka 心跳通知</a></li>
+    <li><a href="#过期的-ip-地址">过期的 IP 地址</a></li>
+    <li><a href="#为-headless-service-启用-eds">为 Headless Service 启用 EDS</a></li>
+    <li><a href="#神秘消失的服务">神秘消失的服务</a></li>
+    <li><a href="#反思">反思</a></li>
+    <li><a href="#参考文档">参考文档</a></li>
+  </ul>
+</nav>
+                
+                <p>本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。</p>
+<h1 id="失败的-eureka-心跳通知">失败的 Eureka 心跳通知</h1>
+<p>在上一篇文章中，我们介绍了 Headless Service 和普通 Service 的区别。由于 Headless Service 的特殊性，在 Istio 下发给 Envoy Sidecar 的配置中，此类服务的配置参数和其他服务的参数有所有不同。除了我们上次遇到的 mTLS 故障之外，这些差异可能还会导致应用出现一些其他意想不到的情况。</p>
+<p>这次遇到的问题现象是：在 Spring Cloud 应用迁移到 Istio 中后，服务提供者向 Eureka Server 发送心跳失败。</p>
+<p>备注：Eureka Server 采用心跳机制来判定服务的健康状态。服务提供者在启动后，周期性（默认30秒）向Eureka Server发送心跳，以证明当前服务是可用状态。Eureka Server在一定的时间（默认90秒）未收到客户端的心跳，则认为服务宕机，注销该实例。</p>
+<p>查看应用程序日志，可以看到 Eureka 客户端发送心跳失败的相关日志信息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">2020-09-24 13:32:46.533 ERROR <span style="color:#bd93f9">1</span> --- <span style="color:#ff79c6">[</span>tbeatExecutor-0<span style="color:#ff79c6">]</span> com.netflix.discovery.DiscoveryClient    : DiscoveryClient_EUREKA-TEST-CLIENT/eureka-client-544b94f967-gcx2f:eureka-test-client - was unable to send heartbeat!
+
+com.netflix.discovery.shared.transport.TransportException: Cannot execute request on any known server
+	at com.netflix.discovery.shared.transport.decorator.RetryableEurekaHttpClient.execute<span style="color:#ff79c6">(</span>RetryableEurekaHttpClient.java:112<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.sendHeartBeat<span style="color:#ff79c6">(</span>EurekaHttpClientDecorator.java:89<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator<span style="color:#8be9fd;font-style:italic">$3</span>.execute<span style="color:#ff79c6">(</span>EurekaHttpClientDecorator.java:92<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at com.netflix.discovery.shared.transport.decorator.SessionedEurekaHttpClient.execute<span style="color:#ff79c6">(</span>SessionedEurekaHttpClient.java:77<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at com.netflix.discovery.shared.transport.decorator.EurekaHttpClientDecorator.sendHeartBeat<span style="color:#ff79c6">(</span>EurekaHttpClientDecorator.java:89<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at com.netflix.discovery.DiscoveryClient.renew<span style="color:#ff79c6">(</span>DiscoveryClient.java:864<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at com.netflix.discovery.DiscoveryClient<span style="color:#8be9fd;font-style:italic">$HeartbeatThread</span>.run<span style="color:#ff79c6">(</span>DiscoveryClient.java:1423<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>eureka-client-1.9.13.jar!/:1.9.13<span style="color:#ff79c6">]</span>
+	at java.base/java.util.concurrent.Executors<span style="color:#8be9fd;font-style:italic">$RunnableAdapter</span>.call<span style="color:#ff79c6">(</span>Executors.java:515<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>na:na<span style="color:#ff79c6">]</span>
+	at java.base/java.util.concurrent.FutureTask.run<span style="color:#ff79c6">(</span>FutureTask.java:264<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>na:na<span style="color:#ff79c6">]</span>
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker<span style="color:#ff79c6">(</span>ThreadPoolExecutor.java:1130<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>na:na<span style="color:#ff79c6">]</span>
+	at java.base/java.util.concurrent.ThreadPoolExecutor<span style="color:#8be9fd;font-style:italic">$Worker</span>.run<span style="color:#ff79c6">(</span>ThreadPoolExecutor.java:630<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>na:na<span style="color:#ff79c6">]</span>
+	at java.base/java.lang.Thread.run<span style="color:#ff79c6">(</span>Thread.java:832<span style="color:#ff79c6">)</span> ~<span style="color:#ff79c6">[</span>na:na<span style="color:#ff79c6">]</span>
+
+</code></pre></div><h1 id="过期的-ip-地址">过期的 IP 地址</h1>
+<p>对于请求失败类的故障，我们首先可以通过 Envoy 的访问日志查看失败原因。通过下面的命令查看客户端 Envoy Sidecar 的日志：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">k logs -f eureka-client-66f748f84f-vvvmz -c eureka-client -n eureka
+</code></pre></div><p>从 Envoy 日志中可以查看到客户端通过 HTTP PUT 向服务器发出的心跳请求。该请求的 Response 状态码为 &ldquo;UF,URX&rdquo;，表示其 Upstream Failure，即连接上游服务失败。在日志中还可以看到，在连接失败后，Envoy 向客户端应用返回了一个 &ldquo;503&rdquo; HTTP 错误码。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[2020-09-24T13:31:37.980Z] &#34;PUT /eureka/apps/EUREKA-TEST-CLIENT/eureka-client-544b94f967-gcx2f:eureka-test-client?status=UP&amp;lastDirtyTimestamp=1600954114925 HTTP/1.1&#34; 503 UF,URX &#34;-&#34; &#34;-&#34; 0 91 3037 - &#34;-&#34; &#34;Java-EurekaClient/v1.9.13&#34; &#34;1cd54507-3f93-4ff3-a93e-35ead11da70f&#34; &#34;eureka-server:8761&#34; &#34;172.16.0.198:8761&#34; outbound|8761||eureka-server.eureka.svc.cluster.local - 172.16.0.198:8761 172.16.0.169:53890 - default
+</code></pre></div><p>从日志中可以看到访问的 Upstream Cluster 是 outbound|8761||eureka-server.eureka.svc.cluster.local ，Envoy 将该请求转发到了 IP地址 为 172.16.0.198 的 Upstream Host。</p>
+<p>查看集群中部署的服务，可以看到 eureka-server 是一个 Headless Service。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HUABINGZHAO-MB0:eureka-istio-test huabingzhao$ k get svc -n eureka -o wide
+NAME            TYPE        CLUSTER-IP   EXTERNAL-IP   PORT<span style="color:#ff79c6">(</span>S<span style="color:#ff79c6">)</span>    AGE   SELECTOR
+eureka-server   ClusterIP   None         &lt;none&gt;        8761/TCP   17m   <span style="color:#8be9fd;font-style:italic">app</span><span style="color:#ff79c6">=</span>eureka-server
+</code></pre></div><p>在本系列的上一篇文章<a href="https://cloud.tencent.com/developer/article/1700748">『Istio 运维实战系列（2）：让人头大的『无头服务』-上』</a>中，我们了解到 Headless Service 并没有 Cluster IP，DNS 会直接将 Service 名称解析到 Service 后端的多个 Pod IP 上。Envoy 日志中显示连接 Eureka Server地址 172.16.0.198 失败，我们来看看这个 IP 来自哪一个 Eureka Server 的 Pod 。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">HUABINGZHAO-MB0:eureka-istio-test huabingzhao$ k get pod -n eureka -o wide | grep eureka-server
+NAME                             READY   STATUS    RESTARTS   AGE     IP             NODE        NOMINATED NODE   READINESS GATES
+eureka-server-0                  1/1     Running   <span style="color:#bd93f9">0</span>          6h55m   172.16.0.59    10.0.0.15   &lt;none&gt;           &lt;none&gt;
+eureka-server-1                  1/1     Running   <span style="color:#bd93f9">0</span>          6m1s    172.16.0.200   10.0.0.7    &lt;none&gt;           &lt;none&gt;
+eureka-server-2                  1/1     Running   <span style="color:#bd93f9">0</span>          6h56m   172.16.1.3     10.0.0.14   &lt;none&gt;           &lt;none&gt;
+</code></pre></div><p>从上面的命令输出中可以看到 Eureka 集群中有三个服务器，但没有哪一个服务器的 Pod IP 是 Envoy 日志中显示的 172.16.0.198。进一步分析发现 eureka-server-1 Pod 的启动时间比客户端的启动时间晚很多，初步怀疑 Envoy 采用了一个已经被销毁的 Eureka Server 的 IP 进行访问，导致访问失败。</p>
+<p>通过查看 Envoy dump 文件中 outbound|8761||eureka-server.eureka.svc.cluster.local 的相关配置，进一步加深了我对此的怀疑。从下面的 yaml 片段中可以看到该 Cluster 的类型为 “ORIGINAL_DST”。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">{
+     <span style="color:#ff79c6">&#34;version_info&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-23T03:57:03Z/27&#34;</span>,
+     <span style="color:#ff79c6">&#34;cluster&#34;: </span>{
+      <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.api.v2.Cluster&#34;</span>,
+      <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|8761||eureka-server.eureka.svc.cluster.local&#34;</span>,
+      <span style="color:#ff79c6">&#34;type&#34;: </span><span style="color:#f1fa8c">&#34;ORIGINAL_DST&#34;</span>,  <span style="color:#6272a4"># 该选项表明 Enovy 在转发请求时会直接采用 downstream 原始请求中的地址。</span>
+      <span style="color:#ff79c6">&#34;connect_timeout&#34;: </span><span style="color:#f1fa8c">&#34;1s&#34;</span>,
+      <span style="color:#ff79c6">&#34;lb_policy&#34;: </span><span style="color:#f1fa8c">&#34;CLUSTER_PROVIDED&#34;</span>,
+   ...
+
+}  
+</code></pre></div><p>根据 <a href="https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/service_discovery#arch-overview-service-discovery-types">Envoy 的文档说明</a>，“ORIGINAL_DST” 的解释为：</p>
+<blockquote>
+<p>In these cases requests routed to an original destination cluster are forwarded to upstream hosts as addressed by the redirection metadata, without any explicit host configuration or upstream host discovery.</p>
+</blockquote>
+<p>即对于“ORIGINAL_DST” 类型的 Cluster，Envoy 在转发请求时会直接采用 downstream 请求中的原始目地地 IP 地址，而不会采用服务发现机制。Istio 中 Envoy Sidecar 的该处理方式和 K8s 对 Headless Service 的处理是类似的，即由客户端根据 DNS 直接选择一个后端的 Pod IP，不会采用负载均衡算法对客户端的请求进行重定向分发。但让人疑惑的是：为什么客户端通过 DNS 查询得到的 Pod 地址 172.16.0.198 访问失败了呢？这是由于客户端查询 DNS 时得到的地址在访问期间已经不存在了。下图解释了导致该问题的原因：
+
+  <img src="/img/2020-09-11-headless-mtls/origin_dst.png" alt="">
+
+</p>
+<ol>
+<li>Client 查询 DNS 得到 eureka-server 的三个IP地址。</li>
+<li>Client 选择 Server-1 的 IP 172.16.0.198 发起连接请求，请求被 iptables rules 拦截并重定向到了客户端 Pod 中 Envoy 的 VirtualInbound 端口 15001。</li>
+<li>在收到 Client 的连接请求后，根据 Cluster 的配置，Envoy 采用请求中的原始目的地址 172.16.0.198 连接 Server-1，此时该 IP 对应的 Pod 是存在的，因此 Envoy 到 Server-1 的链接创建成功，Client 和 Envoy 之间的链接也会建立成功。Client 在创建链接时采用了 HTTP Keep Alive 选项，因此 Client 会一直保持该链接，并通过该链接以 30 秒间隔持续发送 HTTP PUT 服务心跳通知。</li>
+<li>由于某些原因，该 Server-1 Pod 被 K8s 重建为 Server-1ꞌ，IP 发生了变化。</li>
+<li>当 Server-1 的 IP 变化后，Envoy 并不会立即主动断开和 Client 端的链接。此时从 Client 的角度来看，到 172.16.0.198 的 TCP 链接依然是正常的，因此 Client 会继续使用该链接发送 HTTP 请求。同时由于 Cluster 类型为 “ORIGINAL_DST” ，Envoy 会继续尝试连接 Client 请求中的原始目地地址 172.16.0.198，如图中蓝色箭头所示。但是由于该 IP 上的 Pod 已经被销毁，Envoy 会连接失败，并在失败后向 Client 端返回一个这样的错误信息：“upstream connect error or disconnect/reset before headers. reset reason: connection failure HTTP/1.1 503” 。如果 Client 在收到该错误后不立即断开并重建链接，那么直到该链接超时之前，Client 都不会重新查询 DNS 获取到 Pod 重建后的正确地址。</li>
+</ol>
+<h1 id="为-headless-service-启用-eds">为 Headless Service 启用 EDS</h1>
+<p>从前面的分析中我们已经知道出错的原因是由于客户端 HTTP 长链接中的 IP 地址过期导致的。那么一个最直接的想法就是让 Envoy 采用正确的 IP 地址去连接 Upstream Host。在不修改客户端代码，不重建客户端链接的情况下，如何才能实现呢？</p>
+<p>如果对比一个其他服务的 Cluster 配置，可以看到正常情况下，Istio 下发的配置中，Cluster 类型为 EDS （Endopoint Discovery Service），如下面的 yaml 片段所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"> {
+  <span style="color:#ff79c6">&#34;version_info&#34;: </span><span style="color:#f1fa8c">&#34;2020-09-23T03:02:01Z/2&#34;</span>,
+  <span style="color:#ff79c6">&#34;cluster&#34;: </span>{
+   <span style="color:#ff79c6">&#34;@type&#34;: </span><span style="color:#f1fa8c">&#34;type.googleapis.com/envoy.config.cluster.v3.Cluster&#34;</span>,
+   <span style="color:#ff79c6">&#34;name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|8080||http-server.default.svc.cluster.local&#34;</span>,
+   <span style="color:#ff79c6">&#34;type&#34;: </span><span style="color:#f1fa8c">&#34;EDS&#34;</span>,       <span style="color:#6272a4"># 普通服务采用 EDS 服务发现，根据 LB 算法从 EDS 下发的 endpoint 中选择一个进行连接</span>
+   <span style="color:#ff79c6">&#34;eds_cluster_config&#34;: </span>{
+    <span style="color:#ff79c6">&#34;eds_config&#34;: </span>{
+     <span style="color:#ff79c6">&#34;ads&#34;: </span>{},
+     <span style="color:#ff79c6">&#34;resource_api_version&#34;: </span><span style="color:#f1fa8c">&#34;V3&#34;</span>
+    },
+    <span style="color:#ff79c6">&#34;service_name&#34;: </span><span style="color:#f1fa8c">&#34;outbound|8080||http-server.default.svc.cluster.local&#34;</span>
+   },
+  ...
+
+ }
+</code></pre></div><p>在采用 EDS 的情况下，Envoy 会通过 EDS 获取到该 Cluster 中所有可用的 Endpoint，并根据负载均衡算法（缺省为 Round Robin）将 Downstream 发来的请求发送到不同的 Endpoint。因此只要把 Cluster 类型改为 EDS，Envoy 在转发请求时就不会再采用请求中错误的原始 IP 地址，而会采用 EDS 自动发现到的 Endpoint 地址。采用 EDS 的情况下，本例的中的访问流程如下图所示：</p>
+<p>
+  <img src="/img/2020-09-11-headless-mtls/eds.png" alt="">
+
+</p>
+<p>通过查阅 <a href="https://github.com/istio/istio/blob/master/pilot/pkg/networking/core/v1alpha3/cluster.go#L369">Istio 源码</a>，可以发现 Istio 对于 Headless Service 缺省采用了 &ldquo;ORIGINAL_DST&rdquo; 类型的 Cluster，但我们也可以通过设置一个 Istiod 的环境变量 PILOT_ENABLE_EDS_FOR_HEADLESS_SERVICES 为 Headless Service 强制启用 EDS 。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">convertResolution</span>(proxy <span style="color:#ff79c6">*</span>model.Proxy, service <span style="color:#ff79c6">*</span>model.Service) cluster.Cluster_DiscoveryType {
+	<span style="color:#ff79c6">switch</span> service.Resolution {
+	<span style="color:#ff79c6">case</span> model.ClientSideLB:
+		<span style="color:#ff79c6">return</span> cluster.Cluster_EDS
+	<span style="color:#ff79c6">case</span> model.DNSLB:
+		<span style="color:#ff79c6">return</span> cluster.Cluster_STRICT_DNS
+	<span style="color:#ff79c6">case</span> model.Passthrough: <span style="color:#6272a4">// Headless Service 的取值为 model.Passthrough
+</span><span style="color:#6272a4"></span>		<span style="color:#ff79c6">if</span> proxy.Type <span style="color:#ff79c6">==</span> model.SidecarProxy {
+            <span style="color:#6272a4">// 对于 Sidecar Proxy，如果 PILOT_ENABLE_EDS_FOR_HEADLESS_SERVICES 的值设为 True，则启用 EDS，否则采用 ORIGINAL_DST
+</span><span style="color:#6272a4"></span>			<span style="color:#ff79c6">if</span> service.Attributes.ServiceRegistry <span style="color:#ff79c6">==</span> <span style="color:#8be9fd;font-style:italic">string</span>(serviceregistry.Kubernetes) <span style="color:#ff79c6">&amp;&amp;</span> features.EnableEDSForHeadless {
+				<span style="color:#ff79c6">return</span> cluster.Cluster_EDS
+			}
+
+			<span style="color:#ff79c6">return</span> cluster.Cluster_ORIGINAL_DST
+		}
+		<span style="color:#ff79c6">return</span> cluster.Cluster_EDS
+	<span style="color:#ff79c6">default</span>:
+		<span style="color:#ff79c6">return</span> cluster.Cluster_EDS
+	}
+}
+</code></pre></div><p>在将 Istiod 环境变量 PILOT_ENABLE_EDS_FOR_HEADLESS_SERVICES 设置为 true 后，再查看 Envoy 的日志，可以看到虽然请求原始 IP 地址还是 172.16.0.198，但 Envoy 已经把请求分发到了实际可用的三个 Server 的 IP 上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>2020-09-24T13:35:28.790Z<span style="color:#ff79c6">]</span> <span style="color:#f1fa8c">&#34;PUT /eureka/apps/EUREKA-TEST-CLIENT/eureka-client-544b94f967-gcx2f:eureka-test-client?status=UP&amp;lastDirtyTimestamp=1600954114925 HTTP/1.1&#34;</span> <span style="color:#bd93f9">200</span> - <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">4</span> <span style="color:#bd93f9">4</span> <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#f1fa8c">&#34;Java-EurekaClient/v1.9.13&#34;</span> <span style="color:#f1fa8c">&#34;d98fd3ab-778d-42d4-a361-d27c2491eff0&#34;</span> <span style="color:#f1fa8c">&#34;eureka-server:8761&#34;</span> <span style="color:#f1fa8c">&#34;172.16.1.3:8761&#34;</span> outbound|8761<span style="color:#ff79c6">||</span>eureka-server.eureka.svc.cluster.local 172.16.0.169:39934 172.16.0.198:8761 172.16.0.169:53890 - default
+<span style="color:#ff79c6">[</span>2020-09-24T13:35:58.797Z<span style="color:#ff79c6">]</span> <span style="color:#f1fa8c">&#34;PUT /eureka/apps/EUREKA-TEST-CLIENT/eureka-client-544b94f967-gcx2f:eureka-test-client?status=UP&amp;lastDirtyTimestamp=1600954114925 HTTP/1.1&#34;</span> <span style="color:#bd93f9">200</span> - <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">1</span> <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#f1fa8c">&#34;Java-EurekaClient/v1.9.13&#34;</span> <span style="color:#f1fa8c">&#34;7799a9a0-06a6-44bc-99f1-a928d8576b7c&#34;</span> <span style="color:#f1fa8c">&#34;eureka-server:8761&#34;</span> <span style="color:#f1fa8c">&#34;172.16.0.59:8761&#34;</span> outbound|8761<span style="color:#ff79c6">||</span>eureka-server.eureka.svc.cluster.local 172.16.0.169:45582 172.16.0.198:8761 172.16.0.169:53890 - default
+<span style="color:#ff79c6">[</span>2020-09-24T13:36:28.801Z<span style="color:#ff79c6">]</span> <span style="color:#f1fa8c">&#34;PUT /eureka/apps/EUREKA-TEST-CLIENT/eureka-client-544b94f967-gcx2f:eureka-test-client?status=UP&amp;lastDirtyTimestamp=1600954114925 HTTP/1.1&#34;</span> <span style="color:#bd93f9">200</span> - <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">2</span> <span style="color:#bd93f9">1</span> <span style="color:#f1fa8c">&#34;-&#34;</span> <span style="color:#f1fa8c">&#34;Java-EurekaClient/v1.9.13&#34;</span> <span style="color:#f1fa8c">&#34;aefb383f-a86d-4c96-845c-99d6927c722e&#34;</span> <span style="color:#f1fa8c">&#34;eureka-server:8761&#34;</span> <span style="color:#f1fa8c">&#34;172.16.0.200:8761&#34;</span> outbound|8761<span style="color:#ff79c6">||</span>eureka-server.eureka.svc.cluster.local 172.16.0.169:60794 172.16.0.198:8761 172.16.0.169:53890 - default
+</code></pre></div><h1 id="神秘消失的服务">神秘消失的服务</h1>
+<p>在将 Eureka Server Cluster 的类型从 ORIGINAL_DST 改为 EDS 之后，之前心跳失败的服务正常了。但过了一段时间后，发现原来 Eureka 中注册的部分服务下线，导致服务之间无法正常访问。查询 Eureka Server 的日志，发现日志中有如下的错误：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">2020-09-24 14:07:35.511  WARN <span style="color:#bd93f9">6</span> --- <span style="color:#ff79c6">[</span>eureka-server-3<span style="color:#ff79c6">]</span> c.netflix.eureka.cluster.PeerEurekaNode  : EUREKA-SERVER-2/eureka-server-2.eureka-server.eureka.svc.cluster.local:eureka-server-2:8761:Heartbeat@eureka-server-0.eureka-server: missing entry.
+2020-09-24 14:07:35.511  WARN <span style="color:#bd93f9">6</span> --- <span style="color:#ff79c6">[</span>eureka-server-3<span style="color:#ff79c6">]</span> c.netflix.eureka.cluster.PeerEurekaNode  : EUREKA-SERVER-2/eureka-server-2.eureka-server.eureka.svc.cluster.local:eureka-server-2:8761:Heartbeat@eureka-server-0.eureka-server: cannot find instance
+</code></pre></div><p>从日志中我们可以看到多个 Eureka Server 之间的数据同步发生了错误。当部署为集群模式时，Eureka 集群中的多个实例之间会进行数据同步，本例中的 Eureka 集群中有三个实例，这些实例之间的数据同步如下图所示：</p>
+<p>
+  <img src="/img/2020-09-11-headless-mtls/eureka-cluster.png" alt="">
+
+</p>
+<p>当改用 EDS 之后，当集群中的每一个 Eureka Server 向集群中的其他 Eureka Server 发起数据同步时，这些请求被请求方 Pod 中的 Envoy Sidecar 采用 Round Robin 进行了随机分发，导致同步消息发生了紊乱，集群中每个服务器中的服务注册消息不一致，导致某些服务被误判下线。该故障现象比较随机，经过多次测试，我们发现在 Eureka 中注册的服务较多时更容易出现改故障，当只有少量服务时不容易复现。</p>
+<p>找到原因后，要解决该问题就很简单了，我们可以通过将 Eureka Server 的 Sidecar Injection 设置为 false 来规避该问题，如下面的 yaml 片段所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: apps/v1
+<span style="color:#ff79c6">kind</span>: StatefulSet
+<span style="color:#ff79c6">metadata</span>:
+  <span style="color:#ff79c6">name</span>: eureka-server
+<span style="color:#ff79c6">spec</span>:
+  <span style="color:#ff79c6">selector</span>:
+    <span style="color:#ff79c6">matchLabels</span>:
+      <span style="color:#ff79c6">app</span>: eureka-server
+  <span style="color:#ff79c6">serviceName</span>: <span style="color:#f1fa8c">&#34;eureka-server&#34;</span>
+  <span style="color:#ff79c6">replicas</span>: <span style="color:#bd93f9">3</span>
+  <span style="color:#ff79c6">template</span>:
+    <span style="color:#ff79c6">metadata</span>:
+      <span style="color:#ff79c6">labels</span>:
+        <span style="color:#ff79c6">app</span>: eureka-server
+      <span style="color:#ff79c6">annotations</span>:
+        <span style="color:#ff79c6">sidecar.istio.io/inject</span>: <span style="color:#f1fa8c">&#34;false&#34;</span>  <span style="color:#6272a4"># 不为 eureka-server pod 注入 Envoy Siedecar</span>
+    <span style="color:#ff79c6">spec</span>:
+      <span style="color:#ff79c6">containers</span>:
+      - <span style="color:#ff79c6">name</span>: eureka-server
+        <span style="color:#ff79c6">image</span>: zhaohuabing/eureka-test-service:latest
+        <span style="color:#ff79c6">ports</span>:
+        - <span style="color:#ff79c6">containerPort</span>: <span style="color:#bd93f9">8761</span>
+          <span style="color:#ff79c6">name</span>: http
+</code></pre></div><h1 id="反思">反思</h1>
+<p>对于 Headless Service，Istio 缺省采用 “ORIGINAL_DST” 类型的 Cluster，要求 Envoy Sidecar 在转发时采用请求原始目的 IP 地址的行为其实是合理的。如同我们在本系列的上一篇文章<a href="https://cloud.tencent.com/developer/article/1700748">『Istio 运维实战系列（2）：让人头大的『无头服务』-上』</a>所介绍的，Headless Service 一般用于定义有状态的服务。对于有状态的服务，需要由客户端根据应用特定的算法来自行决定访问哪一个后端 Pod，因此不应该在这些 Pod 前加一个负载均衡器。</p>
+<p>在本例中，由于 Eureka 集群中各个节点之间会对收到的客户端服务心跳通知进行同步，因此对于客户端来说，访问的是哪一个 Eureka 节点并不重要，我们可以认为 Eureka 集群对于外部客户端而言是无状态的。因此设置 PILOT_ENABLE_EDS_FOR_HEADLESS_SERVICES 环境变量，在客户端的 Envoy Sidecar 中对客户端发往 Eureka Server 的请求进行负载均衡是没有问题的。但是由于 Eureka 集群内部的各个节点之间的是有状态的，修改后影响了集群中各个 Eureka 节点之间的数据同步，导致了后面部分服务错误下线的问题。对于引发的该问题，我们通过去掉 Eureka Server 的 Sidecar 注入来进行了规避。</p>
+<p>对于该问题，更合理的处理方法是 Envoy Sidecar 在尝试连接 Upstream Host 失败一定次数后主动断开和客户端侧的链接，由客户端重新查询 DNS，获取正确的 Pod IP 来创建新的链接。经过测试验证，Istio 1.6 及之后的版本中，Envoy 在 Upstream 链接断开后会主动断开和 Downstream 的长链接，建议尽快升级到 1.6 版本，以彻底解决本问题。也可以直接采用腾讯云上的云原生 Service Mesh 服务 TCM（Tencent Cloud Mesh），为微服务应用快速引入 Service Mesh 的流量管理和服务治理能力，而无需再关注 Service Mesh 基础设施自身的安装、维护、升级等事项。</p>
+<h1 id="参考文档">参考文档</h1>
+<ul>
+<li><a href="https://medium.com/expedia-group-tech/all-about-istio-proxy-5xx-issues-e0221b29e692">All about ISTIO-PROXY 5xx Issues</a></li>
+<li><a href="https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-eureka-server.html">Service Discovery: Eureka Server</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1700748">Istio 运维实战系列（2）：让人头大的『无头服务』-上</a></li>
+</ul>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2020-09-11-headless-mtls/" data-toggle="tooltip" data-placement="top" title="Istio 运维实战系列（2）：让人头大的『无头服务』-上">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2020-09-28-xingchang/" data-toggle="tooltip" data-placement="top" title="大邑新场 --- 被时光遗忘的川西古镇">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2020
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

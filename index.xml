@@ -6,10 +6,28 @@
     <description>Recent content on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 28 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>大邑新场 --- 被时光遗忘的川西古镇</title>
+      <link>https://zhaohuabing.com/post/2020-09-28-xingchang/</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-09-28-xingchang/</guid>
+      <description>I m g 20200926 114017 I m g 20200926 120808 01 I m g 20200926 120819 I m g 20200926 121439 I m g 20200926 121919 I m g 20200926 122024 I m g 20200926 122104 I m g 20200926 122818 I m g 20200926 123042 I m g 20200926 123140 I m g 20200926 124028 I m g 20200926 124227 I m g 20200926 124303 I m g 20200926</description>
+    </item>
+    
+    <item>
+      <title>Istio 运维实战系列（3）：让人头大的『无头服务』-下</title>
+      <link>https://zhaohuabing.com/post/2020-09-19-headless-mtls/</link>
+      <pubDate>Sat, 19 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-09-19-headless-mtls/</guid>
+      <description>本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方</description>
+    </item>
     
     <item>
       <title>Istio 运维实战系列（2）：让人头大的『无头服务』-上</title>
