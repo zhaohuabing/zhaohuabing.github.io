@@ -6,10 +6,19 @@
     <description>Recent content in Istio on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 19 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 13 Oct 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>在 Istio 中实现 Redis 集群的数据分片、读写分离和流量镜像</title>
+      <link>https://zhaohuabing.com/post/2020-10-14-redis-cluster-with-istio/</link>
+      <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-10-14-redis-cluster-with-istio/</guid>
+      <description>Redis 是一个高性能的 key-value 存储系统，被广泛用于微服务架构中。本文将介绍如何通过 Istio 和 Envoy 实现客户端无感知的 Redis Cluster 数据分片，并提供读写分离、流量镜像等高级流</description>
+    </item>
     
     <item>
       <title>Istio 运维实战系列（3）：让人头大的『无头服务』-下</title>
