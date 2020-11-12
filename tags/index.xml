@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 13 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 12 Nov 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Envoy</title>
       <link>https://zhaohuabing.com/tags/envoy/</link>
-      <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 12 Nov 2020 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/envoy/</guid>
       <description></description>
@@ -23,9 +23,18 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 12 Nov 2020 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>service Mesh</title>
+      <link>https://zhaohuabing.com/tags/service-mesh/</link>
+      <pubDate>Thu, 12 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
     </item>
     
@@ -152,15 +161,6 @@
       <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/sdn/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>service Mesh</title>
-      <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Fri, 21 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
       <description></description>
     </item>
     
