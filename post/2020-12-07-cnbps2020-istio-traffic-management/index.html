@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="CNBPS 2020 云原生应用架构专场介绍" />
-    <meta property="og:title" content="CNBPS 2020 云原生应用架构专场介绍" />
-    <meta property="twitter:title" content="CNBPS 2020 云原生应用架构专场介绍" />
+    <meta name="title" content="CNBPS 2020 Istio 流量管理原理与协议扩展" />
+    <meta property="og:title" content="CNBPS 2020 Istio 流量管理原理与协议扩展" />
+    <meta property="twitter:title" content="CNBPS 2020 Istio 流量管理原理与协议扩展" />
     
 
     
-    <meta name="description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。">
-    <meta property="og:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
-    <meta property="twitter:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    <meta name="description" content="通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。">
+    <meta property="og:description" content="通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。" />
+    <meta property="twitter:description" content="通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>CNBPS 2020 云原生应用架构专场介绍-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>CNBPS 2020 Istio 流量管理原理与协议扩展-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2020-11-12-cnbps2020/">
+    <link rel="canonical" href="/post/2020-12-07-cnbps2020-istio-traffic-management/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 	
@@ -188,17 +188,17 @@
                         </a>
                         
                     </div>
-                    <h1>CNBPS 2020 云原生应用架构专场介绍</h1>
-                    <h2 class="subheading">11月19-21日，CNBPS 2020重磅回归！了解云原生趋势和最佳实践？来这一场就够了！</h2>
+                    <h1>CNBPS 2020 Istio 流量管理原理与协议扩展</h1>
+                    <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 
                         
                                 &#34;赵化冰&#34;
                          
                         on 
-                        Thursday, November 12, 2020
+                        Monday, December 7, 2020
                         
-                            <span id="/post/2020-11-12-cnbps2020/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                            <span id="/post/2020-12-07-cnbps2020-istio-traffic-management/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -355,19 +355,10 @@ $(function() {
                 post-container">
 
                 
-                <p>11月19-21日，CNBPS 2020重磅回归！</p>
-<p>作为一年一度的云原生科技盛会，众多云原生届的“顶流”将在这里聚集，展现云原生世界的科技想象力。</p>
-<p>了解云原生趋势和最佳实践？来这一场就够了！</p>
-<p>CNBPS 2020将在11月19-21日全新启动！作为国内最有影响力的云原生盛会之一，云原生技术实践峰会（CNBPS）至今已举办三届。</p>
-<p>2020年云原生的重头戏转向全栈和生态，从企业实践的角度，云原生也被看作企业数字化转型的唯一解决方案。云原生技术正在快速开拓新的技术边界，支持新的应用范式，变成新常态。本次大会，将尝试从全球视角诠释云原生的升维定义——云原生全栈，展现云原生原力觉醒的无穷动能。</p>
-<p>非常荣幸应邀担任本次 CNBPS 2020 大会『云原生应用架构』专场的出品人。提到到云原生，我们首先通常会想到云原生的 &ldquo;微服务&rdquo;，&ldquo;容器化&rdquo;，&ldquo;DevOps&quot;这三驾马车：微服务架构可以让我们构建易伸缩、高可用的应用系统，并且我们可以针对市场变化对该系统进行快速迭代，以满足用户需求。容器化提供了跨平台的标准应用打包方式，让我们的应用可以做到一次打包，多处运行，并且使用K8s对容器进行灵活的编排和部署。DevOps 则帮助我们应对微服务应用发布和运维的一些列挑战。</p>
-<p>但是，从云原生概念的兴起、逐渐发展到如今，其包含的技术理念和内容已远不止如此。我们可以看到，有越来越多的一些新兴技术、开源项目、和已有技术声称自己是云原生的、或者适用于云原生。对我而言，我认为任何能够让我们充分利用云计算潜力，让企业快速上云、利用云计算无限扩展的能力帮助企业进行数字化转型的技术，都可以称之为云原生技术。</p>
-<p>例如最近风头非常强劲的 Service Mesh 服务网格，就是近两年进入云原生版图的新兴技术，Service Mesh可以为云原生应用提供无侵入的流量管理能力，今天我们就有三场关于Service Mesh的分享。当然，在云原生应用系统中，我们还面领复杂网络环境下的安全挑战，如何通过API网关向外部系统提供服务，如何搭建一个高可用微服务架构等诸多问题。</p>
-<p>因此，我们策划了今天的云原生应用架构专场，希望能够超越&quot;微服务&rdquo;，&ldquo;容器化&rdquo;，&ldquo;DevOps&quot;这三驾马车，从应用架构这个层面和大家一起探讨云原生的一些相关技术和最佳实践。</p>
-<p>在『云原生应用架构』专场中，我们邀请了来自腾讯、支流科技、灵雀云、Nginx、WSO2、安畅网络科技、StreamNative等国内外知名企业和开源社区的一线技术专家，共同探讨 Service Mesh、API 网关、云原生应用安全、应用分布式参考架构、消息流平台、高可用微服务架构等最前沿的云原生技术内容。希望这些分享能为你带来一些有价值的参考和启发。</p>
-<p>我在本专场中也会有一个『Istio 流量管理原理与协议扩展』的分享，时间11月20日下午两点，欢迎大家到时参加。</p>
-<p>大会线上直播链接： <a href="https://cloud.tencent.com/edu/learning/live-3203">https://cloud.tencent.com/edu/learning/live-3203</a></p>
-<p>CNBPS 2020 大会『云原生应用架构』专场演讲介绍：</p>
+                <p>通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。</p>
+<p>我们知道，Service Mesh 最主要的功能就是 管理网格内服务间的东西向流量，以及网格出入口的南北向流量。因此，能够理解 Istio 流量管理背后的原理，对于我们在 Istio 的日常运维工作将会有很大帮助。</p>
+<p>Istio 可以在四层和七层上的流量进行管理，当然我们主要希望采用的是其七层的流量管理能力。在七层上，Istio 主要支持了 HTTP/gPRC 两种协议，而对于我们在微服务中使用到的其他七层协议，如 Thrift，Dubbo，Redis 等的支持非常有限。如果我们希望将使用了这些协议的应用迁移到 Istio ，那么只能在四层上对这些协议进行流量管理，能做的事情将非常有限。今天我也将和大家一起讨论如何能够对 Istio 进行扩展，使其能够支持更多的七层协议。</p>
+<p>CNBPS 2020 Istio 流量管理原理与协议扩展：</p>
 <p>B站
 
 
@@ -387,19 +378,15 @@ $(function() {
 
 
     <div>
-        <iframe id="biliplayer" src="//player.bilibili.com/player.html?bvid=BV1kZ4y137gv&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" ></iframe>
+        <iframe id="biliplayer" src="//player.bilibili.com/player.html?bvid=BV1av411t7JL&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" ></iframe>
     </div>
 
 </p>
 <p>YouTube
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/cllc1ZGlhsQ" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+  <iframe src="https://www.youtube.com/embed/lB5d4qbZqzU" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
 </div>
-</p>
-<p>
-  <img src="/img/2020-11-12-cnbps2020/cnbps-cn-app-arch.jpeg" alt="">
-
 </p>
 
 
@@ -409,15 +396,10 @@ $(function() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2020-10-14-redis-cluster-with-istio/" data-toggle="tooltip" data-placement="top" title="在 Istio 中实现 Redis 集群的数据分片、读写分离和流量镜像">&larr;
+                        <a href="/post/2020-11-12-cnbps2020/" data-toggle="tooltip" data-placement="top" title="CNBPS 2020 云原生应用架构专场介绍">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2020-12-07-cnbps2020-istio-traffic-management/" data-toggle="tooltip" data-placement="top" title="CNBPS 2020 Istio 流量管理原理与协议扩展">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
 
