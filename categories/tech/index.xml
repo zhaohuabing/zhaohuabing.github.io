@@ -309,15 +309,6 @@
     </item>
     
     <item>
-      <title>Istio微服务平台集成实践</title>
-      <link>https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/</link>
-      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/</guid>
-      <description>前言 Istio发布1.0版本后，其服务发现和路由规则功能已基本具备production能力，我们也开始了Istio和公司内部微服务平台的集成</description>
-    </item>
-    
-    <item>
       <title>Secure ONAP Microservices with Istio Mutual TLS Authentication and RBAC</title>
       <link>https://zhaohuabing.com/post/2018-08-15-manage-onap-with-istio-auth-enabled/</link>
       <pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate>
