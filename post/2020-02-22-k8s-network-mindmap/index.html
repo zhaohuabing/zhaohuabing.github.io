@@ -422,6 +422,31 @@ $(function() {
 </li>
 </ul>
 </li>
+<li>部署模式
+<ul>
+<li>Single node</li>
+<li>Single head node，multiple workers
+<ul>
+<li>API Server，Scheduler，and Controller Manager run on a single node</li>
+</ul>
+</li>
+<li>Single etcd，HA heade nodes，multiple workers
+<ul>
+<li>Multiple API Server instances fronted by a load balancer</li>
+<li>Multiple Scheduler and Controller Manager instances with leader election</li>
+<li>Single etcd node</li>
+</ul>
+</li>
+<li>HA etcd，HA head nodes，multiple workers
+<ul>
+<li>Multiple API Server instances fronted by a load balancer</li>
+<li>Multiple Scheduler and Controller Manager instances with leader election</li>
+<li>Etcd cluster run on nodes seperate from the Kubernetes head nodes</li>
+</ul>
+</li>
+<li>Kubernetes Federation</li>
+</ul>
+</li>
 <li>商业模式
 <ul>
 <li>云服务用户：避免使用单一云提供商导致的厂商锁定，避免技术和成本风险</li>
@@ -821,7 +846,7 @@ var disq = new iDisqus('disqus-comment', {
             
                 </ul>
 		<p class="copyright text-muted">
-                    Copyright &copy; Huabing Blog 2020
+                    Copyright &copy; Huabing Blog 2021
                     <br>
                     <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
                     <iframe
