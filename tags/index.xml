@@ -6,15 +6,33 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Dec 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Aeraki</title>
+      <link>https://zhaohuabing.com/tags/aeraki/</link>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/aeraki/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dubbo</title>
+      <link>https://zhaohuabing.com/tags/dubbo/</link>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/dubbo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Envoy</title>
       <link>https://zhaohuabing.com/tags/envoy/</link>
-      <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/envoy/</guid>
       <description></description>
@@ -23,9 +41,27 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redis</title>
+      <link>https://zhaohuabing.com/tags/redis/</link>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/redis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Thrift</title>
+      <link>https://zhaohuabing.com/tags/thrift/</link>
+      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/thrift/</guid>
       <description></description>
     </item>
     
@@ -35,15 +71,6 @@
       <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Redis</title>
-      <link>https://zhaohuabing.com/tags/redis/</link>
-      <pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/redis/</guid>
       <description></description>
     </item>
     

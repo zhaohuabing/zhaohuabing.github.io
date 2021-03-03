@@ -3,32 +3,67 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://zhaohuabing.com/categories/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
+    <loc>https://zhaohuabing.com/tags/aeraki/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/post/2020-12-07-cnbps2020-istio-traffic-management/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
+    <loc>https://zhaohuabing.com/categories/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/dubbo/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/envoy/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2021-03-02-manage-any-layer-7-traffic-in-istio/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://zhaohuabing.com/post/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/redis/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/thrift/</loc>
+    <lastmod>2021-03-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2020-12-07-cnbps2020-istio-traffic-management/</loc>
     <lastmod>2020-12-07T00:00:00+00:00</lastmod>
   </url>
   
@@ -38,23 +73,8 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/tags/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/tech/</loc>
-    <lastmod>2020-12-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://zhaohuabing.com/post/2020-11-12-cnbps2020/</loc>
     <lastmod>2020-11-12T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/redis/</loc>
-    <lastmod>2020-10-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
