@@ -383,7 +383,11 @@ $(function() {
       </ul>
     </li>
     <li><a href="#小结">小结</a></li>
-    <li><a href="#参考链接">参考链接</a></li>
+    <li><a href="#参考链接">参考链接</a>
+      <ul>
+        <li><a href="#视频回放">视频回放</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
                 
@@ -511,15 +515,45 @@ aeraki/demo/install-demo.sh
 
 </p>
 <h1 id="小结">小结</h1>
-<p>Service Mesh 中有大量的七层协议流量，包括 RPC、Database、Cache、Messaging 等类型的七层协议，但 Istio 只提供了 HTTP 和 gRPC 的七层管理能力，对其他七层协议的支持非常有限。Aerkai 开源项目通过非侵入的方式为 Istio 提供了任意七层协议的支持能力，并提供了面向用户的高级配置 CRD，可以很方便地对这些协议的流量进行管理，实现灰度发布等高级流量管理能力。目前 Aeraki 已经支持了 Thrift、Dubbo、Redis、Kafka、Zookeeper，并即将支持更多的协议。Aeraki 的定位是做成一个非侵入式 Istio 功能增强工具集，除了协议扩展之外，还会关注解决在 Istio 使用过程中遇到的其他常见问题，包括效率优化、配置简化、第三方服务发现接入、功能扩展等。如果您希望了解更多关于 Aeraki 的内容，欢迎访问 Github 主页  <a href="https://github.com/aeraki-framework/aeraki">https://github.com/aeraki-framework/aeraki</a> 。</p>
+<p>Service Mesh 中有大量的七层协议流量，包括 RPC、Database、Cache、Messaging 等类型的七层协议，但 Istio 只提供了 HTTP 和 gRPC 的七层管理能力，对其他七层协议的支持非常有限。Aerkai 开源项目通过非侵入的方式为 Istio 提供了任意七层协议的支持能力，并提供了面向用户的高级配置 CRD，可以很方便地对这些协议的流量进行管理，实现灰度发布等高级流量管理能力。目前 Aeraki 已经支持了 Thrift、Dubbo、Redis、Kafka、Zookeeper，并即将支持更多的协议。Aeraki 的定位是做成一个非侵入式 Istio 功能增强工具集，除了协议扩展之外，还会关注解决在 Istio 使用过程中遇到的其他常见问题，包括效率优化、配置简化、第三方服务发现接入、功能扩展等。如果您希望了解更多关于 Aeraki 的内容，欢迎访问 Github 主页  <a href="https://github.com/aeraki-framework">https://github.com/aeraki-framework</a> 。</p>
 <p><strong>招聘信息</strong>：腾讯云 Service Mesh 团队正在火热招聘中，Base 成都、北京、深圳或者西安，要求候选者熟悉 Kubernetes/Istio/Envoy。欢迎大家发送简历到 <a href="mailto:huabingzhao@tencent.com">huabingzhao@tencent.com</a> 或者微信联系 zhao_huabing。</p>
 <h1 id="参考链接">参考链接</h1>
 <ul>
 <li><a href="https://www.bilibili.com/video/BV1XN41197Sq">IstioCon talk “How to Manage Any Layer-7 Traffic in an Istio Service Mesh?” 视频回放</a></li>
 <li><a href="https://zhaohuabing.com/slides/how-to-manage-any-layer-7-traffic-in-istio.pdf">IstioCon talk “How to Manage Any Layer-7 Traffic in an Istio Service Mesh? 讲稿下载</a></li>
-<li><a href="https://github.com/aeraki-framework/aeraki">Aeraki Github 主页</a></li>
+<li><a href="https://github.com/aeraki-framework">Aeraki Github 主页</a></li>
 <li><a href="http://aeraki.zhaohuabing.com:3000/d/pgz7wp-Gz/aeraki-demo?orgId=1&amp;refresh=10s&amp;kiosk">Aeraki 在线 Demo</a></li>
 </ul>
+<h2 id="视频回放">视频回放</h2>
+<p>B站
+
+
+
+<style>
+    #biliplayer {
+      width: 100%;
+      height: 600px;
+    }
+    @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+      #biliplayer {
+        width: 100%;
+        height: 250px;
+      }
+    }
+</style>
+
+
+    <div>
+        <iframe id="biliplayer" src="//player.bilibili.com/player.html?bvid=BV1XN41197Sq&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" ></iframe>
+    </div>
+
+</p>
+<p>YouTube
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/sBS4utF68d8" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+</p>
 
 
                 
