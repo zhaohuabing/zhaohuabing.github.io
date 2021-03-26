@@ -6,10 +6,46 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 24 Mar 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes</title>
+      <link>https://zhaohuabing.com/tags/kubernetes/</link>
+      <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network</title>
+      <link>https://zhaohuabing.com/tags/network/</link>
+      <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tencent</title>
+      <link>https://zhaohuabing.com/tags/tencent/</link>
+      <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/tencent/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TKE</title>
+      <link>https://zhaohuabing.com/tags/tke/</link>
+      <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/tke/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Aeraki</title>
@@ -120,15 +156,6 @@
     </item>
     
     <item>
-      <title>Kubernetes</title>
-      <link>https://zhaohuabing.com/tags/kubernetes/</link>
-      <pubDate>Tue, 19 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/kubernetes/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Security</title>
       <link>https://zhaohuabing.com/tags/security/</link>
       <pubDate>Tue, 19 May 2020 00:00:00 +0000</pubDate>
@@ -152,15 +179,6 @@
       <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Network</title>
-      <link>https://zhaohuabing.com/tags/network/</link>
-      <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/network/</guid>
       <description></description>
     </item>
     

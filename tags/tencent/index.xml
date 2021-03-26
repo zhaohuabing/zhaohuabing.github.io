@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tencent on Huabing Blog</title>
+    <link>https://zhaohuabing.com/tags/tencent/</link>
+    <description>Recent content in Tencent on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 24 Mar 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/tags/tencent/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>腾讯云容器网络介绍</title>
+      <link>https://zhaohuabing.com/post/2021-03-24-tke-network-mode/</link>
+      <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-03-24-tke-network-mode/</guid>
+      <description>VPC-CNI 网络模式 在 VPC-CNI 网络模式下，Pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。VPC-CNI 网络模式下，根据 Pod 的网卡是否为独立弹性网卡，又</description>
+    </item>
+    
+  </channel>
+</rss>

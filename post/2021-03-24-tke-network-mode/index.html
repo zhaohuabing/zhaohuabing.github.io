@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="腾讯云容器网络介绍" />
+    <meta property="og:title" content="腾讯云容器网络介绍" />
+    <meta property="twitter:title" content="腾讯云容器网络介绍" />
+    
+
+    
+    <meta name="description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。">
+    <meta property="og:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    <meta property="twitter:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>腾讯云容器网络介绍-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2021-03-24-tke-network-mode/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+    
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/life">life</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/note">note</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/books/">BOOKS</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('https://images.pexels.com/photos/276223/pexels-photo-276223.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
+    }
+</style>
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/tencent" title="Tencent">
+                            Tencent
+                        </a>
+                        
+                        <a class="tag" href="/tags/tke" title="TKE">
+                            TKE
+                        </a>
+                        
+                        <a class="tag" href="/tags/kubernetes" title="Kubernetes">
+                            Kubernetes
+                        </a>
+                        
+                        <a class="tag" href="/tags/network" title="Network">
+                            Network
+                        </a>
+                        
+                    </div>
+                    <h1>腾讯云容器网络介绍</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by 
+                        
+                                &#34;赵化冰&#34;
+                         
+                        on 
+                        Wednesday, March 24, 2021
+                        
+                            <span id="/post/2021-03-24-tke-network-mode/" class="leancloud_visitors meta_data_item" data-flag-title="">
+    <span class="post-meta-item-icon">
+      <span class="octicon octicon-eye"></span> 
+    </span>
+    <i class="fa fa-eye"></i>
+    <span class="old-visitors-count" style="display: none;"></span>
+    <span class="leancloud-visitors-count"></span>
+</span>
+
+
+
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+
+<script>
+	AV.initialize("Xu5MAnXL360Ms89vMVnWBjuq-gzGzoHsz", "efUYEefAc2eIPBRO59PRERQC");
+</script>
+
+<script type="text/javascript">
+function showTime(Counter) {
+    var query = new AV.Query(Counter);
+    var entries = [];
+    var $visitors = $(".leancloud_visitors");
+
+    $visitors.each(function() {
+        entries.push($(this).attr("id").trim());
+    });
+
+    query.containedIn('url', entries);
+    query.find()
+        .done(function(results) {
+            var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+            var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+
+            
+            
+            
+            
+
+            for (var i = 0; i < results.length; i++) {
+                var item = results[i];
+                var url = item.get('url');
+                var time = item.get('time');
+                var element = document.getElementById(url);
+
+                $(element).find(COUNT_CONTAINER_REF).text(time);
+            }
+            for (var i = 0; i < entries.length; i++) {
+                var url = entries[i];
+                var element = document.getElementById(url);
+                var countSpan = $(element).find(COUNT_CONTAINER_REF);
+                if (countSpan.text() == '') {
+                    var oldCountSpan = $(element).find(OLD_COUNT_CONTAINER_REF).text();
+                    if(oldCountSpan!=''){
+                        countSpan.text(0+parseInt(oldCountSpan));
+                    }else{
+                        countSpan.text(0);          
+                    }
+                }
+            }
+        })
+        .fail(function(object, error) {
+            console.log("Error: " + error.code + " " + error.message);
+        });
+}
+
+function addCount(Counter) {
+    var $visitors = $(".leancloud_visitors");
+    var url = $visitors.attr('id').trim();
+    var title = $visitors.attr('data-flag-title').trim();
+    var query = new AV.Query(Counter);
+
+    query.equalTo("url", url);
+    query.find({
+        success: function(results) {
+            if (results.length > 0) {
+                var counter = results[0];
+                counter.fetchWhenSave(true);
+                counter.increment("time");
+                counter.save(null, {
+                    success: function(counter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(counter.get('time'));
+                    },
+                    error: function(counter, error) {
+                        console.log('Failed to save Visitor num, with error message: ' + error.message);
+                    }
+                });
+            } else {
+                var newcounter = new Counter();
+                 
+                var acl = new AV.ACL();
+                acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
+                newcounter.setACL(acl);
+                 
+                newcounter.set("title", title);
+                newcounter.set("url", url);
+                var OLD_COUNT_CONTAINER_REF = '.old-visitors-count';
+                var $element = $(document.getElementById(url));
+                var oldCountSpan = $element.find(OLD_COUNT_CONTAINER_REF).text();
+                if(oldCountSpan!=''){
+                    newcounter.set("time", parseInt(oldCountSpan)+1);
+                }else{
+ 	                    newcounter.set("time",  1);
+                }
+                newcounter.save(null, {
+                    success: function(newcounter) {
+                        var $element = $(document.getElementById(url));
+                        $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+                    },
+                    error: function(newcounter, error) {
+                        console.log('Failed to create');
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log('Error:' + error.code + " " + error.message);
+        }
+    });
+}
+$(function() {
+    var Counter = AV.Object.extend("Counter");
+    
+    
+    if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+    } else {
+        showTime(Counter);
+    }
+});
+</script>
+
+                        
+                        
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <header>
+                    <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+  <ul>
+    <li><a href="#vpc-cni-网络模式">VPC-CNI 网络模式</a>
+      <ul>
+        <li><a href="#出向---从-pod-到虚机">出向 - 从 Pod 到虚机</a></li>
+        <li><a href="#出向---从虚机到物理机">出向 - 从虚机到物理机</a></li>
+        <li><a href="#出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</a></li>
+        <li><a href="#入向---从物理机到虚机">入向 - 从物理机到虚机</a></li>
+        <li><a href="#入向---从虚拟机到-pod">入向 - 从虚拟机到 Pod</a></li>
+        <li><a href="#独占网卡模式">独占网卡模式</a></li>
+        <li><a href="#vpc-cni-模式实质">VPC-CNI 模式实质</a></li>
+      </ul>
+    </li>
+    <li><a href="#global-router-模式">Global Router 模式</a></li>
+    <li><a href="#参考链接">参考链接</a></li>
+  </ul>
+</nav>
+                
+                <h1 id="vpc-cni-网络模式">VPC-CNI 网络模式</h1>
+<p>在 VPC-CNI 网络模式下，Pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。VPC-CNI 网络模式下，根据 Pod 的网卡是否为独立弹性网卡，又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/vpc-cni.png" alt="">
+
+</p>
+<p>从上图中可以看到，一个虚拟机上多个 Pod 使用了同一个弹性网卡 eth1 作为对外通信的出口，因此该模式相对于独占网卡模式而言，对主机资源的消耗要小一些。</p>
+<p>假设上图 node1 上的 pod1（10.0.0.44) 发送一个 IP 数据包到 node2 上的 pod4（10.0.0.30）。我们通过来通过相关的网络设置来分析一下 VPC-CNI 网络中 Pod 的流量是如何转发的。</p>
+<h2 id="出向---从-pod-到虚机">出向 - 从 Pod 到虚机</h2>
+<p>Pod 中的路由表如下所示。可以看到出向流量被发送到了缺省网关 169.254.1.1 。一般来说，缺省网关的地址应该和 Pod 的地址处于同一子网中，但这里使用的地址 169.254.1.1 并不在子网 10.0.0.0/24 中，因此该 IP 对应的 MAC 地址也无法通过 ARP 协议学习得到。查看 arp 表，可以得看到一条 169.254.1.1 的条目，对应的 MAC 地址为 e2:62:fb:d2:cb:28，该 ARP 条目的 Flags Mask 是 CM，<a href="https://www.geeksforgeeks.org/arp-command-in-linux-with-examples/">M 这个 mask 表示该条目是一条静态条目（Permanent entry）</a>，该条目应该是 VPC CNI 插件在设置 Pod 网络时添加的。</p>
+<p>可以看到此处的网关地址 169.254.1.1 是连接 Pod 的 Veth pair 对端设备在 Pod 路由表中的一个填充符，其 IP 地址具体是什么值并没有意义，这里采用了一个 169 保留网段的地址，可以避免占用 VPC 网段的地址。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-6tfkf -- route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         169.254.1.1     0.0.0.0         UG    <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+169.254.1.1     0.0.0.0         255.255.255.255 UH    <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+
+➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-6tfkf -- arp     
+Address                  HWtype  HWaddress           Flags Mask            Iface
+169.254.1.1              ether   e2:62:fb:d2:cb:28   CM                    eth0
+</code></pre></div><p>查看 node1 中的网络设备，可以看到 e2:62:fb:d2:cb:28 对应于 Pod1 网卡在虚机 node1 中的 veth pair 对端 16: eni8ba8b48a483@if3。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip link</span>
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc fq_codel state UP mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
+    link/ether 52:54:00:6a:d6:a9 brd ff:ff:ff:ff:ff:ff
+3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state DOWN mode DEFAULT group default 
+    link/ether 02:42:99:5e:7a:5d brd ff:ff:ff:ff:ff:ff
+4: eth1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc fq_codel state UP mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
+    link/ether 20:90:6f:cd:76:76 brd ff:ff:ff:ff:ff:ff
+5: eni9cdadcec1a4@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether 72:c9:77:c8:0d:99 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">0</span>
+6: eni90454969e0a@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether d6:bb:78:55:14:a0 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">1</span>
+10: enia59decf1cc3@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether e6:b6:ea:2c:b6:16 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">5</span>
+11: eniec98d9f243c@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether aa:ab:c2:5d:05:90 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">2</span>
+13: eni78dddf1c1d5@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether 02:00:e7:ff:5e:b1 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">4</span>
+16: eni8ba8b48a483@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether e2:62:fb:d2:cb:28 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">3</span>
+</code></pre></div><p><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">Veth pair 可以看做一条连接了两张网卡的网线，该网线一端的网卡在 Pod 上，一端在虚机上，任何一张网卡发送的数据包，都可以在另一端的网卡上收到。</a>因此当 Pod 将数据包通过其 eth0 发送出来时，虚机上就可以从 Veth pair 对端的网卡上收到该数据包。</p>
+<p>
+  <img src="/img/2020-03-12-linux-network-virtualization/veth-pair.jpg" alt="">
+
+</p>
+<p>即通过缺省路由和设置 ARP 静态条目，Pod 的出向流量被从 Pod eth0 网卡发出，通过 Veth pair 发送到了虚拟机上。</p>
+<h2 id="出向---从虚机到物理机">出向 - 从虚机到物理机</h2>
+<p>从 pod 中出来的流量的目的地可能是同一虚机上的其他 Pod，也可以是其他虚机上的 Pod，或者同一 VPC 中的虚机。我们需要采用不同的网络路径对这些不同目的地的流量进行路由。但是由于这些目的地址的 IP 地址都属于 VPC 的同一子网网段 10.0.0.0/24，因此无法按照目的地址进行路由。为了解决该问题，虚机上采用了策略路由<a href="https://en.wikipedia.org/wiki/Policy-based_routing">Policy Based Route</a>。策略路由是一种比普通路由算法更为灵活的路由方式，除了目地地址以外，策略路由还可以根据源地址、协议类型、端口等将来自 pod 的出向流量路由到不同的目的地。虚机上相关的路由策略和路由表如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip rule</span>
+0:	from all lookup <span style="color:#8be9fd;font-style:italic">local</span>
+512:	from all to 10.0.0.41 lookup main¹
+512:	from all to 10.0.0.44 lookup main²
+1536:	from 10.0.0.41 lookup 100³
+1536:	from 10.0.0.44 lookup 100⁴
+32766:	from all lookup main
+32767:	from all lookup default
+
+<span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip route show table main</span>
+default via 10.0.0.1 dev eth0 proto dhcp metric <span style="color:#bd93f9">100</span> 
+default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101</span> 
+10.0.0.0/24 dev eth0 proto kernel scope link src 10.0.0.49 metric <span style="color:#bd93f9">100</span> 
+10.0.0.41 dev eniec98d9f243c scope link⁵ 
+10.0.0.44 dev eni8ba8b48a483 scope link⁶
+
+<span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip route show table 100</span>
+default via 10.0.0.1 dev eth1 onlink
+</code></pre></div><h3 id="目的地为同一虚机节点上的其他-pod">目的地为同一虚机节点上的其他 Pod</h3>
+<p>在上面 <code>ip rule</code> 命令输出的路由策略中，可以看到上标为 1 和 2 的两条路由策略指定目的地为本节点中 Pod 的 IP 包采用 main 路由表。在 main 路由表中，上标为 5 和 6 的两条路由将发送到这两个 IP 地址的数据包分别发送到了本节点的两个 Pod 的 Veth pair 对端设备上。<a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">Veth pair 可以看做一条网线连接了两张网卡</a>，从 Veth pair 一端进入的数据包会原封不动地从另一端收到，因此这些数据包就这样被发送到了同一虚机节点上的其他 Pod 上。来自本虚拟机节点外部的其他流量到达虚拟机后，也是通过该条路由被发送到 Pod 上的。</p>
+<h3 id="目的地为其他虚机节点上的-pod">目的地为其他虚机节点上的 Pod</h3>
+<p>类似地，上标为 3 和 4 的两条路由策略指定源地址为本点中 Pod IP 地址的数据包采用 100 路由表。在该路由表中只有一条缺省路由，将这些数据包通过 eth1 接口发送到网关 10.0.0.1。 类似于 Pod 中的缺省网关，这里的 10.0.0.1 其实也并不是一个真实存在的设备。</p>
+<p>数据包进入虚拟机的 eth1 后，通过 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">vhost-net/virtio-net</a>机制被发送到物理机上。vhost-net/virtio-net 是一种在虚拟机和其宿主物理机发送网络数据包的机制。打一个可能不是很恰当的比喻，可以将 vhost-net/virtio-net 看做一个 Veth pair，或者连接两个网卡的一条网线。该网线一头的网卡在虚机里，另一头在物理机上。连接物理机这头的网卡是一个 <a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#%E4%BB%80%E4%B9%88%E6%98%AFtuntap">tap</a> 设备，vhost 进程收到虚拟机的数据包后，会将其写入到该 tap 设备中，在物理机的网络协议栈中就会收到该数据包。</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/virtio-networking-fig5.png" alt="">
+
+
+图源自 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net</a></p>
+<h2 id="出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</h2>
+<p>当物理机上收到 Pod 发出的数据包后，会根据一个下面这样的全局路由表判断其目的 Pod 地址所在的物理机节点，然后进行 GRE 封包，通过物理机连接到的 Underlay Network 发送到目地物理机节点上。在本例中，由于数据包的目的地址是 10.0.0.30，因此 GRE 封包后的目地 IP 地址为 Host 2 的地址。</p>
+<table>
+<thead>
+<tr>
+<th>VPC ID</th>
+<th>Pod/Node IP</th>
+<th>Host IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>10.0.0.41</td>
+<td>Host 1 IP</td>
+</tr>
+<tr>
+<td>100</td>
+<td>10.0.0.44</td>
+<td>Host 1 IP</td>
+</tr>
+<tr>
+<td>100</td>
+<td>10.0.0.30</td>
+<td>Host 2 IP</td>
+</tr>
+<tr>
+<td>100</td>
+<td>10.0.0.35</td>
+<td>Host 2 IP</td>
+</tr>
+</tbody>
+</table>
+<p>由于在 VPC-CNI 模式中 Pod 和虚机机节点都处于 VPC 的子网中，因此 Pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。虚拟机之间的通信也是类似的原理。</p>
+<h2 id="入向---从物理机到虚机">入向 - 从物理机到虚机</h2>
+<p>对端物理机 Host2 上收到 Host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 Host2 上的路由规则将该数据包写入虚拟机节点 Node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
+<p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
+<h2 id="入向---从虚拟机到-pod">入向 - 从虚拟机到 Pod</h2>
+<p>虚拟机上的 main 路由表中上标为 7 的路由条目将发向 10.0.0.3 的数据包通过 Veth pair 在虚拟机端的设备 eni0f548c70045 发送给 Pod 4。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-40-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip route show table main</span>
+default via 10.0.0.1 dev eth0 proto dhcp metric <span style="color:#bd93f9">100</span> 
+default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101</span> 
+10.0.0.0/24 dev eth0 proto kernel scope link src 10.0.0.22 metric <span style="color:#bd93f9">100</span> 
+10.0.0.30 dev eni0f548c70045 scope link⁷ 
+10.0.0.35 dev eni353b4974c2c scope link
+</code></pre></div><h2 id="独占网卡模式">独占网卡模式</h2>
+<p>在独占网卡模式下，会在每一个 Pod 中插入一张独立的弹性网卡，相对于共享网卡模式而言，其性能更高，但资源消耗也更多，相同规格的虚拟机上，能够支持的 Pod 会比共享网卡模式更少一些。</p>
+<p>相对于共享网卡模式，独占网卡模式下的数据流量路径更简单清晰，如下图所示：</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/vpc-cni-exclusive-mode.png" alt="">
+
+</p>
+<p>以图中 Node 1 为例，虚拟机上的弹性网卡被直接放到了 Pod1 和 Pod2 的 Network Namespace 中。和共享网卡模式不同的是，Pod 到虚拟机的流量无需经过 Veth pair 进行转发，直接通过 vhost-net/virtio-net 机制发送到了虚拟机上，因此效率更高。流量到达虚拟机后，后续的转发方式和共享网卡模式是完全相同的。</p>
+<h2 id="vpc-cni-模式实质">VPC-CNI 模式实质</h2>
+<p>如果我们忽略上面介绍的这些技术细节，以上帝视角来看 VPC-CNI 模式，则可以把 VPC-CNI 网络模式看做一个扁平的二层网络，该网络中所有的虚拟机和 Pod 之间都可以直接进行通信，IP 地址不会经过 NAT 转换。</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/vpc-cni-simplified.png" alt="">
+
+</p>
+<h1 id="global-router-模式">Global Router 模式</h1>
+<p>Global Router 模式下，容器网络和 VPC 网络是两个相互独立的一个子网。容器网络和 VPC 网络之间通过三层路由互通，也不会经过 NAT 转换。Global Router 模式的原理如下图所示：</p>
+<h1 id="参考链接">参考链接</h1>
+<ul>
+<li><a href="https://cloud.tencent.com/document/product/457/50353">腾讯云容器网络概述</a></li>
+<li><a href="https://cloud.tencent.com/document/product/576/18527">弹性网卡使用限制</a></li>
+<li><a href="https://man7.org/linux/man-pages/man8/ip-rule.8.html">Linux 策略路由</a></li>
+<li><a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">Deep dive into Virtio-networking and vhost-net</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined">Linux Tun/Tap 介绍</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/">https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined</a></li>
+<li><a href="https://cloud.tencent.com/document/product/457/50353">腾讯云容器网络概述</a></li>
+</ul>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021-03-02-manage-any-layer-7-traffic-in-istio/" data-toggle="tooltip" data-placement="top" title="IstioCon 2021 演讲分享：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2021
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>
