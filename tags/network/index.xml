@@ -17,7 +17,7 @@
       <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2021-03-24-tke-network-mode/</guid>
-      <description>VPC-CNI 网络模式 在 VPC-CNI 网络模式下，Pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。VPC-CNI 网络模式下，根据 Pod 的网卡是否为独立弹性网卡，又</description>
+      <description>VPC-CNI 网络模式 在 VPC-CNI 网络模式下，Pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。根据 Pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡</description>
     </item>
     
     <item>
