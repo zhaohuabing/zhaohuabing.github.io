@@ -364,43 +364,197 @@ $(function() {
                 </header>
                 <nav id="TableOfContents">
   <ul>
-    <li><a href="#vpc-cni-网络模式">VPC-CNI 网络模式</a>
+    <li><a href="#global-router-模式">Global Router 模式</a>
       <ul>
-        <li><a href="#出向---从-pod-到虚机">出向 - 从 Pod 到虚机</a></li>
-        <li><a href="#出向---目的地为相同虚机节点上的-pod">出向 - 目的地为相同虚机节点上的 Pod</a></li>
+        <li><a href="#出向---从-pod-到虚机">出向 - 从 pod 到虚机</a></li>
+        <li><a href="#出向---目的地为相同虚机节点上的-pod">出向 - 目的地为相同虚机节点上的 pod</a></li>
         <li><a href="#出向---从虚拟机到物理机">出向 - 从虚拟机到物理机</a></li>
         <li><a href="#出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</a></li>
         <li><a href="#入向---从物理机到虚机">入向 - 从物理机到虚机</a></li>
-        <li><a href="#入向---从虚拟机到-pod">入向 - 从虚拟机到 Pod</a></li>
+        <li><a href="#入向---从虚拟机到-pod">入向 - 从虚拟机到 pod</a></li>
+        <li><a href="#global-router-模式实质">Global Router 模式实质</a></li>
+      </ul>
+    </li>
+    <li><a href="#vpc-cni-网络模式">VPC-CNI 网络模式</a>
+      <ul>
+        <li><a href="#出向---从-pod-到虚机-1">出向 - 从 pod 到虚机</a></li>
+        <li><a href="#出向---目的地为相同虚机节点上的-pod-1">出向 - 目的地为相同虚机节点上的 pod</a></li>
+        <li><a href="#出向---从虚拟机到物理机-1">出向 - 从虚拟机到物理机</a></li>
+        <li><a href="#出向---从源物理机到目的物理机-1">出向 - 从源物理机到目的物理机</a></li>
+        <li><a href="#入向---从物理机到虚机-1">入向 - 从物理机到虚机</a></li>
+        <li><a href="#入向---从虚拟机到-pod-1">入向 - 从虚拟机到 pod</a></li>
         <li><a href="#独占网卡模式">独占网卡模式</a></li>
         <li><a href="#vpc-cni-模式实质">VPC-CNI 模式实质</a></li>
       </ul>
     </li>
-    <li><a href="#global-router-模式">Global Router 模式</a>
-      <ul>
-        <li><a href="#出向---从-pod-到虚机-1">出向 - 从 Pod 到虚机</a></li>
-        <li><a href="#出向---目的地为相同虚机节点上的-pod-1">出向 - 目的地为相同虚机节点上的 Pod</a></li>
-        <li><a href="#出向---从虚拟机到物理机-1">出向 - 从虚拟机到物理机</a></li>
-        <li><a href="#出向---从源物理机到目的物理机-1">出向 - 从源物理机到目的物理机</a></li>
-        <li><a href="#入向---从物理机到虚机-1">入向 - 从物理机到虚机</a></li>
-        <li><a href="#入向---从虚拟机到-pod-1">入向 - 从虚拟机到 Pod</a></li>
-        <li><a href="#global-router-模式实质">Global Router 模式实质</a></li>
-      </ul>
-    </li>
+    <li><a href="#tke-网络模式小结">TKE 网络模式小结</a></li>
     <li><a href="#参考链接">参考链接</a></li>
   </ul>
 </nav>
                 
-                <h1 id="vpc-cni-网络模式">VPC-CNI 网络模式</h1>
-<p>在 VPC-CNI 网络模式下，Pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。根据 Pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
+                <h1 id="global-router-模式">Global Router 模式</h1>
+<p>Global Router 模式下，容器网络和 VPC 网络处于不同的网段，这两个网段之间通过三层路由互通，IP 数据包不会经过 NAT 转换。Global Router 模式的原理如下图所示：</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/global-router.png" alt="">
+
+</p>
+<p>Global Router 模式为每一个虚拟机分配了一个容器子网网段。一个虚拟机上的所有 pod 处于同一个容器网段上，这些 pod 之间通过虚拟机上的一个虚拟网桥实现了二层互通。当 pod 要和本虚拟机之外的其他虚机或者 pod 通信时，则需要通过虚拟机上的网桥 cbr0 和虚拟机的弹性网卡 eth0 进行路由中转。</p>
+<p>假设上图 node1 上的 pod1（172.20.0.3) 发送了一个 IP 数据包到 node2 上的 pod4（172.20.0.66）。我们采用该例子来分析一下 Global Router 网络模式下 pod 的流量是如何在容器网络和 VPC 网络中进行转发的。</p>
+<h2 id="出向---从-pod-到虚机">出向 - 从 pod 到虚机</h2>
+<p>通过 <code>ip addr</code> 命令查看 pod 中的网络设备，可以看到 pod1 中的 eth0 网卡。eth0 是一个 veth 设备，我们通过 <code>ethtool</code> 命令可以看到其在虚拟机 namespace 中的对端设备编号为6。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-bnc7x  -- ip addr
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">65536</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#bd93f9">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+3: eth0@if6: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP group default 
+    link/ether f6:b9:8c:3d:62:8c brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">0</span>
+    inet 172.20.0.3/26 brd 172.20.0.63 scope global eth0
+       valid_lft forever preferred_lft forever
+
+➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-bnc7x  -- ethtool -S eth0
+NIC statistics:
+     peer_ifindex: <span style="color:#bd93f9">6</span>
+</code></pre></div><p>查看虚拟机 node1 中的网络设备。可以看到编号为6的这张网卡。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip addr</span>
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">65536</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#bd93f9">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc fq_codel state UP group default qlen <span style="color:#bd93f9">1000</span>
+    link/ether 52:54:00:cf:9f:ad brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.29/24 brd 10.0.0.255 scope global noprefixroute eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::5054:ff:fecf:9fad/64 scope link 
+       valid_lft forever preferred_lft forever
+3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state DOWN group default 
+    link/ether 02:42:07:83:f1:3a brd ff:ff:ff:ff:ff:ff
+    inet 169.254.32.1/28 brd 169.254.32.15 scope global docker0
+       valid_lft forever preferred_lft forever
+4: cbr0: &lt;BROADCAST,MULTICAST,PROMISC,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP group default qlen <span style="color:#bd93f9">1000</span>
+    link/ether f6:23:3e:66:b2:51 brd ff:ff:ff:ff:ff:ff
+    inet 172.20.0.1/26 brd 172.20.0.63 scope global cbr0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::f423:3eff:fe66:b251/64 scope link 
+       valid_lft forever preferred_lft forever
+5: veth88a01d46@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP group default 
+    link/ether 4e:02:63:5d:29:44 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">0</span>
+    inet6 fe80::4c02:63ff:fe5d:2944/64 scope link 
+       valid_lft forever preferred_lft forever
+6: vethdc4b21b7@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP group default 
+    link/ether 66:b8:19:aa:9f:91 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">1</span>
+    inet6 fe80::64b8:19ff:feaa:9f91/64 scope link 
+       valid_lft forever preferred_lft forever
+7: veth91fbf97b@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP group default 
+    link/ether 0a:17:bd:8e:7b:d4 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">2</span>
+    inet6 fe80::817:bdff:fe8e:7bd4/64 scope link 
+       valid_lft forever preferred_lft forever
+</code></pre></div><p>通过 <code>ethtool</code> 命令可以看到其在 pod1 network namespace 中的对端设备编号为3</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ethtool -S vethdc4b21b7</span>
+NIC statistics:
+     peer_ifindex: <span style="color:#bd93f9">3</span>
+</code></pre></div><p>备注：<a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">veth</a> 是 Linux 中的一种虚拟以太设备，veth 设备总是成对出现的，因此又被称为 veth pair。我们可以把 veth 可以看做一条连接了两张网卡的网线，该网线一端的网卡在 pod 的 Network Namespace 上，另一端的网卡在虚机的 Root Network Namespace 上，任何一张网卡发送的数据包，都可以在另一端的网卡上收到。因此当 pod 将数据包通过其 eth0 发送出来时，虚机上就可以从 veth pair 对端的网卡上收到该数据包。</p>
+<p>
+  <img src="/img/2020-03-12-linux-network-virtualization/veth-pair.jpg" alt="">
+
+</p>
+<p>在前面 node1 <code>ip link</code> 命令输出中，我们可以看到编号为4的网络设备，这是 node1 上用于连接 pod 的网桥 cbr0。</p>
+<p>通过 <code>ip link show master</code> 命令，我们可以看到加入了网桥 cbr0 中的网卡。其中编号为6的网卡是 pod1 eth0 在虚拟机 Network Namespace 的 veth 对端设备。另一个编号为7的网卡是 pod2 eth0 的 veth pair 对端设备。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip link show master cbr0</span>
+6: vethdc4b21b7@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
+    link/ether 66:b8:19:aa:9f:91 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">1</span>
+7: veth91fbf97b@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
+    link/ether 0a:17:bd:8e:7b:d4 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">2</span>
+</code></pre></div><p>从上面的分析可以看到，虚拟机中有一个网桥，同一个虚拟机上的所有 pod 通过 veth pair 连到该网桥上，pod 中的出向流量通过 veth pair 到达了虚拟机中的网桥上。</p>
+<h2 id="出向---目的地为相同虚机节点上的-pod">出向 - 目的地为相同虚机节点上的 pod</h2>
+<p>pod1 中的路由表如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-bnc7x  -- route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         172.20.0.1      0.0.0.0         UG    <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+172.20.0.0      *               255.255.255.192 U     <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+</code></pre></div><p>虚拟机 node1 上所有 pod 属于同一个 IP 子网 172.20.0.0/26，这些 pod 都连接到了虚拟网桥 cbr0 上。如上面路由表的第二条路由条目所示，目地地为子网 172.20.0.0/26 的流量将通过源 pod 的 eth0 发出去，eth0 的 veth pair 对端网卡处于网桥上，因此网桥会收到该数据包。网桥收到数据包后，通过二层转发将该数据包从网桥上连接到目的 pod 的端口发送出去，数据将到达该端的 veth pair 对端，即该数据包的目的 pod 上。</p>
+<h2 id="出向---从虚拟机到物理机">出向 - 从虚拟机到物理机</h2>
+<p>如果 pod 发出的 IP 数据包的目的地址不属于虚拟机上的 pod 网段，根据上面显示的 pod 中的缺省路由，数据包会被发送到网关 172.0.0.1。</p>
+<p>在前面 node1 的 <code>ip addr</code> 命令行输出中，我们可以看到 172.0.0.1 实际上是虚拟网桥 cbr0 的地址。一般来说，网桥（备注：Linux 上的网桥实际上是一个二层交换机，而不是一个桥接设备）工作在二层上，用于连接同一个二层广播域（一个 IP 子网）上的所有节点，并不会处理三层包头。为什么 cbr0 会有一个 IP 地址，并充当了 pod 的网关呢？</p>
+<p>Linux 虚拟网桥比较特殊，可以同时工作在二层和三层上。Linux 虚拟网桥自身带有一张网卡，这张网卡可以设置一个IP地址，例如这里 cbr0 的 172.0.0.1。由于这张网桥自带的网卡和虚拟机上的所有 pod 连接在同一个网桥上，因此这张网卡可以接收到 pod 发出的二层数据帧。同时由于这张网卡处于虚拟机的 Root Namespace 中，因此可以参与虚拟机上的三层路由转发。</p>
+<p>如下图所示，我们可以认为 172.0.0.1 这张网卡同时工作在网桥 cbr0 和一个连接了 pod 子网 172.0.0.0/26 和 VPC 子网 10.0.0.0/24 的三层路由器上（虚拟机 node1 开通了 IP forward，自身就相当于一个路由器）。</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/linux-bridge.png" alt="">
+
+</p>
+<p>当 pod 发出的数据包通过 veth pair 到达网桥后，由于 pod 路由规则指定的网关地址为 172.0.0.1，因此网桥上的这张网卡 172.0.0.1 会收到二层地址为自身 mac 地址的数据包。然后虚拟机会根据如下所示的路由规则进行转发。根据下面的第一条缺省路由，虚拟机则会通过自身 eth0 将数据包 forward 到缺省网关 10.0.0.1 上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># route -n</span>
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.0.0.1        0.0.0.0         UG    <span style="color:#bd93f9">100</span>    <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+10.0.0.0        0.0.0.0         255.255.255.0   U     <span style="color:#bd93f9">100</span>    <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+172.20.0.0      0.0.0.0         255.255.255.192 U     <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> cbr0
+</code></pre></div><p>其实网关 10.0.0.1 并不是一个真实存在的设备，数据包进入虚拟机的 eth0 后，会通过 <a href="https://www.eet-china.com/mp/a13515.html">vhost-net/virtio-net</a> 机制被发送到物理机上。vhost-net/virtio-net 是一种在虚拟机和其宿主物理机之间传递网络数据包的机制，其作用和 veth pair 类似，只不过 veth pair 连接的是两个 Network Namespace，而 vhost-net/virtio-net 连接的是虚拟机和物理机。</p>
+<p>vhost-net/virtio-net 的原理如下图所示:</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/virtio-networking-fig5.png" alt="">
+
+
+图源自 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net</a></p>
+<h2 id="出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</h2>
+<p>当物理机上收到 pod 发出的数据包后，会根据一个下面这样的全局路由表判断其目的 pod 地址所在的物理机节点。全局路由表指明了目的 pod 子网所在的物理机地址。除此之外，由于 pod 和虚拟机处于不同的三层网络，还需要指定从物理机上的哪个虚拟机节点进入 pod 子网。</p>
+<p>确定目的物理机地址后，会对原始的数据包进行 GRE 封包，通过物理机连接到的 Underlay Network 发送到目地物理机节点上。在本例中，由于数据包的目的地址处于子网 172.20.0.64/26，因此 GRE 封包后的目地 IP 地址为 host 2 的地址。</p>
+<table>
+<thead>
+<tr>
+<th>VPC ID</th>
+<th>pod Subnet</th>
+<th>host IP</th>
+<th>node IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>172.20.0.0/26</td>
+<td>host 1 IP</td>
+<td>10.0.0.29</td>
+</tr>
+<tr>
+<td>100</td>
+<td>172.20.0.64/26</td>
+<td>host 2 IP</td>
+<td>10.0.0.37</td>
+</tr>
+</tbody>
+</table>
+<h2 id="入向---从物理机到虚机">入向 - 从物理机到虚机</h2>
+<p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 172.20.0.66。host2 上应该有一条路由规则，该路由规则将 node2 的 IP 地址 10.0.0.37 作为 pod 子网 172.20.0.64/26 的下一跳。根据这条路由规则，物理机将该数据包写入 node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上的 eth0 上。</p>
+<p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
+<h2 id="入向---从虚拟机到-pod">入向 - 从虚拟机到 pod</h2>
+<p>node2 上的路由规则如下所示。根据路由规则，目的地址为 172.20.0.64/26 子网的数据包被发送到了网桥 cbr0 上，然后通过网桥的二层转发发送到目地节点 172.20.0.67。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-37-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># route -n</span>
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.0.0.1        0.0.0.0         UG    <span style="color:#bd93f9">100</span>    <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+10.0.0.0        0.0.0.0         255.255.255.0   U     <span style="color:#bd93f9">100</span>    <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
+172.20.0.64     0.0.0.0         255.255.255.192 U     <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> cbr0
+</code></pre></div><h2 id="global-router-模式实质">Global Router 模式实质</h2>
+<p>如果我们忽略 Global Router 模式的上述实现细节，以一个更高的视角来观看该模式，则该模式可以简化为下图：</p>
+<p>虚拟机和容器处于不同的网络上，不同虚拟机上的 pod 属于容器网络的不同子网，这些网络之间可以通过三层路由互通，数据包的地址不会经过 NAT 转换。</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/global-router-simplified.png" alt="">
+
+</p>
+<h1 id="vpc-cni-网络模式">VPC-CNI 网络模式</h1>
+<p>在 VPC-CNI 网络模式下，pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。根据 pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
 <p>
   <img src="/img/2021-03-24-tke-network-mode/vpc-cni.png" alt="">
 
 </p>
-<p>从上图中可以看到，共享网卡模式使用了虚拟机上的同一个弹性网卡 eth1 作为该虚拟机上所有 Pod 流量的对外通道。该模式相对于独占网卡模式而言，对主机资源的消耗要小一些，但网络性能也会差一些。但相对于后面将会介绍的 Global Router 模式而言效率更高，因为 VPC-CNI 共享网卡模式中虚拟机上使用了一个独立的网卡作为 Pod 对外的通信通道。</p>
-<p>假设上图 node1 上的 pod1（10.0.0.44) 发送一个 IP 数据包到 node2 上的 pod4（10.0.0.30）。我们采用该例子来分析一下 VPC-CNI 网络的共享网卡模式下 Pod 的流量是如何转发的。</p>
-<h2 id="出向---从-pod-到虚机">出向 - 从 Pod 到虚机</h2>
-<p>Pod 中的路由表如下面的命令行输出所示。可以看到出向流量被发送到了缺省网关 169.254.1.1 。一般来说，缺省网关的地址应该和 Pod 的地址处于同一子网中，但这里使用的地址 169.254.1.1 并不在子网 10.0.0.0/24 中，因此无法通过 ARP 协议学习得到该 IP 对应的 MAC 地址。但在 arp 表中有一条 169.254.1.1 的条目，其对应的 MAC 地址为 e2:62:fb:d2:cb:28。那么 Pod 是如何得到缺省网关的 IP 地址的呢？我们可以看到该 ARP 条目的 Flags Mask 是 CM，<a href="https://www.geeksforgeeks.org/arp-command-in-linux-with-examples/">M 这个 mask 表示该条目是一条静态条目（Permanent entry）</a>，静态条目并不是通过 arp 协议学习得到的，而是手动插入或者通过程序写入的。Pod 中该 apr 条目应该是 VPC CNI 插件在设置 Pod 网络时添加的。</p>
+<p>从上图中可以看到，共享网卡模式使用了虚拟机上的同一个弹性网卡 eth1 作为该虚拟机上所有 pod 流量的对外通道。该模式相对于独占网卡模式而言，对主机资源的消耗要小一些，但网络性能也会差一些。但相对于前面介绍的 Global Router 模式而言效率更高，因为 VPC-CNI 共享网卡模式中虚拟机上使用了一个独立的网卡作为 pod 对外的通信通道。</p>
+<p>假设上图 node1 上的 pod1（10.0.0.44) 发送一个 IP 数据包到 node2 上的 pod4（10.0.0.30）。我们采用该例子来分析一下 VPC-CNI 网络的共享网卡模式下 pod 的流量是如何转发的。</p>
+<h2 id="出向---从-pod-到虚机-1">出向 - 从 pod 到虚机</h2>
+<p>在 VPC-CNI 模式下，集群中的所有 Pod 和虚拟机都属于同一个 VPC 子网。在这种情况下，我们无法再像 Global Router模式一样采用一个 Linux 网桥来连接同一个虚拟机中的所有 Pod。因为由于子网相同，当 pod 发出的数据包的目地 IP 地址是其他节点上的 pod 时，网桥无法将该流量发出去。</p>
+<p>VPC-CNI 模式通过在 pod 设置缺省网关和静态 ARP 条目解决了该问题。pod 中的路由表如下面的命令行输出所示。可以看到出向流量被发送到了缺省网关 169.254.1.1 。一般来说，缺省网关的地址应该和 pod 的地址处于同一子网中，但这里使用的地址 169.254.1.1 并不在子网 10.0.0.0/24 中，因此无法通过 ARP 协议学习得到该 IP 对应的 MAC 地址。但在 pod 的 arp 表中有一条 169.254.1.1 的条目，其对应的 MAC 地址为 e2:62:fb:d2:cb:28。那么 pod 是如何得到缺省网关的 IP 地址的呢？我们可以看到该 ARP 条目的 Flags Mask 是 CM，<a href="https://www.geeksforgeeks.org/arp-command-in-linux-with-examples/">M 这个 mask 表示该条目是一条静态条目（Permanent entry）</a>，静态条目并不是通过 arp 协议学习得到的，而是手动插入或者通过程序写入的。pod 中该 apr 条目应该是 VPC CNI 插件在设置 pod 网络时添加的。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-6tfkf -- route -n
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
@@ -410,8 +564,8 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 ➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-6tfkf -- arp     
 Address                  HWtype  HWaddress           Flags Mask            Iface
 169.254.1.1              ether   e2:62:fb:d2:cb:28   CM                    eth0
-</code></pre></div><p>查看 node1 中的网络设备，可以看到 e2:62:fb:d2:cb:28 对应于 Pod1 网卡在虚机 node1 中的 veth pair 对端 16: eni8ba8b48a483@if3。</p>
-<p>因此 Pod 的网关地址 169.254.1.1 只是连接 Pod 和虚拟机的 Veth pair 对端设备在 Pod 路由表中的一个填充符，其 IP 地址具体是什么值并没有意义，这里采用了一个 169 保留网段的地址，可以避免占用 VPC 网段的地址。</p>
+</code></pre></div><p>查看 node1 中的网络设备，可以看到 e2:62:fb:d2:cb:28 对应于 pod1 网卡在虚机 node1 中的 veth pair 对端 16: eni8ba8b48a483@if3。</p>
+<p>因此 pod 的网关地址 169.254.1.1 只是连接 pod 和虚拟机的 veth pair 对端设备在 pod 路由表中的一个填充符，其 IP 地址具体是什么值并没有意义，这里采用了一个 169 保留网段的地址，可以避免占用 VPC 网段的地址。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip link</span>
 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -433,14 +587,11 @@ Address                  HWtype  HWaddress           Flags Mask            Iface
     link/ether 02:00:e7:ff:5e:b1 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">4</span>
 16: eni8ba8b48a483@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default 
     link/ether e2:62:fb:d2:cb:28 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">3</span>
-</code></pre></div><p><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">Veth pair 可以看做一条连接了两张网卡的网线，该网线一端的网卡在 Pod 上，一端在虚机上，任何一张网卡发送的数据包，都可以在另一端的网卡上收到。</a>因此当 Pod 将数据包通过其 eth0 发送出来时，虚机上就可以从 Veth pair 对端的网卡上收到该数据包。</p>
-<p>
-  <img src="/img/2020-03-12-linux-network-virtualization/veth-pair.jpg" alt="">
-
-</p>
-<p>即通过缺省路由和设置 ARP 静态条目，Pod 的出向流量被从 Pod eth0 网卡发出，通过 Veth pair 发送到了虚拟机上。</p>
-<h2 id="出向---目的地为相同虚机节点上的-pod">出向 - 目的地为相同虚机节点上的 Pod</h2>
-<p>从 pod 中出来的流量的目的地可能是同一虚机上的其他 Pod，也可以是其他虚机上的 Pod，或者同一 VPC 中的虚机。我们需要采用不同的网络路径对这些不同目的地的流量进行路由。但是由于这些目的地址的 IP 地址都属于 VPC 的同一子网网段 10.0.0.0/24，因此无法按照目的地址进行路由。为了解决该问题，虚机上采用了策略路由<a href="https://en.wikipedia.org/wiki/Policy-based_routing">Policy Based Route</a>。策略路由是一种比普通路由算法更为灵活的路由方式，除了目地地址以外，策略路由还可以根据源地址、协议类型、端口等将来自 pod 的出向流量路由到不同的目的地。虚机上相关的路由策略和路由表如下所示：</p>
+</code></pre></div><p>由于 veth pair 连接了 pod network namespace 和虚拟机的 root network namespace，因此当 pod 通过其 eth0 发送数据包时，虚机上就可以从 veth pair 对端的网卡上收到该数据包。</p>
+<p>即通过缺省路由和设置 ARP 静态条目，pod 的出向流量被从 pod eth0 网卡发出，通过 veth pair 发送到了虚拟机上。</p>
+<h2 id="出向---目的地为相同虚机节点上的-pod-1">出向 - 目的地为相同虚机节点上的 pod</h2>
+<p>从 pod 中出来的流量的目的地可能是同一虚机上的其他 pod，也可以是其他虚机上的 pod，或者同一 VPC 中的虚机。我们需要采用不同的网络路径对这些不同目的地的流量进行路由。但是在 VPC-CNI 网络中，所有节点上的 pod 以及 VPC 中的虚拟机都属于同一个 IP 子网，因此无法按照数据包目的地址进行路由。为了解决该问题，虚机上采用了策略路由<a href="https://en.wikipedia.org/wiki/Policy-based_routing">Policy Based Route</a>。策略路由是一种比普通路由算法更为灵活的路由方式，除了目地地址以外，策略路由还可以根据源地址、协议类型、端口等将来自 pod 的出向流量路由到不同的目的地。</p>
+<p>虚拟机 node1 上的路由策略和路由表如下所示：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip rule</span>
 0:	from all lookup <span style="color:#8be9fd;font-style:italic">local</span>
 512:	from all to 10.0.0.41 lookup main¹
@@ -459,54 +610,50 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 
 <span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip route show table 100</span>
 default via 10.0.0.1 dev eth1 onlink
-</code></pre></div><p>在上面 <code>ip rule</code> 命令输出的路由策略中，可以看到上标为 1 和 2 的两条路由策略指定目的地为本节点中 Pod 的 IP 包采用 main 路由表。在 main 路由表中，上标为 5 和 6 的两条路由将发送到这两个 IP 地址的数据包分别发送到了本节点的两个 Pod 的 Veth pair 对端设备上。<a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">Veth pair 可以看做一条网线连接了两张网卡</a>，从 Veth pair 一端进入的数据包会原封不动地从另一端收到，因此这些数据包就这样被发送到了同一虚机节点上的其他 Pod 上。来自本虚拟机节点外部的其他流量到达虚拟机后，也是通过该条路由被发送到 Pod 上的。</p>
-<h2 id="出向---从虚拟机到物理机">出向 - 从虚拟机到物理机</h2>
-<p>类似地，上标为 3 和 4 的两条路由策略指定源地址为本点中 Pod IP 地址的数据包采用 100 路由表。在该路由表中只有一条缺省路由，将这些数据包通过 eth1 接口发送到网关 10.0.0.1。 类似于 Pod 中的缺省网关，这里的 10.0.0.1 其实也并不是一个真实存在的设备。</p>
-<p>数据包进入虚拟机的 eth1 后，通过 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">vhost-net/virtio-net</a>机制被发送到物理机上。vhost-net/virtio-net 是一种在虚拟机和其宿主物理机发送网络数据包的机制。打一个可能不是很恰当的比喻，可以将 vhost-net/virtio-net 看做一个 Veth pair，或者连接两个网卡的一条网线。该网线一头的网卡在虚机里，另一头在物理机上。连接物理机这头的网卡是一个 <a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#%E4%BB%80%E4%B9%88%E6%98%AFtuntap">tap</a> 设备，vhost 进程收到虚拟机的数据包后，会将其写入到该 tap 设备中，在物理机的网络协议栈中就会收到该数据包。</p>
-<p>
-  <img src="/img/2021-03-24-tke-network-mode/virtio-networking-fig5.png" alt="">
-
-
-图源自 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net</a></p>
-<h2 id="出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</h2>
-<p>当物理机上收到 Pod 发出的数据包后，会根据一个下面这样的全局路由表判断其目的 Pod 地址所在的物理机节点，然后进行 GRE 封包，通过物理机连接到的 Underlay Network 发送到目地物理机节点上。在本例中，由于数据包的目的地址是 10.0.0.30，因此 GRE 封包后的目地 IP 地址为 Host 2 的地址。</p>
+</code></pre></div><p>在上面 <code>ip rule</code> 命令输出的路由策略中，可以看到上标为 1 和 2 的两条路由策略指定目的地为本节点中 pod 的 IP 包采用 main 路由表。在 main 路由表中，上标为 5 和 6 的两条路由将发送到这两个 IP 地址的数据包分别发送到了本节点的两个 pod 的 veth pair 对端设备上。<a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">veth pair 可以看做一条网线连接了两张网卡</a>，从 veth pair 一端进入的数据包会原封不动地从另一端收到，因此这些数据包就这样被发送到了同一虚机节点上的其他 pod 上。来自本虚拟机节点外部的其他流量到达虚拟机后，也是通过该条路由被发送到 pod 上的。</p>
+<h2 id="出向---从虚拟机到物理机-1">出向 - 从虚拟机到物理机</h2>
+<p>类似地，上标为 3 和 4 的两条路由策略指定源地址为本虚拟机点中 pod IP 地址的数据包采用 100 路由表。在该路由表中只有一条缺省路由，将这些数据包通过 eth1 接口发送到网关 10.0.0.1。</p>
+<p>在这之后的流程和 Global Router 模式相同，会采用 vhost-net/virtio-net 将数据包从虚拟机发送到物理机上。和 Global Router 唯一不同的是，VPC-CNI 采用了独立的弹性网卡 eth1 来处理 pod 的流量，并未像 Global Router 模式一样使用虚拟机自身的 eth0。</p>
+<h2 id="出向---从源物理机到目的物理机-1">出向 - 从源物理机到目的物理机</h2>
+<p>和 Global Router 模式类似，当物理机上收到 pod 发出的数据包后，也会根据一个下面这样的全局路由表判断其目的 pod 地址所在的物理机节点，然后进行 GRE 封包，通过物理机连接到的 Underlay Network 发送到目地物理机节点上。</p>
+<p>由于 pod 和 虚拟机都在同一个子网中，vpc-cni 模式的全局路由表是按照 pod 节点而不是子网粒度进行设置的。在本例中，由于数据包的目的地址是 10.0.0.30，因此 GRE 封包后的目地 IP 地址为 host 2 的地址。</p>
 <table>
 <thead>
 <tr>
 <th>VPC ID</th>
-<th>Pod/Node IP</th>
-<th>Host IP</th>
+<th>pod/node IP</th>
+<th>host IP</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>100</td>
 <td>10.0.0.41</td>
-<td>Host 1 IP</td>
+<td>host 1 IP</td>
 </tr>
 <tr>
 <td>100</td>
 <td>10.0.0.44</td>
-<td>Host 1 IP</td>
+<td>host 1 IP</td>
 </tr>
 <tr>
 <td>100</td>
 <td>10.0.0.30</td>
-<td>Host 2 IP</td>
+<td>host 2 IP</td>
 </tr>
 <tr>
 <td>100</td>
 <td>10.0.0.35</td>
-<td>Host 2 IP</td>
+<td>host 2 IP</td>
 </tr>
 </tbody>
 </table>
-<p>由于在 VPC-CNI 模式中 Pod 和虚机机节点都处于 VPC 的子网中，因此 Pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。虚拟机之间的通信也是类似的原理。</p>
-<h2 id="入向---从物理机到虚机">入向 - 从物理机到虚机</h2>
-<p>对端物理机 Host2 上收到 Host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 Host2 上的路由规则将该数据包写入虚拟机节点 Node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
+<p>由于 pod 和虚机机节点都处于 VPC 的子网中，因此 pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。虚拟机之间的通信也是类似的原理。</p>
+<h2 id="入向---从物理机到虚机-1">入向 - 从物理机到虚机</h2>
+<p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 host2 上的路由规则将该数据包写入虚拟机节点 node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
 <p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
-<h2 id="入向---从虚拟机到-pod">入向 - 从虚拟机到 Pod</h2>
-<p>虚拟机上的 main 路由表中上标为 7 的路由条目将发向 10.0.0.3 的数据包通过 Veth pair 在虚拟机端的设备 eni0f548c70045 发送给 Pod 4。</p>
+<h2 id="入向---从虚拟机到-pod-1">入向 - 从虚拟机到 pod</h2>
+<p>虚拟机 node2 上的 main 路由表中上标为 7 的路由条目将发向 10.0.0.3 的数据包通过 veth pair 在虚拟机端的设备 eni0f548c70045 发送给 pod 4。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-40-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip route show table main</span>
 default via 10.0.0.1 dev eth0 proto dhcp metric <span style="color:#bd93f9">100</span> 
 default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101</span> 
@@ -514,123 +661,58 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 10.0.0.30 dev eni0f548c70045 scope link⁷ 
 10.0.0.35 dev eni353b4974c2c scope link
 </code></pre></div><h2 id="独占网卡模式">独占网卡模式</h2>
-<p>在独占网卡模式下，会在每一个 Pod 中插入一张独立的弹性网卡，相对于共享网卡模式而言，其性能更高，但资源消耗也更多。相同规格的虚拟机上，独占网卡模式下能够支持的 Pod 会比共享网卡模式更少一些。</p>
+<p>在独占网卡模式下，VPC-CNI 插件会在每一个 pod 中插入一张独立的弹性网卡，相对于共享网卡模式而言，其性能更高，但资源消耗也更多。因此在相同规格的虚拟机上，独占网卡模式下能够支持的 pod 会比共享网卡模式更少一些。</p>
 <p>相对于共享网卡模式，独占网卡模式下的数据流量路径更简单清晰，如下图所示：</p>
 <p>
   <img src="/img/2021-03-24-tke-network-mode/vpc-cni-exclusive-mode.png" alt="">
 
 </p>
-<p>以图中 Node 1 为例，虚拟机上的弹性网卡被直接放到了 Pod1 和 Pod2 的 Network Namespace 中。和共享网卡模式不同的是，Pod 到虚拟机的流量无需经过 Veth pair 和共享网卡进行中转，直接通过 vhost-net/virtio-net 机制发送到了物理机上，因此效率更高。流量到达虚拟机后，后续的转发方式和共享网卡模式是完全相同的。</p>
+<p>以图中 node 1 为例，虚拟机上的弹性网卡被直接放到了 pod1 和 pod2 的 Network Namespace 中。和共享网卡模式不同的是，pod 到虚拟机的流量无需经过 veth pair 和共享网卡进行中转，直接通过 vhost-net/virtio-net 机制发送到了物理机上，因此效率更高。流量到达虚拟机后，后续的转发方式和共享网卡模式是完全相同的。</p>
 <h2 id="vpc-cni-模式实质">VPC-CNI 模式实质</h2>
-<p>如果我们忽略上面介绍的这些技术细节，以上帝视角来看 VPC-CNI 模式，则可以把 VPC-CNI 网络模式看做一个扁平的二层网络，该网络中所有的虚拟机和 Pod 之间都可以直接进行通信，IP 地址不会经过 NAT 转换。</p>
+<p>如果我们忽略上面介绍的这些技术细节，以上帝视角来看 VPC-CNI 模式，则可以把 VPC-CNI 网络模式看做一个扁平的二层网络，该网络中所有的虚拟机和 pod 之间都可以直接进行通信，IP 地址不会经过 NAT 转换。</p>
 <p>
   <img src="/img/2021-03-24-tke-network-mode/vpc-cni-simplified.png" alt="">
 
 </p>
-<h1 id="global-router-模式">Global Router 模式</h1>
-<p>Global Router 模式下，容器网络是和 VPC 网络独立的一个网络。容器网络和 VPC 网络之间通过三层路由互通，也不会经过 NAT 转换。Global Router 模式的原理如下图所示：</p>
-<p>Global Router 模式为每一个虚拟机上的 Pod 分配了一个容器子网网段。同一个虚拟机上的 Pod 之间通过一个网桥进行相互通信。当 Pod 要和本虚拟机之外的其他虚机或者 Pod 通信时，则需要通过虚拟机上的 eth0 进行路由中转。</p>
-<p>由于该模式下 Pod 和虚拟机共用虚拟机上的 eth0 对外进行通信，因此网络性能相对于 VPC-CNI 模式更低。</p>
-<p>假设上图 node1 上的 pod1（172.20.0.3) 发送一个 IP 数据包到 node2 上的 pod4（172.20.0.66）。我们采用该例子来分析一下 Global Router 网络模式下 Pod 的流量是如何转发的。</p>
-<h2 id="出向---从-pod-到虚机-1">出向 - 从 Pod 到虚机</h2>
-<p>通过 <code>ip addr</code> 查看 Pod1 中的网络设备，Pod1 中的 eth0 是一个 Veth 设备，我们通过 <code>ethtool</code> 可以看到其在虚拟机 namespace 中的对端设备编号为6。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-bnc7x  -- ip addr
-1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">65536</span> qdisc noqueue state UNKNOWN group default qlen <span style="color:#bd93f9">1000</span>
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-3: eth0@if6: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP group default 
-    link/ether f6:b9:8c:3d:62:8c brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">0</span>
-    inet 172.20.0.3/26 brd 172.20.0.63 scope global eth0
-       valid_lft forever preferred_lft forever
-
-➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-bnc7x  -- ethtool -S eth0
-NIC statistics:
-     peer_ifindex: <span style="color:#bd93f9">6</span>
-</code></pre></div><p>查看虚拟机 Node1 中的网络设备。可以看到编号为6的这张网卡，通过 <code>ethtool</code> 命令可以看到其在 Pod1 namespace 中的对端设备编号为3。同时，我们在虚拟机设备列表中还可以看到一个编号为4的网桥 cbr0。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip link</span>
-1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc fq_codel state UP mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
-    link/ether 52:54:00:cf:9f:ad brd ff:ff:ff:ff:ff:ff
-3: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state DOWN mode DEFAULT group default 
-    link/ether 02:42:07:83:f1:3a brd ff:ff:ff:ff:ff:ff
-4: cbr0: &lt;BROADCAST,MULTICAST,PROMISC,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue state UP mode DEFAULT group default qlen <span style="color:#bd93f9">1000</span>
-    link/ether f6:23:3e:66:b2:51 brd ff:ff:ff:ff:ff:ff
-5: veth88a01d46@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
-    link/ether 4e:02:63:5d:29:44 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">0</span>
-6: vethdc4b21b7@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
-    link/ether 66:b8:19:aa:9f:91 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">1</span>
-7: veth91fbf97b@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
-    link/ether 0a:17:bd:8e:7b:d4 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">2</span>
-
-<span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ethtool -S vethdc4b21b7</span>
-NIC statistics:
-     peer_ifindex: <span style="color:#bd93f9">3</span>
-</code></pre></div><p>通过 <code>ip link show master</code> 命令，我们可以看到网桥 cbr0 中的网卡。编号为6的网卡被加入到了网桥中，另一个编号为7的网卡是 Pod2 中 eth0 的 Veth pair 对端。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-29-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip link show master cbr0</span>
-6: vethdc4b21b7@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
-    link/ether 66:b8:19:aa:9f:91 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">1</span>
-7: veth91fbf97b@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#bd93f9">1500</span> qdisc noqueue master cbr0 state UP mode DEFAULT group default 
-    link/ether 0a:17:bd:8e:7b:d4 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#bd93f9">2</span>
-</code></pre></div><p>从上面的分析可以看到，虚拟机中有一个网桥，同一个虚拟机上的所有 Pod 通过 Veth pair 连到该网桥上，Pod 中的出向流量通过 Veth pair 到达了虚拟机中的网桥上。</p>
-<h2 id="出向---目的地为相同虚机节点上的-pod-1">出向 - 目的地为相同虚机节点上的 Pod</h2>
-<p>Pod1 中的路由表如下所示：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-bnc7x  -- route
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-default         172.20.0.1      0.0.0.0         UG    <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
-172.20.0.0      *               255.255.255.192 U     <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
-</code></pre></div><p>虚拟机 Node1 上所有 Pod 属于同一个 IP 子网 172.20.0.0/26，这些 Pod 都连接到了虚拟网桥上。如上面路由表的第二条路由条目所示，目地地为子网 172.20.0.0/26 的流量将通过 Pod 的 eth0 发出来，eth0 的 Veth pair 对端网卡处于网桥上，因此网桥会收到该数据包，并通过二层转发将该数据包发送到虚拟机中对应的 Pod 上。</p>
-<h2 id="出向---从虚拟机到物理机-1">出向 - 从虚拟机到物理机</h2>
-<p>如果目的地址不在虚拟机上的 Pod 网段，根据 Pod 中的第缺省路由，数据包将会被发送到网关 172.0.0.1，也就是虚拟机 Node1 上的网桥 cbr0 自身所带的网卡。一般来说，网桥只工作于二层，但该虚拟网桥自身也有一张网卡，该网卡上有一个三层地址 172.0.0.1。网桥上的这张网卡可以接收到来自 Pod 子网的二层数据帧，同时也可以参与虚拟机的三层路由转发，充当了 Pod 到外部的一个网关。当 Pod 发出的数据包到达网桥后，网桥自身的这张网卡收到了二层地址为自身 mac 地址的数据包，然后根据虚拟机上如下所示的路由规则进行转发。虚拟机则会通过自身 eth0 将数据包 forward 到缺省网关 10.0.0.1 上。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Node1 路由表
-
-Destination     Gateway         Genmask              Flags Metric Ref    Use Iface
-0.0.0.0          10.0.0.1          0.0.0.0                   UG    <span style="color:#bd93f9">0</span>         <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span>     eth0
-10.0.0.0          0.0.0.0            255.255.255.0       U       <span style="color:#bd93f9">0</span>         <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span>     eth0
-172.20.0.0      0.0.0.0            255.255.255.192   U       <span style="color:#bd93f9">0</span>         <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span>     cbr0
-</code></pre></div><p>在这之后的流程和 VPC-CNI 模式相同，会采用 vhost-net/virtio-net 将数据包从虚拟机发送到物理机上。</p>
-<h2 id="出向---从源物理机到目的物理机-1">出向 - 从源物理机到目的物理机</h2>
-<p>这部分的逻辑和 VPC-CNI 类似，也会采用一个全局路由表来判断其目的 Pod 地址所处的物理机节点。但该路由表有所不同，由于每个虚拟机上的容器子网网段不同，因此路由表按 Pod 子网而不是 Pod IP 粒度进行存储。同时，由于容器网络是一个和 VPC 不同的网络，还需要指定其</p>
+<h1 id="tke-网络模式小结">TKE 网络模式小结</h1>
 <table>
 <thead>
 <tr>
-<th>VPC ID</th>
-<th>Pod/Node IP</th>
-<th>Host IP</th>
+<th>网络模式</th>
+<th>网络规划</th>
+<th>流量出入口</th>
+<th>网络效率</th>
+<th>资源占用</th>
+<th>成本</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>100</td>
-<td>10.0.0.41</td>
-<td>Host 1 IP</td>
+<td>Global Router</td>
+<td>容器网络独立于 VPC 网络，每个虚拟机节点一个独立容器子网网段。容器 IP 地址分配不占用 VPC 子网地址空间。</td>
+<td>容器和虚拟机共享虚拟机弹性网卡。</td>
+<td>网络效率一般，适用于对网络效率没有特殊要求的应用。</td>
+<td>相对于其他两种模式，对主机资源占用最少。</td>
+<td>低</td>
 </tr>
 <tr>
-<td>100</td>
-<td>10.0.0.44</td>
-<td>Host 1 IP</td>
+<td>VPC-CNI 共享网卡</td>
+<td>容器直接采用 VPC 网络，容器和虚拟机处于同一 VPC 子网，容器 IP 地址分配占用 VPC 子网地址空间。</td>
+<td>虚拟机中所有容器共享一张单独的弹性网卡，不占用虚拟机自身的弹性网卡。</td>
+<td>网络效率较高，适用于对网络效率要求较高的应用。</td>
+<td>对主机资源占用相对于 Global Router 模式更多，但比独占网卡模式小。</td>
+<td>中</td>
 </tr>
 <tr>
-<td>100</td>
-<td>10.0.0.30</td>
-<td>Host 2 IP</td>
-</tr>
-<tr>
-<td>100</td>
-<td>10.0.0.35</td>
-<td>Host 2 IP</td>
+<td>VPC-CNI 独占网卡</td>
+<td>容器直接采用 VPC 网络，容器和虚拟机处于同一 VPC 子网，容器 IP 地址分配占用 VPC 子网地址空间。</td>
+<td>虚拟机中每个 pod 分配一张单独的弹性网卡。</td>
+<td>网络效率最高，适合于对网络效率敏感的特殊应用，例如网关、媒体等。</td>
+<td>对主机资源占用最大。</td>
+<td>高</td>
 </tr>
 </tbody>
 </table>
-<p>由于在 VPC-CNI 模式中 Pod 和虚机机节点都处于 VPC 的子网中，因此 Pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。虚拟机之间的通信也是类似的原理。</p>
-<h2 id="入向---从物理机到虚机-1">入向 - 从物理机到虚机</h2>
-<p>对端物理机 Host2 上收到 Host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 Host2 上的路由规则将该数据包写入虚拟机节点 Node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
-<p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
-<h2 id="入向---从虚拟机到-pod-1">入向 - 从虚拟机到 Pod</h2>
-<h2 id="global-router-模式实质">Global Router 模式实质</h2>
-<p>如果我们同样忽略 Global Router 的实现细节，以上帝视角来看该模式，则该模式如下图所示：虚拟机和容器处于不同的网络上，不同虚拟机上的 Pod 属于容器网络的不同子网，这些网络之间可以通过三层路由互通，数据包的地址不会经过 NAT 转换。</p>
 <h1 id="参考链接">参考链接</h1>
 <ul>
 <li><a href="https://cloud.tencent.com/document/product/457/50353">腾讯云容器网络概述</a></li>
@@ -638,8 +720,8 @@ Destination     Gateway         Genmask              Flags Metric Ref    Use Ifa
 <li><a href="https://man7.org/linux/man-pages/man8/ip-rule.8.html">Linux 策略路由</a></li>
 <li><a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">Deep dive into Virtio-networking and vhost-net</a></li>
 <li><a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined">Linux Tun/Tap 介绍</a></li>
-<li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/">https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined</a></li>
-<li><a href="https://cloud.tencent.com/document/product/457/50353">腾讯云容器网络概述</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization">Linux network namespace， veth， birdge与路由</a></li>
+<li><a href="https://www.eet-china.com/mp/a13515.html">vhost-net/virtio-net 原理</a></li>
 </ul>
 
 
