@@ -397,7 +397,7 @@ $(function() {
 <li>节点上的 Pod 可以不通过 NAT 和其他任何节点上的 Pod 通信</li>
 <li>节点上的代理（比如：系统守护进程、kubelet）可以和节点上的所有 Pod 通信</li>
 </ul>
-<p>在实现该网络模型时，TKE（Tencent Kubernetes Engine）提供了 Global Router 和 VPC-CNI 两种网络模式。下面我们来通过这两种模式下数据包的转发流程来分析一下这两种模式的实现原理，以及我们在创建 TKE 集群时应该如何选择。</p>
+<p>在实现该网络模型时，为了应对不同的使用场景，TKE（Tencent Kubernetes Engine）提供了 Global Router 和 VPC-CNI 两种网络模式。本文中，我们将通过这两种模式下数据包的转发流程来分析这两种模式各自的实现原理。本文还会对比分析不同网络模式下的网络效率和资源使用情况，以便于大家在创建 TKE 集群时根据应用对网络的需求和使用成本选择合适的网络模型。</p>
 <h1 id="global-router-模式">Global Router 模式</h1>
 <p>Global Router 模式下，容器网络和 VPC 网络处于不同的网段，这两个网段之间通过三层路由互通，IP 数据包不会经过 NAT 转换。Global Router 模式的原理如下图所示：</p>
 <p>
