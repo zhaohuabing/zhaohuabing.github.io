@@ -551,7 +551,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 </p>
 <h1 id="vpc-cni-网络模式">VPC-CNI 网络模式</h1>
-<p>在 VPC-CNI 网络模式下，Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 段，集群中所有的 Pod 属于同一个 VPC 子网。根据 Pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
+<p>在 VPC-CNI 网络模式下，Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 网段。集群中所有的 Pod 属于同一个 VPC 子网。根据 Pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
 <p>
   <img src="/img/2021-03-24-tke-network-mode/vpc-cni.png" alt="">
 
@@ -703,7 +703,7 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 </tr>
 <tr>
 <td>VPC-CNI 共享网卡</td>
-<td>Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 段，集群中所有的 Pod 属于同一个 VPC 子网。</td>
+<td>Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 网段。集群中所有的 Pod 属于同一个 VPC 子网。</td>
 <td>虚拟机中所有容器共享一张单独的弹性网卡，不占用虚拟机自身的弹性网卡。</td>
 <td>网络效率较高，适用于对网络效率要求较高的应用。</td>
 <td>对主机资源占用相对于 Global Router 模式更多，但比独占网卡模式小。</td>
@@ -711,7 +711,7 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 </tr>
 <tr>
 <td>VPC-CNI 独占网卡</td>
-<td>Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 段，集群中所有的 Pod 属于同一个 VPC 子网。</td>
+<td>Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 网段。集群中所有的 Pod 属于同一个 VPC 子网。</td>
 <td>虚拟机中每个 Pod 分配一张单独的弹性网卡。</td>
 <td>网络效率最高，适合于对网络效率敏感的特殊应用，例如网关、实时媒体流等。</td>
 <td>对主机资源占用最大。</td>
