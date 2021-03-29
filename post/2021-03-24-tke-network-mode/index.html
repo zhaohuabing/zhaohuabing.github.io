@@ -551,7 +551,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 
 </p>
 <h1 id="vpc-cni-网络模式">VPC-CNI 网络模式</h1>
-<p>在 VPC-CNI 网络模式下，Pod 与虚拟机都在同一个 VPC 子网中，共享相同的子网网段。根据 Pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
+<p>在 VPC-CNI 网络模式下，Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 段，集群中所有的 Pod 属于同一个 VPC 子网。根据 Pod 的网卡是否为独立弹性网卡，VPC-CNI 又分为共享网卡和独占网卡两种模型。其中共享网卡模式的原理如下图所示：</p>
 <p>
   <img src="/img/2021-03-24-tke-network-mode/vpc-cni.png" alt="">
 
@@ -559,7 +559,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 <p>从上图中可以看到，共享网卡模式使用了虚拟机上的同一个弹性网卡 eth1 作为该虚拟机上所有 Pod 流量的对外通道。该模式相对于独占网卡模式而言，对主机资源的消耗要小一些，但网络性能也会差一些。但相对于前面介绍的 Global Router 模式而言效率更高，因为 VPC-CNI 共享网卡模式中虚拟机上使用了一个独立的网卡作为 Pod 对外的通信通道。</p>
 <p>假设上图 Node1 上的 Pod1（10.0.0.44) 发送一个 IP 数据包到 Node2 上的 Pod4（10.0.0.30）。我们采用该例子来分析一下 VPC-CNI 网络的共享网卡模式下 Pod 的流量是如何转发的。</p>
 <h2 id="出向---从-pod-到虚机-1">出向 - 从 Pod 到虚机</h2>
-<p>在 VPC-CNI 模式下，集群中的所有 Pod 和虚拟机都属于同一个 VPC 子网。在这种情况下，我们无法再像 Global Router模式一样采用一个 Linux 网桥来连接同一个虚拟机中的所有 Pod。因为由于子网相同，当 Pod 发出的数据包的目地 IP 地址是其他节点上的 Pod 时，网桥无法将该流量发出去。</p>
+<p>在 VPC-CNI 模式下，集群中的所有 Pod 属于同一个 VPC 子网。在这种情况下，我们无法再像 Global Router模式一样采用一个 Linux 网桥来连接同一个虚拟机中的所有 Pod。因为由于子网相同，当 Pod 发出的数据包的目地 IP 地址是其他节点上的 Pod 时，网桥无法将该流量发出去。</p>
 <p>VPC-CNI 模式通过在 Pod 设置缺省网关和静态 ARP 条目解决了该问题。Pod 中的路由表如下面的命令行输出所示。可以看到出向流量被发送到了缺省网关 169.254.1.1 。一般来说，缺省网关的地址应该和 Pod 的地址处于同一子网中，但这里使用的地址 169.254.1.1 并不在子网 10.0.0.0/24 中，因此无法通过 ARP 协议学习得到该 IP 对应的 MAC 地址。但在 Pod 的 arp 表中有一条 169.254.1.1 的条目，其对应的 MAC 地址为 e2:62:fb:d2:cb:28。那么 Pod 是如何得到缺省网关的 IP 地址的呢？我们可以看到该 ARP 条目的 Flags Mask 是 CM，<a href="https://www.geeksforgeeks.org/arp-command-in-linux-with-examples/">M 这个 mask 表示该条目是一条静态条目（Permanent entry）</a>，静态条目并不是通过 arp 协议学习得到的，而是手动插入或者通过程序写入的。Pod 中该 apr 条目应该是 VPC CNI 插件在设置 Pod 网络时添加的。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">➜  ~ k <span style="color:#8be9fd;font-style:italic">exec</span> network-tool-549c7756bd-6tfkf -- route -n
 Kernel IP routing table
@@ -596,7 +596,7 @@ Address                  HWtype  HWaddress           Flags Mask            Iface
 </code></pre></div><p>由于 Veth pair 连接了 Pod network namespace 和虚拟机的 root network namespace，因此当 Pod 通过其 eth0 发送数据包时，虚机上就可以从 Veth pair 对端的网卡上收到该数据包。</p>
 <p>即通过缺省路由和设置 ARP 静态条目，Pod 的出向流量被从 Pod eth0 网卡发出，通过 Veth pair 发送到了虚拟机上。</p>
 <h2 id="出向---目的地为相同虚机节点上的-pod-1">出向 - 目的地为相同虚机节点上的 Pod</h2>
-<p>从 Pod 中出来的流量的目的地可能是同一虚机上的其他 Pod，也可以是其他虚机上的 Pod，或者同一 VPC 中的虚机。我们需要采用不同的网络路径对这些不同目的地的流量进行路由。但是在 VPC-CNI 网络中，所有节点上的 Pod 以及 VPC 中的虚拟机都属于同一个 IP 子网，因此无法按照数据包目的地址进行路由。为了解决该问题，虚机上采用了策略路由<a href="https://en.wikipedia.org/wiki/Policy-based_routing">Policy Based Route</a>。策略路由是一种比普通路由算法更为灵活的路由方式，除了目地地址以外，策略路由还可以根据源地址、协议类型、端口等将来自 Pod 的出向流量路由到不同的目的地。</p>
+<p>从 Pod 中出来的流量的目的地可能是同一虚机上的其他 Pod，也可以是其他虚机上的 Pod，或者同一 VPC 中的虚机。我们需要采用不同的网络路径对这些不同目的地的流量进行路由。但是在 VPC-CNI 网络中，所有节点上的 Pod 都属于同一个 IP 子网，因此无法按照数据包目的地址进行路由。为了解决该问题，虚机上采用了策略路由<a href="https://en.wikipedia.org/wiki/Policy-based_routing">Policy Based Route</a>。策略路由是一种比普通路由算法更为灵活的路由方式，除了目地地址以外，策略路由还可以根据源地址、协议类型、端口等将来自 Pod 的出向流量路由到不同的目的地。</p>
 <p>虚拟机 Node1 上的路由策略和路由表如下所示：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#ff79c6">[</span>root@VM-0-49-centos ~<span style="color:#ff79c6">]</span><span style="color:#6272a4"># ip rule</span>
 0:	from all lookup <span style="color:#8be9fd;font-style:italic">local</span>
@@ -622,7 +622,7 @@ default via 10.0.0.1 dev eth1 onlink
 <p>在这之后的流程和 Global Router 模式相同，会采用 vhost-net/virtio-net 将数据包从虚拟机发送到物理机上。和 Global Router 唯一不同的是，VPC-CNI 采用了独立的弹性网卡 eth1 来处理 Pod 的流量，并未像 Global Router 模式一样使用虚拟机自身的 eth0。</p>
 <h2 id="出向---从源物理机到目的物理机-1">出向 - 从源物理机到目的物理机</h2>
 <p>和 Global Router 模式类似，当物理机上收到 Pod 发出的数据包后，也会根据一个下面这样的全局路由表判断其目的 Pod 地址所在的物理机节点，然后进行 GRE 封包，通过物理机连接到的 Underlay Network 发送到目地物理机节点上。</p>
-<p>由于 Pod 和 虚拟机都在同一个子网中，vpc-cni 模式的全局路由表是按照 Pod 节点而不是子网粒度进行设置的。在本例中，由于数据包的目的地址是 10.0.0.30，因此 GRE 封包后的目地 IP 地址为 host 2 的地址。</p>
+<p>由于集群中所有 Pod 都在同一个 VPC 子网中，vpc-cni 模式的全局路由表是按照 Pod 节点而不是子网粒度进行设置的。在本例中，由于数据包的目的地址是 10.0.0.30，因此 GRE 封包后的目地 IP 地址为 host 2 的地址。</p>
 <table>
 <thead>
 <tr>
@@ -654,7 +654,7 @@ default via 10.0.0.1 dev eth1 onlink
 </tr>
 </tbody>
 </table>
-<p>由于 Pod 和虚机机节点都处于 VPC 的子网中，因此 Pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。虚拟机之间的通信也是类似的原理。</p>
+<p>由于 Pod 和虚机机节点都处于 VPC 的子网中，因此 Pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。VPC 中虚拟机之间的通信也是类似的原理。</p>
 <h2 id="入向---从物理机到虚机-1">入向 - 从物理机到虚机</h2>
 <p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 host2 上的路由规则将该数据包写入虚拟机节点 Node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
 <p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
@@ -703,7 +703,7 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 </tr>
 <tr>
 <td>VPC-CNI 共享网卡</td>
-<td>容器直接采用 VPC 网络，容器和虚拟机处于同一 VPC 子网，容器 IP 地址分配占用 VPC 子网地址空间。</td>
+<td>Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 段，集群中所有的 Pod 属于同一个 VPC 子网。</td>
 <td>虚拟机中所有容器共享一张单独的弹性网卡，不占用虚拟机自身的弹性网卡。</td>
 <td>网络效率较高，适用于对网络效率要求较高的应用。</td>
 <td>对主机资源占用相对于 Global Router 模式更多，但比独占网卡模式小。</td>
@@ -711,7 +711,7 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 </tr>
 <tr>
 <td>VPC-CNI 独占网卡</td>
-<td>容器直接采用 VPC 网络，容器和虚拟机处于同一 VPC 子网，容器 IP 地址分配占用 VPC 子网地址空间。</td>
+<td>Pod 与虚拟机都在一个 VPC 网络中，共享相同的 CIDR 段，集群中所有的 Pod 属于同一个 VPC 子网。</td>
 <td>虚拟机中每个 Pod 分配一张单独的弹性网卡。</td>
 <td>网络效率最高，适合于对网络效率敏感的特殊应用，例如网关、实时媒体流等。</td>
 <td>对主机资源占用最大。</td>
