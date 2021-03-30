@@ -501,20 +501,23 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 </code></pre></div><p>其实网关 10.0.0.1 并不是一个真实存在的设备，数据包进入虚拟机的 eth0 后，会通过 <a href="https://www.redhat.com/en/virtio-networking-series">Virtio-networking</a> 机制被发送到物理机。Virtio-networking 是一种在虚拟机和其宿主物理机之间传递网络数据包的机制，其作用和 Veth pair 类似，只不过 Veth pair 用于在两个 Network Namespace 之间传递网络数据，而 Virtio-networking 则用于在虚拟机和物理机传递网络数据。</p>
 <p>Virtio-networking 有在 Kernel space 实现的 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">vhost-net/virtio-net</a>方案，也有完全在 User space 实现的 <a href="https://www.redhat.com/en/blog/how-vhost-user-came-being-virtio-networking-and-dpdk">vhost-user/virtio-net</a>方案。其中 vhost-net/virtio-net 方案的原理如下图所示：</p>
 <p>
-  <img src="/img/2021-03-24-tke-network-mode/2019-09-12-virtio-networking-fig1.png" alt="">
+  <img src="/img/2021-03-24-tke-network-mode/2019-09-12-virtio-networking-fig3.png" alt="">
 
-</p>
-<p>Virtio-networking 包括用于在虚拟机和物理机之间创建数据通道的控制面和传输数据的数据面，为了简化问题，方便理解，我们这里只关注数据面。如上图所示，数据面主要包含下面的组件：</p>
+
+图源自：<a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">Deep dive into Virtio-networking and vhost-net</a></p>
+<p>该图中包括了用于在虚拟机和物理机之间创建数据通道的控制面和传输数据的数据面。主要包含下面的组件：</p>
 <ul>
 <li>virtio-net device - qemu 为 guest vm 模拟的虚拟网卡。</li>
 <li>virtio-net driver - guest vm 中的网卡驱动。virtio-net device 被模拟为一个 PIC 设备，guest vm 网卡驱动采用 PCI 协议和虚拟网卡通信。</li>
+<li>vhost-net - 物理机 kernel 中 vhost handler 的实现，用于 offload hypervisor 的数据面，以提供更快的包转发路径。</li>
 <li>Tap - 采用了一个 <a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined">Tap</a> 设备来作为 guest vm 在物理机侧的网络数据包出入口。</li>
 </ul>
-<p>数据包从虚拟机发送到物理机的流程如下：</p>
+<p>数据包从虚拟机发送到物理机的大致流程如下：</p>
 <ol>
-<li>virtio-net driver 采用 PCI 协议向 virtio-net device 发送数据包。</li>
-<li>virtio-net device 将数据包写入到一个 buffer 中。</li>
-<li>Qemu 作为 hypervisor 可以访问所有 guest vm 的内存。Qemu 读取 buffer 中的数据包，然后将数据包写入到物理机的 Tap 设备中。</li>
+<li>virtio-net driver 将要发送的数据包写入到一块共享内存中。</li>
+<li>virtio-net 通过控制面通道通知 virtio-host 数据就绪。</li>
+<li>vhost-net 从共享内存中读取数据。</li>
+<li>vhost-net 将数据包写入到物理机上该虚拟机网卡对应的的 Tap 设备中。</li>
 </ol>
 <p>Virtio-networking 的内容较多，只是该话题即可成为一系列文章。因此此处不再继续展开，我们简单地将其理解为一个虚拟机和物理机之间的网络数据传输通道即可。如果读者有兴趣的话可以阅读本文后面的相关参考资料。</p>
 <h2 id="出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</h2>
