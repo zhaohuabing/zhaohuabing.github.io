@@ -498,10 +498,27 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 0.0.0.0         10.0.0.1        0.0.0.0         UG    <span style="color:#bd93f9">100</span>    <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
 10.0.0.0        0.0.0.0         255.255.255.0   U     <span style="color:#bd93f9">100</span>    <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> eth0
 172.20.0.0      0.0.0.0         255.255.255.192 U     <span style="color:#bd93f9">0</span>      <span style="color:#bd93f9">0</span>        <span style="color:#bd93f9">0</span> cbr0
-</code></pre></div><p>其实网关 10.0.0.1 并不是一个真实存在的设备，数据包进入虚拟机的 eth0 后，会通过 <a href="https://www.redhat.com/en/virtio-networking-series">Virtio-networking</a> 机制被发送到物理机上。Virtio-networking 是一种在虚拟机和其宿主物理机之间传递网络数据包的机制，其作用和 Veth pair 类似，只不过 Veth pair 用于在两个 Network Namespace 之间传递网络数据，而 Virtio-networking 则用于在虚拟机和物理机传递网络数据。</p>
-<p>Virtio-networking 有在 Kernel space 实现的 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">vhost-net/virtio-net</a>方案，也有完全在 User space 实现的 <a href="https://www.redhat.com/en/blog/how-vhost-user-came-being-virtio-networking-and-dpdk">Virtio-networking and DPDK</a>方案。有兴趣的话可以了解本文后面的参考资料。</p>
+</code></pre></div><p>其实网关 10.0.0.1 并不是一个真实存在的设备，数据包进入虚拟机的 eth0 后，会通过 <a href="https://www.redhat.com/en/virtio-networking-series">Virtio-networking</a> 机制被发送到物理机。Virtio-networking 是一种在虚拟机和其宿主物理机之间传递网络数据包的机制，其作用和 Veth pair 类似，只不过 Veth pair 用于在两个 Network Namespace 之间传递网络数据，而 Virtio-networking 则用于在虚拟机和物理机传递网络数据。</p>
+<p>Virtio-networking 有在 Kernel space 实现的 <a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">vhost-net/virtio-net</a>方案，也有完全在 User space 实现的 <a href="https://www.redhat.com/en/blog/how-vhost-user-came-being-virtio-networking-and-dpdk">vhost-user/virtio-net</a>方案。其中 vhost-net/virtio-net 方案的原理如下图所示：</p>
+<p>
+  <img src="/img/2021-03-24-tke-network-mode/2019-09-12-virtio-networking-fig1.png" alt="">
+
+</p>
+<p>Virtio-networking 包括用于在虚拟机和物理机之间创建数据通道的控制面和传输数据的数据面，为了简化问题，方便理解，我们这里只关注数据面。如上图所示，数据面主要包含下面的组件：</p>
+<ul>
+<li>virtio-net device - qemu 为 guest vm 模拟的虚拟网卡。</li>
+<li>virtio-net driver - guest vm 中的网卡驱动。virtio-net device 被模拟为一个 PIC 设备，guest vm 网卡驱动采用 PCI 协议和虚拟网卡通信。</li>
+<li>Tap - 采用了一个 <a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined">Tap</a> 设备来作为 guest vm 在物理机侧的网络数据包出入口。</li>
+</ul>
+<p>数据包从虚拟机发送到物理机的流程如下：</p>
+<ol>
+<li>virtio-net driver 采用 PCI 协议向 virtio-net device 发送数据包。</li>
+<li>virtio-net device 将数据包写入到一个 buffer 中。</li>
+<li>Qemu 作为 hypervisor 可以访问所有 guest vm 的内存。Qemu 读取 buffer 中的数据包，然后将数据包写入到物理机的 Tap 设备中。</li>
+</ol>
+<p>Virtio-networking 的内容较多，只是该话题即可成为一系列文章。因此此处不再继续展开，我们简单地将其理解为一个虚拟机和物理机之间的网络数据传输通道即可。如果读者有兴趣的话可以阅读本文后面的相关参考资料。</p>
 <h2 id="出向---从源物理机到目的物理机">出向 - 从源物理机到目的物理机</h2>
-<p>当物理机上收到 Pod 发出的数据包后，会根据一个下面这样的全局路由表判断其目的 Pod 地址所在的物理机节点。全局路由表指明了目的 Pod 子网所在的物理机地址。除此之外，由于 Pod 和虚拟机处于不同的三层网络，还需要指定从物理机上的哪个虚拟机节点进入 Pod 子网。</p>
+<p>当物理机从 Tap 上收到 Pod 发出的数据包后，会根据一个下面这样的全局路由表判断其目的 Pod 地址所在的物理机节点。全局路由表指明了目的 Pod 子网所在的物理机地址。除此之外，由于 Pod 和虚拟机处于不同的三层网络，还需要指定从物理机上的哪个虚拟机节点进入 Pod 子网。</p>
 <p>确定目的物理机地址后，会对原始的数据包进行 GRE 封包，通过物理机连接到的 Underlay Network 发送到目地物理机节点上。在本例中，由于数据包的目的地址处于子网 172.20.0.64/26，因此 GRE 封包后的目地 IP 地址为 host 2 的地址。</p>
 <table>
 <thead>
@@ -528,7 +545,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 </tbody>
 </table>
 <h2 id="入向---从物理机到虚机">入向 - 从物理机到虚机</h2>
-<p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 172.20.0.66。host2 上应该有一条路由规则，该路由规则将 Node2 的 IP 地址 10.0.0.37 作为 Pod 子网 172.20.0.64/26 的下一跳。根据这条路由规则，物理机将该数据包写入 Node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上的 eth0 上。</p>
+<p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 172.20.0.66。host2 上应该有一条路由规则，该路由规则将 Node2 的 IP 地址 10.0.0.37 作为 Pod 子网 172.20.0.64/26 的下一跳。根据这条路由规则，物理机将该数据包写入 Node2 对应的 Tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上的 eth0 上。</p>
 <p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
 <h2 id="入向---从虚拟机到-pod">入向 - 从虚拟机到 Pod</h2>
 <p>Node2 上的路由规则如下所示。根据路由规则，目的地址为 172.20.0.64/26 子网的数据包被发送到了网桥 cbr0 上，然后通过网桥的二层转发发送到目地节点 172.20.0.67。</p>
@@ -651,7 +668,7 @@ default via 10.0.0.1 dev eth1 onlink
 </table>
 <p>由于 Pod 和虚机机节点都处于 VPC 的子网中，因此 Pod 和虚拟机之间也可以直接进行通信，采用的是相同的路由表。VPC 中虚拟机之间的通信也是类似的原理。</p>
 <h2 id="入向---从物理机到虚机-1">入向 - 从物理机到虚机</h2>
-<p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 host2 上的路由规则将该数据包写入虚拟机节点 Node2 对应的 tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
+<p>对端物理机 host2 上收到 host1 发出的数据包后，首先进行 GRE 解包，解包后得到该数据包的原始目的地址为 10.0.0.30。然后根据 host2 上的路由规则将该数据包写入虚拟机节点 Node2 对应的 Tap 设备上，通过 vhost-net/virtio-net 发送到虚拟机上对应的网卡 eth1 上。</p>
 <p>备注：由于无法登录到物理机上查看，这部分处理流程是根据相关资料推测得出的。如流程有误，欢迎大家斧正。</p>
 <h2 id="入向---从虚拟机到-pod-1">入向 - 从虚拟机到 Pod</h2>
 <p>虚拟机 Node2 上的 main 路由表中上标为 7 的路由条目将发向 10.0.0.3 的数据包通过 Veth pair 在虚拟机端的设备 eni0f548c70045 发送给 Pod 4。</p>
@@ -720,7 +737,7 @@ default via 10.0.0.1 dev eth1 proto dhcp metric <span style="color:#bd93f9">101<
 <li><a href="https://cloud.tencent.com/document/product/576/18527">弹性网卡使用限制</a></li>
 <li><a href="https://man7.org/linux/man-pages/man8/ip-rule.8.html">Linux 策略路由</a></li>
 <li><a href="https://www.redhat.com/en/blog/deep-dive-virtio-networking-and-vhost-net">Deep dive into Virtio-networking and vhost-net</a></li>
-<li><a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/#undefined">Linux Tun/Tap 介绍</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-02-24-linux-Taptun/#undefined">Linux Tun/Tap 介绍</a></li>
 <li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization">Linux network namespace， Veth， birdge与路由</a></li>
 <li><a href="https://www.eet-china.com/mp/a13515.html">vhost-net/virtio-net 原理</a></li>
 <li><a href="https://www.redhat.com/en/virtio-networking-series">Virtio-networking series</a></li>
