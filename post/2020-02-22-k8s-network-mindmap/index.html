@@ -347,7 +347,7 @@ $(function() {
                 post-container">
 
                 
-                <p><a href="/img/2020-02-22-k8s-network-mindmap/markmap.svg">Mind Map</a></p>
+                <p><a href="/mindmap/k8s.html">Mind Map</a></p>
 <ul>
 <li>Kubernetes
 <ul>
@@ -560,8 +560,62 @@ $(function() {
 </li>
 <li>Security
 <ul>
+<li>Background Knowledge
+<ul>
 <li><a href="https://zhaohuabing.com/post/2020-03-19-pki/">Certificate and PKI</a></li>
 <li><a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/">Kubernetes 中使用到的证书</a></li>
+</ul>
+</li>
+<li>User Type
+<ul>
+<li>Service Account
+<ul>
+<li>Managed by Kubernetes</li>
+<li>Represent workloads in the cluster</li>
+<li>Bound to a specific namespace</li>
+</ul>
+</li>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#normal-user">Normal User</a>
+<ul>
+<li>Managed out side of Kubernetes</li>
+<li>Authenticated with a valid certicated signed by the cluster&rsquo;s CA
+<ul>
+<li>User name: Certificate subject <a href="https://docs.oracle.com/cd/E24191_01/common/tutorials/authz_cert_attributes.html">Common Name</a> field</li>
+<li>Group: Certificate subject <a href="https://docs.oracle.com/cd/E24191_01/common/tutorials/authz_cert_attributes.html">Organization</a> field</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Authentication
+<ul>
+<li>Service account tokens for service accounts</li>
+<li>Client certifications for normal users</li>
+<li><a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/#service-account--%E8%AF%81%E4%B9%A6">Certifications for control plane components communication</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/#%E4%BD%BF%E7%94%A8-tls-bootstrapping-%E7%AE%80%E5%8C%96-kubelet-%E8%AF%81%E4%B9%A6%E5%88%B6%E4%BD%9C">Bootstrap Token</a> for clusters and nodes bootstrapping</li>
+</ul>
+</li>
+<li>Authorization
+<ul>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">RBAC</a>
+<ul>
+<li>Namespace Scope
+<ul>
+<li>Role</li>
+<li>RoleBinding (Associate users retrived from authentication process to Roles)</li>
+</ul>
+</li>
+<li>Cluster Scope
+<ul>
+<li>ClusterRole</li>
+<li>CluseterRoleBinding (Associate users retrived from authentication process to ClusteRoles)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
