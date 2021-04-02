@@ -6,10 +6,19 @@
     <description>Recent content in Kubernetes on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 02 Apr 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Istio 知识图谱</title>
+      <link>https://zhaohuabing.com/post/2020-04-02-istio-mindmap/</link>
+      <pubDate>Fri, 02 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-04-02-istio-mindmap/</guid>
+      <description>Mind Map Istio 流量管理 Istio流量管理实现机制深度解析 Istio 流量管理原理与协议扩展 可见性 实现方法级调用跟踪 实现 Kafka 消息调用跟踪 协议扩展 如何在 Isito 中支持 Du</description>
+    </item>
     
     <item>
       <title>腾讯云容器网络介绍</title>
@@ -30,7 +39,7 @@
     </item>
     
     <item>
-      <title>Kubernetes知识图谱</title>
+      <title>Kubernetes 知识图谱</title>
       <link>https://zhaohuabing.com/post/2020-02-22-k8s-network-mindmap/</link>
       <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
       
