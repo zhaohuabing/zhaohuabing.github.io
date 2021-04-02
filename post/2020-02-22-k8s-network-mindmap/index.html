@@ -347,7 +347,8 @@ $(function() {
                 post-container">
 
                 
-                <ul>
+                <p><a href="/img/2020-02-22-k8s-network-mindmap/markmap.svg">Mind Map</a></p>
+<ul>
 <li>Kubernetes
 <ul>
 <li>基本理念
@@ -447,6 +448,47 @@ $(function() {
 <li>Kubernetes Federation</li>
 </ul>
 </li>
+<li>Workload
+<ul>
+<li>Pod
+<ul>
+<li>Smalleset deployable computing unit</li>
+<li>Consist of one or more containers</li>
+<li>All containers in a pod share <a href="https://kubernetes.io/docs/concepts/storage/volumes/">storage</a>, <a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#network-namespace">network namespacem</a> and <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html">cgroup</a></li>
+</ul>
+</li>
+<li>Workload resources(Controllers)
+<ul>
+<li>Deployment &amp; RelicaSet
+<ul>
+<li>Deployment is used to deploy stateless appliations.</li>
+<li>ReplicaSet ensured a specified numbers of pod replicas are running at a given time.</li>
+<li>Deployment is used to rollout/update/rollback ReplicaSet.</li>
+<li>ReplicaSet is not supposed to be used directly, it should be managed by Deployments.</li>
+</ul>
+</li>
+<li>StatefulSet
+<ul>
+<li>StatefulSet is used to deploy stateful applications.</li>
+<li>SetatefSet require a Headless Service to provide network identity for the pods.</li>
+</ul>
+</li>
+<li>DaemonSet
+<ul>
+<li>DaemonSet ensures that all(or some) Nodes run a copy of a Pod.</li>
+<li>Use cases: cluster storage daemon, logs collection daemon, node monitoring daemon.</li>
+</ul>
+</li>
+<li>Job &amp; CronJob
+<ul>
+<li>Job runs pods until a specified number of them have been succcessfully executed.</li>
+<li>CronJob runs a job periodically on a given schedule.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>商业模式
 <ul>
 <li>云服务用户：避免使用单一云提供商导致的厂商锁定，避免技术和成本风险</li>
@@ -498,12 +540,12 @@ $(function() {
 <li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#istio-gateway">Istio Ingress Gateway</a></li>
 </ul>
 </li>
+</ul>
+</li>
 <li>腾讯云
 <ul>
 <li><a href="https://zhaohuabing.com/post/2021-03-24-tke-network-mode/#global-router-%E6%A8%A1%E5%BC%8F">Global Router</a></li>
 <li><a href="https://zhaohuabing.com/post/2021-03-24-tke-network-mode/#vpc-cni-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F">VPC-CNI</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#api-gateway--sidecar-proxy">API Gateway+Service Mesh</a></li>
