@@ -448,6 +448,12 @@ $(function() {
 <li>Kubernetes Federation</li>
 </ul>
 </li>
+<li>商业模式
+<ul>
+<li>云服务用户：避免使用单一云提供商导致的厂商锁定，避免技术和成本风险</li>
+<li>云服务厂商：使用Kubernetes来打破AWS的先入垄断地位，抢夺市场份额</li>
+</ul>
+</li>
 <li>Workload
 <ul>
 <li>Pod
@@ -489,10 +495,35 @@ $(function() {
 </li>
 </ul>
 </li>
-<li>商业模式
+<li>Storage
 <ul>
-<li>云服务用户：避免使用单一云提供商导致的厂商锁定，避免技术和成本风险</li>
-<li>云服务厂商：使用Kubernetes来打破AWS的先入垄断地位，抢夺市场份额</li>
+<li>Volume
+<ul>
+<li>purpose
+<ul>
+<li>Persist data across the life span of a Pod
+<ul>
+<li>Data won&rsquo;t lost when a container is restarted</li>
+</ul>
+</li>
+<li>Share data between containers running together in a Pod
+<ul>
+<li>Volume can be mounted to mutiple containers inside a Pod</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>type
+<ul>
+<li>configMap</li>
+<li>emptyDir</li>
+<li>hostPath</li>
+<li>local</li>
+<li>persistentVolumeClaim</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Network
