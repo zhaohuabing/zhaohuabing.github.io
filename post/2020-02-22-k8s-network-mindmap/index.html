@@ -526,6 +526,51 @@ $(function() {
 </li>
 </ul>
 </li>
+<li>Policies
+<ul>
+<li>ResourceQuota
+<ul>
+<li>purpose
+<ul>
+<li>Limit the aggregated resource consumption of a Namespace</li>
+</ul>
+</li>
+<li>Scope
+<ul>
+<li>Namespaced: ResourceQuota is enforced in a Namespace scope, different Namespaces have different Resouce limit</li>
+</ul>
+</li>
+<li>Type
+<ul>
+<li>Compute Resource Quota
+<ul>
+<li>CPU (limits.cpu requests.cpu)</li>
+<li>Memory (limits.memory requets.memory)</li>
+</ul>
+</li>
+<li>Storage Resource Quota
+<ul>
+<li>Persistent Storage (storage)</li>
+<li>Ephemeral Storage (ephermal-storage)</li>
+</ul>
+</li>
+<li>Object Count Quota
+<ul>
+<li>Limit of total number of Namespaced resources (count/services)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Request and Limit
+<ul>
+<li>Request: Resources that are guaranteed to get</li>
+<li>Limit: The maximum amount of resources that one can get</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>Network
 <ul>
 <li>Linux Network Virtualization
