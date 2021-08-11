@@ -1,0 +1,149 @@
+@startuml
+'skinparam handwritten true
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam defaultFontName FG Virgil
+skinparam shadowing false
+
+== rds subscription (main thread)==
+
+HttpConnectionManagerFilterConfigFactory -> HttpConnectionManagerFilterConfigFactory:createFilterFactoryFromProtoTyped()
+activate HttpConnectionManagerFilterConfigFactory
+
+HttpConnectionManagerFilterConfigFactory -> HttpConnectionManagerFilterConfigFactory:createSingletons() RouteConfigProviderManager
+activate HttpConnectionManagerFilterConfigFactory
+deactivate HttpConnectionManagerFilterConfigFactory
+
+HttpConnectionManagerFilterConfigFactory -> HttpConnectionManagerFilterConfigFactory:createConfig(RouteConfigProviderManager Signleton)
+activate HttpConnectionManagerFilterConfigFactory
+
+HttpConnectionManagerFilterConfigFactory -> HttpConnectionManagerConfig:constructor()
+alt static route
+    HttpConnectionManagerConfig -> RouteConfigProviderManager:createStaticRouteConfigProvider()
+else rds
+    HttpConnectionManagerConfig -> RouteConfigProviderManager:createRdsRouteConfigProvider()
+    activate RouteConfigProviderManager
+    alt subscription for the rds source doesn't exist
+            RouteConfigProviderManager -> RdsRouteConfigSubscription:constructor(rds)
+            RdsRouteConfigSubscription -> SubscriptionFactory:subscriptionFromConfigSource(rds)
+    end
+    deactivate RouteConfigProviderManager
+end
+deactivate HttpConnectionManagerFilterConfigFactory
+
+deactivate HttpConnectionManagerFilterConfigFactory
+
+== rds config change (main thread)==
+
+SubscriptionFactory -> RdsRouteConfigSubscription:onConfigUpdate() 
+activate RdsRouteConfigSubscription
+RdsRouteConfigSubscription -> RdsRouteConfigProvider:onConfigUpdate()
+
+activate RdsRouteConfigProvider
+RdsRouteConfigProvider -> "ThreadLocal::TypedSlot":runOnAllThreads()
+activate "ThreadLocal::TypedSlot"
+"ThreadLocal::TypedSlot" -> "ThreadLocal::TypedSlot": config_ = new_config
+deactivate "ThreadLocal::TypedSlot"
+
+deactivate RdsRouteConfigProvider
+
+deactivate RdsRouteConfigSubscription
+
+== handle http request (worker thread) ==
+
+?->ConnectionManager:onData()
+activate ConnectionManager
+ConnectionManager -> Router:decodeHeaders()
+
+activate Router
+Router -> ActiveStream:route()
+deactivate Router
+deactivate ConnectionManager
+ActiveStream -> RdsRouteConfigProvider:config()
+
+/'
+== get upstream connection ==
+"FilterManagerImpl" -> "TcpProxy::Filter": onNewConnection()
+activate "TcpProxy::Filter"
+"TcpProxy::Filter" -> "TcpProxy::Filter": initializeUpstreamConnection()
+activate "TcpProxy::Filter"
+
+"TcpProxy::Filter" -> "TcpProxy::GenericConnPoolFactory":createGenericConnPool(upstream_callbacks_) ➂
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+"TcpProxy::Filter" -> "TcpProxy::GenericConnPool":newStream(GenericConnectionPoolCallbacks) ➃
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+deactivate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+"TcpProxy::GenericConnPool" -> "TcpProxy::Filter": onGenericPoolReady ➃
+
+
+== process downstream data ==
+FilterManagerImpl -> ConnectionManager: onData() ➀ 
+activate ConnectionManager
+ConnectionManager -> "ConnectionManager":dispatch() 
+activate ConnectionManager
+ConnectionManager -> RequestDecoder: onData()
+RequestDecoder -> DecoderStateMachine: run()
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: handleState()
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamHeader()
+DecoderStateMachine -> ActiveStream: constructor()
+ActiveStream -> DecoderStateMachine:newStream()
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamData()
+DecoderStateMachine -> ActiveStream:onStreamDecoded()
+activate ActiveStream
+ActiveStream -> ActiveMessage:onStreamDecoded()
+activate ActiveMessage
+ActiveMessage -> Router:onMessageDecoded()
+Router -> ActiveMessage:route()
+ActiveMessage -> ConnectionManager:config()
+activate Router
+Router -> ClusterManager:getThreadLocalCluster()
+Router -> ThreadLocalCluster:tcpConnPool()
+Router -> UpstreamRequest:constructor()
+Router -> UpstreamRequest:start()
+UpstreamRequest -> ConnectionPool:newConnection(*this)
+ConnectionPool -> UpstreamRequest:onPoolReady()
+activate UpstreamRequest
+UpstreamRequest -> ClientConnection:addUpstreamCallbacks() ➁
+UpstreamRequest -> ConnectionPool:connection()
+UpstreamRequest -> ClientConnection:write()
+deactivate UpstreamRequest
+deactivate Router
+deactivate ActiveMessage
+deactivate ActiveStream
+deactivate DecoderStateMachine
+deactivate DecoderStateMachine
+deactivate ConnectionManager
+deactivate ConnectionManager
+
+== process upstream data ==
+ClientConnection -> Router: onUpstreamData() ➁
+activate Router
+Router -> ActiveMessage:startUpstreamResponse()
+Router -> ActiveMessage:upstreamData()
+ActiveMessage -> ActiveResponseDecoder:onData()
+ActiveResponseDecoder -> ResponseDecoder:onData()
+ResponseDecoder -> DecoderStateMachine:run()
+
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: handleState()
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamHeader()
+DecoderStateMachine -> ActiveStream: constructor()
+ActiveStream -> DecoderStateMachine:newStream()
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamData()
+DecoderStateMachine -> ActiveStream:onStreamDecoded()
+ActiveStream -> ActiveResponseDecoder:onStreamDecoded()
+ActiveResponseDecoder -> Connection:write()
+deactivate DecoderStateMachine
+deactivate DecoderStateMachine
+deactivate Router
+'/
+@enduml

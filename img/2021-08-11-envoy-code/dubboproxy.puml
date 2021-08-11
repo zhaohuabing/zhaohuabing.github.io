@@ -1,0 +1,101 @@
+@startuml
+'skinparam handwritten true
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam defaultFontName FG Virgil
+skinparam shadowing false
+
+== Register DubboProxy Filter to Filter Manager ==
+DubboProxyFilterConfigFactory -> ConnectionManager:constructor()
+activate "DubboProxyFilterConfigFactory"
+"DubboProxyFilterConfigFactory" -> "FilterManagerImpl":addReadFilter(Filter) ➀   
+deactivate "DubboProxyFilterConfigFactory"
+
+== get downstream connection ==
+"FilterManagerImpl" -> "ConnectionManager":initializeReadFilterCallbacks(callbacks)
+
+/'
+== get upstream connection ==
+"FilterManagerImpl" -> "TcpProxy::Filter": onNewConnection()
+activate "TcpProxy::Filter"
+"TcpProxy::Filter" -> "TcpProxy::Filter": initializeUpstreamConnection()
+activate "TcpProxy::Filter"
+
+"TcpProxy::Filter" -> "TcpProxy::GenericConnPoolFactory":createGenericConnPool(upstream_callbacks_) ➂
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+"TcpProxy::Filter" -> "TcpProxy::GenericConnPool":newStream(GenericConnectionPoolCallbacks) ➃
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+deactivate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+"TcpProxy::GenericConnPool" -> "TcpProxy::Filter": onGenericPoolReady ➃
+'/
+
+== process downstream data ==
+FilterManagerImpl -> ConnectionManager: onData() ➀ 
+activate ConnectionManager
+ConnectionManager -> "ConnectionManager":dispatch() 
+activate ConnectionManager
+ConnectionManager -> RequestDecoder: onData()
+RequestDecoder -> DecoderStateMachine: run()
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: handleState()
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamHeader()
+DecoderStateMachine -> ActiveStream: constructor()
+ActiveStream -> DecoderStateMachine:newStream()
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamData()
+DecoderStateMachine -> ActiveStream:onStreamDecoded()
+activate ActiveStream
+ActiveStream -> ActiveMessage:onStreamDecoded()
+activate ActiveMessage
+ActiveMessage -> Router:onMessageDecoded()
+Router -> ActiveMessage:route()
+ActiveMessage -> ConnectionManager:config()
+activate Router
+Router -> ClusterManager:getThreadLocalCluster()
+Router -> ThreadLocalCluster:tcpConnPool()
+Router -> UpstreamRequest:constructor()
+Router -> UpstreamRequest:start()
+UpstreamRequest -> ConnectionPool:newConnection(*this)
+ConnectionPool -> UpstreamRequest:onPoolReady()
+activate UpstreamRequest
+UpstreamRequest -> ClientConnection:addUpstreamCallbacks() ➁
+UpstreamRequest -> ConnectionPool:connection()
+UpstreamRequest -> ClientConnection:write()
+deactivate UpstreamRequest
+deactivate Router
+deactivate ActiveMessage
+deactivate ActiveStream
+deactivate DecoderStateMachine
+deactivate DecoderStateMachine
+deactivate ConnectionManager
+deactivate ConnectionManager
+
+== process upstream data ==
+ClientConnection -> Router: onUpstreamData() ➁
+activate Router
+Router -> ActiveMessage:startUpstreamResponse()
+Router -> ActiveMessage:upstreamData()
+ActiveMessage -> ActiveResponseDecoder:onData()
+ActiveResponseDecoder -> ResponseDecoder:onData()
+ResponseDecoder -> DecoderStateMachine:run()
+
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: handleState()
+activate DecoderStateMachine
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamHeader()
+DecoderStateMachine -> ActiveStream: constructor()
+ActiveStream -> DecoderStateMachine:newStream()
+DecoderStateMachine -> DecoderStateMachine: onDecodeStreamData()
+DecoderStateMachine -> ActiveStream:onStreamDecoded()
+ActiveStream -> ActiveResponseDecoder:onStreamDecoded()
+ActiveResponseDecoder -> Connection:write()
+deactivate DecoderStateMachine
+deactivate DecoderStateMachine
+deactivate Router
+@enduml

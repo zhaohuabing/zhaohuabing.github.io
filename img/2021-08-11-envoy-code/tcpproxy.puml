@@ -1,0 +1,56 @@
+@startuml
+'skinparam handwritten true
+skinparam monochrome true
+skinparam packageStyle rect
+skinparam defaultFontName FG Virgil
+skinparam shadowing false
+
+participant "TcpProxy::Filter" 
+participant "Network::FilterManagerImpl" 
+
+== Register TcpProxy Filter to Filter Manager ==
+"Extensions::NetworkFilters::TcpProxy::ConfigFactory" -> "TcpProxy::Filter":constructor()
+activate "Extensions::NetworkFilters::TcpProxy::ConfigFactory"
+"Extensions::NetworkFilters::TcpProxy::ConfigFactory" -> "Network::FilterManagerImpl":addReadFilter(Filter) ➀   
+deactivate "Extensions::NetworkFilters::TcpProxy::ConfigFactory"
+
+== get downstream connection ==
+"Network::FilterManagerImpl" -> "TcpProxy::Filter":initializeReadFilterCallbacks(callbacks) ➁
+activate "TcpProxy::Filter"
+"TcpProxy::Filter" -> "TcpProxy::Filter":initialize(callbacks)
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+== get upstream connection ==
+"Network::FilterManagerImpl" -> "TcpProxy::Filter": onNewConnection()
+activate "TcpProxy::Filter"
+"TcpProxy::Filter" -> "TcpProxy::Filter": initializeUpstreamConnection()
+activate "TcpProxy::Filter"
+
+"TcpProxy::Filter" -> "TcpProxy::GenericConnPoolFactory":createGenericConnPool(upstream_callbacks_) ➂
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+"TcpProxy::Filter" -> "TcpProxy::GenericConnPool":newStream(GenericConnectionPoolCallbacks) ➃
+activate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+deactivate "TcpProxy::Filter"
+deactivate "TcpProxy::Filter"
+
+"TcpProxy::GenericConnPool" -> "TcpProxy::Filter": onGenericPoolReady ➃
+
+== process downstream data ==
+"Network::FilterManagerImpl" -> "TcpProxy::Filter": onData() ➀ 
+activate "TcpProxy::Filter"
+"TcpProxy::Filter" -> "TcpProxy::TcpUpstream":encodeData()  //write downstream data to upstream
+activate "TcpProxy::TcpUpstream"
+"TcpProxy::TcpUpstream" -> "Network::ClientConnection":write() 
+deactivate "TcpProxy::TcpUpstream"
+deactivate "TcpProxy::Filter"
+
+== process upstream data ==
+"TcpProxy::TcpConnPool" -> "TcpProxy::Filter": onUpstreamData() ➂
+"TcpProxy::Filter" -> "Network::ServerConnection":write() ➁
+@enduml

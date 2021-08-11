@@ -6,10 +6,19 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Apr 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Envoy</title>
+      <link>https://zhaohuabing.com/tags/envoy/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/envoy/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Kubernetes</title>
@@ -62,15 +71,6 @@
       <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/dubbo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Envoy</title>
-      <link>https://zhaohuabing.com/tags/envoy/</link>
-      <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/tags/envoy/</guid>
       <description></description>
     </item>
     

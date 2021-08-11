@@ -6,10 +6,19 @@
     <description>Recent content in Categories on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Apr 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Tech</title>
+      <link>https://zhaohuabing.com/categories/tech/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/categories/tech/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Knowledge Graph</title>
@@ -17,15 +26,6 @@
       <pubDate>Fri, 02 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/categories/knowledge-graph/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tech</title>
-      <link>https://zhaohuabing.com/categories/tech/</link>
-      <pubDate>Wed, 24 Mar 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/categories/tech/</guid>
       <description></description>
     </item>
     
