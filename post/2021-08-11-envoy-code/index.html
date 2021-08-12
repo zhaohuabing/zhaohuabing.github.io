@@ -165,7 +165,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://images.pexels.com/photos/206901/pexels-photo-206901.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
+        background-image: url('https://micrio-cdn.vangoghmuseum.nl/czMXZ/views/max/1800x1204.webp')
     }
 </style>
 <header class="intro-header">
@@ -354,11 +354,11 @@ $(function() {
   <ul>
     <li><a href="#tcp-proxy">TCP Proxy</a></li>
     <li><a href="#dubbo-proxy">Dubbo Proxy</a></li>
-    <li><a href="#rds">RDS</a></li>
+    <li><a href="#rrds">rRDS</a></li>
   </ul>
 </nav>
                 
-                <p>最近在实现 <a href="https://github.com/aeraki-framework/meta-protocol-proxy">MetaProtocol</a> 时阅读了 Envoy 相关的一些源码，并绘制了一些重要流程的 UML 时序图。</p>
+                <p>在实现 <a href="https://github.com/aeraki-framework/meta-protocol-proxy">MetaProtocol</a> 时阅读了 Envoy 源码。这里将一些重要流程的时序图记录下来，以备后续查看。</p>
 <h1 id="tcp-proxy">TCP Proxy</h1>
 
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
@@ -389,7 +389,22 @@ $(function() {
   </figure>
 </div>
 
-<h1 id="rds">RDS</h1>
+<h1 id="rrds">rRDS</h1>
+<p>rDS（路由发现服务）的代码包括下面三个主要的流程：</p>
+<ul>
+<li>订阅 rDS
+<ul>
+<li>执行线程：Main Thread</li>
+</ul>
+</li>
+<li>处理 rDS 的配置更新
+<ul>
+<li>执行线程：Main Thread</li>
+</ul>
+</li>
+<li>使用 rDS 配置对请求进行路由
+<ul>
+<li>执行线程：Worker Thread
 
 
 <div class="box" >
@@ -403,7 +418,10 @@ $(function() {
       </figcaption>
   </figure>
 </div>
-
+</li>
+</ul>
+</li>
+</ul>
 
 
                 
