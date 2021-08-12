@@ -17,7 +17,7 @@
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2021-08-11-envoy-code/</guid>
-      <description>在实现 MetaProtocol 时阅读了 Envoy 源码。这里将一些重要流程的时序图记录下来，以备后续查看。 TCP Proxy TCP Proxy 时序图 Dubbo Proxy Dubbo Proxy 时序图 rRDS rDS（路由发现服务）的代码包括下面</description>
+      <description>最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码。这里将一些重要流程的时序图记录下来，以备后续查看。 TCP Proxy TCP Proxy 时序图 Dubbo Proxy Dubbo Proxy 时序图 RDS RDS（路由发现服务）</description>
     </item>
     
     <item>

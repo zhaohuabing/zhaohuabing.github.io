@@ -21,9 +21,9 @@
     
 
     
-    <meta name="description" content="最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码，并绘制了一些重要流程的 UML 时序图。">
-    <meta property="og:description" content="最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码，并绘制了一些重要流程的 UML 时序图。" />
-    <meta property="twitter:description" content="最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码，并绘制了一些重要流程的 UML 时序图。" />
+    <meta name="description" content="最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码。这里将一些重要流程的时序图记录下来，以备后续查看。">
+    <meta property="og:description" content="最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码。这里将一些重要流程的时序图记录下来，以备后续查看。" />
+    <meta property="twitter:description" content="最近在实现 MetaProtocol 时阅读了 Envoy 相关的一些源码。这里将一些重要流程的时序图记录下来，以备后续查看。" />
     
 
     
@@ -165,7 +165,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://micrio-cdn.vangoghmuseum.nl/czMXZ/views/max/1800x1204.webp')
+        background-image: url('https://micrio-cdn.vangoghmuseum.nl/wTQHw/views/max/1800x1208.webp')
     }
 </style>
 <header class="intro-header">
@@ -354,11 +354,11 @@ $(function() {
   <ul>
     <li><a href="#tcp-proxy">TCP Proxy</a></li>
     <li><a href="#dubbo-proxy">Dubbo Proxy</a></li>
-    <li><a href="#rrds">rRDS</a></li>
+    <li><a href="#rds">RDS</a></li>
   </ul>
 </nav>
                 
-                <p>在实现 <a href="https://github.com/aeraki-framework/meta-protocol-proxy">MetaProtocol</a> 时阅读了 Envoy 源码。这里将一些重要流程的时序图记录下来，以备后续查看。</p>
+                <p>最近在实现 <a href="https://github.com/aeraki-framework/meta-protocol-proxy">MetaProtocol</a> 时阅读了 Envoy 相关的一些源码。这里将一些重要流程的时序图记录下来，以备后续查看。</p>
 <h1 id="tcp-proxy">TCP Proxy</h1>
 
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
@@ -389,35 +389,56 @@ $(function() {
   </figure>
 </div>
 
-<h1 id="rrds">rRDS</h1>
-<p>rDS（路由发现服务）的代码包括下面三个主要的流程：</p>
+<h1 id="rds">RDS</h1>
+<p>RDS（路由发现服务）的代码包括下面三个主要的流程：</p>
 <ul>
-<li>订阅 rDS
+<li>订阅 RDS
 <ul>
-<li>执行线程：Main Thread</li>
+<li>执行线程：<a href="https://blog.envoyproxy.io/envoy-threading-model-a8d44b922310">Main Thread</a></li>
+<li>工作流程：RDS 订阅是在 HCM 配置工厂类中处理的，详细流程如下：
+<ol>
+<li>Envoy 在初始化 Network Filter Chain 时调用 HttpConnectionManagerFilterConfigFactory 的 createFilterFactoryFromProtoTyped 方法。</li>
+<li>该方法中会创建一个 RouteConfigProviderManager 对象。代码中只会创建一个单实例，所有的 HCM 初始化过程会共用一个 RouteConfigProviderManager Singleton 对象。由于所有 HCM 初始化都是在 Main Thread 中进行的，因此对该 Singleton 的访问不会存在并发冲突。<a href="https://github.com/envoyproxy/envoy/blob/c98cd1320d7aed7bfa1de2a8313d1d116e68833a/source/extensions/filters/network/http_connection_manager/config.cc#L158">（相关代码）</a></li>
+<li>根据 HCM 的路由配置是 RDS 还是静态配置，分别创建 RdsRouteConfigProvider 或者 StaticRouteConfigProvider <a href="https://github.com/envoyproxy/envoy/blob/5b4bad85bd7adb923cf25dd319f8f3f45b7c2670/source/common/router/rds_impl.cc#L38">（相关代码）</a>。该方法中会创建一个 RdsRouteConfigSubscription 对象，该对象负责具体的订阅逻辑，然后再以 RdsRouteConfigSubscription 作为参数来创建 RdsRouteConfigSubscription。注意这里 RdsRouteConfigProvider 实例是和 RDS 配置的 hash 值一一对应的，同样的 RDS 配置（即 config_source 和 route_config_name 相同），只会创建一个 RdsRouteConfigProvider，以避免多个 HCM 重复订阅相同的 RDS。如果一个 RDS 配置对应的 RdsRouteConfigProvider 已经存在，会将已有的 RdsRouteConfigProvider 返回给 HCM 。即多个 HCM 配置的 RDS 相同的话，会共用一个 RdsRouteConfigProvider 实例。 <a href="https://github.com/envoyproxy/envoy/blob/5b4bad85bd7adb923cf25dd319f8f3f45b7c2670/source/common/router/rds_impl.cc#L338">（相关代码）</a>。</li>
+<li>在 RdsRouteConfigSubscription 的构造方法中，会从 context 中拿到 ClusterManager 的SubscriptionFactory，然后通过 subscriptionFromConfigSource 方法对该 RDS 进行订阅。 subscriptionFromConfigSource 方法中会将自身作为SubscriptionCallbacks 参数，以接收 RDS 更新通知。<a href="https://github.com/envoyproxy/envoy/blob/5b4bad85bd7adb923cf25dd319f8f3f45b7c2670/source/common/router/rds_impl.cc#L95">（相关代码）</a></li>
+</ol>
+</li>
 </ul>
 </li>
-<li>处理 rDS 的配置更新
+<li>处理 RDS 的配置更新
 <ul>
-<li>执行线程：Main Thread</li>
+<li>执行线程：<a href="https://blog.envoyproxy.io/envoy-threading-model-a8d44b922310">Main Thread</a></li>
+<li>工作流程：
+<ol>
+<li>RdsRouteConfigSubscription 的 onConfigUpdate 方法收到 RDS 配置更新的回调，然后调用 RdsRouteConfigProvider 的 onConfigUpdate 方法。<a href="https://github.com/envoyproxy/envoy/blob/5b4bad85bd7adb923cf25dd319f8f3f45b7c2670/source/common/router/rds_impl.cc#L115">（相关代码）</a></li>
+<li>RdsRouteConfigProvider 通过 <a href="https://blog.envoyproxy.io/envoy-threading-model-a8d44b922310">Thread local storage</a> 机制将配置更新到各个 worker thread 中。</li>
+</ol>
+</li>
 </ul>
 </li>
-<li>使用 rDS 配置对请求进行路由
+<li>使用 RDS 配置对请求进行路由
 <ul>
-<li>执行线程：Worker Thread
+<li>执行线程：<a href="https://blog.envoyproxy.io/envoy-threading-model-a8d44b922310">Worker Thread</a></li>
+<li>工作流程：
+<ol>
+<li>Envoy 调用到 Network Filter Chain 中的 HCM filter。</li>
+<li>HCM filter 调用到 HTTP Filter Chain 中的 Router。</li>
+<li>Router 拿到缓存的 RDS 配置，根据 RDS 配置进行路由。
 
 
 <div class="box" >
   <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
     <div class="img">
-      <img itemprop="thumbnail" src="/img/2021-08-11-envoy-code/rds.png" alt="Rds 时序图"/>
+      <img itemprop="thumbnail" src="/img/2021-08-11-envoy-code/rds.png" alt="RDS 时序图"/>
     </div>
     <a href="/img/2021-08-11-envoy-code/rds.png" itemprop="contentUrl"></a>
       <figcaption align="center">
-          <p>Rds 时序图</p>
+          <p>RDS 时序图</p>
       </figcaption>
   </figure>
 </div>
+</li>
+</ol>
 </li>
 </ul>
 </li>

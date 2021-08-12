@@ -26,6 +26,7 @@ else rds
     alt subscription for the rds source doesn't exist
             RouteConfigProviderManager -> RdsRouteConfigSubscription:constructor(rds)
             RdsRouteConfigSubscription -> SubscriptionFactory:subscriptionFromConfigSource(rds)
+            RouteConfigProviderManager -> RdsRouteConfigProvider:constructor(RdsRouteConfigSubscription)
     end
     deactivate RouteConfigProviderManager
 end
