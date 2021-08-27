@@ -6,10 +6,19 @@
     <description>Recent content in Istio on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Jul 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 26 Aug 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>合著：Istio Handbook—Istio 服务网格进阶实战</title>
+      <link>https://zhaohuabing.com/post/2021-08-26-istio-handbook/</link>
+      <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-08-26-istio-handbook/</guid>
+      <description>Istio Handbook——Istio 服务网格进阶实战 Istio 是由 Google、IBM、Lyft 等共同开源的 Service Mesh（服务网格）框架，于2017年初开</description>
+    </item>
     
     <item>
       <title>Istio Meetup China：全栈服务网格 - Aeraki 助你在 Istio 服务网格中管理任何七层流量</title>
