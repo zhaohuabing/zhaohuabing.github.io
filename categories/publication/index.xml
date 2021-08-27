@@ -20,5 +20,14 @@
       <description>“浮云飘进我的生活,没有带来雨水或迎来风暴,却为落日的天空增添了色彩” — 泰戈尔，飞鸟集 如果你想要学习或者构建一个现代化的云原生数据中心网络，</description>
     </item>
     
+    <item>
+      <title>合著：Istio Handbook—Istio 服务网格进阶实战</title>
+      <link>https://zhaohuabing.com/post/2021-08-26-istio-handbook/</link>
+      <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-08-26-istio-handbook/</guid>
+      <description>Istio Handbook——Istio 服务网格进阶实战 Istio 是由 Google、IBM、Lyft 等共同开源的 Service Mesh（服务网格）框架，于2017年初开</description>
+    </item>
+    
   </channel>
 </rss>
