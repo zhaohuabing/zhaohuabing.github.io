@@ -108,13 +108,17 @@
                         </li>
                         
                         <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/tech">tech</a>
                         </li>
                         
                     
                     
 		    
-                        <li><a href="/top/books/">BOOKS</a></li>
+                        <li><a href="/top/publications/">PUBLICATION</a></li>
                     
                         <li><a href="/top/about/">ABOUT</a></li>
                     
@@ -235,19 +239,19 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2021-03-02-manage-any-layer-7-traffic-in-istio/">
+    <a href="https://zhaohuabing.com/post/2020-10-14-redis-cluster-with-istio/">
         <h2 class="post-title">
-            IstioCon 2021 演讲分享：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？
+            在 Istio 中实现 Redis 集群的数据分片、读写分离和流量镜像
         </h2>
 	
         <div class="post-content-preview">
 	
-            本文根据腾讯云赵化冰和知乎唐阳在 IstioCon 2021 中的演讲 “How to Manage Any Layer-7 Traffic in an Istio Service Mesh?” 整理而成。
+            Redis 是一个高性能的 key-value 存储系统，被广泛用于微服务架构中。本文将介绍如何通过 Istio 和 Envoy 实现客户端无感知的 Redis Cluster 数据分片，并实现读写分离、流量镜像等高级流量管理功能。
         
         </div>
     </a>
     <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Tuesday, March 2, 2021
+    Posted by     &#34;赵化冰&#34; Tuesday, October 13, 2020
     
     
     </p>
@@ -256,19 +260,19 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2020-12-07-cnbps2020-istio-traffic-management/">
+    <a href="https://zhaohuabing.com/post/2020-09-19-headless-mtls/">
         <h2 class="post-title">
-            CNBPS 2020 Istio 流量管理原理与协议扩展
+            Istio 运维实战系列（3）：让人头大的『无头服务』-下
         </h2>
 	
         <div class="post-content-preview">
 	
-            通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。
+            本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。
         
         </div>
     </a>
     <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Monday, December 7, 2020
+    Posted by     &#34;赵化冰&#34; Saturday, September 19, 2020
     
     
     </p>
@@ -277,23 +281,19 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2020-11-12-cnbps2020/">
+    <a href="https://zhaohuabing.com/post/2020-09-11-headless-mtls/">
         <h2 class="post-title">
-            CNBPS 2020 云原生应用架构专场介绍
+            Istio 运维实战系列（2）：让人头大的『无头服务』-上
         </h2>
-	
-        <h3 class="post-subtitle">
-            11月19-21日，CNBPS 2020重磅回归！了解云原生趋势和最佳实践？来这一场就够了！
-        </h3>
 	
         <div class="post-content-preview">
 	
-            11月19-21日，CNBPS 2020重磅回归！ 作为一年一度的云原生科技盛会，众多云原生届的“顶流”将在这里聚集，展现云原生世界的科技想象力
-       
+            本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。
+        
         </div>
     </a>
     <p class="post-meta">
-    Posted by     &#34;赵化冰&#34; Thursday, November 12, 2020
+    Posted by     &#34;赵化冰&#34; Friday, September 11, 2020
     
     
     </p>
@@ -422,9 +422,13 @@
                 
             
                 
+            
+                
                     <a href="/tags/microservice" title="microservice">
                         microservice
                     </a>
+                
+            
                 
             
                 
@@ -451,6 +455,8 @@
                     <a href="/tags/opentracing" title="opentracing">
                         opentracing
                     </a>
+                
+            
                 
             
                 

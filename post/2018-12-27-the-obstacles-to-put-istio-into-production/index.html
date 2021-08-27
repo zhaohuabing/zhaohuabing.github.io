@@ -108,13 +108,17 @@
                         </li>
                         
                         <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/tech">tech</a>
                         </li>
                         
                     
                     
 		    
-                        <li><a href="/top/books/">BOOKS</a></li>
+                        <li><a href="/top/publications/">PUBLICATION</a></li>
                     
                         <li><a href="/top/about/">ABOUT</a></li>
                     
@@ -391,12 +395,12 @@ $(function() {
 </nav>
                 
                 <blockquote>
-<p><!-- raw HTML omitted -->What is service mesh?<!-- raw HTML omitted -->
-<!-- raw HTML omitted --><!-- raw HTML omitted -->
+<p><B>What is service mesh?</B>
+<BR><BR>
 Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services.
-<!-- raw HTML omitted --><!-- raw HTML omitted -->
-<!-- raw HTML omitted -->What is Istio?<!-- raw HTML omitted -->
-<!-- raw HTML omitted --><!-- raw HTML omitted -->
+<BR><BR>
+<B>What is Istio?</B>
+<BR><BR>
 Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an open platform, Istio lets you connect, secure, control, and observe services.</p>
 </blockquote>
 <p>I have been following the Istio project from its early stage. Over time, it turned out Istio has a good architecture, an active community, promising features and also strong support from big companies. So, after its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.</p>
@@ -410,14 +414,14 @@ Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/microservices.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>A software system consisting of both “fine-grained” and “coarse-grained” services</center>
 <p>To achieve this goal, we created our own service registry (which is based on Consul). All the services are still deployed in Kubernetes cluster, but we integrate our own service registry, instead of Kubernetes, into Pilot instead of Kubernetes. All the “fine-grained” and “coarse-grained” services are registered to this service registry, then these services are pushed to Pilot via a customized Pilot service registry adapter.</p>
 <p>With this approach, both the Microservice applications and SOA applications can be managed in the service mesh and interconnect with each other. An additional benefit is that we can even build a hybrid service mesh across Kubernetes clusters and VM/BearMetals, allowing more legacy systems integrated into service mesh without significant changes to their existing software architecture and deployment model.
 
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/hybrid-service-mesh.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Hybrid Service Mesh for all kind of service</center>
 <h1 id="support-multiple-network-interfaces">Support multiple network interfaces</h1>
 <h2 id="why-we-need-multiple-network-interfaces">Why we need multiple network interfaces</h2>
 <p>Istio has been highly integrated with Kubernetes, therefore, it’s not surprising that Istio now only allows one network interface for each node in the mesh. This is because in Kubernetes each pod only has one network interface (apart from a loopback).</p>
@@ -436,14 +440,15 @@ Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/multi-network-issue.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Envoy crash caused by incorrect listeners</center>
 <h2 id="how-to-support-multiple-interfaces">How to support multiple interfaces</h2>
 <p>All the IPs of the node should be sent to Pilot with the discovery request. So Pilot can use all the IP addresses to tell which services are located with the proxy and build correct inbound listeners for that proxy.
 
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/multi-network-solution.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>The solution for multiple network interfaces</center>
+A pull request has already been submitted to fix it. Multiple network interfaces support will be available in Istio release 1.1.
 <p>RP: <a href="https://github.com/istio/istio/pull/9688">https://github.com/istio/istio/pull/9688</a></p>
 <p>Issue: <a href="https://github.com/istio/istio/issues/9441">https://github.com/istio/istio/issues/9441</a></p>
 <h1 id="service-mesh-and-api-gateway">Service Mesh and API Gateway</h1>
@@ -457,7 +462,7 @@ Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/ingress-comparation.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Functionalities of Kubernetes ingress, Istio gateway and API gateway</center>
 <h2 id="service-mesh-and-api-gateway-should-work-together">Service mesh and API Gateway should work together</h2>
 <p>As we discussed above, neither Istio Gateway nor API gateway could finish the jobs on their own. So it’s better to have them work together to provide a comprehensive, full-functional traffic entrance for the service mesh.</p>
 <p>The below figure illustrates how API Gateway and mesh sidecar can coexist. API Gateway offloads the service discovery and traffic management features to the sidecar and focuses on the API management features. It’s a much clearer picture, the two components now are serving two fundamentally different requirements.</p>
@@ -465,7 +470,7 @@ Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/api-gateway-and-envoy.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>How API gateway and service mesh works together</center>
 <h1 id="the-missing-part-async-communication">The missing part: async communication</h1>
 <p>There are two inter-service communication styles for microservices - sync RPC (Remote Procedure Call) and async messaging. However, Istio only addressed one of them, async communication support is totally missed right now. If you are serious about leveraging Istio in production, this is one thing you have to consider.</p>
 <p>For us, one important use case is canary deployment. Both the REST requests and Kafka messages should be split between old and new versions when implementing a canary deployment, but Istio can only deal with REST traffic.</p>
@@ -474,7 +479,7 @@ Istio is an open-source service mesh project lead by Google, IBM and Lyft. As an
   <img src="/img/2018-12-27-the-obstacles-to-put-istio-into-production/async.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Async messaging splitting between services</center>
 <h1 id="conclusion">Conclusion</h1>
 <p>Istio provides an infrastructure layer to facilitate the communication and management for microservice. Istio doesn&rsquo;t eliminate the complexity brought by microservice architecture, but it can shift the complexity from individual microservice to an abstract layer in a unified manner to make it more manageable.</p>
 <p>If you have any thoughts, please leave a message under the article or contact me by <a href="mailto:zhaohuabing@gmail.com">email</a>.</p>
@@ -619,9 +624,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="microservice">
                             microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -648,6 +657,8 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/opentracing" title="opentracing">
                             opentracing
                         </a>
+                        
+                        
                         
                         
                         

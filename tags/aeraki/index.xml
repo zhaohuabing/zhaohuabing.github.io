@@ -6,13 +6,22 @@
     <description>Recent content in Aeraki on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 Jul 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/aeraki/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>IstioCon 2021 演讲分享：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？</title>
+      <title>Istio Meetup China：全栈服务网格 - Aeraki 助你在 Istio 服务网格中管理任何七层流量</title>
+      <link>https://zhaohuabing.com/post/2021-07-10-full-stack-service-mesh/</link>
+      <pubDate>Sat, 10 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-07-10-full-stack-service-mesh/</guid>
+      <description>主题简介 流量管理是 Istio 服务网格的核心能力，然而 Istio 缺省只提供了 HTTP 和 gRPC 两种协议的七层管理能力。对于微服务中常用的其他协议，包括 RPC、Messag</description>
+    </item>
+    
+    <item>
+      <title>IstioCon 2021：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？</title>
       <link>https://zhaohuabing.com/post/2021-03-02-manage-any-layer-7-traffic-in-istio/</link>
       <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       

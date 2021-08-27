@@ -108,13 +108,17 @@
                         </li>
                         
                         <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/tech">tech</a>
                         </li>
                         
                     
                     
 		    
-                        <li><a href="/top/books/">BOOKS</a></li>
+                        <li><a href="/top/publications/">PUBLICATION</a></li>
                     
                         <li><a href="/top/about/">ABOUT</a></li>
                     
@@ -406,7 +410,7 @@ $(function() {
   <img src="/img/2018-12-19-multi-network-interfaces-for-istio/knitter-network-topology.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Kubernetes多网络平面开源项目[Knitter](https://github.com/ZTE/Knitter/)</center>
 <p>除了NFV的应用场景，Istio也支持除Kubernetes之外的其他部署环境，例如虚机和裸金属部署。在这些场景下，一个Host具有多个网络接口的场景也是很常见的，例如同时需要被内部和外部网络访问的Host就会有两个网络接口。</p>
 <h1 id="istio在多网络平面下的问题">Istio在多网络平面下的问题</h1>
 <p>在1.0版本中，Pilot在创建Inbound listener时未考虑多网络平面的情况，因此在Envoy所在节点存在多个IP时的处理逻辑存在问题。</p>
@@ -415,7 +419,7 @@ $(function() {
   <img src="/img/2018-12-19-multi-network-interfaces-for-istio/envoy-crash.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Istio在多网络平面场景下的问题</center>
 <h2 id="服务注册">服务注册</h2>
 <ol>
 <li>Envoy所在节点存在两个网络接口，分别连接到10.75.8.0/24和192.168.10.0/24两个网络上。</li>
@@ -443,7 +447,7 @@ $(function() {
   <img src="/img/2018-12-19-multi-network-interfaces-for-istio/multi-network-solution.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Istio多网络平面解决方案</center>
 <h2 id="服务注册流程不变">服务注册（流程不变）</h2>
 <ol>
 <li>Envoy所在节点存在两个网络接口，分别连接到10.75.8.0/24和192.168.10.0/24两个网络上。</li>
@@ -465,7 +469,7 @@ $(function() {
 <li>Envoy将请求发送到127.0.0.1的Service A进程的服务端口上进行处理。</li>
 </ol>
 <p>该修改方案已实现并提交PR合入到Istio 代码中，在1月份发布的Istio 1.1 Release中将会正式支持。</p>
-<p>RP: <a href="https://github.com/istio/istio/pull/9688">https://github.com/istio/istio/pull/9688</a><!-- raw HTML omitted -->
+<p>RP: <a href="https://github.com/istio/istio/pull/9688">https://github.com/istio/istio/pull/9688</a><br>
 Issue: <a href="https://github.com/istio/istio/issues/9441">https://github.com/istio/istio/issues/9441</a></p>
 <h1 id="参考资料">参考资料</h1>
 <ol>
@@ -613,9 +617,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="microservice">
                             microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -642,6 +650,8 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/opentracing" title="opentracing">
                             opentracing
                         </a>
+                        
+                        
                         
                         
                         

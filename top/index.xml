@@ -21,11 +21,11 @@
     
     <item>
       <title></title>
-      <link>https://zhaohuabing.com/top/books/</link>
+      <link>https://zhaohuabing.com/top/publications/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/top/books/</guid>
-      <description>Istio Handbook——Istio 服务网格进阶实战 合著：该电子书为国内Service Mesh技术开源社区ServiceMesher合著，我作为</description>
+      <guid>https://zhaohuabing.com/top/publications/</guid>
+      <description>云原生数据中心网络 原著：vxlan 发明者 Dinesh G. Dutt 的巨著，介绍了云原生数据中心的架构、设计、相关技术及最佳实践。 出版社：中国电力出版社/O&amp;rs</description>
     </item>
     
   </channel>

@@ -108,13 +108,17 @@
                         </li>
                         
                         <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/tech">tech</a>
                         </li>
                         
                     
                     
 		    
-                        <li><a href="/top/books/">BOOKS</a></li>
+                        <li><a href="/top/publications/">PUBLICATION</a></li>
                     
                         <li><a href="/top/about/">ABOUT</a></li>
                     
@@ -376,7 +380,7 @@ $(function() {
   <img src="https://img.zhaohuabing.com/in-post/2018-02-03-authentication-and-authorization-of-microservice/auth-scenarios.png" alt="微服务认证和鉴权涉及到的三种场景">
 
 </p>
-<!-- raw HTML omitted -->
+<center>微服务认证和鉴权涉及到的三种场景</center>
 <h2 id="用户认证和鉴权">用户认证和鉴权</h2>
 <h3 id="用户身份认证">用户身份认证</h3>
 <p>一个完整的微服务应用是由多个相互独立的微服务进程组成的，对每个微服务的访问都需要进行用户认证。如果将用户认证的工作放到每个微服务中，存在下面一些问题：</p>
@@ -393,7 +397,7 @@ $(function() {
 <p>Token用于表明用户身份，因此需要对其内容进行加密，避免被请求方或者第三者篡改。<a href="https://jwt.io">JWT(Json Web Token)</a>是一个定义Token格式的开放标准(RFC 7519),定义了Token的内容，加密方式，并提供了各种语言的lib。</p>
 <p>JWT Token的结构非常简单，包括三部分：</p>
 <ul>
-<li>Header<!-- raw HTML omitted -->
+<li>Header<BR>
 头部包含类型,为固定值JWT。然后是JWT使用的Hash算法。</li>
 </ul>
 <pre><code>{
@@ -401,7 +405,7 @@ $(function() {
   &quot;typ&quot;: &quot;JWT&quot;
 }
 </code></pre><ul>
-<li>Payload<!-- raw HTML omitted -->
+<li>Payload<BR>
 包含发布者，过期时间，用户名等标准信息，也可以添加用户角色，用户自定义的信息。</li>
 </ul>
 <pre><code>{
@@ -410,7 +414,7 @@ $(function() {
   &quot;admin&quot;: true
 }
 </code></pre><ul>
-<li>Signature<!-- raw HTML omitted -->
+<li>Signature<BR>
 Token颁发方的签名，用于客户端验证Token颁发方的身份，也用于服务器防止Token被篡改。
 签名算法</li>
 </ul>
@@ -437,7 +441,7 @@ Token颁发方的签名，用于客户端验证Token颁发方的身份，也用�
 
 </li>
 </ol>
-<!-- raw HTML omitted -->
+<center>采用Token进行用户认证的流程图</center>
 <h3 id="实现单点登录">实现单点登录</h3>
 <p>单点登录的理念很简单，即用户只需要登录应用一次，就可以访问应用中所有的微服务。API Gateway提供了客户端访问微服务应用的入口，Token实现了无状态的用户认证。结合这两种技术，可以为微服务应用实现一个单点登录方案。</p>
 <p>用户的认证流程和采用Token方式认证的基本流程类似，不同之处是加入了API Gateway作为外部请求的入口。</p>
@@ -459,7 +463,7 @@ Token颁发方的签名，用于客户端验证Token颁发方的身份，也用�
 
 </li>
 </ol>
-<!-- raw HTML omitted -->
+<center>采用API Gateway和Token实现微服务应用的单点登录</center>
 <h3 id="用户权限控制">用户权限控制</h3>
 <p>用户权限控制有两种做法，在API Gateway处统一处理，或者在各个微服务中单独处理。</p>
 <h4 id="api-gateway处进行统一的权限控制">API Gateway处进行统一的权限控制</h4>
@@ -642,9 +646,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="microservice">
                             microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -671,6 +679,8 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/opentracing" title="opentracing">
                             opentracing
                         </a>
+                        
+                        
                         
                         
                         

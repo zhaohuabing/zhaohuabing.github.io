@@ -108,13 +108,17 @@
                         </li>
                         
                         <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/tech">tech</a>
                         </li>
                         
                     
                     
 		    
-                        <li><a href="/top/books/">BOOKS</a></li>
+                        <li><a href="/top/publications/">PUBLICATION</a></li>
                     
                         <li><a href="/top/about/">ABOUT</a></li>
                     
@@ -413,34 +417,34 @@ $(function() {
 <p>为解决该问题，Kubernetes提供了Service资源，Service对提供同一个服务的多个Pod进行聚合。一个Service提供一个虚拟的Cluster IP，后端对应一个或者多个提供服务的Pod。在集群中访问该Service时，采用Cluster IP即可，Kube-proxy负责将发送到Cluster IP的请求转发到后端的Pod上。</p>
 <p>Kube-proxy是一个运行在每个节点上的go应用程序，支持三种工作模式：</p>
 <ul>
-<li><strong>userspace</strong> <!-- raw HTML omitted -->
-该模式下kube-proxy会为每一个Service创建一个监听端口。发向Cluster IP的请求被Iptables规则重定向到Kube-proxy监听的端口上，Kube-proxy根据LB算法选择一个提供服务的Pod并和其建立链接，以将请求转发到Pod上。<!-- raw HTML omitted -->
+<li><strong>userspace</strong> <br>
+该模式下kube-proxy会为每一个Service创建一个监听端口。发向Cluster IP的请求被Iptables规则重定向到Kube-proxy监听的端口上，Kube-proxy根据LB算法选择一个提供服务的Pod并和其建立链接，以将请求转发到Pod上。<br>
 该模式下，Kube-proxy充当了一个四层Load balancer的角色。由于kube-proxy运行在userspace中，在进行转发处理时会增加两次内核和用户空间之间的数据拷贝，效率较另外两种模式低一些；好处是当后端的Pod不可用时，kube-proxy可以重试其他Pod。</li>
 </ul>
 <p>
   <img src="https://d33wubrfki0l68.cloudfront.net/e351b830334b8622a700a8da6568cb081c464a9b/13020/images/docs/services-userspace-overview.svg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Kube-proxy userspace模式（来自[Kubernetes官网文档](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies/)<sup>[[1]](#ref01)</sup>)</center>
 <ul>
-<li><strong>iptables</strong><!-- raw HTML omitted -->
-为了避免增加内核和用户空间的数据拷贝操作，提高转发效率，Kube-proxy提供了iptables模式。在该模式下，Kube-proxy为service后端的每个Pod创建对应的iptables规则，直接将发向Cluster IP的请求重定向到一个Pod IP。<!-- raw HTML omitted -->
+<li><strong>iptables</strong><br>
+为了避免增加内核和用户空间的数据拷贝操作，提高转发效率，Kube-proxy提供了iptables模式。在该模式下，Kube-proxy为service后端的每个Pod创建对应的iptables规则，直接将发向Cluster IP的请求重定向到一个Pod IP。<br>
 该模式下Kube-proxy不承担四层代理的角色，只负责创建iptables规则。该模式的优点是较userspace模式效率更高，但不能提供灵活的LB策略，当后端Pod不可用时也无法进行重试。</li>
 </ul>
 <p>
   <img src="https://d33wubrfki0l68.cloudfront.net/27b2978647a8d7bdc2a96b213f0c0d3242ef9ce0/e8c9b/images/docs/services-iptables-overview.svg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Kube-proxy iptables模式（来自[Kubernetes官网文档](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies/)<sup>[[1]](#ref01)</sup>)</center>
 <ul>
-<li><strong>ipvs</strong> <!-- raw HTML omitted -->
+<li><strong>ipvs</strong> <br>
 该模式和iptables类似，kube-proxy监控Pod的变化并创建相应的ipvs rules。ipvs也是在kernel模式下通过netfilter实现的，但采用了hash table来存储规则，因此在规则较多的情况下，Ipvs相对iptables转发效率更高。除此以外，ipvs支持更多的LB算法。如果要设置kube-proxy为ipvs模式，必须在操作系统中安装IPVS内核模块。</li>
 </ul>
 <p>
   <img src="https://d33wubrfki0l68.cloudfront.net/2d3d2b521cf7f9ff83238218dac1c019c270b1ed/9ac5c/images/docs/services-ipvs-overview.svg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Kube-proxy ipvs模式（来自[Kubernetes官网文档](https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies/)<sup>[[1]](#ref01)</sup>)</center>
 <h2 id="istio-sidecar-proxy">Istio Sidecar Proxy</h2>
 <p>Cluster IP解决了服务之间相互访问的问题，但从上面Kube-proxy的三种模式可以看到，Cluster IP的方式只提供了服务发现和基本的LB功能。如果要为服务间的通信应用灵活的路由规则以及提供Metrics collection，distributed tracing等服务管控功能,就必须得依靠Istio提供的服务网格能力了。</p>
 <p>在Kubernetes中部署Istio后，Istio通过iptables和Sidecar Proxy接管服务之间的通信，服务间的相互通信不再通过Kube-proxy，而是通过Istio的Sidecar Proxy进行。请求流程是这样的：Client发起的请求被iptables重定向到Sidecar Proxy，Sidecar Proxy根据从控制面获取的服务发现信息和路由规则，选择一个后端的Server Pod创建链接，代理并转发Client的请求。</p>
@@ -449,7 +453,7 @@ $(function() {
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-inter-services-communication.jpg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Istio Sidecar Proxy</center>
 <h1 id="如何从外部网络访问">如何从外部网络访问</h1>
 <p>Kubernetes的Pod IP和Cluster IP都只能在集群内部访问，而我们通常需要从外部网络上访问集群中的某些服务，Kubernetes提供了下述几种方式来为集群提供外部流量入口。</p>
 <h2 id="nodeport">NodePort</h2>
@@ -514,7 +518,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/NodePort.jpg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>NodePort</center>
 <h2 id="loadbalancer">LoadBalancer</h2>
 <p>NodePort提供了一种从外部网络访问Kubernetes集群内部Service的方法，但该方法存在下面一些限制，导致这种方式主要适用于程序开发，不适合用于产品部署。</p>
 <ul>
@@ -528,47 +532,48 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Load-Balancer.jpg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>NodeBalancer</center>
 <blockquote>
 <p>备注：LoadBalancer类型需要云服务提供商的支持，Service中的定义只是在Kubernetes配置文件中提出了一个要求，即为该Service创建Load Balancer，至于如何创建则是由Google Cloud或Amazon Cloud等云服务商提供的，创建的Load Balancer的过程不在Kubernetes Cluster的管理范围中。</p>
-<!-- raw HTML omitted -->
+<br>
+目前WS, Azure, CloudStack, GCE 和 OpenStack 等主流的公有云和私有云提供商都可以为Kubernetes提供Load Balancer。一般来说，公有云提供商还会为Load Balancer提供一个External IP，以提供Internet接入。如果你的产品没有使用云提供商，而是自建Kubernetes Cluster，则需要自己提供LoadBalancer。
 </blockquote>
 <h2 id="ingress">Ingress</h2>
 <p>LoadBalancer类型的Service提供的是四层负载均衡器，当只需要向外暴露一个服务的时候，采用这种方式是没有问题的。但当一个应用需要对外提供多个服务时，采用该方式则要求为每一个四层服务（IP+Port）都创建一个外部load balancer。</p>
 <p>一般来说，同一个应用的多个服务/资源会放在同一个域名下，在这种情况下，创建多个Load balancer是完全没有必要的，反而带来了额外的开销和管理成本。另外直接将服务暴露给外部用户也会导致了前端和后端的耦合，影响了后端架构的灵活性，如果以后由于业务需求对服务进行调整会直接影响到客户端。</p>
 <p>在这种情况下，我们可以通过使用Kubernetes Ingress来统一网络入口。Kubernetes Ingress声明了一个应用层（OSI七层）的负载均衡器，可以根据HTTP请求的内容将来自同一个TCP端口的请求分发到不同的Kubernetes Service，其功能包括：</p>
 <ul>
-<li><strong>按HTTP请求的URL进行路由</strong> <!-- raw HTML omitted -->
+<li><strong>按HTTP请求的URL进行路由</strong> <BR>
 同一个TCP端口进来的流量可以根据URL路由到Cluster中的不同服务，如下图所示：
 
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress-url-fanout.png" alt="">
 
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<center>Simple fanout</center>
 <ul>
-<li><strong>按HTTP请求的Host进行路由</strong> <!-- raw HTML omitted -->
+<li><strong>按HTTP请求的Host进行路由</strong> <BR>
 同一个IP进来的流量可以根据HTTP请求的Host路由到Cluster中的不同服务，如下图所示：
 
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress-name-based-route.png" alt="">
 
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<center>Name based virtual hosting</center>
 <p>Ingress 规则定义了对七层网关的要求，包括URL分发规则，基于不同域名的虚拟主机，SSL证书等。Kubernetes使用Ingress Controller 来监控Ingress规则，并通过一个七层网关来实现这些要求，一般可以使用Nginx，HAProxy，Envoy等。</p>
 <p>虽然Ingress Controller通过七层网关为后端的多个Service提供了统一的入口，但由于其部署在集群中，因此并不能直接对外提供服务。实际上Ingress需要配合NodePort和LoadBalancer才能提供对外的流量入口，如下图所示：
 
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress&#43;Nodeport&#43;LoadBalancer-Topo.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>采用Ingress, NodePortal和LoadBalancer提供外部流量入口的拓扑结构</center>
 <p>上图描述了如何采用Ingress配合NodePort和Load Balancer为集群提供外部流量入口，从该拓扑图中可以看到该架构的伸缩性非常好，在NodePort，Ingress，Pod等不同的接入层面都可以对系统进行水平扩展，以应对不同的外部流量要求。</p>
 <p>上图只展示了逻辑架构，下面的图展示了具体的实现原理：
 
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Ingress&#43;NodePort&#43;LoadBalancer-deep-dive.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>采用Ingress, NodePortal和LoadBalancer提供外部流量入口的实现原理</center>
 <p>流量从外部网络到达Pod的完整路径如下：</p>
 <ol>
 <li>外部请求先通过四层Load Balancer进入内部网络</li>
@@ -590,7 +595,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/K8s-ingress-and-Istio.jpg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>采用Kubernetes Ingress作为服务网格的流量入口</center>
 <h2 id="istio-gateway">Istio Gateway</h2>
 <p>Istio社区意识到了Ingress和Mesh内部配置割裂的问题，因此从0.8版本开始，社区采用了 Gateway 资源代替K8s Ingress来表示流量入口。</p>
 <p>Istio Gateway资源本身只能配置L4-L6的功能，例如暴露的端口，TLS设置等；但Gateway可以和绑定一个VirtualService，在VirtualService 中可以配置七层路由规则，这些七层路由规则包括根据按照服务版本对请求进行导流，故障注入，HTTP重定向，HTTP重写等所有Mesh内部支持的路由规则。</p>
@@ -600,7 +605,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/Istio-Ingress.jpg" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>采用 Istio Ingress Gateway作为服务网格的流量入口</center>
 <h2 id="应用对api-gateway的需求">应用对API Gateway的需求</h2>
 <p>采用Gateway和VirtualService实现的Istio Ingress Gateway提供了网络入口处的基础通信功能，包括可靠的通信和灵活的路由规则。但对于一个服务化应用来说，网络入口除了基础的通讯功能之外，还有一些其他的应用层功能需求，例如：</p>
 <ul>
@@ -615,7 +620,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
   <img src="https://zhaohuabing.com/img/2018-12-27-the-obstacles-to-put-istio-into-production/ingress-comparation.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>Kubernetes ingress, Istio gateway and API gateway的功能对比</center>
 <p>API Gateway需求中很大一部分需要根据不同的应用系统进行定制，目前看来暂时不大可能被纳入K8s Ingress或者Istio Gateway的规范之中。为了满足这些需求，涌现出了各类不同的k8s Ingress Controller以及Istio Ingress Gateway实现，包括Ambassador ，Kong, Traefik,Solo等。</p>
 <p>这些网关产品在实现在提供基础的K8s Ingress能力的同时，提供了强大的API Gateway功能，但由于缺少统一的标准，这些扩展实现之间相互之间并不兼容。而且遗憾的是，目前这些Ingress controller都还没有正式提供和Istio 控制面集成的能力。</p>
 <blockquote>
@@ -632,7 +637,7 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
   <img src="/img/2019-03-29-how-to-choose-ingress-for-service-mesh/API-Gateway-and-Sidecar-Proxy-as-Ingress-for-Istio.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center>采用API Gateway + Sidecar Proxy为服务网格提供流量入口</center>
 <blockquote>
 <p>备注：在实际部署时，API Gateway前端需要采用NodePort和LoadBalancer提供外部流量入口。为了突出主题，对上图进行了简化，没有画出NodePort和LoadBalancer。</p>
 </blockquote>
@@ -642,10 +647,10 @@ KUBE-SERVICES -d 10.103.188.73/32 -p tcp -m comment --comment <span style="color
 <p>对于吞吐量而言，如果入口处的网络吞吐量存在瓶颈，则可以通过对API Gateway + Sidecar Proxy组成的Ingress整体进行水平扩展，来对入口流量进行负荷分担，以提高网格入口的网络吞吐量。</p>
 <h1 id="参考资料">参考资料</h1>
 <ol>
-<li><!-- raw HTML omitted --><a href="https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies">https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies</a><!-- raw HTML omitted --></li>
-<li><!-- raw HTML omitted --><a href="https://zhaohuabing.com/2017/11/28/access-application-from-outside/#undefined">https://zhaohuabing.com/2017/11/28/access-application-from-outside/#undefined</a><!-- raw HTML omitted --></li>
-<li><!-- raw HTML omitted --><a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0">https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0</a><!-- raw HTML omitted --></li>
-<li><!-- raw HTML omitted --><a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/#service-mesh-and-api-gateway">https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/#service-mesh-and-api-gateway</a><!-- raw HTML omitted --></li>
+<li><a id="ref01"><a href="https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies">https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies</a></a></li>
+<li><a id="ref02"><a href="https://zhaohuabing.com/2017/11/28/access-application-from-outside/#undefined">https://zhaohuabing.com/2017/11/28/access-application-from-outside/#undefined</a></a></li>
+<li><a id="ref03"><a href="https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0">https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0</a></a></li>
+<li><a id="ref04"><a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/#service-mesh-and-api-gateway">https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/#service-mesh-and-api-gateway</a></a></li>
 </ol>
 
 
@@ -788,9 +793,13 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/microservice" title="microservice">
                             microservice
                         </a>
+                        
+                        
                         
                         
                         
@@ -817,6 +826,8 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/opentracing" title="opentracing">
                             opentracing
                         </a>
+                        
+                        
                         
                         
                         

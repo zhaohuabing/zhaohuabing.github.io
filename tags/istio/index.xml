@@ -6,13 +6,22 @@
     <description>Recent content in Istio on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 10 Jul 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>IstioCon 2021 演讲分享：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？</title>
+      <title>Istio Meetup China：全栈服务网格 - Aeraki 助你在 Istio 服务网格中管理任何七层流量</title>
+      <link>https://zhaohuabing.com/post/2021-07-10-full-stack-service-mesh/</link>
+      <pubDate>Sat, 10 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-07-10-full-stack-service-mesh/</guid>
+      <description>主题简介 流量管理是 Istio 服务网格的核心能力，然而 Istio 缺省只提供了 HTTP 和 gRPC 两种协议的七层管理能力。对于微服务中常用的其他协议，包括 RPC、Messag</description>
+    </item>
+    
+    <item>
+      <title>IstioCon 2021：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？</title>
       <link>https://zhaohuabing.com/post/2021-03-02-manage-any-layer-7-traffic-in-istio/</link>
       <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       
@@ -21,7 +30,7 @@
     </item>
     
     <item>
-      <title>CNBPS 2020 Istio 流量管理原理与协议扩展</title>
+      <title>CNBPS 2020：Istio 流量管理原理与协议扩展</title>
       <link>https://zhaohuabing.com/post/2020-12-07-cnbps2020-istio-traffic-management/</link>
       <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
       
@@ -30,7 +39,7 @@
     </item>
     
     <item>
-      <title>CNBPS 2020 云原生应用架构专场介绍</title>
+      <title>CNBPS 2020：云原生应用架构专场介绍</title>
       <link>https://zhaohuabing.com/post/2020-11-12-cnbps2020/</link>
       <pubDate>Thu, 12 Nov 2020 00:00:00 +0000</pubDate>
       
@@ -156,7 +165,7 @@
     </item>
     
     <item>
-      <title>Service Mesh是下一代SDN吗？</title>
+      <title>Service Mesher Meetup 成都站：Service Mesh是下一代SDN吗？</title>
       <link>https://zhaohuabing.com/post/2019-10-26-what-can-service-mesh-learn-from-sdn/</link>
       <pubDate>Sat, 26 Oct 2019 00:00:00 +0000</pubDate>
       
@@ -242,7 +251,7 @@
       <pubDate>Thu, 27 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/</guid>
-      <description>What is service mesh?Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services. What is Istio?Istio is an</description>
+      <description>What is service mesh? Service mesh is becoming yet another fancy name in the cloud-native world this year. What exactly it is? By definition, service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud-native application. Besides, it also facilitates the governance of services. What is Istio? Istio</description>
     </item>
     
     <item>
@@ -261,6 +270,15 @@
       
       <guid>https://zhaohuabing.com/post/2018-10-29-envoy-build/</guid>
       <description>Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微</description>
+    </item>
+    
+    <item>
+      <title>Istio微服务平台集成实践</title>
+      <link>https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/</link>
+      <pubDate>Thu, 18 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/</guid>
+      <description>前言 Istio发布1.0版本后，其服务发现和路由规则功能已基本具备production能力，我们也开始了Istio和公司内部微服务平台的集成</description>
     </item>
     
     <item>

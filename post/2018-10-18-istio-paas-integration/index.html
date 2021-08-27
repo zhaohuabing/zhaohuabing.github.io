@@ -108,13 +108,17 @@
                         </li>
                         
                         <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
                             <a href="/categories/tech">tech</a>
                         </li>
                         
                     
                     
 		    
-                        <li><a href="/top/books/">BOOKS</a></li>
+                        <li><a href="/top/publications/">PUBLICATION</a></li>
                     
                         <li><a href="/top/about/">ABOUT</a></li>
                     
@@ -412,7 +416,7 @@ $(function() {
   <img src="/img/2018-10-18-istio-paas-integration/current_architecture.png" alt="">
 
 </p>
-<!-- raw HTML omitted -->
+<center></center>
 <h2 id="服务注册">服务注册</h2>
 <p>电信领域与IT领域相比有一些特殊性，其中一点就是多网络平面的需求。多网络平面是电信领域的一个术语，通俗来讲就是系统中存在多个网络。采用多个网络的目的一般是为了管理原因，例如管理系统采用一个网络进行通信，而应用之间的通信在另一个网络上，这多个网络之间是相互隔离的。</p>
 <p>采用多网络平面后，和标准的K8S网络模型有所不同，标准的K8S集群中的一个Pod上只会有一个网络接口。我们的PaaS对K8S的网络进行了扩展，使其支持多个网络，即一个Pod上可以有多个网络接口（该解决方案已开源，参见https://github.com/ZTE/Knitter）。</p>
@@ -534,6 +538,8 @@ var disq = new iDisqus('disqus-comment', {
                         
                         
                         
+                        
+                        
                         <a href="/tags/api-gateway" title="api-gateway">
                             api-gateway
                         </a>
@@ -563,6 +569,8 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/digital-signature" title="digital-signature">
                             digital-signature
                         </a>
+                        
+                        
                         
                         
                         
@@ -605,6 +613,8 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/kubernetes" title="kubernetes">
                             kubernetes
                         </a>
+                        
+                        
                         
                         
                         
@@ -671,6 +681,12 @@ var disq = new iDisqus('disqus-comment', {
                         <a href="/tags/service-mesh" title="service-mesh">
                             service-mesh
                         </a>
+                        
+                        
+                        
+                        
+                        
+                        
                         
                         
                         
