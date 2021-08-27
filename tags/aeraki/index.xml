@@ -29,5 +29,14 @@
       <description>备注：本文根据腾讯云赵化冰和知乎唐阳在 IstioCon 2021 中的演讲 “How to Manage Any Layer-7 Traffic in an Istio Service Mesh?” 整理而成。 大家好，今天我们想和大家分享的主题是如何扩</description>
     </item>
     
+    <item>
+      <title>CNBPS 2020：Istio 流量管理原理与协议扩展</title>
+      <link>https://zhaohuabing.com/post/2020-12-07-cnbps2020-istio-traffic-management/</link>
+      <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2020-12-07-cnbps2020-istio-traffic-management/</guid>
+      <description>通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进</description>
+    </item>
+    
   </channel>
 </rss>

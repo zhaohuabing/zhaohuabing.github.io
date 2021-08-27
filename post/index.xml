@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 27 Aug 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>译著：云原生数据中心网络</title>
+      <link>https://zhaohuabing.com/post/2021-08-27-cloud-native-data-center/</link>
+      <pubDate>Fri, 27 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-08-27-cloud-native-data-center/</guid>
+      <description>“浮云飘进我的生活,没有带来雨水或迎来风暴,却为落日的天空增添了色彩” — 泰戈尔，飞鸟集 如果你想要学习或者构建一个现代化的云原生数据中心网络，</description>
+    </item>
     
     <item>
       <title>Envoy 源码流程图</title>

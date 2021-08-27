@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Publication on Huabing Blog</title>
+    <link>https://zhaohuabing.com/categories/publication/</link>
+    <description>Recent content in Publication on Huabing Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 27 Aug 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://zhaohuabing.com/categories/publication/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>译著：云原生数据中心网络</title>
+      <link>https://zhaohuabing.com/post/2021-08-27-cloud-native-data-center/</link>
+      <pubDate>Fri, 27 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-08-27-cloud-native-data-center/</guid>
+      <description>“浮云飘进我的生活,没有带来雨水或迎来风暴,却为落日的天空增添了色彩” — 泰戈尔，飞鸟集 如果你想要学习或者构建一个现代化的云原生数据中心网络，</description>
+    </item>
+    
+  </channel>
+</rss>
