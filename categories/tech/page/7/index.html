@@ -122,6 +122,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -199,26 +201,26 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-04-16-how-to-choose-ingress-for-service-mesh-english/">
+    <a href="https://zhaohuabing.com/2018/06/02/istio08/">
         <h2 class="post-title">
-            Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?
+            Istio 0.8 Release发布
         </h2>
 	
         <h3 class="post-subtitle">
-            Kubernetes Ingress, Istio Gateway or API Gateway?
+            来自Istio的儿童节礼物
         </h3>
 	
         <div class="post-content-preview">
 	
-            By default, in a Kubernetes cluster with the Istio service mesh enabled, services can only be accessed inside the cluster. However, some of the services may need to be exposed to the external network as well. Kubernetes and Istio provide a variety of means to get external traffic into your cluster including NodePort, LoadBalancer, Kubernetes Ingress and Istio Gateway. With all these options, which one should be the right choice for your service mesh running in production?
+            在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Tuesday, April 16, 2019
-    
-      
+        Posted by    &#34;赵化冰&#34;  Saturday, June 2, 2018
+        
+        
     
     </p>
 
@@ -226,26 +228,49 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/">
+    <a href="https://zhaohuabing.com/2018/05/24/set_up_my_ubuntu_desktop/">
         <h2 class="post-title">
-            如何为服务网格选择入口网关？
+            Everything about Setting Up My Ubuntu Desktop
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            Everything about setting up my own ubuntu desktop, it&#39;s just a Note in case I need it later
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Thursday, May 24, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/05/23/external_system_auth/">
+        <h2 class="post-title">
+            微服务安全沉思录之三
         </h2>
 	
         <h3 class="post-subtitle">
-            Kubernetes Ingress, Istio Gateway还是API Gateway？
+            外部系统访问控制
         </h3>
 	
         <div class="post-content-preview">
 	
-            在启用了Istio服务网格的Kubernetes集群中，缺省情况下只能在集群内部访问网格中的服务，要如何才能从外部网络访问这些服务呢？ Kubernetes和Istio提供了NodePort，LoadBalancer，Kubernetes Ingress，Istio Gateway等多种外部流量入口的方式，面对这么多种方式，我们在产品部署中应该如何选择？
+            一些外部的第三方系统可能需要访问系统内部的微服务。例如在网上商店的例子中，外部的推荐服务可能需要接入系统，以获取商店的商品目录信息。相对于内部服务之间的访问而言，外部系统的访问需要进行严格的安全控制。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Friday, March 29, 2019
-    
-      
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
     </p>
 
@@ -253,22 +278,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
+    <a href="https://zhaohuabing.com/2018/05/23/service_2_service_auth/">
         <h2 class="post-title">
-            Istio 服务注册插件机制代码解析
+            微服务安全沉思录之二
         </h2>
+	
+        <h3 class="post-subtitle">
+            服务间认证与鉴权
+        </h3>
 	
         <div class="post-content-preview">
 	
-            本文将从代码出发，对Pilot的服务注册插件机制进行分析。
+            除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问,根据应用系统数据敏感程度不同，对于系统内微服务的访问也需要进行相应的安全控制。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, February 18, 2019
-    
-      
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
     </p>
 
@@ -276,22 +305,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-01-21-git/">
+    <a href="https://zhaohuabing.com/2018/05/22/user_authentication_authorization/">
         <h2 class="post-title">
-            Git内部存储原理
+            微服务安全沉思录之一
         </h2>
+	
+        <h3 class="post-subtitle">
+            用户访问认证与鉴权
+        </h3>
 	
         <div class="post-content-preview">
 	
-            Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。
+            这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, January 21, 2019
-    
-      
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
     </p>
 
@@ -299,22 +332,53 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
+    <a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">
         <h2 class="post-title">
-            The obstacles to put Istio into production and how we solve them
+            Istio Sidecar自动注入原理
         </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes webhook扩展机制解析
+        </h3>
 	
         <div class="post-content-preview">
 	
-            After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.
+            Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Thursday, December 27, 2018
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/04/16/using-helm-to-deploy-to-kubernetes/">
+        <h2 class="post-title">
+            Helm介绍
+        </h2>
+	
+        <h3 class="post-subtitle">
+            强大的Kubernetes包管理工具
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Helm是Kubernetes生态系统中的一个软件包管理工具。本文将介绍为何要使用Helm进行Kubernetes软件包管理，澄清Helm中使用到的相关概念，并通过一个具体的示例学习如何使用Helm打包，分发，安装，升级及回退Kubernetes应用。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Monday, April 16, 2018
+        
+        
     
     </p>
 

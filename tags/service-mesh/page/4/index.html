@@ -122,6 +122,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -199,26 +201,118 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/">
+    <a href="https://zhaohuabing.com/post/2018-08-15-manage-onap-with-istio-auth-enabled/">
         <h2 class="post-title">
-            如何为服务网格选择入口网关？
+            Secure ONAP Microservices with Istio Mutual TLS Authentication and RBAC
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            In the previous post Manage ONAP Microservices with Istio Service Mesh, we went through the steps of how to install Istio and integrate it with ONAP platform, it’s super simple and has nearly no impact to the existing projects. Now let’s enable Istio auth to secure the inter-service communication inside ONAP, it will need a little bit more efforts, but it’
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Wednesday, August 15, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-08-01-manage-onap-with-istio/">
+        <h2 class="post-title">
+            Manage ONAP Microservices with Istio Service Mesh
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            In the previous post How service mesh can help during the ONAP Microservice journey, we have discussed why the community wants ONAP to evolve towards Microservice architecture and how service mesh approach could help during the journey. Now it’s time to dip our toe in the water, let’s try out Istio with ONAP by following the below steps. Installation First, download installation scripts
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Wednesday, August 1, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-06-22-onap-with-service-mesh/">
+        <h2 class="post-title">
+            How service mesh can help during the ONAP Microservice journey
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            ONAP Beijing is available now! ONAP, as part of LF Networking, now accounts for more than 65% of global subscriber participation through carriers creating a harmonized, de-facto open source platform. While it&rsquo;s so exciting to see that more operators are deploying ONAP in their commercial network, ONAP community realizes that there are still somewhere we can improve to smooth the deployment process. For example, instead of deploying ONAP as a
+       
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Friday, June 22, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/04/11/service-mesh-vs-api-gateway/">
+        <h2 class="post-title">
+            Service Mesh 和 API Gateway的关系探讨（译文）
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            API Gateway和Service Mesh的关系是我最近一直在思考的问题，也和同事及社区的朋友之间进行了一些讨论。这篇短文很清晰地总结了两者之间的相似之处以及这两者在微服务架构中的不同用途。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Wednesday, April 11, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/">
+        <h2 class="post-title">
+            谈谈微服务架构中的基础设施：Service Mesh与Istio
         </h2>
 	
         <h3 class="post-subtitle">
-            Kubernetes Ingress, Istio Gateway还是API Gateway？
+            Service Mesh模式及Istio开源项目介绍
         </h3>
 	
         <div class="post-content-preview">
 	
-            在启用了Istio服务网格的Kubernetes集群中，缺省情况下只能在集群内部访问网格中的服务，要如何才能从外部网络访问这些服务呢？ Kubernetes和Istio提供了NodePort，LoadBalancer，Kubernetes Ingress，Istio Gateway等多种外部流量入口的方式，面对这么多种方式，我们在产品部署中应该如何选择？
+            作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性,本文介绍了Service Mesh模式如何应对微服务架构的这些挑战，以及Service Mesh的明星开源项目Istio。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Friday, March 29, 2019
-    
-      
+        Posted by赵化冰  Thursday, March 29, 2018
+        
+        
     
     </p>
 
@@ -226,91 +320,22 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
+    <a href="https://zhaohuabing.com/2018/01/02/nginmesh-install/">
         <h2 class="post-title">
-            Istio 服务注册插件机制代码解析
+            Nginx开源Service Mesh组件Nginmesh安装指南
         </h2>
 	
         <div class="post-content-preview">
 	
-            本文将从代码出发，对Pilot的服务注册插件机制进行分析。
+            Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, February 18, 2019
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
-        <h2 class="post-title">
-            The obstacles to put Istio into production and how we solve them
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.
+        Posted by赵化冰  Tuesday, January 2, 2018
         
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Thursday, December 27, 2018
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/">
-        <h2 class="post-title">
-            拥抱NFV，Istio 1.1 将支持多网络平面
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Istio1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。而在电信NFV场景中，多网络平面是一个常见的场景，随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。
         
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Wednesday, December 19, 2018
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-10-29-envoy-build/">
-        <h2 class="post-title">
-            Istio实战系列-Envoy Proxy构建分析
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微服务之间的调用流量进行转发。今天我&gt;们来分析一下Istio 使用到的Envoy构建流程。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Monday, October 29, 2018
-    
-      
     
     </p>
 
@@ -327,10 +352,6 @@
         <a href="/tags/service-mesh/page/3/">&larr; Newer Posts</a>
     </li>
     
-    
-    <li class="next">
-        <a href="/tags/service-mesh/page/5/">Older Posts &rarr;</a>
-    </li>
     
 </ul>
 

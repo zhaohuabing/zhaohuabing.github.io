@@ -123,6 +123,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -200,22 +202,26 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/24/set_up_my_ubuntu_desktop/">
+    <a href="https://zhaohuabing.com/2017/11/08/istio-canary-release/">
         <h2 class="post-title">
-            Everything about Setting Up My Ubuntu Desktop
+            采用Istio实现灰度发布(金丝雀发布)
         </h2>
+	
+        <h3 class="post-subtitle">
+            用户无感知的平滑业务升级
+        </h3>
 	
         <div class="post-content-preview">
 	
-            Everything about setting up my own ubuntu desktop, it&#39;s just a Note in case I need it later
+            当应用上线以后，运维面临的一大挑战是如何能在不影响已上线业务的情况下进行升级。本文将介绍如何使用Istio实现应用的灰度发布（金丝雀发布）
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Thursday, May 24, 2018
-    
-      
+        Posted by赵化冰  Wednesday, November 8, 2017
+        
+        
     
     </p>
 
@@ -223,26 +229,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/external_system_auth/">
+    <a href="https://zhaohuabing.com/2017/11/07/istio-traffic-shifting/">
         <h2 class="post-title">
-            微服务安全沉思录之三
+            使用Istio实现应用流量转移
         </h2>
 	
         <h3 class="post-subtitle">
-            外部系统访问控制
+              &#34;本文翻译自istio官方文档&#34;
         </h3>
 	
         <div class="post-content-preview">
 	
-            一些外部的第三方系统可能需要访问系统内部的微服务。例如在网上商店的例子中，外部的推荐服务可能需要接入系统，以获取商店的商品目录信息。相对于内部服务之间的访问而言，外部系统的访问需要进行严格的安全控制。
+            本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-      
+        Posted by    &#34;赵化冰&#34;  Tuesday, November 7, 2017
+        
+        
     
     </p>
 
@@ -250,26 +256,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/service_2_service_auth/">
+    <a href="https://zhaohuabing.com/2017/11/04/istio-install_and_example/">
         <h2 class="post-title">
-            微服务安全沉思录之二
+            Istio及Bookinfo示例程序安装试用笔记
         </h2>
 	
         <h3 class="post-subtitle">
-            服务间认证与鉴权
+            手把手教你从零搭建Istio及Bookinfo示例程序
         </h3>
 	
         <div class="post-content-preview">
 	
-            除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问,根据应用系统数据敏感程度不同，对于系统内微服务的访问也需要进行相应的安全控制。
+            Istio是来自Google，IBM和Lyft的一个Service Mesh（服务网格）开源项目，是Google继Kubernetes之后的又一大作,本文将演示如何从裸机开始从零搭建Istio及Bookinfo示例程序。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-      
+        Posted by赵化冰  Saturday, November 4, 2017
+        
+        
     
     </p>
 
@@ -277,26 +283,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/22/user_authentication_authorization/">
+    <a href="https://zhaohuabing.com/2017/11/03/hello-world/">
         <h2 class="post-title">
-            微服务安全沉思录之一
+            Welcome to Zhaohuabing Blog
         </h2>
 	
         <h3 class="post-subtitle">
-            用户访问认证与鉴权
+            Hello World, Hello Blog
         </h3>
 	
         <div class="post-content-preview">
 	
-            这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。
-        
+            “Yeah It&rsquo;s on. ” Hello World!
+       
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-      
+        Posted by赵化冰  Saturday, November 4, 2017
+        
+        
     
     </p>
 
@@ -304,26 +310,55 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">
+    <a href="https://zhaohuabing.com/post/2017-09-25-onap-microservice-bus-tutorial-/">
         <h2 class="post-title">
-            Istio Sidecar自动注入原理
+            ONAP Developer Event: Microservice Bus Tutorial 
         </h2>
-	
-        <h3 class="post-subtitle">
-            Kubernetes webhook扩展机制解析
-        </h3>
 	
         <div class="post-content-preview">
 	
-            Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
+            Microservices Bus(MSB) provide a reliable, resilient and scalable communication and governance infrastructure to support Microservice Architecture including including service registration/discovery, external API gateway, internal API gateway, client SDK.It&#39;s a pluggable architecture so it can integrate with auth service provider to provide centralized Authentication &amp; Authorization. MSB also provides a service portal to manage the REST APIs.
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
+        
+            
+                Saclay, France 2017/09
+            
+        
+            
+                <a href="https://wiki.onap.org/display/DW/September&#43;26-28&#43;Topics#September2628Topics-M2">活动链接</a>
+            
+        
+            
+                <a href="/img/2017-09-25-onap-microservice-bus-tutorial/msb.pdf">讲稿下载</a>
+            
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/top/archive/">
+        <h2 class="post-title">
+            Posts Archive
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            Archive of historical posts.
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted byHuabing Blog  Monday, January 1, 0001
+        
+        
     
     </p>
 
@@ -340,10 +375,6 @@
         <a href="/page/11/">&larr; Newer Posts</a>
     </li>
     
-    
-    <li class="next">
-        <a href="/page/13/">Older Posts &rarr;</a>
-    </li>
     
 </ul>
 

@@ -122,6 +122,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -199,98 +201,6 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2020-08-13-gcloud-service-mesh/">
-        <h2 class="post-title">
-            Google Cloud 服务网格：Traffic Director 与 Anthos Service Mesh 的左右互搏
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic Director 与 Anthos Service Mesh。Google 同时推出两个 Servcie Mesh 产品的原因是什么？这两个产品的定位有何不同？
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Thursday, August 13, 2020
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2020-06-12-third-party-registry-english/">
-        <h2 class="post-title">
-            How to Integrate Your Service Registry with Istio?
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            How can we quickly integrate these existing microservices projects with Istio at minimal modifications? In this post, I will first explain the service registry mechanism of Istio, and then propose several possible options to integrate third-party service discovery with Istio.
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;Huabing Zhao&#34; Friday, June 12, 2020
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2020-06-02-third-party-registry/">
-        <h2 class="post-title">
-            如何将第三方服务中心注册集成到 Istio ？
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            目前越来越多的微服务项目开始考虑将自己的微服务基础设施向 Istio 进行迁移。然而对于大量使用了 Consul，Eureka 或者自建服务注册中心的项目来说，如何能够以最小的代价快速地将现有微服务项目和 Istio 进行集成，以享受 Istio 提供的各种服务治理能力呢？本文将分析 Istio 服务注册机制的原理，并提出几种 Istio 与第三方服务注册中心集成的可行方案，以供读者参考。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Tuesday, June 2, 2020
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2020-05-25-istio-certificate/">
-        <h2 class="post-title">
-            一文带你彻底厘清 Isito 中的证书工作机制
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Istio 为微服务提供了无侵入，可插拔的安全框架。应用不需要修改代码，就可以利用 Istio 提供的双向 TLS 认证实现服务身份认证，并基于服务身份信息提供细粒度的访问控制。本文将揭秘 Istio 双向 TLS 认证的实现机制。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Monday, May 25, 2020
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
     <a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/">
         <h2 class="post-title">
             一文带你彻底厘清 Kubernetes 中的证书工作机制
@@ -304,9 +214,151 @@
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Tuesday, May 19, 2020
+        Posted by    &#34;赵化冰&#34;  Tuesday, May 19, 2020
+        
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2020-03-19-pki/">
+        <h2 class="post-title">
+            数字证书原理
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            数字证书相关的技术与原理。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Thursday, March 19, 2020
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/">
+        <h2 class="post-title">
+            Linux network namespace， veth， birdge与路由
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            介绍Linux的network namespace, veth，bridge与路由。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Thursday, March 12, 2020
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/">
+        <h2 class="post-title">
+            Linux Tun/Tap 介绍
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            在计算机网络中，TUN与TAP是操作系统内核中的虚拟网络设备。不同于普通靠硬件网路板卡实现的设备，这些虚拟的网络设备全部用软件实现，并向运行于操作系统上的软件提供与硬件的网络设备完全相同的功能。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;Huabing Zhao&#34;  Monday, February 24, 2020
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2020-02-21-network-service-mesh-english/">
+        <h2 class="post-title">
+            Network Service Mesh: A Big Step Toward Cloud-Native NFV
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            When hearing about Network Service Mesh for the first time, you probably are as curious as I was:  Does it have anything to do with Service Mesh/Istio? In my opinion, Network Service Mesh could be a turn point for NFV. I&#39;ll dive into more details in this post.
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;Huabing Zhao&#34;  Friday, February 21, 2020
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2020-02-15-network-service-mesh/">
+        <h2 class="post-title">
+            NFV迈向云原生时代：Network Service Mesh项目介绍
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            当第一次看到Network Service Mesh这一名词时，你很可能和我一样好奇它到底是什么？是否和Service Mesh有什么关系？Network Service Mesh是云原生领域中一个新的热点，是CNCF（云原生基金会）中的一个沙箱项目。本文将介绍Network Service Mesh的起源和架构，并探讨其与Service Mesh、SDN、NFV等相关技术的区别与联系。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Saturday, February 15, 2020
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/">
+        <h2 class="post-title">
+            Istio流量管理实现机制深度解析
+        </h2>
+	
+        <h3 class="post-subtitle">
+            基于Istio 1.4.0版本更新
+        </h3>
+	
+        <div class="post-content-preview">
+	
+             Istio作为一个service mesh开源项目,其中最重要的功能就是对网格中微服务之间的流量进行管理,包括服务发现,请求路由和服务间的可靠通信。Istio体系中流量管理配置下发以及流量规则如何在数据面生效的机制相对比较复杂，通过官方文档容易管中窥豹，难以了解其实现原理。本文尝试结合系统架构、配置文件和代码对Istio流量管理的架构和实现机制进行分析，以达到从整体上理解Pilot和Envoy的流量管理机制的目的。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Thursday, December 12, 2019
+        
+        
     
     </p>
 

@@ -122,6 +122,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -199,26 +201,26 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/">
+    <a href="https://zhaohuabing.com/2018/06/02/istio08/">
         <h2 class="post-title">
-            如何为服务网格选择入口网关？
+            Istio 0.8 Release发布
         </h2>
 	
         <h3 class="post-subtitle">
-            Kubernetes Ingress, Istio Gateway还是API Gateway？
+            来自Istio的儿童节礼物
         </h3>
 	
         <div class="post-content-preview">
 	
-            在启用了Istio服务网格的Kubernetes集群中，缺省情况下只能在集群内部访问网格中的服务，要如何才能从外部网络访问这些服务呢？ Kubernetes和Istio提供了NodePort，LoadBalancer，Kubernetes Ingress，Istio Gateway等多种外部流量入口的方式，面对这么多种方式，我们在产品部署中应该如何选择？
+            在6月1日这一天的早上，Istio社区宣布发布0.8 Release，除了常规的故障修复和性能改进外，这个儿童节礼物里面还有什么值得期待内容呢？让我们来看一看：
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Friday, March 29, 2019
-    
-      
+        Posted by    &#34;赵化冰&#34;  Saturday, June 2, 2018
+        
+        
     
     </p>
 
@@ -226,22 +228,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
+    <a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">
         <h2 class="post-title">
-            Istio 服务注册插件机制代码解析
+            Istio Sidecar自动注入原理
         </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes webhook扩展机制解析
+        </h3>
 	
         <div class="post-content-preview">
 	
-            本文将从代码出发，对Pilot的服务注册插件机制进行分析。
+            Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, February 18, 2019
-    
-      
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
     </p>
 
@@ -249,22 +255,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
+    <a href="https://zhaohuabing.com/2018/03/29/what-is-service-mesh-and-istio/">
         <h2 class="post-title">
-            The obstacles to put Istio into production and how we solve them
+            谈谈微服务架构中的基础设施：Service Mesh与Istio
         </h2>
+	
+        <h3 class="post-subtitle">
+            Service Mesh模式及Istio开源项目介绍
+        </h3>
 	
         <div class="post-content-preview">
 	
-            After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.
+            作为一种架构模式，微服务将复杂系统切分为数十乃至上百个小服务，每个服务负责实现一个独立的业务逻辑。这些小服务易于被小型的软件工程师团队所理解和修改，并带来了语言和框架选择灵活性，缩短应用开发上线时间，可根据不同的工作负载和资源要求对服务进行独立缩扩容等优势。另一方面，当应用被拆分为多个微服务进程后，进程内的方法调用变成了了进程间的远程调用。引入了对大量服务的连接、管理和监控的复杂性,本文介绍了Service Mesh模式如何应对微服务架构的这些挑战，以及Service Mesh的明星开源项目Istio。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Thursday, December 27, 2018
-    
-      
+        Posted by赵化冰  Thursday, March 29, 2018
+        
+        
     
     </p>
 
@@ -272,22 +282,22 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/">
+    <a href="https://zhaohuabing.com/2018/01/02/nginmesh-install/">
         <h2 class="post-title">
-            拥抱NFV，Istio 1.1 将支持多网络平面
+            Nginx开源Service Mesh组件Nginmesh安装指南
         </h2>
 	
         <div class="post-content-preview">
 	
-            Istio1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。而在电信NFV场景中，多网络平面是一个常见的场景，随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。
+            Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, December 19, 2018
-    
-      
+        Posted by赵化冰  Tuesday, January 2, 2018
+        
+        
     
     </p>
 
@@ -295,22 +305,80 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-10-29-envoy-build/">
+    <a href="https://zhaohuabing.com/2017/11/08/istio-canary-release/">
         <h2 class="post-title">
-            Istio实战系列-Envoy Proxy构建分析
+            采用Istio实现灰度发布(金丝雀发布)
         </h2>
+	
+        <h3 class="post-subtitle">
+            用户无感知的平滑业务升级
+        </h3>
 	
         <div class="post-content-preview">
 	
-            Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微服务之间的调用流量进行转发。今天我&gt;们来分析一下Istio 使用到的Envoy构建流程。
+            当应用上线以后，运维面临的一大挑战是如何能在不影响已上线业务的情况下进行升级。本文将介绍如何使用Istio实现应用的灰度发布（金丝雀发布）
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, October 29, 2018
+        Posted by赵化冰  Wednesday, November 8, 2017
+        
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2017/11/07/istio-traffic-shifting/">
+        <h2 class="post-title">
+            使用Istio实现应用流量转移
+        </h2>
+	
+        <h3 class="post-subtitle">
+              &#34;本文翻译自istio官方文档&#34;
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Tuesday, November 7, 2017
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2017/11/04/istio-install_and_example/">
+        <h2 class="post-title">
+            Istio及Bookinfo示例程序安装试用笔记
+        </h2>
+	
+        <h3 class="post-subtitle">
+            手把手教你从零搭建Istio及Bookinfo示例程序
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Istio是来自Google，IBM和Lyft的一个Service Mesh（服务网格）开源项目，是Google继Kubernetes之后的又一大作,本文将演示如何从裸机开始从零搭建Istio及Bookinfo示例程序。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Saturday, November 4, 2017
+        
+        
     
     </p>
 
@@ -327,10 +395,6 @@
         <a href="/tags/istio/page/5/">&larr; Newer Posts</a>
     </li>
     
-    
-    <li class="next">
-        <a href="/tags/istio/page/7/">Older Posts &rarr;</a>
-    </li>
     
 </ul>
 

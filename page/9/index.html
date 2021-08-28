@@ -123,6 +123,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -200,72 +202,26 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-01-21-git/">
+    <a href="https://zhaohuabing.com/2018/05/23/external_system_auth/">
         <h2 class="post-title">
-            Git内部存储原理
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            Git是程序员工作中使用频率非常高的工具，要提高日常的工作效率，就需要熟练掌握Git的使用方法。相对于传统的版本控制系统而言，Git更为强大和灵活，其各种命令和命令参数也非常多，如果不了解Git的内部原理，要把Git使用得顺手的话非常困难。本文将用一个具体的例子来帮助理解Git的内部存储原理,加深对Git的理解，从掌握各种Git命令，以在使用Git进行工作时得心应手。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Monday, January 21, 2019
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
-        <h2 class="post-title">
-            The obstacles to put Istio into production and how we solve them
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Thursday, December 27, 2018
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-24-machine-learningp-introduction/">
-        <h2 class="post-title">
-            Machine Learning Introduction
+            微服务安全沉思录之三
         </h2>
 	
         <h3 class="post-subtitle">
-            Machine Learning-Week 1
+            外部系统访问控制
         </h3>
 	
         <div class="post-content-preview">
 	
-            What is machine learning? Two definitions of machine learning are offered. Arthur Samuel version: A field of study that gives computers the ability to learn without being explicitly programmed. Tom Mitchell version: A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E. Example: playing checkers. E
-       
+            一些外部的第三方系统可能需要访问系统内部的微服务。例如在网上商店的例子中，外部的推荐服务可能需要接入系统，以获取商店的商品目录信息。相对于内部服务之间的访问而言，外部系统的访问需要进行严格的安全控制。
+        
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, December 24, 2018
-    
-      
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
     </p>
 
@@ -273,22 +229,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/">
+    <a href="https://zhaohuabing.com/2018/05/23/service_2_service_auth/">
         <h2 class="post-title">
-            拥抱NFV，Istio 1.1 将支持多网络平面
+            微服务安全沉思录之二
         </h2>
+	
+        <h3 class="post-subtitle">
+            服务间认证与鉴权
+        </h3>
 	
         <div class="post-content-preview">
 	
-            Istio1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。而在电信NFV场景中，多网络平面是一个常见的场景，随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。
+            除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问,根据应用系统数据敏感程度不同，对于系统内微服务的访问也需要进行相应的安全控制。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, December 19, 2018
-    
-      
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
     </p>
 
@@ -296,22 +256,134 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2018-10-29-envoy-build/">
+    <a href="https://zhaohuabing.com/2018/05/22/user_authentication_authorization/">
         <h2 class="post-title">
-            Istio实战系列-Envoy Proxy构建分析
+            微服务安全沉思录之一
         </h2>
+	
+        <h3 class="post-subtitle">
+            用户访问认证与鉴权
+        </h3>
 	
         <div class="post-content-preview">
 	
-            Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微服务之间的调用流量进行转发。今天我&gt;们来分析一下Istio 使用到的Envoy构建流程。
+            这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Monday, October 29, 2018
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">
+        <h2 class="post-title">
+            Istio Sidecar自动注入原理
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes webhook扩展机制解析
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Wednesday, May 23, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/05/20/cryptocurrency_week1_scroogecoin/">
+        <h2 class="post-title">
+            Programming Assignment: Scrooge Coin
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Bitcoin and Cryptocurrency Technologies-Week 1
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Finally, I got to the most exciting part of week 1 lectures-the programming assignment!
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Sunday, May 20, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2018/05/12/cryptocurrency_week1_digital_signature/">
+        <h2 class="post-title">
+            Digital Signature and Public Key as Identities
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Bitcoin and Cryptocurrency Technologies-Week 1
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Some fundamental cryptographic technologies in Bitcoin: Asymmetic encryption(Public/Private key), Digital Signature, Digital Identity(Public key and Digital Certificate).
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Tuesday, May 15, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/">
+        <h2 class="post-title">
+            Hash Pointers and Data Structures
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Bitcoin and Cryptocurrency Technologies-Week 1
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            Hash pointer is used to bulid some key data structures in cryptocurrency, such as Block chain and Merkel tree.
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Saturday, May 12, 2018
+        
+        
     
     </p>
 

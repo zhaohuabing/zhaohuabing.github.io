@@ -811,5 +811,14 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
       <description>“Yeah It&amp;rsquo;s on. ” Hello World!</description>
     </item>
     
+    <item>
+      <title>ONAP Developer Event: Microservice Bus Tutorial </title>
+      <link>https://zhaohuabing.com/post/2017-09-25-onap-microservice-bus-tutorial-/</link>
+      <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2017-09-25-onap-microservice-bus-tutorial-/</guid>
+      <description>Introduction Microservices Bus(MSB) provide a reliable, resilient and scalable communication and governance infrastructure to support Microservice Architecture including including service registration/discovery, external API gateway, internal API gateway, client SDK. It&amp;rsquo;s a pluggable architecture so it can integrate with auth service provider to provide centralized Authentication &amp;amp; Authorization. MSB also provides a service portal to manage the REST APIs. MSB doesn’t depend on a specific</description>
+    </item>
+    
   </channel>
 </rss>

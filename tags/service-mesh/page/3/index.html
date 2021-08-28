@@ -122,6 +122,8 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
@@ -199,114 +201,6 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-07-02-using-opentracing-with-istio-english/">
-        <h2 class="post-title">
-            Enhance Istio Distributed Tracing with OpenTracing
-        </h2>
-	
-        <h3 class="post-subtitle">
-            Part 2: Enable Async Messaging Tracing with OpenTracing
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            In this post, we will continue to use the eshop demo to explore how asynchronous messaging, specifically Kafka, can be traced in Istio service mesh with the help of Opentracing.
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Wednesday, September 11, 2019
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-06-22-using-opentracing-with-istio-english/">
-        <h2 class="post-title">
-            Enhance Istio Distributed Tracing with OpenTracing
-        </h2>
-	
-        <h3 class="post-subtitle">
-            Part 1: Implement Fine-grained Tracing with OpenTracing
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            While evolving towards a microservices architecture, the biggest change is that the monolith application has been divided into multiple independent processes(or services), as a result, a method call between software modules now becomes a remote procedure call go through multiple services. A client request usually goes through a couple of or even a dozen of services in a complex microservices system, which makes it really hard to figure out w
-       
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Saturday, August 24, 2019
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-07-02-using-opentracing-with-istio/">
-        <h2 class="post-title">
-            洞若观火：使用OpenTracing增强Istio的调用链跟踪
-        </h2>
-	
-        <h3 class="post-subtitle">
-            第二篇：如何利用Opentracing实现Kafka消息的调用跟踪
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            本文将接着上一篇继续介绍如何利用OpenTracing来对Kafka异步消息进行跟踪，并将异步消息的跟踪信息加入Istio/Envoy生成的分布式调用跟踪链中进行统一呈现。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Tuesday, July 2, 2019
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
-    <a href="https://zhaohuabing.com/post/2019-06-22-using-opentracing-with-istio/">
-        <h2 class="post-title">
-            洞若观火：使用OpenTracing增强Istio的调用链跟踪
-        </h2>
-	
-        <h3 class="post-subtitle">
-            第一篇：如何利用Opentracing实现方法级的细粒度跟踪
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            本文将介绍如何利用OpenTracing来增强Istio/Envoy缺省的调用链跟踪实现：如何利用Opentracing来实现跨进程边界的分布式调用上下文传递；以及在Istio/Envoy生成的分布式调用跟踪基础上实现方法级的细粒度调用跟踪。
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    
-    Posted by     &#34;赵化冰&#34; Saturday, June 22, 2019
-    
-      
-    
-    </p>
-
-</div>
-<hr>
-
-<div class="post-preview">
     <a href="https://zhaohuabing.com/post/2019-04-16-how-to-choose-ingress-for-service-mesh-english/">
         <h2 class="post-title">
             Which One is the Right Choice for the Ingress Gateway of Your Service Mesh?
@@ -324,9 +218,151 @@
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Tuesday, April 16, 2019
+        Posted by    &#34;赵化冰&#34;  Tuesday, April 16, 2019
+        
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/">
+        <h2 class="post-title">
+            如何为服务网格选择入口网关？
+        </h2>
+	
+        <h3 class="post-subtitle">
+            Kubernetes Ingress, Istio Gateway还是API Gateway？
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            在启用了Istio服务网格的Kubernetes集群中，缺省情况下只能在集群内部访问网格中的服务，要如何才能从外部网络访问这些服务呢？ Kubernetes和Istio提供了NodePort，LoadBalancer，Kubernetes Ingress，Istio Gateway等多种外部流量入口的方式，面对这么多种方式，我们在产品部署中应该如何选择？
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Friday, March 29, 2019
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2019-02-18-pilot-service-registry-code-analysis/">
+        <h2 class="post-title">
+            Istio 服务注册插件机制代码解析
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            本文将从代码出发，对Pilot的服务注册插件机制进行分析。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Monday, February 18, 2019
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-12-27-the-obstacles-to-put-istio-into-production/">
+        <h2 class="post-title">
+            The obstacles to put Istio into production and how we solve them
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            After its 1.0 release, our team has begun the efforts to integrate Istio into our system. This article tells our findings and thoughts during this adventure.
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Thursday, December 27, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-12-19-multi-network-interfaces-for-istio/">
+        <h2 class="post-title">
+            拥抱NFV，Istio 1.1 将支持多网络平面
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            Istio1.0版本只支持在单个网络，即Mesh中的服务只能连接在一个网络上。而在电信NFV场景中，多网络平面是一个常见的场景，随着Kubernetes在NFV领域中的逐渐应用，已经出现多个Kubernetes多网络平面解决方案，Istio也需要考虑支持多网络平面，以为5G的微服务化架构提供服务通讯和管控的基础设施。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Wednesday, December 19, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-10-29-envoy-build/">
+        <h2 class="post-title">
+            Istio实战系列-Envoy Proxy构建分析
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            Istio由控制面和数据面组成。其中Envoy是Istio在数据面缺省使用的转发代理，Istio利用Envoy的四层和七层代理功能对网格中微服务之间的调用流量进行转发。今天我&gt;们来分析一下Istio 使用到的Envoy构建流程。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Monday, October 29, 2018
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/post/2018-10-18-istio-paas-integration/">
+        <h2 class="post-title">
+            Istio微服务平台集成实践
+        </h2>
+	
+        <div class="post-content-preview">
+	
+            Istio发布1.0版本后，其服务发现和路由规则功能已基本具备production能力，我们也开始了Istio和公司内部微服务平台的集成工作，打算以Istio为基础打造一个微服务管控中心，在这里把目前的进展和遇到的坑和大家分享一下。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Thursday, October 18, 2018
+        
+        
     
     </p>
 
