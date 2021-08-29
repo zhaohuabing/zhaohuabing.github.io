@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="CNBPS 2020：Istio 流量管理原理与协议扩展" />
-    <meta property="og:title" content="CNBPS 2020：Istio 流量管理原理与协议扩展" />
-    <meta property="twitter:title" content="CNBPS 2020：Istio 流量管理原理与协议扩展" />
+    <meta name="title" content="ONAP Developer Event: MSB Technical Deep Dive and ONAP Use Cases" />
+    <meta property="og:title" content="ONAP Developer Event: MSB Technical Deep Dive and ONAP Use Cases" />
+    <meta property="twitter:title" content="ONAP Developer Event: MSB Technical Deep Dive and ONAP Use Cases" />
     
 
     
-    <meta name="description" content="通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。">
-    <meta property="og:description" content="通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。" />
-    <meta property="twitter:description" content="通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。" />
+    <meta name="description" content="In this session, I&#39;ll talk about the MSB(Microservice BUS) project we have been using in OPEN-O as the fabric for Microservice communications.">
+    <meta property="og:description" content="In this session, I&#39;ll talk about the MSB(Microservice BUS) project we have been using in OPEN-O as the fabric for Microservice communications." />
+    <meta property="twitter:description" content="In this session, I&#39;ll talk about the MSB(Microservice BUS) project we have been using in OPEN-O as the fabric for Microservice communications." />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>CNBPS 2020：Istio 流量管理原理与协议扩展-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>ONAP Developer Event: MSB Technical Deep Dive and ONAP Use Cases-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2020-12-07-cnbps2020-istio-traffic-management/">
+    <link rel="canonical" href="/post/2017-04-02-onap-msb-deep-dive/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 
@@ -173,7 +173,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('/img/2020-11-12-cnbps2020/head.png')
+        background-image: url('https://images.pexels.com/photos/466685/pexels-photo-466685.jpeg?cs=srgb&dl=pexels-lukas-kloeppel-466685.jpg&fm=jpg')
     }
 </style>
 <header class="intro-header">
@@ -183,46 +183,34 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/istio" title="Istio">
-                            Istio
+                        <a class="tag" href="/tags/onap" title="ONAP">
+                            ONAP
                         </a>
                         
-                        <a class="tag" href="/tags/envoy" title="Envoy">
-                            Envoy
+                        <a class="tag" href="/tags/microservice" title="Microservice">
+                            Microservice
                         </a>
                         
-                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
-                            Service Mesh
-                        </a>
-                        
-                        <a class="tag" href="/tags/aeraki" title="Aeraki">
-                            Aeraki
+                        <a class="tag" href="/tags/api-gateway" title="API Gateway">
+                            API Gateway
                         </a>
                         
                     </div>
-                    <h1>CNBPS 2020：Istio 流量管理原理与协议扩展</h1>
+                    <h1>ONAP Developer Event: MSB Technical Deep Dive and ONAP Use Cases</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         
                             
                                 
-                                    Virtual 2020/11
+                                    Middletown, NJ, USA 2017/07
                                 
                             
                                 
-                                    <a href="https://mp.weixin.qq.com/s/Cpe7HqEIH4NAXWsoKd_cCg">活动链接</a>
+                                    <a href="https://wiki.onap.org/display/DW/ONAP&#43;Project&#43;Developer&#43;Event%3A&#43;May&#43;2&#43;-&#43;5%2C&#43;2017%2C&#43;Middletown%2C&#43;NJ%2C&#43;USA">活动链接</a>
                                 
                             
                                 
-                                    <a href="/slides/cnbps2020-istio-aeraki.pdf">讲稿下载</a>
-                                
-                            
-                                
-                                    <a href="https://www.bilibili.com/video/BV1av411t7JL">哔哩哔哩</a>
-                                
-                            
-                                
-                                    <a href="https://youtu.be/lB5d4qbZqzU">YouTube</a>
+                                    <a href="/img/2017-04-02-onap-msb-deep-dive/msb-deep-dive.pdf">讲稿下载</a>
                                 
                             
                             
@@ -247,54 +235,24 @@
                 post-container">
 
                 
-                <p>通过本次的分享，听众可以理解Istio流量管理背后的实现原理，包括控制面流量管理模型和数据面流量转发机制。本次分享还将介绍如何对Istio进行扩展，以支持更多地七层协议，如dubbo，thrift，redis等等。</p>
-<p>我们知道，Service Mesh 最主要的功能就是 管理网格内服务间的东西向流量，以及网格出入口的南北向流量。因此，能够理解 Istio 流量管理背后的原理，对于我们在 Istio 的日常运维工作将会有很大帮助。</p>
-<p>Istio 可以在四层和七层上的流量进行管理，当然我们主要希望采用的是其七层的流量管理能力。在七层上，Istio 主要支持了 HTTP/gPRC 两种协议，而对于我们在微服务中使用到的其他七层协议，如 Thrift，Dubbo，Redis 等的支持非常有限。如果我们希望将使用了这些协议的应用迁移到 Istio ，那么只能在四层上对这些协议进行流量管理，能做的事情将非常有限。今天我也将和大家一起讨论如何能够对 Istio 进行扩展，使其能够支持更多的七层协议。</p>
-<p><a href="/slides/cnbps2020-istio-aeraki.pdf">CNBPS 2020 Istio 流量管理原理与协议扩展</a></p>
-<p>B站
-
-
-
-<style>
-    #biliplayer {
-      width: 100%;
-      height: 600px;
-    }
-    @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
-      #biliplayer {
-        width: 100%;
-        height: 250px;
-      }
-    }
-</style>
-
-
-    <div>
-        <iframe id="biliplayer" src="//player.bilibili.com/player.html?bvid=BV1av411t7JL&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" loading="lazy" ></iframe>
-    </div>
-
-</p>
-<p>YouTube
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube.com/embed/lB5d4qbZqzU" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
-</div>
-</p>
-
+                <h2 id="introduction">Introduction</h2>
+<p>In this session, I&rsquo;ll talk about the MSB(Microservice BUS) project we have been using in OPEN-O as the fabric for Microservice communications.</p>
+<p>First, I will start with why we choose Microservice Architecture in OPEN-O.</p>
+<p>Then, I’d like to talk about the challenges we were facing when we turn to the microservice approach.</p>
+<p>Finally, How we address these challenges in OPEN-O with the help of Microservice BUS
+And what’s the potential benefit MSB could bring to ONAP.</p>
+<h2 id="slides">Slides</h2>
+<p><a href="/img/2017-04-02-onap-msb-deep-dive/msb-deep-dive.pdf">download pdf</a></p>
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vS_r7wQVNMWN5m5c9ui2tPg0oIXUQlk9LYH-on-f2ERaWDL8sOaRF71Ays/embed?start=false&loop=false&delayms=3000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
 
                 
 
                 <hr>
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/post/2020-11-12-cnbps2020/" data-toggle="tooltip" data-placement="top" title="CNBPS 2020：云原生应用架构专场介绍">&larr;
-                            Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/post/2021-03-02-manage-any-layer-7-traffic-in-istio/" data-toggle="tooltip" data-placement="top" title="IstioCon 2021: How to Manage Any Layer-7 Traffic in an Istio Service Mesh?">Next
+                        <a href="/post/2017-04-14-onap-microservice-powered-orchestration-architecture/" data-toggle="tooltip" data-placement="top" title="ONS ONAP Minisummit: Microservice Powered Orchestration Architecture">Next
                             Post &rarr;</a>
                     </li>
                     

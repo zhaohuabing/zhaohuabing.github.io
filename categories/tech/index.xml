@@ -39,7 +39,7 @@
     </item>
     
     <item>
-      <title>IstioCon 2021：如何在 Isito 中支持 Dubbo、Thrift、Redis，以及任何七层协议？</title>
+      <title>IstioCon 2021: How to Manage Any Layer-7 Traffic in an Istio Service Mesh?</title>
       <link>https://zhaohuabing.com/post/2021-03-02-manage-any-layer-7-traffic-in-istio/</link>
       <pubDate>Tue, 02 Mar 2021 00:00:00 +0000</pubDate>
       

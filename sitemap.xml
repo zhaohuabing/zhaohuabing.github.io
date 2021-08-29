@@ -698,6 +698,11 @@
   </url>
   
   <url>
+    <loc>https://zhaohuabing.com/post/2017-11-11-onap-msb-to-support-carrier-grade-onap-microservice-architecture-with-service-mesh/</loc>
+    <lastmod>2017-11-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/2017/11/08/istio-canary-release/</loc>
     <lastmod>2017-11-08T15:00:00+00:00</lastmod>
   </url>
@@ -720,6 +725,16 @@
   <url>
     <loc>https://zhaohuabing.com/post/2017-09-25-onap-microservice-bus-tutorial-/</loc>
     <lastmod>2017-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2017-04-14-onap-microservice-powered-orchestration-architecture/</loc>
+    <lastmod>2017-04-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2017-04-02-onap-msb-deep-dive/</loc>
+    <lastmod>2017-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
