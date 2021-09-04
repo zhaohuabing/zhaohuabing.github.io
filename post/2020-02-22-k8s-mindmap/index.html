@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Linux Tun/Tap 介绍" />
-    <meta property="og:title" content="Linux Tun/Tap 介绍" />
-    <meta property="twitter:title" content="Linux Tun/Tap 介绍" />
+    <meta name="title" content="Kubernetes 知识图谱" />
+    <meta property="og:title" content="Kubernetes 知识图谱" />
+    <meta property="twitter:title" content="Kubernetes 知识图谱" />
     
 
     
-    <meta name="description" content="在计算机网络中，TUN与TAP是操作系统内核中的虚拟网络设备。不同于普通靠硬件网路板卡实现的设备，这些虚拟的网络设备全部用软件实现，并向运行于操作系统上的软件提供与硬件的网络设备完全相同的功能。">
-    <meta property="og:description" content="在计算机网络中，TUN与TAP是操作系统内核中的虚拟网络设备。不同于普通靠硬件网路板卡实现的设备，这些虚拟的网络设备全部用软件实现，并向运行于操作系统上的软件提供与硬件的网络设备完全相同的功能。" />
-    <meta property="twitter:description" content="在计算机网络中，TUN与TAP是操作系统内核中的虚拟网络设备。不同于普通靠硬件网路板卡实现的设备，这些虚拟的网络设备全部用软件实现，并向运行于操作系统上的软件提供与硬件的网络设备完全相同的功能。" />
+    <meta name="description" content="Kubernetes 相关知识汇总">
+    <meta property="og:description" content="Kubernetes 相关知识汇总" />
+    <meta property="twitter:description" content="Kubernetes 相关知识汇总" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Linux Tun/Tap 介绍-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Kubernetes 知识图谱-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2020-02-24-linux-taptun/">
+    <link rel="canonical" href="/post/2020-02-22-k8s-mindmap/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 
@@ -173,7 +173,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://images.pexels.com/photos/1172105/pexels-photo-1172105.jpeg')
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/%E0%B8%AA%E0%B8%B1%E0%B8%99%E0%B9%80%E0%B8%82%E0%B8%B2%E0%B8%8A%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%9C%E0%B8%B7%E0%B8%AD%E0%B8%81.jpg/2560px-%E0%B8%AA%E0%B8%B1%E0%B8%99%E0%B9%80%E0%B8%82%E0%B8%B2%E0%B8%8A%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%9C%E0%B8%B7%E0%B8%AD%E0%B8%81.jpg')
     }
 </style>
 <header class="intro-header">
@@ -183,16 +183,12 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/linux" title="Linux">
-                            Linux
-                        </a>
-                        
-                        <a class="tag" href="/tags/tun/tap" title="Tun/Tap">
-                            Tun/Tap
+                        <a class="tag" href="/tags/kubernetes" title="Kubernetes">
+                            Kubernetes
                         </a>
                         
                     </div>
-                    <h1>Linux Tun/Tap 介绍</h1>
+                    <h1>Kubernetes 知识图谱</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         
@@ -201,9 +197,9 @@
                                     &#34;Huabing Zhao&#34;
                              
                             on 
-                            Monday, February 24, 2020
+                            Saturday, February 22, 2020
                             
-                                <span id="/post/2020-02-24-linux-taptun/" class="leancloud_visitors meta_data_item" data-flag-title="">
+                                <span id="/post/2020-02-22-k8s-mindmap/" class="leancloud_visitors meta_data_item" data-flag-title="">
     <span class="post-meta-item-icon">
       <span class="octicon octicon-eye"></span> 
     </span>
@@ -361,83 +357,355 @@ $(function() {
                 post-container">
 
                 
-                <header>
-                    <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
-  <ul>
-    <li><a href="#什么是tuntap">什么是Tun/Tap</a></li>
-    <li><a href="#应用程序如何操作tuntap">应用程序如何操作Tun/Tap</a></li>
-    <li><a href="#使用tuntap创建点对点隧道">使用Tun/Tap创建点对点隧道</a></li>
-    <li><a href="#使用tuntap隧道绕过防火墙">使用Tun/Tap隧道绕过防火墙</a></li>
-    <li><a href="#使用tap隧道桥接两个远程站点">使用Tap隧道桥接两个远程站点</a></li>
-    <li><a href="#参考资料">参考资料</a></li>
-  </ul>
-</nav>
-                
-                <h1 id="什么是tuntap">什么是Tun/Tap</h1>
-<p>在计算机网络中，TUN与TAP是操作系统内核中的虚拟网络设备。不同于普通靠硬件网路板卡实现的设备，这些虚拟的网络设备全部用软件实现，并向运行于操作系统上的软件提供与硬件的网络设备完全相同的功能。</p>
-<p>TAP等同于一个以太网设备，它操作第二层数据包如以太网数据帧。TUN模拟了网络层设备，操作第三层数据包比如IP数据封包。</p>
-<p>操作系统通过TUN/TAP设备向绑定该设备的用户空间的程序发送数据，反之，用户空间的程序也可以像操作硬件网络设备那样，通过TUN/TAP设备发送数据。在后种情况下，TUN/TAP设备向操作系统的网络栈投递（或“注入”）数据包，从而模拟从外部接受数据的过程。</p>
-<h1 id="应用程序如何操作tuntap">应用程序如何操作Tun/Tap</h1>
-<p>Linux Tun/Tap驱动程序为应用程序提供了两种交互方式：虚拟网络接口和字符设备/dev/net/tun。写入字符设备/dev/net/tun的数据会发送到虚拟网络接口中；发送到虚拟网络接口中的数据也会出现在该字符设备上。</p>
-<p>应用程序可以通过标准的Socket API向Tun/Tap接口发送IP数据包，就好像对一个真实的网卡进行操作一样。除了应用程序以外，操作系统也会根据TCP/IP协议栈的处理向Tun/Tap接口发送IP数据包或者以太网数据包，例如ARP或者ICMP数据包。Tun/Tap驱动程序会将Tun/Tap接口收到的数据包原样写入到/dev/net/tun字符设备上，处理Tun/Tap数据的应用程序如VPN程序可以从该设备上读取到数据包，以进行相应处理。</p>
-<p>应用程序也可以通过/dev/net/tun字符设备写入数据包，这种情况下该字符设备上写入的数据包会被发送到Tun/Tap虚拟接口上，进入操作系统的TCP/IP协议栈进行相应处理，就像从物理网卡进入操作系统的数据一样。</p>
-<p>Tun虚拟设备和物理网卡的区别是Tun虚拟设备是IP层设备，从/dev/net/tun字符设备上读取的是IP数据包，写入的也只能是IP数据包，因此不能进行二层操作，如发送ARP请求和以太网广播。与之相对的是，Tap虚拟设备是以太网设备，处理的是二层以太网数据帧，从/dev/net/tun字符设备上读取的是以太网数据帧，写入的也只能是以太网数据帧。从这点来看，Tap虚拟设备和真实的物理网卡的能力更接近。</p>
-<p>下图描述了Tap/Tun的工作原理：
-
-  <img src="/img/2020-02-24-linux-taptun/linux-tuntap.png" alt="">
-
-</p>
-<h1 id="使用tuntap创建点对点隧道">使用Tun/Tap创建点对点隧道</h1>
-<p>通过应用程序从/dev/net/tun字符设备中读取或者写入数据看上去并没有太大用处，但通过将Tun/Tap结合物理网络设备使用,我们可以创建一个点对点的隧道。如下图所示，左边主机上应用程序发送到Tun虚拟设备上的IP数据包被VPN程序通过字符设备接收，然后再通过一个TCP或者UDP隧道发送到右端的VPN服务器上，VPN服务器将隧道负载中的原始IP数据包写入字符设备，这些IP包就会出现在右侧的Tun虚拟设备上，最后通过操作系统协议栈和socket接口发送到右侧的应用程序上。</p>
-<p>
-  <img src="/img/2020-02-24-linux-taptun/linux-tun-tunnel.png" alt="">
-
-</p>
-<p>上图中的隧道也可以采用Tap虚拟设备实现。使用Tap的话，隧道的负载将是以太数据帧而不是IP数据包，而且还会传递ARP等广播数据包。
-
-  <img src="/img/2020-02-24-linux-taptun/linux-tap-tunnel.png" alt="">
-
-</p>
-<h1 id="使用tuntap隧道绕过防火墙">使用Tun/Tap隧道绕过防火墙</h1>
-<p>结合路由规则和IPTables规则，可以将VPN服务器端的主机作为连接外部网络的网关，以绕过防火墙对客户端的一些外部网络访问限制。如下图所示，防火墙规则允许客户端访问主机IP2，而禁止访问其他Internet上的节点。通过采用Tun隧道，从防火墙角度只能看到被封装后的数据包，因此防火墙认为客户端只是在访问IP2，会对数据进行放行。而VPN服务端在解包得到真实的访问目的后，会通过路由规则和IPTables规则将请求转发到真正的访问目的地上，然后再将真实目的地的响应IP数据包封装进隧道后原路返回给客户端，从而达到绕过防火墙限制的目的。
-
-  <img src="/img/2020-02-24-linux-taptun/linux-access-internet-via-tunnel.png" alt="">
-
-</p>
-<h1 id="使用tap隧道桥接两个远程站点">使用Tap隧道桥接两个远程站点</h1>
-<p>如下图所示，可以使用tap建立二层隧道将两个远程站点桥接起来，组成一个局域网。对于两边站点中的主机来说，访问对方站点的主机和本地站点的主机的方式没有区别，都处于一个局域网192.168.0.0/24中。</p>
-<p>VPN主机上有两个物理网卡，其中Eth0用于和对方站点的VPN主机进行通信，建立隧道。Eth1在通过网线连接到以太网交换机的同时也被则加入了Linux Bridge，这相当于用一条网线将Linux Bridge上的一个端口（Eth1）连接到了本地站点的以太网交换机上，Eth1上收到的所有数据包都会被发送到Linux Bridge上，Linux Bridge发给Eth1的数据包也会被发送到以太网交换机上。Linux Bridge上还有一个Tap虚拟网卡，用于VPN程序接收从Linux Bridge上收到的数据包。</p>
-<p>
-  <img src="/img/2020-02-24-linux-taptun/linux-bridge-tunnel.png" alt="">
-
-</p>
-<p>假设192.168.0.5发出了一个对192.168.0.3的ARP请求，该ARP请求在网络中经过的路径如下：</p>
-<ol>
-<li>192.168.0.5发出ARP请求，询问192.168.0.3的MAC地址。</li>
-<li>该ARP请求将被发送到以太网交换机上。</li>
-<li>以太网交换机对该请求进行泛洪，发送到其包括Eth1在内的所有端口上。</li>
-<li>由于Eth1被加入了VPN主机上的Linux Bridge，因此Linux Bridge收到该ARP请求。</li>
-<li>Linux Bridge对该ARP请求进行泛洪，发送到连到其上面的Tap虚拟网卡上。</li>
-<li>VPN程序通过/dev/net/tun字符设备读取到该ARP请求，然后封装到TCP/UDP包中，发送到对端站点的VPN主机。</li>
-<li>对端站点的VPN程序通过监听TCP/UDP端口接收到封装的ARP请求，将ARP请求通过/dev/net/tun字符设备写入到Tap设备中。</li>
-<li>Linux Bridge泛洪，将ARP请求发送往Eth1，由于Eth1连接到了以太网交换机上，以太网交换机接收到了该ARP请求。</li>
-<li>以太网交换机进行泛洪，将ARP请求发送给了包括192.168.0.3的所有主机。</li>
-<li>192.168.0.3收到了APR请求，判断iP地址和自己相同，对此请求进行响应。</li>
-<li>同理，ARP响应包也可以按照该路径返回到图左边包括192.168.0.5在内的站点中。</li>
-</ol>
-<p>从站点主机的角度来看，上面图中两个VPN主机之间的远程连接可以看作一条虚拟的网线，这条网线将两个Linux Bridge连接起来。这两个Linux Bridge和两个以太网交换机一起将左右两个站点的主机连接在一起，形成了一个局域网。
-
-  <img src="/img/2020-02-24-linux-taptun/linux-bridge-tunnel-simplified.png" alt="">
-
-</p>
-<h1 id="参考资料">参考资料</h1>
+                <p><a href="/mindmap/k8s.html">Mind Map</a></p>
 <ul>
-<li><a href="https://www.kernel.org/doc/Documentation/networking/tuntap.txt">Universal TUN/TAP device driver</a></li>
-<li><a href="http://vtun.sourceforge.net/tun/faq.html">Universal TUN/TAP device driver Frequently Asked Question</a></li>
-<li><a href="https://backreference.org/2010/03/26/tuntap-interface-tutorial/">Tun/Tap interface tutorial</a></li>
-<li><a href="https://github.com/gregnietsky/simpletun/blob/master/simpletun.c">A simplistic, simple-minded, naive tunnelling program using tun/tap interfaces and TCP</a></li>
+<li>Kubernetes
+<ul>
+<li>基本理念
+<ul>
+<li>自动化部署，缩扩容和管理容器应用</li>
+<li>预期状态管理(Desired State Management)
+<ul>
+<li>Kubernetes API 对象（声明预期状态）</li>
+<li>Kubernetes Control Plane（确保集群当前状态匹配预期状态）
+<ul>
+<li>Kubernetes Master
+<ul>
+<li>kube-apiserver（API Server）
+<ul>
+<li>对外提供各种对象的CRUD REST接口</li>
+<li>对外提供Watch机制，通知对象变化</li>
+<li>将对象存储到Etcd中</li>
+</ul>
+</li>
+<li>kube-controller-manager（守护进程）
+<ul>
+<li>功能：通过apiserver监视集群的状态，并做出相应更改，以使得集群的当前状态向预期状态靠拢</li>
+<li>controllers
+<ul>
+<li>replication controller</li>
+<li>endpoints controller</li>
+<li>namespace controller</li>
+<li>serviceaccounts controller</li>
+<li>&hellip;&hellip;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>kube-scheduler（调度器）
+<ul>
+<li>功能：将Pod调度到合适的工作节点上运行</li>
+<li>调度的考虑因素
+<ul>
+<li>资源需求</li>
+<li>服务治理要求</li>
+<li>硬件/软件/策略限制</li>
+<li>亲和以及反亲和要求</li>
+<li>数据局域性</li>
+<li>负载间的干扰</li>
+<li>&hellip;&hellip;</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Work Node
+<ul>
+<li>Kubelet（节点代理）
+<ul>
+<li>接受通过各种机制（主要是通过apiserver）提供的一组PodSpec</li>
+<li>确保PodSpec中描述的容器处于运行状态且运行状况良好</li>
+</ul>
+</li>
+<li>Kube-proxy（节点网络代理）
+<ul>
+<li>在节点上提供Kubernetes API中定义Service</li>
+<li>设置Service对应的IPtables规则</li>
+<li>进行流量转发（userspace模式）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>部署模式
+<ul>
+<li>Single node</li>
+<li>Single head node，multiple workers
+<ul>
+<li>API Server，Scheduler，and Controller Manager run on a single node</li>
+</ul>
+</li>
+<li>Single etcd，HA heade nodes，multiple workers
+<ul>
+<li>Multiple API Server instances fronted by a load balancer</li>
+<li>Multiple Scheduler and Controller Manager instances with leader election</li>
+<li>Single etcd node</li>
+</ul>
+</li>
+<li>HA etcd，HA head nodes，multiple workers
+<ul>
+<li>Multiple API Server instances fronted by a load balancer</li>
+<li>Multiple Scheduler and Controller Manager instances with leader election</li>
+<li>Etcd cluster run on nodes seperate from the Kubernetes head nodes</li>
+</ul>
+</li>
+<li>Kubernetes Federation</li>
+</ul>
+</li>
+<li>商业模式
+<ul>
+<li>云服务用户：避免使用单一云提供商导致的厂商锁定，避免技术和成本风险</li>
+<li>云服务厂商：使用Kubernetes来打破AWS的先入垄断地位，抢夺市场份额</li>
+</ul>
+</li>
+<li>Workload
+<ul>
+<li>Pod
+<ul>
+<li>Smalleset deployable computing unit</li>
+<li>Consist of one or more containers</li>
+<li>All containers in a pod share <a href="https://kubernetes.io/docs/concepts/storage/volumes/">storage</a>, <a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#network-namespace">network namespacem</a> and <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html">cgroup</a></li>
+</ul>
+</li>
+<li>Workload resources(Controllers)
+<ul>
+<li>Deployment &amp; RelicaSet
+<ul>
+<li>Deployment is used to deploy stateless appliations.</li>
+<li>ReplicaSet ensured a specified numbers of pod replicas are running at a given time.</li>
+<li>Deployment is used to rollout/update/rollback ReplicaSet.</li>
+<li>ReplicaSet is not supposed to be used directly, it should be managed by Deployments.</li>
+</ul>
+</li>
+<li>StatefulSet
+<ul>
+<li>StatefulSet is used to deploy stateful applications.</li>
+<li>SetatefSet require a Headless Service to provide network identity for the pods.</li>
+</ul>
+</li>
+<li>DaemonSet
+<ul>
+<li>DaemonSet ensures that all(or some) Nodes run a copy of a Pod.</li>
+<li>Use cases: cluster storage daemon, logs collection daemon, node monitoring daemon.</li>
+</ul>
+</li>
+<li>Job &amp; CronJob
+<ul>
+<li>Job runs pods until a specified number of them have been succcessfully executed.</li>
+<li>CronJob runs a job periodically on a given schedule.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Storage
+<ul>
+<li>Volume
+<ul>
+<li>purpose
+<ul>
+<li>Persist data across the life span of a Pod
+<ul>
+<li>Data won&rsquo;t lost when a container is restarted</li>
+</ul>
+</li>
+<li>Share data between containers running together in a Pod
+<ul>
+<li>Volume can be mounted to mutiple containers inside a Pod</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>type
+<ul>
+<li>configMap</li>
+<li>emptyDir</li>
+<li>hostPath</li>
+<li>local</li>
+<li>persistentVolumeClaim</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Policies
+<ul>
+<li>ResourceQuota
+<ul>
+<li>purpose
+<ul>
+<li>Limit the aggregated resource consumption of a Namespace</li>
+</ul>
+</li>
+<li>Scope
+<ul>
+<li>Namespaced: ResourceQuota is enforced in a Namespace scope, different Namespaces have different Resouce limit</li>
+</ul>
+</li>
+<li>Type
+<ul>
+<li>Compute Resource Quota
+<ul>
+<li>CPU (limits.cpu requests.cpu)</li>
+<li>Memory (limits.memory requets.memory)</li>
+</ul>
+</li>
+<li>Storage Resource Quota
+<ul>
+<li>Persistent Storage (storage)</li>
+<li>Ephemeral Storage (ephermal-storage)</li>
+</ul>
+</li>
+<li>Object Count Quota
+<ul>
+<li>Limit of total number of Namespaced resources (count/services)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Request and Limit
+<ul>
+<li>Request: Resources that are guaranteed to get</li>
+<li>Limit: The maximum amount of resources that one can get</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Network
+<ul>
+<li>Linux Network Virtualization
+<ul>
+<li><a href="https://zhaohuabing.com/post/2020-02-24-linux-taptun/">Linux tun/tap</a></li>
+</ul>
+</li>
+<li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#network-namespace">Network Namespace</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#veth">Veth Pair</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-03-12-linux-network-virtualization/#bridge">Linux bridge</a></li>
+<li>Vlan</li>
+<li>Vxlan
+<ul>
+<li><a href="https://cizixs.com/2017/09/25/vxlan-protocol-introduction/">Vxlan原理</a></li>
+<li><a href="https://cizixs.com/2017/09/28/linux-vxlan/">Linux 上实现 vxlan 网络</a></li>
+</ul>
+</li>
+<li>Routing Protocol
+<ul>
+<li>Distance Vector Protocol
+<ul>
+<li>BGP</li>
+</ul>
+</li>
+<li>Link-State Protocol
+<ul>
+<li>OSPF</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>K8s Network
+<ul>
+<li>Service
+- <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#cluster-ip">Cluster IP</a>
+- <a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/#headless-services">Headless</a>
+- <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#nodeport">NodePort</a>
+- <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#loadbalancer">LoadBalancer</a>
+<ul>
+<li>Ingress
+<ul>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#k8s-ingress">K8s Ingress</a></li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#istio-gateway">Istio Ingress Gateway</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>腾讯云
+<ul>
+<li><a href="https://zhaohuabing.com/post/2021-03-24-tke-network-mode/#global-router-%E6%A8%A1%E5%BC%8F">Global Router</a></li>
+<li><a href="https://zhaohuabing.com/post/2021-03-24-tke-network-mode/#vpc-cni-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%BC%8F">VPC-CNI</a></li>
+</ul>
+</li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#api-gateway--sidecar-proxy">API Gateway+Service Mesh</a></li>
+<li>Kubernetes CNI插件
+<ul>
+<li><a href="https://www.lijiaocn.com/%E9%A1%B9%E7%9B%AE/2017/04/11/calico-usage.html">Calico</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Security
+<ul>
+<li>Background Knowledge
+<ul>
+<li><a href="https://zhaohuabing.com/post/2020-03-19-pki/">Certificate and PKI</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/">Kubernetes 中使用到的证书</a></li>
+</ul>
+</li>
+<li>User Type
+<ul>
+<li>Service Account
+<ul>
+<li>Managed by Kubernetes</li>
+<li>Represent workloads in the cluster</li>
+<li>Bound to a specific namespace</li>
+</ul>
+</li>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#normal-user">Normal User</a>
+<ul>
+<li>Managed out side of Kubernetes</li>
+<li>Authenticated with a valid certicated signed by the cluster&rsquo;s CA
+<ul>
+<li>User name: Certificate subject <a href="https://docs.oracle.com/cd/E24191_01/common/tutorials/authz_cert_attributes.html">Common Name</a> field</li>
+<li>Group: Certificate subject <a href="https://docs.oracle.com/cd/E24191_01/common/tutorials/authz_cert_attributes.html">Organization</a> field</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Authentication
+<ul>
+<li>Service account tokens for service accounts</li>
+<li>Client certifications for normal users</li>
+<li><a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/#service-account--%E8%AF%81%E4%B9%A6">Certifications for control plane components communication</a></li>
+<li><a href="https://zhaohuabing.com/post/2020-05-19-k8s-certificate/#%E4%BD%BF%E7%94%A8-tls-bootstrapping-%E7%AE%80%E5%8C%96-kubelet-%E8%AF%81%E4%B9%A6%E5%88%B6%E4%BD%9C">Bootstrap Token</a> for clusters and nodes bootstrapping</li>
+</ul>
+</li>
+<li>Authorization
+<ul>
+<li><a href="https://kubernetes.io/docs/reference/access-authn-authz/rbac/">RBAC</a>
+<ul>
+<li>Namespace Scope
+<ul>
+<li>Role</li>
+<li>RoleBinding (Associate users retrived from authentication process to Roles)</li>
+</ul>
+</li>
+<li>Cluster Scope
+<ul>
+<li>ClusterRole</li>
+<li>CluseterRoleBinding (Associate users retrived from authentication process to ClusteRoles)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
 
@@ -447,13 +715,13 @@ $(function() {
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2020-02-22-k8s-mindmap/" data-toggle="tooltip" data-placement="top" title="Kubernetes 知识图谱">&larr;
+                        <a href="/post/2020-02-21-network-service-mesh-english/" data-toggle="tooltip" data-placement="top" title="Network Service Mesh: A Big Step Toward Cloud-Native NFV">&larr;
                             Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/post/2020-03-12-linux-network-virtualization/" data-toggle="tooltip" data-placement="top" title="Linux network namespace， veth， birdge与路由">Next
+                        <a href="/post/2020-02-24-linux-taptun/" data-toggle="tooltip" data-placement="top" title="Linux Tun/Tap 介绍">Next
                             Post &rarr;</a>
                     </li>
                     
