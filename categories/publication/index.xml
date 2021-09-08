@@ -6,10 +6,19 @@
     <description>Recent content in Publication on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Aug 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 06 Sep 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/categories/publication/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Online Lesson: Distributed Tracing with Jaeger, Kubernetes, and Istio</title>
+      <link>https://zhaohuabing.com/post/2021-09-08-distributed-tracing-with-jaeger-kubernetes-and-istio/</link>
+      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-09-08-distributed-tracing-with-jaeger-kubernetes-and-istio/</guid>
+      <description>折扣购买本在线课程 折扣购买 Manning 书籍</description>
+    </item>
     
     <item>
       <title>译著：云原生数据中心网络</title>
