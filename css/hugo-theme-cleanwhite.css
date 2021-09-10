@@ -362,7 +362,7 @@ pre code{
 .intro-header.style-text .site-heading .subheading,.intro-header.style-text .post-heading .subheading,.intro-header.style-text .page-heading .subheading{	
     margin-bottom:15px	
 }	
-.intro-header.style-text .tags a,.intro-header.style-text .tags .tag{	
+.intro-header.style-text .post-heading .meta a,.intro-header.style-text .tags a,.intro-header.style-text .tags .tag{	
     border-color:#404040;	
     color:#404040	
 }	
@@ -420,6 +420,10 @@ pre code{
     line-height:1.1;
     display:block
 }
+.intro-header .post-heading .subheading,.intro-header .post-heading .meta .a{
+    color: #404040
+}
+
 .intro-header .post-heading .subheading{
     font-family:-apple-system,"Helvetica Neue",Arial,"PingFang SC","Hiragino Sans GB",STHeiti,"Microsoft YaHei","Microsoft JhengHei","Source Han Sans SC","Noto Sans CJK SC","Source Han Sans CN","Noto Sans SC","Source Han Sans TC","Noto Sans CJK TC","WenQuanYi Micro Hei",SimSun,sans-serif;
     line-height:1.7;
