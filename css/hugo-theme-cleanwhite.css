@@ -1,0 +1,6 @@
+div#navbar { max-height:600px; }
+
+.intro-header.style-text .post-heading .meta a {
+    border-color: #404040;
+    color: #404040;
+  }
