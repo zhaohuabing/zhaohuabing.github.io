@@ -614,7 +614,8 @@ form .row:first-child .floating-label-form-group{
 }
 .pager{
     margin:20px 0 0!important;
-    padding:0!important
+    /*padding:0!important*/
+    padding:0 0 20px 0
 }
 .pager li>a,.pager li>span{
     font-family:-apple-system,"Helvetica Neue",Arial,"PingFang SC","Hiragino Sans GB",STHeiti,"Microsoft YaHei","Microsoft JhengHei","Source Han Sans SC","Noto Sans CJK SC","Source Han Sans CN","Noto Sans SC","Source Han Sans TC","Noto Sans CJK TC","WenQuanYi Micro Hei",SimSun,sans-serif;
