@@ -473,20 +473,17 @@ pre code{
     font-weight:300;
     margin-bottom:10px
 }
-.post-preview>.post-meta{
+.post-preview>.post-meta>a, .post-preview>.post-meta{
     font-family:Lora,'Times New Roman',serif;
     color:gray;
     font-size:16px;
     font-style:italic;
     margin-top:0
 }
-.post-preview>.post-meta>a{
-    text-decoration:none;
-    color:#404040
-}
+
 .post-preview>.post-meta>a:hover,.post-preview>.post-meta>a:focus{
     color:#0085a1;
-    text-decoration:underline
+    text-decoration:none
 }
 @media only screen and (min-width:768px){
     .post-preview>a>.post-title{
