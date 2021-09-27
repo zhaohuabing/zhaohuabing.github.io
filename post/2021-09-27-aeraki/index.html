@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="Aeraki" />
+    <meta property="og:title" content="Aeraki" />
+    <meta property="twitter:title" content="Aeraki" />
+    
+
+    
+    <meta name="description" content="Aeraki [Air-rah-ki] is the Greek word for &#39;breeze&#39;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further.">
+    <meta property="og:description" content="Aeraki [Air-rah-ki] is the Greek word for &#39;breeze&#39;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further." />
+    <meta property="twitter:description" content="Aeraki [Air-rah-ki] is the Greek word for &#39;breeze&#39;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Aeraki-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2021-09-27-aeraki/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/life">life</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/note">note</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/open-source">open-source</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/publication">publication</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('https://images.unsplash.com/photo-1604099239293-d07cd36f00ac?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
+                        </a>
+                        
+                        <a class="tag" href="/tags/envoy" title="Envoy">
+                            Envoy
+                        </a>
+                        
+                        <a class="tag" href="/tags/aeraki" title="Aeraki">
+                            Aeraki
+                        </a>
+                        
+                    </div>
+                    <h1>Aeraki</h1>
+                    <h2 class="subheading">Manage any layer 7 traffic in Istio service mesh!</h2>
+                    <span class="meta">
+                        
+                            
+                                
+                                    <a href="https://github.com/aeraki-framework">Github</a>
+                                
+                            
+                                
+                                    <a href="http://aeraki.zhaohuabing.com:3000/d/pgz7wp-Gz/aeraki-demo?orgId=1&amp;refresh=10s&amp;kiosk">Online demo</a>
+                                
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h1 id="aeraki-manage-any-layer-7-traffic-in-istio-service-mesh">Aeraki, Manage <strong>any</strong> layer 7 traffic in Istio service mesh!</h1>
+<p>
+  <img src="https://raw.githubusercontent.com/aeraki-framework/aeraki/master/docs/aeraki&amp;istio.png" alt=" Aeraki ">
+
+</p>
+<hr>
+<p>Aeraki [Air-rah-ki] is the Greek word for &lsquo;breeze&rsquo;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further.</p>
+<h2 id="problems-to-solve">Problems to solve</h2>
+<p>We are facing some challenges in service mesh:</p>
+<ul>
+<li>Istio and other service mesh implementations have very limited support for layer 7 protocols other than HTTP and gRPC.</li>
+<li>Envoy RDS(Route Discovery Service) is solely designed for HTTP and gRPC. Other protocols such as Dubbo and Thrift
+can only use listener in-line routes for traffic management, which breaks existing connections when routes change.</li>
+<li>It takes a lot of effort to introduce a proprietary protocol into a service mesh. You&rsquo;ll need to write an Envoy
+filter to handle the traffic in the data plane, and a control plane to manage those Envoys.</li>
+</ul>
+<h2 id="aerakis-approach">Aeraki&rsquo;s approach</h2>
+<p>To address these problems, Aeraki Framework providing a non-intrusive, extendable way to manage any layer 7 traffic in a service mesh.
+
+  <img src="https://raw.githubusercontent.com/aeraki-framework/aeraki/master/docs/aeraki-architecture.png" alt=" Aeraki ">
+
+</p>
+<p>Aeraki Framework consists of the following components:</p>
+<ul>
+<li>Aeraki: <a href="https://github.com/aeraki-framework/aeraki">Aeraki</a> provides high-level, user-friendly traffic management rules 
+to operations, translates the rules to envoy filter configurations, and leverages Istio&rsquo;s EnvoyFilter API to push the 
+configurations to the sidecar proxies. Aeraki also serves as the RDS server for metaprotocol proxies in the data plane. 
+Contrary to Envoy RDS, which focuses on HTTP, <a href="https://github.com/aeraki-framework/aeraki/blob/master/docs/metaprotocol.md#traffic-management">Aeraki RDS</a> is aimed to provide general dynamic route capabilities for
+all layer-7 protocols.</li>
+<li>MetaProtocol Proxy: <a href="https://github.com/aeraki-framework/meta-protocol-proxy">MetaProtocol Proxy</a> provides common capabilities for
+Layer-7 protocols, such as load balancing, circuit breaker, load balancing, routing, rate limiting, fault injection, and 
+auth. Layer-7 protocols can be built on top of MetaProtocol. To add a new protocol into the service mesh, the only thing 
+you need to do is implementing the <a href="https://github.com/aeraki-framework/meta-protocol-proxy/blob/ac788327239bd794e745ce18b382da858ddf3355/src/meta_protocol_proxy/codec/codec.h#L118">codec interface</a>. 
+If you have special requirements which can&rsquo;t be meet by the built-in capabilities, MetaProtocol Proxy also has a filter chain mechanism, 
+allowing users to write their own layer-7 filters to add custom logic into MetaProtocol Proxy.</li>
+</ul>
+<p><a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/dubbo">Dubbo</a> and 
+<a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/thrift">Thrift</a> have
+already been implemented based on MetaProtocol. More protocols are on the way.</p>
+<p>Need to manage proprietary protocols in Istio service mesh? All you need to do is just implementing the
+<a href="https://github.com/aeraki-framework/meta-protocol-proxy/blob/ac788327239bd794e745ce18b382da858ddf3355/src/meta_protocol_proxy/codec/codec.h#L118">codec interface</a>. Aeraki Framework will take care all the others for you. It&rsquo;s so easy!</p>
+<p>Aeraki also has plugins for the protocols which are too special to be fit into the MetaProtocol framework, such as <a href="docs/zh/redis.md">Redis</a> and Kafka, so these protocols can be managed in Istio service mesh.</p>
+<h2 id="reference">Reference</h2>
+<ul>
+<li><a href="https://github.com/aeraki-framework/aeraki/blob/master/docs/metaprotocol.md">Create plugins for proprietary protocols</a></li>
+<li><a href="https://github.com/aeraki-framework/dubbo2istio#readme">Dubbo (中文) </a></li>
+<li><a href="https://github.com/aeraki-framework/aeraki/blob/master/docs/zh/redis.md">Redis (中文) </a></li>
+<li><a href="https://github.com/aeraki-framework/aeraki/blob/master/lazyxds/README.md">LazyXDS（xDS 按需加载）</a></li>
+</ul>
+<h2 id="supported-protocols">Supported protocols:</h2>
+<ul>
+<li>Dubbo
+<ul>
+<li>Service Discovery
+<ul>
+<li><input checked="" disabled="" type="checkbox"> ServiceEntry Integration (<a href="https://github.com/aeraki-framework/aeraki/blob/master/demo/dubbo/serviceentry.yaml">Example</a>)</li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/aeraki-framework/dubbo2istio">ZooKeeper Integration</a></li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/aeraki-framework/dubbo2istio">Nacos Integration</a></li>
+</ul>
+</li>
+<li>Traffic Management
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Request Level Load Balancing</li>
+<li><input checked="" disabled="" type="checkbox"> Version Based Routing</li>
+<li><input checked="" disabled="" type="checkbox"> Traffic Splitting</li>
+<li><input checked="" disabled="" type="checkbox"> Method Based Routing</li>
+<li><input checked="" disabled="" type="checkbox"> Header Based Routing</li>
+<li><input checked="" disabled="" type="checkbox"> Crcuit Breaker</li>
+<li><input checked="" disabled="" type="checkbox"> Locality Load Balancing</li>
+<li><input checked="" disabled="" type="checkbox"> RDS(Route Discovery Service)</li>
+</ul>
+</li>
+<li>Observability
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Dubbo Request Metrics</li>
+</ul>
+</li>
+<li>Security
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Peer Authorization on Interface/Method</li>
+<li><input disabled="" type="checkbox"> Rquest Authorization</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Thrift
+<ul>
+<li>Traffic Management
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Request Level Load Balancing</li>
+<li><input checked="" disabled="" type="checkbox"> Version Based Routing</li>
+<li><input checked="" disabled="" type="checkbox"> Traffic Splitting</li>
+<li><input disabled="" type="checkbox"> Header Based Routing</li>
+<li><input disabled="" type="checkbox"> Rate Limit</li>
+</ul>
+</li>
+<li>Observability
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Thrift Request Metrics</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Kafka
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Metrics</li>
+</ul>
+</li>
+<li>ZooKeeper
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Metrics</li>
+</ul>
+</li>
+<li>Redis
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Redis Cluster</li>
+<li><input checked="" disabled="" type="checkbox"> Sharding</li>
+<li><input checked="" disabled="" type="checkbox"> Prefix Routing</li>
+<li><input checked="" disabled="" type="checkbox"> Auth</li>
+<li><input checked="" disabled="" type="checkbox"> Traffic Mirroring</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> MySql</li>
+<li><input disabled="" type="checkbox"> MongoDB</li>
+<li><input disabled="" type="checkbox"> Postgres</li>
+<li><input disabled="" type="checkbox"> RocketMQ</li>
+<li><input disabled="" type="checkbox"> TARS</li>
+<li>&hellip;</li>
+</ul>
+<h2 id="demo">Demo</h2>
+<p><a href="http://aeraki.zhaohuabing.com:20001/">Live Demo: kiali Dashboard</a></p>
+<p><a href="http://aeraki.zhaohuabing.com:3000/d/pgz7wp-Gz/aeraki-demo?orgId=1&amp;refresh=10s&amp;kiosk">Live Demo: Service Metrics: Grafana</a></p>
+<p><a href="http://aeraki.zhaohuabing.com:9090/new/graph?g0.expr=envoy_dubbo_inbound_20880___response_success&amp;g0.tab=0&amp;g0.stacked=1&amp;g0.range_input=1h&amp;g1.expr=envoy_dubbo_outbound_20880__org_apache_dubbo_samples_basic_api_demoservice_request&amp;g1.tab=0&amp;g1.stacked=1&amp;g1.range_input=1h&amp;g2.expr=envoy_thrift_inbound_9090___response&amp;g2.tab=0&amp;g2.stacked=1&amp;g2.range_input=1h&amp;g3.expr=envoy_thrift_outbound_9090__thrift_sample_server_thrift_svc_cluster_local_response_success&amp;g3.tab=0&amp;g3.stacked=1&amp;g3.range_input=1h&amp;g4.expr=envoy_thrift_outbound_9090__thrift_sample_server_thrift_svc_cluster_local_request&amp;g4.tab=0&amp;g4.stacked=1&amp;g4.range_input=1h">Live Demo: Service Metrics: Prometheus</a></p>
+<p>Screenshot: Service Metrics:
+
+  <img src="https://raw.githubusercontent.com/aeraki-framework/aeraki/master/docs/metrics.png" alt="Screenshot: Service Metrics">
+
+</p>
+<p>Recored Demo: Dubbo and Thrift Traffic Management
+<a href="https://www.youtube.com/watch?v=vrjp-Yg3Leg">
+  <img src="http://i3.ytimg.com/vi/vrjp-Yg3Leg/maxresdefault.jpg" alt="Thrift and Dubbo traffic management demo">
+
+</a></p>
+<h2 id="install">Install</h2>
+<h3 id="pre-requirements">Pre-requirements:</h3>
+<ul>
+<li>A running Kubernetes cluster, which can be either a cluster in the cloud, or a local cluster created with kind/minikube</li>
+<li>Kubectl installed, and the <code>~/.kube/conf</code> points to the cluster in the first step</li>
+<li>Helm installed, which will be used to install some components in the demo</li>
+</ul>
+<h3 id="download-aeraki-from-the-github">Download Aeraki from the Github</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/aeraki-framework/aeraki.git
+</code></pre></div><h3 id="install-istio-aeraki-and-demo-applications">Install Istio, Aeraki and demo applications</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aeraki/demo/install-demo.sh
+</code></pre></div><p>Note: Aeraki needs to configure Istio with smart dns. If you already have an Istio installed and don&rsquo;t know how to
+turn on smart dns, please uninstall it. install-demo.sh will install Istio for you.</p>
+<h3 id="open-the-following-urls-in-your-browser-to-play-with-aeraki-and-view-service-metrics">Open the following URLs in your browser to play with Aeraki and view service metrics</h3>
+<ul>
+<li>Kaili <code>http://{istio-ingressgateway_external_ip}:20001</code></li>
+<li>Grafana <code>http://{istio-ingressgateway_external_ip}:3000</code></li>
+<li>Prometheus <code>http://{istio-ingressgateway_external_ip}:9090</code></li>
+</ul>
+<p>You can import Aeraika demo dashboard from file <code>demo/aeraki-demo.json</code> into the Grafana.</p>
+<h2 id="talks">Talks</h2>
+<ul>
+<li>Istio meetup China(中文): <a href="https://www.youtube.com/watch?v=Bq5T3OR3iTM">全栈服务网格 - Aeraki 助你在 Istio 服务网格中管理任何七层流量</a></li>
+<li>IstioCon 2021: <a href="https://www.youtube.com/watch?v=sBS4utF68d8">How to Manage Any Layer-7 Traffic in an Istio Service Mesh?</a></li>
+</ul>
+<h2 id="contact">Contact</h2>
+<ul>
+<li>Mail: If you&rsquo;re interested in contributing to this project, please reach out to <a href="mailto:zhaohuabing@gmail.com">zhaohuabing@gmail.com</a></li>
+<li>Wechat Group: Please contact Wechat ID: zhao_huabing to join the Aeraki Wechat group</li>
+<li>Slack: Join <a href="http://aeraki.slack.com/">Aeraki slack channel</a></li>
+</ul>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021-09-26-hugo-theme-clean-white/" data-toggle="tooltip" data-placement="top" title="Hugo Theme: CleanWhite">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/aeraki" title="aeraki">
+                            aeraki
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/network" title="network">
+                            network
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-weixin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2021
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

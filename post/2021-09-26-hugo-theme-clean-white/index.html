@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="Hugo Theme: CleanWhite" />
+    <meta property="og:title" content="Hugo Theme: CleanWhite" />
+    <meta property="twitter:title" content="Hugo Theme: CleanWhite" />
+    
+
+    
+    <meta name="description" content="CleanWhite is a clean, elegant, but fully functional blog theme for Hugo, which I use for my own blog.">
+    <meta property="og:description" content="CleanWhite is a clean, elegant, but fully functional blog theme for Hugo, which I use for my own blog." />
+    <meta property="twitter:description" content="CleanWhite is a clean, elegant, but fully functional blog theme for Hugo, which I use for my own blog." />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>Hugo Theme: CleanWhite-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2021-09-26-hugo-theme-clean-white/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/life">life</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/note">note</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/open-source">open-source</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/publication">publication</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('https://images.pexels.com/photos/1082655/pexels-photo-1082655.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/hugo" title="Hugo">
+                            Hugo
+                        </a>
+                        
+                    </div>
+                    <h1>Hugo Theme: CleanWhite</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        
+                            
+                                
+                                    <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite">Github</a>
+                                
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h1 id="clean-white-theme-for-hugo">Clean White Theme for Hugo</h1>
+<p>CleanWhite is a clean, elegant, but fully functional blog theme for Hugo. Here is a live <a href="https://zhaohuabing.com">demo site</a> using this theme.</p>
+<p>It is based on <a href="https://github.com/Huxpro/huxpro.github.io">huxblog Jekyll Theme</a>
+and <a href="https://github.com/BlackrockDigital/startbootstrap-clean-blog-jekyll">Clean Blog Jekyll Theme</a>.</p>
+<p>These two upstream projects have done awesome jobs to create a blog theme, what I&rsquo;m doing here is porting it to Hugo, of which I like the simplicity and the much faster compiling speed. Some other features which I think could be useful, such as site search with algolia and proxy for Disqus access in China, have also been built in the CleanWhite theme. Other fancy features of upstream projects are not supported by this Hugo theme, I&rsquo;d like to make it as simple as possible and only focus on blog purpose, at least for now.
+While I created this theme, I followed the Hugo theme best practice and tried to make every part of the template as a replaceable partial html, so it could be much easier for you to make your customization based on it.</p>
+<h2 id="screenshots">Screenshots</h2>
+<p><strong>Home</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/fullscreenshot.png" alt="screenshot">
+
+</p>
+<p><strong>Post</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/post.png" alt="screenshot">
+
+</p>
+<p><strong>Search</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/sitesearch.png" alt="screenshot">
+
+</p>
+<p><strong>Disqus</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/disqus.png" alt="screenshot">
+
+</p>
+<p><strong>Wechat Pay &amp; Alipay</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/rewards.png" alt="screenshot">
+
+</p>
+<p><strong>Mind Map</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/mindmap.png" alt="screenshot">
+
+</p>
+<p><strong>Bilibili Video</strong>
+
+  <img src="https://raw.githubusercontent.com/zhaohuabing/hugo-theme-cleanwhite/master/images/bilibili.png" alt="screenshot">
+
+</p>
+<h2 id="quick-start">Quick Start</h2>
+<p>The simplest way is to start with the example site coming with this theme, then you can play around and add your own stuff.</p>
+<pre><code>$ mkdir test
+$ cd test
+$ mkdir themes
+$ cd themes
+$ git clone https://github.com/zhaohuabing/hugo-theme-cleanwhite.git
+$ cp -r hugo-theme-cleanwhite/exampleSite/** ../
+$ cd ..
+$ hugo serve
+</code></pre><p>If your site is already a git project, you may want to choose to add the cleanwhite theme as a submodule to avoid messing up your existing git repository.</p>
+<pre><code>$ mkdir themes
+$ git submodule add https://github.com/zhaohuabing/hugo-theme-cleanwhite.git themes/hugo-theme-cleanwhite
+</code></pre><p>Run  Hugo Build-in Server Locally</p>
+<pre><code>$ hugo serve -t  hugo-theme-cleanwhite
+</code></pre><p>Now enter <a href="http://localhost:1313"><code>localhost:1313</code></a> in the address bar of your browser.</p>
+<p>If you start from scratch, there is a working Hugo site configured with the CleanWhite theme in the <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite/tree/master/exampleSite">exampleSite</a> directory.  You can use it as a starting point for your site.</p>
+<p>For more information read the official <a href="https://gohugo.io/overview/installing/">setup guide</a> of Hugo</p>
+<h2 id="configuration">Configuration</h2>
+<p>First, let&rsquo;s take a look at the <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite/blob/master/exampleSite/config.toml">config.toml</a>. It will be useful to learn how to customize your site. Feel free to play around with the settings.</p>
+<h3 id="comments">Comments</h3>
+<p>The optional comments system is powered by <a href="https://disqus.com">Disqus</a>. If you want to enable comments, create an account in Disqus and write down your shortname.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">disqusShortname = <span style="color:#f1fa8c">&#34;your-disqus-short-name&#34;</span>
+</code></pre></div><p>You can disable the comments system by leaving the <code>disqusShortname</code> empty.</p>
+<h3 id="disqus-in-china">Disqus in China</h3>
+<p>Disqus is inaccessible in China. To get it to work, we can set up a proxy with <a href="https://github.com/zhaohuabing/disqus-php-api">disqus-php-api</a> in a host which sets between the client browser and the Disqus server. The idea is that if Disqus can be reached in the guest network, the blog page will show the original Disqus comments UI, otherwise, it will downgrade and use the proxy to access the Disqus, the UI will be a little different, but the visitors can still write their comments on the page.</p>
+<p>The client side java script has already been integrated to CleanWhite them, but you need to set up a proxy server yourself.</p>
+<p>The proxy is written in php, which can be found here: <a href="https://github.com/zhaohuabing/disqus-php-api/tree/master/api">https://github.com/zhaohuabing/disqus-php-api/tree/master/api</a></p>
+<p>You need to specify  your Disqus account information in the config.php.</p>
+<pre><code>define('PUBLIC_KEY', '');
+define('SECRET_KEY', '');
+define('DISQUS_USERNAME', '');
+define('DISQUS_EMAIL', '');
+define('DISQUS_PASSWORD', '');
+define('DISQUS_WEBSITE', '');
+define('DISQUS_SHORTNAME', '');
+</code></pre><p>Set the proxy server address in the site config file of your Hugo project.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">disqus_proxy = <span style="color:#f1fa8c">&#34;http://yourdisqusproxy.com&#34;</span>
+</code></pre></div><h3 id="site-search-with-algolia">Site Search with Algolia</h3>
+<p>Follow this <a href="https://forestry.io/blog/search-with-algolia-in-hugo/#3-create-your-index-in-algolia">tutorial</a> to create your index in Algolia. The index is just the storage of the indexing data of your site in the the cloud . The search page of CleanWhite theme will utilize this indexing data to do the search.</p>
+<p>Go to the directory where you have your Hugo site and run the following commands:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm init
+$ npm install atomic-algolia --save
+</code></pre></div><p>Next, open up the newly created package.json, where we’ll add an NPM script to update your index at Algolia. Find &ldquo;scripts&rdquo;, and add the following:</p>
+<pre><code class="language-josn" data-lang="josn">&quot;algolia&quot;: &quot;atomic-algolia&quot;
+</code></pre><p>Algolia index output format has already been supported by the CleanWhite theme, so you can just build your site, then you’ll find a file called algolia.json in your <code>public</code> directory, which we can use to update your index in Algolia.
+Generate index file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ hugo
+</code></pre></div><p>Create a new file in the root of your Hugo project called .env, and add the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">ALGOLIA_APP_ID</span><span style="color:#ff79c6">={{</span> YOUR_APP_ID <span style="color:#ff79c6">}}</span>
+<span style="color:#8be9fd;font-style:italic">ALGOLIA_ADMIN_KEY</span><span style="color:#ff79c6">={{</span> YOUR_ADMIN_KEY <span style="color:#ff79c6">}}</span>
+<span style="color:#8be9fd;font-style:italic">ALGOLIA_INDEX_NAME</span><span style="color:#ff79c6">={{</span> YOUR_INDEX_NAME <span style="color:#ff79c6">}}</span>
+<span style="color:#8be9fd;font-style:italic">ALGOLIA_INDEX_FILE</span><span style="color:#ff79c6">={{</span> PATH/TO/algolia.json <span style="color:#ff79c6">}}</span>
+</code></pre></div><p><strong>Make sure double curly braces be replaced together</strong>.</p>
+<p>Now you can push your index to Algolia by simply running:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm run algolia
+</code></pre></div><p>Add the following variables to your hugo site config so the search page can get access to algolia index data in the cloud:</p>
+<pre><code>algolia_search = true
+algolia_appId = {{ YOUR_APP_ID }}
+algolia_indexName = {{ YOUR_INDEX_NAME }}
+algolia_apiKey = {{ YOUR_ADMIN_KEY }}
+</code></pre><p>Open search page in your browser: http://localhost:1313/search</p>
+<h3 id="analytics">Analytics</h3>
+<p>You can optionally enable Google or Baidu Analytics. Type your tracking code in the</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">googleAnalytics = <span style="color:#f1fa8c">&#34;UA-XXXXX-X&#34;</span>
+ba_track_id  = <span style="color:#f1fa8c">&#34;XXXXXXXXXXXXXXXX&#34;</span>
+</code></pre></div><p>Leave the <code>googleAnalytics</code>  or &lsquo;ba_track_id ' key empty to disable it.</p>
+<h3 id="wechat-pay--alipay-rewards">Wechat Pay &amp; Alipay Rewards</h3>
+<p>You can enable Wechat Pay &amp; Alipay to allow readers send you money. So if they like your articles, you may even get rewards from your writing. Now you must be motivated to write more.</p>
+<ul>
+<li>Enable Wechat Pay &amp; Alipay in the site config</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">reward = <span style="color:#ff79c6">true</span>
+</code></pre></div><ul>
+<li>
+<p>Replace the QR codes of Wechat Pay &amp; Alipay by overriding the photos in folder /static/img/reward/, otherwise the money will be sent to my accounts!</p>
+</li>
+<li>
+<p>Enable Wechat Pay &amp; Alipay in the site config</p>
+</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">reward = <span style="color:#ff79c6">true</span>
+</code></pre></div><h3 id="mind-map">Mind Map</h3>
+<p>Mind Map is supported with shortcode &lsquo;mind&rsquo;, instering the following code snippet into  your markdown file can create a mind map showing in the screenshots.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">{{% mind %}}
+- Root
+    - Level 1
+        - Level 2
+        - Level 2
+            - Level 3
+            - Level 3
+                - Level 4
+                    - Level 5
+                        - Level 6
+    - Level 1
+        - Level 2
+        - Level 2
+     - Level 1
+        - Level 2
+        - Level 2
+     - Level 1
+        - Level 2
+        - Level 2
+     - Level 1
+        - Level 2
+        - Level 2
+{{% /mind %}}
+</code></pre></div><h3 id="embedded-videos">Embedded Videos</h3>
+<p>Use the below hugo shortcodes to embed videos into your posts.</p>
+<p>Bilibili (B站)</p>
+<pre><code>{{&lt; bilibili BV1kZ4y137gv &gt;}}
+</code></pre><p>Youtube</p>
+<pre><code>{{&lt; youtube cllc1ZGlhsQ &gt;}}
+</code></pre><p>Vimeo</p>
+<pre><code>{{&lt; vimeo 146022717 &gt;}}
+</code></pre><h2 id="thanks">Thanks</h2>
+<p>Thanks for the great jobs of <a href="https://github.com/Huxpro/huxpro.github.io">huxblog Jekyll Theme</a> and <a href="https://github.com/BlackrockDigital/startbootstrap-clean-blog-jekyll">Clean Blog Jekyll Theme</a> which are the the two upstream projects CleanWhite Hugo theme is based on.</p>
+<h2 id="feedback">Feedback</h2>
+<p>If you find any problems, please feel free to <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite/issues/new">raise an issue</a> or create a pull request to fix it.</p>
+<p>If it&rsquo;s helpful for you, I would appreciate it if you could star this repository, thanks!</p>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021-09-08-distributed-tracing-with-jaeger-kubernetes-and-istio/" data-toggle="tooltip" data-placement="top" title="Online Lesson: Distributed Tracing with Jaeger, Kubernetes, and Istio">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/post/2021-09-27-aeraki/" data-toggle="tooltip" data-placement="top" title="Aeraki">Next
+                            Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                
+<div id="disqus-comment"></div>
+
+<script src="/js/iDisqus.js"></script>
+<script>
+var disq = new iDisqus('disqus-comment', {
+    forum: 'zhaohuabings-blog',
+    api: 'https:\/\/disqusapi.zhaohuabing.com',
+	site: 'https:\/\/zhaohuabing.com',
+    mode: 1,
+    timeout: 5000,
+    init: true
+});
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/aeraki" title="aeraki">
+                            aeraki
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/network" title="network">
+                            network
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-weixin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2021
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</body>
+</html>

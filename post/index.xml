@@ -6,10 +6,28 @@
     <description>Recent content in Posts on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Sep 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Sep 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Aeraki</title>
+      <link>https://zhaohuabing.com/post/2021-09-27-aeraki/</link>
+      <pubDate>Mon, 27 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-09-27-aeraki/</guid>
+      <description>Aeraki, Manage any layer 7 traffic in Istio service mesh! Aeraki [Air-rah-ki] is the Greek word for &amp;lsquo;breeze&amp;rsquo;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further. Problems to solve We are facing some challenges in service mesh: Istio and</description>
+    </item>
+    
+    <item>
+      <title>Hugo Theme: CleanWhite</title>
+      <link>https://zhaohuabing.com/post/2021-09-26-hugo-theme-clean-white/</link>
+      <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-09-26-hugo-theme-clean-white/</guid>
+      <description>Clean White Theme for Hugo CleanWhite is a clean, elegant, but fully functional blog theme for Hugo. Here is a live demo site using this theme. It is based on huxblog Jekyll Theme and Clean Blog Jekyll Theme. These two upstream projects have done awesome jobs to create a blog theme, what I&amp;rsquo;m doing here is porting it to Hugo, of which I like the simplicity and the much faster</description>
+    </item>
     
     <item>
       <title>Online Lesson: Distributed Tracing with Jaeger, Kubernetes, and Istio</title>
