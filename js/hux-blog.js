@@ -41,7 +41,7 @@ jQuery(document).ready(function($) {
     //primary navigation slide-in effect
     if ($(window).width() > MQL) {
             var headerHeight = $('.navbar-custom').height(),
-        bannerHeight  = $('.intro-header .container').height(); 
+        bannerHeight = $('.intro-header .container').height();
         $(window).on('scroll', {
                 previousTop: 0
             },
@@ -62,7 +62,7 @@ jQuery(document).ready(function($) {
                     if (currentTop > headerHeight && !$('.navbar-custom').hasClass('is-fixed')) $('.navbar-custom').addClass('is-fixed');
                 }
                 this.previousTop = currentTop;
-            
+
                 //adjust the appearance of side-catalog
                 $catalog.show()
                 if (currentTop > (bannerHeight + 41)) {
