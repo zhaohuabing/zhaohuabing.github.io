@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -63,7 +63,7 @@
     <script src="/js/bootstrap.min.js"></script>
 
     
-    <script src="/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.js"></script>
 
     
     
@@ -364,23 +364,10 @@ $(function() {
 
             
             <div class="
-                col-lg-11 col-lg-offset-1
+                col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
                 post-container">
 
-                
-                <header>
-                    <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
-  <ul>
-    <li><a href="#什么是无头服务">什么是『无头服务』？</a></li>
-    <li><a href="#istio-中无头服务的-mtls-故障">Istio 中『无头服务』的 mTLS 故障</a></li>
-    <li><a href="#解决方案">解决方案</a></li>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#参考文档">参考文档</a></li>
-  </ul>
-</nav>
                 
                 <p>本系列文章将介绍用户从 Spring Cloud，Dubbo 等传统微服务框架迁移到 Istio 服务网格时的一些经验，以及在使用 Istio 过程中可能遇到的一些常见问题的解决方法。</p>
 <h1 id="什么是无头服务">什么是『无头服务』？</h1>
@@ -668,7 +655,6 @@ $(function() {
                     </li>
                     
                 </ul>
-
                 
 <div id="disqus-comment"></div>
 
@@ -685,8 +671,25 @@ var disq = new iDisqus('disqus-comment', {
 </script>
 
 
-
             </div>
+            
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
             
             <div class="
                 col-lg-11 col-lg-offset-1
@@ -1100,6 +1103,69 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+    
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
 
 
 

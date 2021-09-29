@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -63,7 +63,7 @@
     <script src="/js/bootstrap.min.js"></script>
 
     
-    <script src="/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.js"></script>
 
     
     
@@ -360,27 +360,10 @@ $(function() {
 
             
             <div class="
-                col-lg-11 col-lg-offset-1
+                col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
                 post-container">
 
-                
-                <header>
-                    <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
-  <ul>
-    <li><a href="#istio-service-model">Istio Service Model</a></li>
-    <li><a href="#consul-integration">Consul Integration</a></li>
-    <li><a href="#other-service-registries">Other Service Registries</a>
-      <ul>
-        <li><a href="#service-registry-adapter">Service Registry Adapter</a></li>
-        <li><a href="#a-standalone-service-to-watch-service-registry-and-create-serviceentry-and-workloadentry">A Standalone Service to Watch Service Registry and Create ServiceEntry and WorkloadEntry</a></li>
-      </ul>
-    </li>
-    <li><a href="#key-takeaway">Key Takeaway</a></li>
-  </ul>
-</nav>
                 
                 <p>Microservice is a powerful software architecture to escalate innovations, and many businesses have been adopting microservice for a long time. However, the transition from monolith to microservice comes with costs. Fundamentally, microservices are distributed systems, often in large scales, which bring the burden of networking such as service discovery, retry, circuit breaker, as well as the observability such as metrics, logging, and distributed tracing.</p>
 <p>Istio helps microservices to offloads these common concerns to a dedicated infrastructure layer, so the microservices themselves can shift the burden of microservices to Istio, and focus on their own business logic. With all the promising benefits, more and more microservices projects begin to consider migrating their own microservices infrastructure to Istio.</p>
@@ -454,7 +437,6 @@ In order to write a custom service registry adapter, you need to know Pilot sour
                     </li>
                     
                 </ul>
-
                 
 <div id="disqus-comment"></div>
 
@@ -471,8 +453,25 @@ var disq = new iDisqus('disqus-comment', {
 </script>
 
 
-
             </div>
+            
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
             
             <div class="
                 col-lg-11 col-lg-offset-1
@@ -886,6 +885,69 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+    
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
 
 
 

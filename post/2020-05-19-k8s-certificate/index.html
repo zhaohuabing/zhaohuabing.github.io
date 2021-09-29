@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -63,7 +63,7 @@
     <script src="/js/bootstrap.min.js"></script>
 
     
-    <script src="/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.js"></script>
 
     
     
@@ -364,32 +364,10 @@ $(function() {
 
             
             <div class="
-                col-lg-11 col-lg-offset-1
+                col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
                 post-container">
 
-                
-                <header>
-                    <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
-  <ul>
-    <li><a href="#kubernetes-组件的认证方式">Kubernetes 组件的认证方式</a></li>
-    <li><a href="#kubernetes-中使用到的ca和证书">Kubernetes 中使用到的CA和证书</a></li>
-    <li><a href="#kubernetes-中的证书配置">Kubernetes 中的证书配置</a>
-      <ul>
-        <li><a href="#etcd-证书配置">etcd 证书配置</a></li>
-        <li><a href="#kube-apiserver-证书配置">kube-apiserver 证书配置</a></li>
-        <li><a href="#采用-kubeconfig-访问-kube-apiserver">采用 kubeconfig 访问 kube-apiserver</a></li>
-        <li><a href="#service-account--证书">Service Account  证书</a></li>
-        <li><a href="#kubernetes-证书签发">Kubernetes 证书签发</a></li>
-        <li><a href="#使用-tls-bootstrapping-简化-kubelet-证书制作">使用 TLS bootstrapping 简化 Kubelet 证书制作</a></li>
-      </ul>
-    </li>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#参考文档">参考文档</a></li>
-  </ul>
-</nav>
                 
                 <p>接触 Kubernetes 以来，我经常看到 Kubernetes 在不同的地方使用了证书（Certificate），在 Kubernetes 安装和组件启动参数中也需要配置大量证书相关的参数。但是 Kubernetes 的文档在解释这些证书的工作机制方面做得并不是太好。经过大量的相关阅读和分析工作后，我基本弄清楚了 Kubernetes 中证书的使用方式。在本文中，我将试图以一种比官方文档更容易理解的方式来说明 Kubernetes 中证书相关的工作机制，如果你也存在这方面的疑惑，希望这篇文章对你有所帮助。</p>
 <h1 id="kubernetes-组件的认证方式">Kubernetes 组件的认证方式</h1>
@@ -617,7 +595,6 @@ admin.conf  controller-manager.conf  kubelet.conf  scheduler.conf
                     </li>
                     
                 </ul>
-
                 
 <div id="disqus-comment"></div>
 
@@ -634,8 +611,25 @@ var disq = new iDisqus('disqus-comment', {
 </script>
 
 
-
             </div>
+            
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
             
             <div class="
                 col-lg-11 col-lg-offset-1
@@ -1049,6 +1043,69 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+    
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
 
 
 

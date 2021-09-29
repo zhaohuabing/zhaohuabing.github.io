@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -63,7 +63,7 @@
     <script src="/js/bootstrap.min.js"></script>
 
     
-    <script src="/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.js"></script>
 
     
     
@@ -372,37 +372,10 @@ $(function() {
 
             
             <div class="
-                col-lg-11 col-lg-offset-1
+                col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
                 post-container">
 
-                
-                <header>
-                    <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
-  <ul>
-    <li><a href="#traffic-director">Traffic Director</a>
-      <ul>
-        <li><a href="#traffic-director-架构">Traffic Director 架构</a></li>
-        <li><a href="#服务注册发现机制">服务注册发现机制</a></li>
-        <li><a href="#流量管理实现原理">流量管理实现原理</a></li>
-        <li><a href="#sidecar-proxy-部署机制">Sidecar Proxy 部署机制</a></li>
-        <li><a href="#vm和gke混合部署示例">VM和GKE混合部署示例</a></li>
-      </ul>
-    </li>
-    <li><a href="#anthos-service-mesh">Anthos Service Mesh</a>
-      <ul>
-        <li><a href="#anthos-的整体架构">Anthos 的整体架构</a></li>
-        <li><a href="#anthos-gke-集群管理">Anthos GKE 集群管理</a></li>
-        <li><a href="#anthos-service-mesh-的混合云多云解决方案">Anthos Service Mesh 的混合云/多云解决方案</a></li>
-        <li><a href="#anthos-service-mesh-多集群部署示例">Anthos Service Mesh 多集群部署示例</a></li>
-      </ul>
-    </li>
-    <li><a href="#相互竞争还是优势互补">相互竞争还是优势互补？</a></li>
-    <li><a href="#参考文档">参考文档</a></li>
-  </ul>
-</nav>
                 
                 <p>作为开源 Service Mesh 明星项目 Istio 背后的主要厂商，Google 也在其公有云上推出了 Service Mesh 管理服务。让人迷惑的是 Google Cloud 上有两个 Service Mesh 产品：Traffic Director 与 Anthos Service Mesh。Google Cloud 首先在2019年3月发布了其第一个 Service Mesh 产品 Traffic Director，随后不久在2019 年9月紧接着发布了另一个 Service Mesh 产品 Anthos Service Mesh，随后两个产品独立并行发展，直到如今。</p>
 <p>Google Cloud 同时推出两个 Service Mesh 产品的原因是什么？这两个产品的定位有何不同？本文将分别分析这两个产品的架构和功能，以试图解答该疑问。</p>
@@ -930,7 +903,6 @@ Hello version: v2, instance: helloworld-v2-776f74c475-jws5r
                     </li>
                     
                 </ul>
-
                 
 <div id="disqus-comment"></div>
 
@@ -947,8 +919,25 @@ var disq = new iDisqus('disqus-comment', {
 </script>
 
 
-
             </div>
+            
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
             
             <div class="
                 col-lg-11 col-lg-offset-1
@@ -1362,6 +1351,69 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+    
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
 
 
 

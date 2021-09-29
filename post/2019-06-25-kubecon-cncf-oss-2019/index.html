@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -63,7 +63,7 @@
     <script src="/js/bootstrap.min.js"></script>
 
     
-    <script src="/js/hux-blog.min.js"></script>
+    <script src="/js/hux-blog.js"></script>
 
     
     
@@ -356,38 +356,10 @@ $(function() {
 
             
             <div class="
-                col-lg-11 col-lg-offset-1
+                col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
                 post-container">
 
-                
-                <header>
-                    <h2>TOC</h2>
-                </header>
-                <nav id="TableOfContents">
-  <ul>
-    <li><a href="#大会背景介绍">大会背景介绍</a></li>
-    <li><a href="#sofastack-workshop">SOFAStack Workshop</a></li>
-    <li><a href="#keynote">Keynote</a></li>
-    <li><a href="#参加的一些session">参加的一些Session</a>
-      <ul>
-        <li><a href="#envoy的可观察性">Envoy的可观察性</a></li>
-        <li><a href="#基于envoy和apache-skywalking的服务网格的可观察性">基于Envoy和Apache Skywalking的服务网格的可观察性</a></li>
-        <li><a href="#边缘计算的前5大问题">边缘计算的前5大问题</a></li>
-        <li><a href="#spiffe如何帮助istio建立服务网格联邦">SPIFFE如何帮助Istio建立服务网格联邦</a></li>
-        <li><a href="#ingressroute如何为-kubernetes-提供更好的-ingress-对象">IngressRoute：如何为 Kubernetes 提供更好的 Ingress 对象</a></li>
-      </ul>
-    </li>
-    <li><a href="#其它">其它</a>
-      <ul>
-        <li><a href="#大会上的job-board">大会上的job board</a></li>
-        <li><a href="#servicemesher社区的朋友">ServiceMesher社区的朋友</a></li>
-        <li><a href="#恩格斯也来搞kubernetes了">恩格斯也来搞Kubernetes了！</a></li>
-      </ul>
-    </li>
-    <li><a href="#参会的几点感想">参会的几点感想</a></li>
-  </ul>
-</nav>
                 
                 <h1 id="大会背景介绍">大会背景介绍</h1>
 <p>2019年6月24-26日，KubeCon + CloudNativeCon + Open Source Summit大会在上海世博中心举行。本次大会是由CNCF的LC3和Linux基金会的OSS两个大会合并而成的，因此规模空前甚大，估计有超过40多个国家，3000多名开发者参与会议。</p>
@@ -535,7 +507,6 @@ $(function() {
                     </li>
                     
                 </ul>
-
                 
 <div id="disqus-comment"></div>
 
@@ -552,8 +523,25 @@ var disq = new iDisqus('disqus-comment', {
 </script>
 
 
-
             </div>
+            
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
             
             <div class="
                 col-lg-11 col-lg-offset-1
@@ -967,6 +955,69 @@ if (!doNotTrack) {
 }
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+    
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
 
 
 
