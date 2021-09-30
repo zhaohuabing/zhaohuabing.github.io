@@ -17,7 +17,7 @@
       <pubDate>Mon, 27 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/post/2021-09-27-aeraki/</guid>
-      <description>Aeraki [Air-rah-ki] is the Greek word for &amp;lsquo;breeze&amp;rsquo;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further. Lack of Layer-7 Protocols Support in Istio Now we are facing some challenges with service mesh: Istio and other popular service mesh implementations</description>
+      <description>Aeraki [Air-rah-ki] is the Greek word for &amp;lsquo;breeze&amp;rsquo;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further. Lack of Protocols Support in Serivce Mesh Now we are facing some challenges with service mesh: Istio and other popular service mesh implementations</description>
     </item>
     
     <item>
