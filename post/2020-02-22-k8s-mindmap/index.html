@@ -490,9 +490,19 @@
 <ul>
 <li>Service
 - <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#cluster-ip">Cluster IP</a>
-- <a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/#headless-services">Headless</a>
+- Provides access in the cluster internally
+- The ClusterIP range is defined in API server startup option <code>-service-cluster-ip-range</code>
+- Service port is defined in the Service Manifest
 - <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#nodeport">NodePort</a>
+- Provides access at the node level
+- The NodePort range is defined in API server startup option <code>--service-node-port-range</code>
 - <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#loadbalancer">LoadBalancer</a>
+- ExternalName
+- <a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/#headless-services">Headless</a>
+- Define a Headless service: specify &ldquo;None&rdquo; in for the cluster IP(.spec.clusterIP)
+- No cluster IP allocated to Headless services
+- No load balancing and proxying for Headless service
+- Kube dns returns the IP of the pods backing the service
 <ul>
 <li>Ingress
 <ul>
