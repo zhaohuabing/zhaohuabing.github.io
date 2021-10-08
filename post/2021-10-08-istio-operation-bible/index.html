@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Hugo Theme: CleanWhite" />
-    <meta property="og:title" content="Hugo Theme: CleanWhite" />
-    <meta property="twitter:title" content="Hugo Theme: CleanWhite" />
+    <meta name="title" content="合著：Istio 运维实战（电子书）" />
+    <meta property="og:title" content="合著：Istio 运维实战（电子书）" />
+    <meta property="twitter:title" content="合著：Istio 运维实战（电子书）" />
     
 
     
-    <meta name="description" content="CleanWhite is a clean, elegant, but fully functional blog theme for Hugo, which I use for my own blog.">
-    <meta property="og:description" content="CleanWhite is a clean, elegant, but fully functional blog theme for Hugo, which I use for my own blog." />
-    <meta property="twitter:description" content="CleanWhite is a clean, elegant, but fully functional blog theme for Hugo, which I use for my own blog." />
+    <meta name="description" content="“服务网格”这一基础设施的引入也给整个微服务的运维技术栈带来了新的挑战。对于运维同学来说，Istio 和 Envoy 的运维存在着较陡的学习曲线。TCM（Tencent Cloud Mesh）团队是业内最早一批接触服务网格技术的人员之一，有着大量 Istio/Envoy 故障排查和运维经验。本电子书记录了 TCM 团队从大量实际案例中总结出来的 Istio 运维经验，以及使用 Istio 的最佳实践，希望对大家有所帮助。">
+    <meta property="og:description" content="“服务网格”这一基础设施的引入也给整个微服务的运维技术栈带来了新的挑战。对于运维同学来说，Istio 和 Envoy 的运维存在着较陡的学习曲线。TCM（Tencent Cloud Mesh）团队是业内最早一批接触服务网格技术的人员之一，有着大量 Istio/Envoy 故障排查和运维经验。本电子书记录了 TCM 团队从大量实际案例中总结出来的 Istio 运维经验，以及使用 Istio 的最佳实践，希望对大家有所帮助。" />
+    <meta property="twitter:description" content="“服务网格”这一基础设施的引入也给整个微服务的运维技术栈带来了新的挑战。对于运维同学来说，Istio 和 Envoy 的运维存在着较陡的学习曲线。TCM（Tencent Cloud Mesh）团队是业内最早一批接触服务网格技术的人员之一，有着大量 Istio/Envoy 故障排查和运维经验。本电子书记录了 TCM 团队从大量实际案例中总结出来的 Istio 运维经验，以及使用 Istio 的最佳实践，希望对大家有所帮助。" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Hugo Theme: CleanWhite-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>合著：Istio 运维实战（电子书）-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/post/2021-09-26-hugo-theme-clean-white/">
+    <link rel="canonical" href="/post/2021-10-08-istio-operation-bible/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 
@@ -179,7 +179,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://images.pexels.com/photos/1082655/pexels-photo-1082655.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
+        background-image: url('https://images.pexels.com/photos/1172105/pexels-photo-1172105.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260')
     }
 </style>
 
@@ -191,18 +191,26 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/hugo" title="Hugo">
-                            Hugo
+                        <a class="tag" href="/tags/istio" title="Istio">
+                            Istio
+                        </a>
+                        
+                        <a class="tag" href="/tags/envoy" title="Envoy">
+                            Envoy
+                        </a>
+                        
+                        <a class="tag" href="/tags/service-mesh" title="Service Mesh">
+                            Service Mesh
                         </a>
                         
                     </div>
-                    <h1>Hugo Theme: CleanWhite</h1>
+                    <h1>合著：Istio 运维实战（电子书）</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         
                             
                                 
-                                    <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite">Github</a>
+                                    <a href="https://www.aeraki.net/istio-operation-bible">在线阅读</a>
                                 
                             
                             
@@ -227,168 +235,14 @@
                 post-container">
 
                 
-                <h1 id="clean-white-theme-for-hugo">Clean White Theme for Hugo</h1>
-<p>CleanWhite is a clean, elegant, but fully functional blog theme for Hugo. Here is a live <a href="https://zhaohuabing.com">demo site</a> using this theme.</p>
-<p>It is based on <a href="https://github.com/Huxpro/huxpro.github.io">huxblog Jekyll Theme</a>
-and <a href="https://github.com/BlackrockDigital/startbootstrap-clean-blog-jekyll">Clean Blog Jekyll Theme</a>.</p>
-<p>These two upstream projects have done awesome jobs to create a blog theme, what I&rsquo;m doing here is porting it to Hugo, of which I like the simplicity and the much faster compiling speed. Some other features which I think could be useful, such as site search with algolia and proxy for Disqus access in China, have also been built in the CleanWhite theme. Other fancy features of upstream projects are not supported by this Hugo theme, I&rsquo;d like to make it as simple as possible and only focus on blog purpose, at least for now.
-While I created this theme, I followed the Hugo theme best practice and tried to make every part of the template as a replaceable partial html, so it could be much easier for you to make your customization based on it.</p>
-<h2 id="screenshots">Screenshots</h2>
-<p><strong>Home</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/fullscreenshot.png" alt="screenshot">
+                <h3 id="istio-handbookistio-服务网格进阶实战">Istio Handbook——Istio 服务网格进阶实战</h3>
+<p>通过将微服务中原本在 SDK 中实现的应用流量管理、可见性、通信安全等服务治理能力下放到一个专门的“服务网格”基础设施中，Istio 解开了微服务的服务治理需求和业务逻辑之间的代码、编译、部署时机等的耦合，让微服务真正做到了承诺的“按需选择开发语言”，“独立部署升级”等能力，提升了微服务开发和部署的敏捷性，释放了微服务模式的生产力。</p>
+<p>然而，“服务网格”这一基础设施的引入也给整个微服务的运维技术栈带来了新的挑战。对于运维同学来说，Istio 和 Envoy 的运维存在着较陡的学习曲线。TCM（Tencent Cloud Mesh）团队是业内最早一批接触服务网格技术的人员之一，有着大量 Istio/Envoy 故障排查和运维经验。本电子书记录了 TCM 团队从大量实际案例中总结出来的 Istio 运维经验，以及使用 Istio 的最佳实践，希望对大家有所帮助。</p>
+<p>在线阅读：https://www.aeraki.net/istio-operation-bible</p>
+<p>
+  <img src="https://deploy-preview-12--goofy-kalam-c10d41.netlify.app/content/image/cover.jpg" alt="">
 
 </p>
-<p><strong>Post</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/post.png" alt="screenshot">
-
-</p>
-<p><strong>Search</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/sitesearch.png" alt="screenshot">
-
-</p>
-<p><strong>Disqus</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/disqus.png" alt="screenshot">
-
-</p>
-<p><strong>Wechat Pay &amp; Alipay</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/rewards.png" alt="screenshot">
-
-</p>
-<p><strong>Mind Map</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/mindmap.png" alt="screenshot">
-
-</p>
-<p><strong>Bilibili Video</strong>
-
-  <img src="/img/2021-09-26-hugo-theme-clean-white/bilibili.png" alt="screenshot">
-
-</p>
-<h2 id="quick-start">Quick Start</h2>
-<p>The simplest way is to start with the example site coming with this theme, then you can play around and add your own stuff.</p>
-<pre><code>$ mkdir test
-$ cd test
-$ mkdir themes
-$ cd themes
-$ git clone https://github.com/zhaohuabing/hugo-theme-cleanwhite.git
-$ cp -r hugo-theme-cleanwhite/exampleSite/** ../
-$ cd ..
-$ hugo serve
-</code></pre><p>If your site is already a git project, you may want to choose to add the cleanwhite theme as a submodule to avoid messing up your existing git repository.</p>
-<pre><code>$ mkdir themes
-$ git submodule add https://github.com/zhaohuabing/hugo-theme-cleanwhite.git themes/hugo-theme-cleanwhite
-</code></pre><p>Run  Hugo Build-in Server Locally</p>
-<pre><code>$ hugo serve -t  hugo-theme-cleanwhite
-</code></pre><p>Now enter <a href="http://localhost:1313"><code>localhost:1313</code></a> in the address bar of your browser.</p>
-<p>If you start from scratch, there is a working Hugo site configured with the CleanWhite theme in the <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite/tree/master/exampleSite">exampleSite</a> directory.  You can use it as a starting point for your site.</p>
-<p>For more information read the official <a href="https://gohugo.io/overview/installing/">setup guide</a> of Hugo</p>
-<h2 id="configuration">Configuration</h2>
-<p>First, let&rsquo;s take a look at the <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite/blob/master/exampleSite/config.toml">config.toml</a>. It will be useful to learn how to customize your site. Feel free to play around with the settings.</p>
-<h3 id="comments">Comments</h3>
-<p>The optional comments system is powered by <a href="https://disqus.com">Disqus</a>. If you want to enable comments, create an account in Disqus and write down your shortname.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">disqusShortname = <span style="color:#f1fa8c">&#34;your-disqus-short-name&#34;</span>
-</code></pre></div><p>You can disable the comments system by leaving the <code>disqusShortname</code> empty.</p>
-<h3 id="disqus-in-china">Disqus in China</h3>
-<p>Disqus is inaccessible in China. To get it to work, we can set up a proxy with <a href="https://github.com/zhaohuabing/disqus-php-api">disqus-php-api</a> in a host which sets between the client browser and the Disqus server. The idea is that if Disqus can be reached in the guest network, the blog page will show the original Disqus comments UI, otherwise, it will downgrade and use the proxy to access the Disqus, the UI will be a little different, but the visitors can still write their comments on the page.</p>
-<p>The client side java script has already been integrated to CleanWhite them, but you need to set up a proxy server yourself.</p>
-<p>The proxy is written in php, which can be found here: <a href="https://github.com/zhaohuabing/disqus-php-api/tree/master/api">https://github.com/zhaohuabing/disqus-php-api/tree/master/api</a></p>
-<p>You need to specify  your Disqus account information in the config.php.</p>
-<pre><code>define('PUBLIC_KEY', '');
-define('SECRET_KEY', '');
-define('DISQUS_USERNAME', '');
-define('DISQUS_EMAIL', '');
-define('DISQUS_PASSWORD', '');
-define('DISQUS_WEBSITE', '');
-define('DISQUS_SHORTNAME', '');
-</code></pre><p>Set the proxy server address in the site config file of your Hugo project.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">disqus_proxy = <span style="color:#f1fa8c">&#34;http://yourdisqusproxy.com&#34;</span>
-</code></pre></div><h3 id="site-search-with-algolia">Site Search with Algolia</h3>
-<p>Follow this <a href="https://forestry.io/blog/search-with-algolia-in-hugo/#3-create-your-index-in-algolia">tutorial</a> to create your index in Algolia. The index is just the storage of the indexing data of your site in the the cloud . The search page of CleanWhite theme will utilize this indexing data to do the search.</p>
-<p>Go to the directory where you have your Hugo site and run the following commands:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm init
-$ npm install atomic-algolia --save
-</code></pre></div><p>Next, open up the newly created package.json, where we’ll add an NPM script to update your index at Algolia. Find &ldquo;scripts&rdquo;, and add the following:</p>
-<pre><code class="language-josn" data-lang="josn">&quot;algolia&quot;: &quot;atomic-algolia&quot;
-</code></pre><p>Algolia index output format has already been supported by the CleanWhite theme, so you can just build your site, then you’ll find a file called algolia.json in your <code>public</code> directory, which we can use to update your index in Algolia.
-Generate index file:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ hugo
-</code></pre></div><p>Create a new file in the root of your Hugo project called .env, and add the following contents:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">ALGOLIA_APP_ID</span><span style="color:#ff79c6">={{</span> YOUR_APP_ID <span style="color:#ff79c6">}}</span>
-<span style="color:#8be9fd;font-style:italic">ALGOLIA_ADMIN_KEY</span><span style="color:#ff79c6">={{</span> YOUR_ADMIN_KEY <span style="color:#ff79c6">}}</span>
-<span style="color:#8be9fd;font-style:italic">ALGOLIA_INDEX_NAME</span><span style="color:#ff79c6">={{</span> YOUR_INDEX_NAME <span style="color:#ff79c6">}}</span>
-<span style="color:#8be9fd;font-style:italic">ALGOLIA_INDEX_FILE</span><span style="color:#ff79c6">={{</span> PATH/TO/algolia.json <span style="color:#ff79c6">}}</span>
-</code></pre></div><p><strong>Make sure double curly braces be replaced together</strong>.</p>
-<p>Now you can push your index to Algolia by simply running:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm run algolia
-</code></pre></div><p>Add the following variables to your hugo site config so the search page can get access to algolia index data in the cloud:</p>
-<pre><code>algolia_search = true
-algolia_appId = {{ YOUR_APP_ID }}
-algolia_indexName = {{ YOUR_INDEX_NAME }}
-algolia_apiKey = {{ YOUR_ADMIN_KEY }}
-</code></pre><p>Open search page in your browser: http://localhost:1313/search</p>
-<h3 id="analytics">Analytics</h3>
-<p>You can optionally enable Google or Baidu Analytics. Type your tracking code in the</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">googleAnalytics = <span style="color:#f1fa8c">&#34;UA-XXXXX-X&#34;</span>
-ba_track_id  = <span style="color:#f1fa8c">&#34;XXXXXXXXXXXXXXXX&#34;</span>
-</code></pre></div><p>Leave the <code>googleAnalytics</code>  or &lsquo;ba_track_id ' key empty to disable it.</p>
-<h3 id="wechat-pay--alipay-rewards">Wechat Pay &amp; Alipay Rewards</h3>
-<p>You can enable Wechat Pay &amp; Alipay to allow readers send you money. So if they like your articles, you may even get rewards from your writing. Now you must be motivated to write more.</p>
-<ul>
-<li>Enable Wechat Pay &amp; Alipay in the site config</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">reward = <span style="color:#ff79c6">true</span>
-</code></pre></div><ul>
-<li>
-<p>Replace the QR codes of Wechat Pay &amp; Alipay by overriding the photos in folder /static/img/reward/, otherwise the money will be sent to my accounts!</p>
-</li>
-<li>
-<p>Enable Wechat Pay &amp; Alipay in the site config</p>
-</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml">reward = <span style="color:#ff79c6">true</span>
-</code></pre></div><h3 id="mind-map">Mind Map</h3>
-<p>Mind Map is supported with shortcode &lsquo;mind&rsquo;, instering the following code snippet into  your markdown file can create a mind map showing in the screenshots.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">{{% mind %}}
-- Root
-    - Level 1
-        - Level 2
-        - Level 2
-            - Level 3
-            - Level 3
-                - Level 4
-                    - Level 5
-                        - Level 6
-    - Level 1
-        - Level 2
-        - Level 2
-     - Level 1
-        - Level 2
-        - Level 2
-     - Level 1
-        - Level 2
-        - Level 2
-     - Level 1
-        - Level 2
-        - Level 2
-{{% /mind %}}
-</code></pre></div><h3 id="embedded-videos">Embedded Videos</h3>
-<p>Use the below hugo shortcodes to embed videos into your posts.</p>
-<p>Bilibili (B站)</p>
-<pre><code>{{&lt; bilibili BV1kZ4y137gv &gt;}}
-</code></pre><p>Youtube</p>
-<pre><code>{{&lt; youtube cllc1ZGlhsQ &gt;}}
-</code></pre><p>Vimeo</p>
-<pre><code>{{&lt; vimeo 146022717 &gt;}}
-</code></pre><h2 id="thanks">Thanks</h2>
-<p>Thanks for the great jobs of <a href="https://github.com/Huxpro/huxpro.github.io">huxblog Jekyll Theme</a> and <a href="https://github.com/BlackrockDigital/startbootstrap-clean-blog-jekyll">Clean Blog Jekyll Theme</a> which are the the two upstream projects CleanWhite Hugo theme is based on.</p>
-<h2 id="feedback">Feedback</h2>
-<p>If you find any problems, please feel free to <a href="https://github.com/zhaohuabing/hugo-theme-cleanwhite/issues/new">raise an issue</a> or create a pull request to fix it.</p>
-<p>If it&rsquo;s helpful for you, I would appreciate it if you could star this repository, thanks!</p>
 
 
                 
@@ -397,15 +251,10 @@ ba_track_id  = <span style="color:#f1fa8c">&#34;XXXXXXXXXXXXXXXX&#34;</span>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2021-09-08-distributed-tracing-with-jaeger-kubernetes-and-istio/" data-toggle="tooltip" data-placement="top" title="Online Lesson: Distributed Tracing with Jaeger, Kubernetes, and Istio">&larr;
+                        <a href="/post/2021-09-26-hugo-theme-clean-white/" data-toggle="tooltip" data-placement="top" title="Hugo Theme: CleanWhite">&larr;
                             Previous Post</a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/post/2021-10-08-istio-operation-bible/" data-toggle="tooltip" data-placement="top" title="合著：Istio 运维实战（电子书）">Next
-                            Post &rarr;</a>
-                    </li>
                     
                 </ul>
                 
@@ -427,20 +276,6 @@ var disq = new iDisqus('disqus-comment', {
             </div>
 
             
-            
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
             
 
             
@@ -861,63 +696,6 @@ if (!doNotTrack) {
 
 
 
-
-<script type="text/javascript">
-    function generateCatalog(selector) {
-
-        
-        
-        
-        
-            _containerSelector = 'div.post-container'
-        
-
-        
-        var P = $(_containerSelector), a, n, t, l, i, c;
-        a = P.find('h1,h2,h3,h4,h5,h6');
-
-        
-        $(selector).html('')
-
-        
-        a.each(function () {
-            n = $(this).prop('tagName').toLowerCase();
-            i = "#" + $(this).prop('id');
-            t = $(this).text();
-            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
-            l = $('<li class="' + n + '_nav"></li>').append(c);
-            $(selector).append(l);
-        });
-        return true;
-    }
-
-    generateCatalog(".catalog-body");
-
-    
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
-    
-
-
-    loadAsync("\/js\/jquery.nav.js", function () {
-        $('.catalog-body').onePageNav({
-            currentClass: "active",
-            changeHash: !1,
-            easing: "swing",
-            filter: "",
-            scrollSpeed: 700,
-            scrollOffset: 0,
-            scrollThreshold: .2,
-            begin: null,
-            end: null,
-            scrollChange: null,
-            padding: 80
-        });
-    });
-</script>
 
 
 </body>
