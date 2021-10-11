@@ -243,13 +243,9 @@
                 post-container">
 
                 
-                <p>
-  <img src="/img/2021-09-27-aeraki/aeraki&amp;istio.png" alt="">
-
-</p>
-<p>Aeraki [Air-rah-ki] is the Greek word for &lsquo;breeze&rsquo;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer 7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further.</p>
-<h1 id="lack-of-protocols-support-in-serivce-mesh">Lack of Protocols Support in Serivce Mesh</h1>
-<p>Now we are facing some challenges with service mesh:</p>
+                <p>Aeraki [Air-rah-ki] is the Greek word for &lsquo;breeze&rsquo;. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer-7 protocols other than just HTTP and gRPC. We hope this breeze can help Istio sail a little further.</p>
+<h2 id="lack-of-protocols-support-in-service-mesh">Lack of Protocols Support in Service Mesh</h2>
+<p>We are now facing some challenges with service meshes:</p>
 <ul>
 <li>Istio and other popular service mesh implementations have very limited support for layer 7 protocols other than HTTP and gRPC.</li>
 <li>Envoy RDS(Route Discovery Service) is solely designed for HTTP. Other protocols such as Dubbo and Thrift can only use listener in-line routes for traffic management, which breaks existing connections when routes change.</li>
@@ -260,102 +256,168 @@
 <li>RPC: HTTP, gRPC, Thrift, Dubbo, Proprietary RPC Protocol …</li>
 <li>Messaging: Kafka, RabbitMQ …</li>
 <li>Cache: Redis, Memcached …</li>
-<li>Database: MySQL, PostgreSQL, MongoDB …
-
-  <img src="/img/2021-09-27-aeraki/protocols.png" alt=" Aeraki ">
-
-</li>
+<li>Database: MySQL, PostgreSQL, MongoDB …</li>
 </ul>
-<p>If you have already invested a lot of effort in migrating to Service Mesh, of course, you want to get the most out of it — managing the traffic of all the protocols in your microservices, not just HTTP.</p>
-<h1 id="aerakis-approach">Aeraki&rsquo;s approach</h1>
-<p>To address these problems, we create an open-source project, <a href="https://github.com/aeraki-framework">Aeraki</a>, to provide a non-intrusive, extendable way to manage any layer 7 traffic in an Istio service mesh.</p>
-<p>Aeraki [Air-rah-ki] is the Greek word for ‘breeze’. While Istio connects microservices in a service mesh, Aeraki provides a framework to allow Istio to support more layer-7 protocols other than just HTTP and gRPC. We hope that this breeze can help Istio sail a little further.
-
-  <img src="/img/2021-09-27-aeraki/aeraki-architecture.png" alt="">
+<p>
+  <img src="/img/2021-09-27-aeraki/protocols.png" alt=" Common Layer-7 Protocols Used in Microservices  ">
 
 </p>
-<p>Aeraki Framework consists of the following components:</p>
+<p>If you have already invested a lot of effort in migrating to a service mesh, of course, you want to get the most out of it — managing the traffic of all the protocols in your microservices.</p>
+<h2 id="aerakis-approach">Aeraki&rsquo;s approach</h2>
+<p>To address these problems, we create an open-source project, <a href="https://github.com/aeraki-framework">Aeraki</a>, to provide a non-intrusive, extendable way to manage any layer-7 traffic in an Istio service mesh.</p>
+<p>
+  <img src="/img/2021-09-27-aeraki/aeraki-architecture.png" alt=" Aeraki Architecture ">
+
+</p>
+<p>As this diagram shows, Aeraki Framework consists of the following components:</p>
 <ul>
-<li>Aeraki: <a href="https://github.com/aeraki-framework">Aeraki</a> provides high-level, user-friendly traffic management rules to operations, translates the rules to envoy filter configurations, and leverages Istio’s EnvoyFilter API to push the configurations to the sidecar proxies. Aeraki also serves as the RDS server for metaprotocol proxies in the data plane. Contrary to Envoy RDS, which focuses on HTTP, Aeraki RDS is aimed to provide a general dynamic route capability for all layer-7 protocols.</li>
+<li>Aeraki: <a href="https://github.com/aeraki-framework/aeraki">Aeraki</a> provides high-level, user-friendly traffic management rules to operations, translates the rules to envoy filter configurations, and leverages Istio’s <code>EnvoyFilter</code> API to push the configurations to the sidecar proxies. Aeraki also serves as the RDS server for MetaProtocol proxies in the data plane. Contrary to Envoy RDS, which focuses on HTTP, Aeraki RDS is aimed to provide a general dynamic route capability for all layer-7 protocols.</li>
 <li>MetaProtocol Proxy: <a href="https://github.com/aeraki-framework/meta-protocol-proxy">MetaProtocol Proxy</a> provides common capabilities for Layer-7 protocols, such as load balancing, circuit breaker, load balancing, routing, rate limiting, fault injection, and auth. Layer-7 protocols can be built on top of MetaProtocol. To add a new protocol into the service mesh, the only thing you need to do is implementing the <a href="https://github.com/aeraki-framework/meta-protocol-proxy/blob/ac788327239bd794e745ce18b382da858ddf3355/src/meta_protocol_proxy/codec/codec.h#L118">codec interface</a> and a couple of lines of configuration. If you have special requirements which can’t be accommodated by the built-in capabilities, MetaProtocol Proxy also has an application-level filter chain mechanism, allowing users to write their own layer-7 filters to add custom logic into MetaProtocol Proxy.</li>
 </ul>
-<p><a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/dubbo">Dubbo</a> and <a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/thrift">Thrift</a> have already been implemented based on MetaProtocol. More protocols are on the way.</p>
-<p>Need to manage a proprietary protocol in Istio service mesh? All you need to do is just implementing the <a href="https://github.com/aeraki-framework/meta-protocol-proxy/blob/ac788327239bd794e745ce18b382da858ddf3355/src/meta_protocol_proxy/codec/codec.h#L118">codec interface</a>. Aeraki Framework will take care of all the others for you. It’s so easy!</p>
-<p>Aeraki also has plugins for the protocols which are too “special” to be fit into the MetaProtocol framework, such as <a href="https://github.com/aeraki-framework/aeraki/blob/master/docs/zh/redis.md">Redis</a> and Kafka, so these protocols can be managed in Istio service mesh as well.</p>
-<h1 id="deep-dive-into-metaprotocol">Deep Dive Into MetaProtocol</h1>
-<p>Let’s look into how MetaProtocol works. Before MetaProtoco is introduced, if we want to proxy traffic for a specific protocol, we need to write an Envoy filter that understands that protocol and add the code to manipulate the traffic, including routing, header modification, fault injection, traffic mirroring, etc.</p>
+<p><a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/dubbo">Dubbo</a> and <a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/thrift">Thrift</a> have already been implemented based on MetaProtocol. More protocols are on the way. If you&rsquo;re using a close-source, proprietary protocol, you can also manage it in your service mesh simply by writing a MetaProtocol codec for it.</p>
+<p>Most request/response style, stateless protocols can be built on top of the MetaProtocol Proxy. However, some protocols&rsquo; routing policies are too &ldquo;special&rdquo; to be normalized in MetaProtocol. For example, Redis proxy uses a slot number to map a client query to a specific Redis server node, and the slot number is computed by the key in the request. Aeraki can still manage those protocols as long as there&rsquo;s an available Envoy Filter in the Envoy proxy side. Currently, for protocols in this category, <a href="https://github.com/aeraki-framework/aeraki/blob/master/docs/zh/redis.md">Redis</a> and Kafka are supported in Aeraki.</p>
+<h2 id="deep-dive-into-metaprotocol">Deep Dive Into MetaProtocol</h2>
+<p>Let’s look into how MetaProtocol works. Before MetaProtocol is introduced, if we want to proxy traffic for a specific protocol, we need to write an Envoy filter that understands that protocol and add the code to manipulate the traffic, including routing, header modification, fault injection, traffic mirroring, etc.</p>
 <p>For most request/response style protocols, the code for traffic manipulation is very similar. Therefore, to avoid duplicating these functionalities in different Envoy filters, Aeraki Framework implements most of the common functions of a layer-7 protocol proxy in a single place — the MetaProtocol Proxy filter.</p>
 <p>
-  <img src="/img/2021-09-27-aeraki/metaprotocol-proxy.png" alt="">
+  <img src="/img/2021-09-27-aeraki/metaprotocol-proxy.png" alt="MetaProtocol Proxy">
 
 </p>
 <p>This approach significantly lowers the barrier to write a new Envoy filter: instead of writing a fully functional filter, now you only need to implement the codec interface. In addition to that, the control plane is already in place — Aeraki works at the control plane to provides MetaProtocol configuration and dynamic routes for all protocols built on top of MetaProtocol.</p>
 <p>
-  <img src="/img/2021-09-27-aeraki/metaprotocol-proxy-codec.png" alt="">
+  <img src="/img/2021-09-27-aeraki/metaprotocol-proxy-codec.png" alt="Writing an Envoy Filter Before and After MetProtocol">
 
 </p>
-<p>There’re two important data structures in MetaProtocol Proxy: Metadata and Mutation. Metadata is used for routing, and Mutation is used for header manipulation.</p>
+<p>There are two important data structures in MetaProtocol Proxy: Metadata and Mutation. Metadata is used for routing, and Mutation is used for header manipulation.</p>
 <p>At the request path, the decoder(the decode method of the codec implementation) populates the Metadata data structure with key-value pairs parsed from the request, then the Metadata will be passed to the MetaProtocol Router. The Router selects an appropriate upstream cluster after matching the route configuration it receives from Aeraki via RDS and the Metadata.</p>
 <p>A custom filter can populate the Mutation data structure with arbitrary key-value pairs if the request needs to be modified: adding a header or changing the value of a header. Then the Mutation data structure will be passed to the encoder(the encode method of the codec implementation). The encoder is responsible for writing the key-value pairs into the wire protocol.</p>
 <p>
-  <img src="/img/2021-09-27-aeraki/request-path.png" alt="">
+  <img src="/img/2021-09-27-aeraki/request-path.png" alt="Request Path">
 
 </p>
 <p>The response path is similar to the request path, only in a different direction.</p>
 <p>
-  <img src="/img/2021-09-27-aeraki/response-path.png" alt="">
+  <img src="/img/2021-09-27-aeraki/response-path.png" alt="Response Path">
 
 </p>
-<h1 id="an-example">An Example</h1>
-<p><a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/dubbo">Dubbo</a> and <a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/thrift">Thrift</a> have already been implemented based on MetaProtocol, which are supported by Aeraki Framework out of the box. If you need to implement another protocol, you can follow the below steps(use Thrift as an example):</p>
-<h2 id="data-plane">Data Plane</h2>
+<h2 id="an-example">An Example</h2>
+<p>If you need to implement an application protocol based on MetaProtocol, you can follow the below steps(use Dubbo as an example):</p>
+<h3 id="data-plane">Data Plane</h3>
 <ul>
 <li>
 <p>Implement the <a href="https://github.com/aeraki-framework/meta-protocol-proxy/blob/ac788327239bd794e745ce18b382da858ddf3355/src/meta_protocol_proxy/codec/codec.h#L118">codec interface</a> to encode and decode the protocol package. You can refer to <a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/dubbo">Dubbo codec</a> and <a href="https://github.com/aeraki-framework/meta-protocol-proxy/tree/master/src/application_protocols/thrift">Thrift codec</a> as writing your own implementation.</p>
 </li>
 <li>
-<p>Define the protocol with Aeraki ApplicationProtocol CRD, as this YAML snippet shows:</p>
+<p>Define the protocol with Aeraki <code>ApplicationProtocol</code> CRD, as this YAML snippet shows:</p>
 </li>
 </ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: metaprotocol.aeraki.io/v1alpha1
 <span style="color:#ff79c6">kind</span>: ApplicationProtocol
 <span style="color:#ff79c6">metadata</span>:
-  <span style="color:#ff79c6">name</span>: thrift
+  <span style="color:#ff79c6">name</span>: dubbo
   <span style="color:#ff79c6">namespace</span>: istio-system
 <span style="color:#ff79c6">spec</span>:
-  <span style="color:#ff79c6">protocol</span>: thrift
-  <span style="color:#ff79c6">codec</span>: aeraki.meta_protocol.codec.thrift
-</code></pre></div><h2 id="control-plane">Control Plane</h2>
-<p>You don’t need to implement the control plane. Aeraki watches services and traffic rules, generates the configurations for the sidecar proxies, and sends the configurations to the data plane via EnvoyFilter and MetaRoute RDS.</p>
-<h2 id="protocol-selection">Protocol selection</h2>
-<p>Similar to Istio, protocols are identified by service port prefix. Please name service ports with this pattern: tcp-metaprotocol-{application protocol}-xxx. For example, a Thrift service port should be named tcp-metaprotocol-thrift.</p>
-<h2 id="traffic-management">Traffic management</h2>
-<p>You can change the route via MataRouter CRD. For example: send 20% of the requests to v1 and 80% to v2:</p>
+  <span style="color:#ff79c6">protocol</span>: dubbo
+  <span style="color:#ff79c6">codec</span>: aeraki.meta_protocol.codec.dubbo
+</code></pre></div><h3 id="control-plane">Control Plane</h3>
+<p>You don’t need to implement the control plane. Aeraki watches services and traffic rules, generates the configurations for the sidecar proxies, and sends the configurations to the data plane via <code>EnvoyFilter</code> and MetaProtocol RDS.</p>
+<h3 id="protocol-selection">Protocol selection</h3>
+<p>Similar to Istio, protocols are identified by service port prefix. Please name service ports with this pattern: tcp-metaprotocol-{application protocol}-xxx. For example, a Dubbo service port should be named tcp-metaprotocol-dubbo.</p>
+<h3 id="traffic-management">Traffic management</h3>
+<p>You can change the route via <code>MataRouter</code> CRD.</p>
+<ul>
+<li>Route the Dubbo requests calling method sayHello to v2:</li>
+</ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">apiVersion</span>: metaprotocol.aeraki.io/v1alpha1
 <span style="color:#ff79c6">kind</span>: MetaRouter
 <span style="color:#ff79c6">metadata</span>:
   <span style="color:#ff79c6">name</span>: test-metaprotocol-route
 <span style="color:#ff79c6">spec</span>:
   <span style="color:#ff79c6">hosts</span>:
-    - thrift-sample-server.thrift.svc.cluster.local
+    - org.apache.dubbo.samples.basic.api.demoservice
+  <span style="color:#ff79c6">routes</span>:
+    - <span style="color:#ff79c6">name</span>: v2
+    - <span style="color:#ff79c6">match</span>:
+        <span style="color:#ff79c6">attributes</span>:
+          <span style="color:#ff79c6">method</span>:
+            <span style="color:#ff79c6">exact</span>: sayHello
+      <span style="color:#ff79c6">route</span>:
+        - <span style="color:#ff79c6">destination</span>:
+            <span style="color:#ff79c6">host</span>: org.apache.dubbo.samples.basic.api.demoservice
+            <span style="color:#ff79c6">subset</span>: v2
+</code></pre></div><ul>
+<li>Send 20% of the requests to v1 and 80% to v2:</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#ff79c6">piVersion</span>: metaprotocol.aeraki.io/v1alpha1
+<span style="color:#ff79c6">kind</span>: MetaRouter
+<span style="color:#ff79c6">metadata</span>:
+  <span style="color:#ff79c6">name</span>: test-metaprotocol-route
+<span style="color:#ff79c6">spec</span>:
+  <span style="color:#ff79c6">hosts</span>:
+    - org.apache.dubbo.samples.basic.api.demoservice
   <span style="color:#ff79c6">routes</span>:
     - <span style="color:#ff79c6">name</span>: traffic-spilt
       <span style="color:#ff79c6">route</span>:
         - <span style="color:#ff79c6">destination</span>:
-            <span style="color:#ff79c6">host</span>: thrift-sample-server.thrift.svc.cluster.local
+            <span style="color:#ff79c6">host</span>: org.apache.dubbo.samples.basic.api.demoservice
             <span style="color:#ff79c6">subset</span>: v1
           <span style="color:#ff79c6">weight</span>: <span style="color:#bd93f9">20</span>
         - <span style="color:#ff79c6">destination</span>:
-            <span style="color:#ff79c6">host</span>: thrift-sample-server.thrift.svc.cluster.local
+            <span style="color:#ff79c6">host</span>: org.apache.dubbo.samples.basic.api.demoservice
             <span style="color:#ff79c6">subset</span>: v2
           <span style="color:#ff79c6">weight</span>: <span style="color:#bd93f9">80</span>
-</code></pre></div><p>Hope this helps if you need to manage protocols other than HTTP in a service mesh. Reach out (<a href="https://twitter.com/zhaohuabing">@zhaohuabing</a> [zhaohuabing@gmail.com](mail to:zhaohuabing@gmail.com) if you have any questions or comments here!</p>
+</code></pre></div><h2 id="demo">Demo</h2>
+<p><a href="http://aeraki.zhaohuabing.com:20001/">Live Demo: kiali Dashboard</a></p>
+<p><a href="http://aeraki.zhaohuabing.com:3000/d/pgz7wp-Gz/aeraki-demo?orgId=1&amp;refresh=10s&amp;kiosk">Live Demo: Service Metrics: Grafana</a></p>
+<p><a href="http://aeraki.zhaohuabing.com:9090/new/graph?g0.expr=envoy_dubbo_inbound_20880___response_success&amp;g0.tab=0&amp;g0.stacked=1&amp;g0.range_input=1h&amp;g1.expr=envoy_dubbo_outbound_20880__org_apache_dubbo_samples_basic_api_demoservice_request&amp;g1.tab=0&amp;g1.stacked=1&amp;g1.range_input=1h&amp;g2.expr=envoy_thrift_inbound_9090___response&amp;g2.tab=0&amp;g2.stacked=1&amp;g2.range_input=1h&amp;g3.expr=envoy_thrift_outbound_9090__thrift_sample_server_thrift_svc_cluster_local_response_success&amp;g3.tab=0&amp;g3.stacked=1&amp;g3.range_input=1h&amp;g4.expr=envoy_thrift_outbound_9090__thrift_sample_server_thrift_svc_cluster_local_request&amp;g4.tab=0&amp;g4.stacked=1&amp;g4.range_input=1h">Live Demo: Service Metrics: Prometheus</a></p>
+<p>Screenshot: Service Metrics:
+
+  <img src="https://raw.githubusercontent.com/aeraki-framework/aeraki/master/docs/metrics.png" alt="Screenshot: Service Metrics">
+
+</p>
+<p>Recored Demo: Dubbo and Thrift Traffic Management
+<a href="https://www.youtube.com/watch?v=vrjp-Yg3Leg">
+  <img src="http://i3.ytimg.com/vi/vrjp-Yg3Leg/maxresdefault.jpg" alt="Thrift and Dubbo traffic management demo">
+
+</a></p>
+<h2 id="install">Install</h2>
+<h3 id="pre-requirements">Pre-requirements:</h3>
+<ul>
+<li>A running Kubernetes cluster, which can be either a cluster in the cloud, or a local cluster created with kind/minikube</li>
+<li>Kubectl installed, and the <code>~/.kube/conf</code> points to the cluster in the first step</li>
+<li>Helm installed, which will be used to install some components in the demo</li>
+</ul>
+<h3 id="download-aeraki-from-the-github">Download Aeraki from the Github</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/aeraki-framework/aeraki.git
+</code></pre></div><h3 id="install-istio-aeraki-and-demo-applications">Install Istio, Aeraki and demo applications</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aeraki/demo/install-demo.sh
+</code></pre></div><p>Note: Aeraki needs to configure Istio with smart dns. If you already have an Istio installed and don&rsquo;t know how to
+turn on smart dns, please uninstall it. install-demo.sh will install Istio for you.</p>
+<h3 id="open-the-following-urls-in-your-browser-to-play-with-aeraki-and-view-service-metrics">Open the following URLs in your browser to play with Aeraki and view service metrics</h3>
+<ul>
+<li>Kaili <code>http://{istio-ingressgateway_external_ip}:20001</code></li>
+<li>Grafana <code>http://{istio-ingressgateway_external_ip}:3000</code></li>
+<li>Prometheus <code>http://{istio-ingressgateway_external_ip}:9090</code></li>
+</ul>
+<p>You can import Aeraika demo dashboard from file <code>demo/aeraki-demo.json</code> into the Grafana.</p>
+<h2 id="talks">Talks</h2>
+<ul>
+<li>Istio meetup China(中文): <a href="https://www.youtube.com/watch?v=Bq5T3OR3iTM">全栈服务网格 - Aeraki 助你在 Istio 服务网格中管理任何七层流量</a></li>
+<li>IstioCon 2021: <a href="https://www.youtube.com/watch?v=sBS4utF68d8">How to Manage Any Layer-7 Traffic in an Istio Service Mesh?</a></li>
+</ul>
+<h2 id="contact">Contact</h2>
+<ul>
+<li>Mail: If you&rsquo;re interested in contributing to this project, please reach out to <a href="mailto:zhaohuabing@gmail.com">zhaohuabing@gmail.com</a></li>
+<li>Wechat Group: Please contact Wechat ID: zhao_huabing to join the Aeraki Wechat group</li>
+<li>Slack: Join <a href="http://aeraki.slack.com/">Aeraki slack channel</a></li>
+</ul>
 <h2 id="reference">Reference</h2>
 <ul>
-<li><a href="http://aeraki.zhaohuabing.com:20001/">Live Demo: kiali Dashboard</a></li>
+<li><a href="https://github.com/aeraki-framework">Aeraki GitHub</a></li>
+<li><a href="http://aeraki.zhaohuabing.com:20001/">Live Demo: Kiali Dashboard</a></li>
 <li><a href="http://aeraki.zhaohuabing.com:3000/d/pgz7wp-Gz/aeraki-demo?orgId=1&amp;refresh=10s&amp;kiosk">Live Demo: Service Metrics: Grafana</a></li>
 <li><a href="http://aeraki.zhaohuabing.com:9090/new/graph?g0.expr=envoy_dubbo_inbound_20880___response_success&amp;g0.tab=0&amp;g0.stacked=1&amp;g0.range_input=1h&amp;g1.expr=envoy_dubbo_outbound_20880__org_apache_dubbo_samples_basic_api_demoservice_request&amp;g1.tab=0&amp;g1.stacked=1&amp;g1.range_input=1h&amp;g2.expr=envoy_thrift_inbound_9090___response&amp;g2.tab=0&amp;g2.stacked=1&amp;g2.range_input=1h&amp;g3.expr=envoy_thrift_outbound_9090__thrift_sample_server_thrift_svc_cluster_local_response_success&amp;g3.tab=0&amp;g3.stacked=1&amp;g3.range_input=1h&amp;g4.expr=envoy_thrift_outbound_9090__thrift_sample_server_thrift_svc_cluster_local_request&amp;g4.tab=0&amp;g4.stacked=1&amp;g4.range_input=1h">Live Demo: Service Metrics: Prometheus</a></li>
-<li>Istio meetup China(中文): <a href="https://www.youtube.com/watch?v=Bq5T3OR3iTM">全栈服务网格 - Aeraki 助你在 Istio 服务网格中管理任何七层流量</a></li>
+<li>Istio meetup China(Chinese): <a href="https://www.youtube.com/watch?v=Bq5T3OR3iTM">Full Stack Service Mesh - Manage Any Layer-7 Traffic in an Istio Service Mesh with Aeraki</a></li>
 <li>IstioCon 2021: <a href="https://www.youtube.com/watch?v=sBS4utF68d8">How to Manage Any Layer-7 Traffic in an Istio Service Mesh?</a></li>
 </ul>
 
@@ -366,7 +428,7 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2021-09-26-hugo-theme-clean-white/" data-toggle="tooltip" data-placement="top" title="Hugo Theme: CleanWhite">&larr;
+                        <a href="/post/2021-10-08-istio-operation-bible/" data-toggle="tooltip" data-placement="top" title="合著：Istio 运维实战（电子书）">&larr;
                             Previous Post</a>
                     </li>
                     
