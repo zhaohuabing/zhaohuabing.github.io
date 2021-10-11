@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hux-blog.min.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -72,7 +72,9 @@
 
 
 
+
 <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
     <div class="container-fluid">
         
         <div class="navbar-header page-scroll">
@@ -104,7 +106,7 @@
                         </li>
                         
                         <li>
-                            <a href="/categories/note">note</a>
+                            <a href="/categories/open-source">open-source</a>
                         </li>
                         
                         <li>
@@ -122,12 +124,14 @@
                     
                     
 		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
                         <li><a href="/top/about/">ABOUT</a></li>
                     
 
                     
 		    <li>
-                        <a href="/search">SEARCH <img src="/img/search.png" height="15" style="cursor: pointer;" alt="Search"></a>
+                        <a href="/search"><i class="fa fa-search"></i></a>
 		    </li>
                     
                 </ul>
@@ -199,26 +203,22 @@
             
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/service_2_service_auth/">
+    <a href="https://zhaohuabing.com/2018/02/09/docker-without-sudo/">
         <h2 class="post-title">
-            微服务安全沉思录之二
+            如何使用非root用户执行docker命令
         </h2>
-	
-        <h3 class="post-subtitle">
-            服务间认证与鉴权
-        </h3>
 	
         <div class="post-content-preview">
 	
-            除来自用户的访问请求以外，微服务应用中的各个微服务相互之间还有大量的访问,根据应用系统数据敏感程度不同，对于系统内微服务的访问也需要进行相应的安全控制。
+            如何使用非root用户执行docker命令
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-      
+        Posted by赵化冰  Friday, February 9, 2018
+        
+        
     
     </p>
 
@@ -226,26 +226,26 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/22/user_authentication_authorization/">
+    <a href="https://zhaohuabing.com/2018/02/03/authentication-and-authorization-of-microservice/">
         <h2 class="post-title">
-            微服务安全沉思录之一
+            如何构建安全的微服务应用？
         </h2>
 	
         <h3 class="post-subtitle">
-            用户访问认证与鉴权
+            微服务架构下的认证和鉴权方案探讨
         </h3>
 	
         <div class="post-content-preview">
 	
-            这段时间对之前微服务安全相关的一些想法进行了进一步总结和归纳，理清在之前文章里面没有想得太清楚的地方，例如服务间的认证与鉴权以及用户身份在服务调用链中的传递。在这一系列博客里面将分为三个部分对微服务安全进行系统阐述：用户访问认证与鉴权，服务间认证与鉴权，外部系统访问控制。
+            微服务架构的引入为软件应用带来了诸多好处：包括小开发团队，缩短开发周期，语言选择灵活性，增强服务伸缩能力等。与此同时，也引入了分布式系统的诸多复杂问题。其中一个挑战就是如何在微服务架构中实现一个灵活，安全，高效的认证和鉴权方案。本文将尝试就此问题进行一次比较完整的探讨。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-      
+        Posted by赵化冰  Saturday, February 3, 2018
+        
+        
     
     </p>
 
@@ -253,26 +253,22 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/05/23/istio-auto-injection-with-webhook/">
+    <a href="https://zhaohuabing.com/2018/01/02/nginmesh-install/">
         <h2 class="post-title">
-            Istio Sidecar自动注入原理
+            Nginx开源Service Mesh组件Nginmesh安装指南
         </h2>
-	
-        <h3 class="post-subtitle">
-            Kubernetes webhook扩展机制解析
-        </h3>
 	
         <div class="post-content-preview">
 	
-            Kubernets 1.9版本引入了Admission Webhook(web 回调)扩展机制，通过Webhook,开发者可以非常灵活地对Kubernets API Server的功能进行扩展，在API Server创建资源时对资源进行验证或者修改。 Istio 0.7版本就利用了Kubernets webhook实现了sidecar的自动注入。
+            Nginmesh是NGINX的Service Mesh开源项目，用于Istio服务网格平台中的数据面代理。它旨在提供七层负载均衡和服务路由功能，与Istio集成作为sidecar部署，并将以“标准，可靠和安全的方式”使得服务间通信更容易。Nginmesh在今年底已经连续发布了0.2和0.3版本，提供了服务发现，请求转发，路由规则，性能指标收集等功能。本文介绍如何采用kubeadmin安装kubernetes集群并部署Nginmesh sidecar。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by     &#34;赵化冰&#34; Wednesday, May 23, 2018
-    
-      
+        Posted by赵化冰  Tuesday, January 2, 2018
+        
+        
     
     </p>
 
@@ -280,26 +276,22 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/04/16/using-helm-to-deploy-to-kubernetes/">
+    <a href="https://zhaohuabing.com/2017/11/28/access-application-from-outside/">
         <h2 class="post-title">
-            Helm介绍
+            如何从外部访问Kubernetes集群中的应用？
         </h2>
-	
-        <h3 class="post-subtitle">
-            强大的Kubernetes包管理工具
-        </h3>
 	
         <div class="post-content-preview">
 	
-            Helm是Kubernetes生态系统中的一个软件包管理工具。本文将介绍为何要使用Helm进行Kubernetes软件包管理，澄清Helm中使用到的相关概念，并通过一个具体的示例学习如何使用Helm打包，分发，安装，升级及回退Kubernetes应用。
+            我们知道，kubernetes的Cluster Network属于私有网络，只能在cluster Network内部才能访问部署的应用，那如何才能将Kubernetes集群中的应用暴露到外部网络，为外部用户提供服务呢？本文探讨了从外部网络访问kubernetes cluster中应用的几种实现方式。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by 赵化冰 Monday, April 16, 2018
-    
-      
+        Posted by赵化冰  Tuesday, November 28, 2017
+        
+        
     
     </p>
 
@@ -307,22 +299,76 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/04/11/service-mesh-vs-api-gateway/">
+    <a href="https://zhaohuabing.com/2017/11/23/windows-proxy-scripts/">
         <h2 class="post-title">
-            Service Mesh 和 API Gateway的关系探讨（译文）
+            使用脚本和定时任务自动设置windows HTTP 代理服务器
         </h2>
 	
         <div class="post-content-preview">
 	
-            API Gateway和Service Mesh的关系是我最近一直在思考的问题，也和同事及社区的朋友之间进行了一些讨论。这篇短文很清晰地总结了两者之间的相似之处以及这两者在微服务架构中的不同用途。
+            使用Visual Basic Script脚本和Windows定时任务自动设置windows HTTP 代理服务器。
         
         </div>
     </a>
     <p class="post-meta">
     
-    Posted by 赵化冰 Wednesday, April 11, 2018
+        Posted by赵化冰  Thursday, November 23, 2017
+        
+        
     
-      
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2017/11/08/istio-canary-release/">
+        <h2 class="post-title">
+            采用Istio实现灰度发布(金丝雀发布)
+        </h2>
+	
+        <h3 class="post-subtitle">
+            用户无感知的平滑业务升级
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            当应用上线以后，运维面临的一大挑战是如何能在不影响已上线业务的情况下进行升级。本文将介绍如何使用Istio实现应用的灰度发布（金丝雀发布）
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by赵化冰  Wednesday, November 8, 2017
+        
+        
+    
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="https://zhaohuabing.com/2017/11/07/istio-traffic-shifting/">
+        <h2 class="post-title">
+            使用Istio实现应用流量转移
+        </h2>
+	
+        <h3 class="post-subtitle">
+              &#34;本文翻译自istio官方文档&#34;
+        </h3>
+	
+        <div class="post-content-preview">
+	
+            本任务将演示如何将应用流量逐渐从旧版本的服务迁移到新版本。通过Istio，可以使用一系列不同权重的规则（10%，20%，··· 100%）将流量平缓地从旧版本服务迁移到新版本服务。
+        
+        </div>
+    </a>
+    <p class="post-meta">
+    
+        Posted by    &#34;赵化冰&#34;  Tuesday, November 7, 2017
+        
+        
     
     </p>
 
@@ -414,9 +460,13 @@
                
             
                
+            
+               
                     <a href="/tags/envoy" title="envoy">
                         envoy
                     </a>
+               
+            
                
             
                
@@ -658,11 +708,11 @@
         <h5>BOOKMARKS</h5>
         <ul class="list-inline">
             
-            <li><a target="_blank" href="https://medium.com/@zhaohuabing">medium</a></li>
+            <li><a target="_blank" href="https://unsplash.com/">unsplash</a></li>
             
             <li><a target="_blank" href="https://www.pexels.com">pexels</a></li>
             
-            <li><a target="_blank" href="https://www.vangoghmuseum.nl/en/collection?q=">van gogh</a></li>
+            <li><a target="_blank" href="https://commons.wikimedia.org/wiki/Commons:Wiki_Loves_Earth_2020/Winners">nature</a></li>
             
         </ul>
     </section>
@@ -870,6 +920,67 @@ if (!doNotTrack) {
 </script>
 <script async src='https://www.google-analytics.com/analytics.js'></script>
 
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
 
 
 </body>
