@@ -102,10 +102,6 @@
                         </li>
                         
                         <li>
-                            <a href="/categories/life">life</a>
-                        </li>
-                        
-                        <li>
                             <a href="/categories/open-source">open-source</a>
                         </li>
                         
@@ -485,27 +481,81 @@
 <li>K8s Network
 <ul>
 <li>Service
-- <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#cluster-ip">Cluster IP</a>
-- Provides access in the cluster internally
-- The ClusterIP range is defined in API server startup option <code>-service-cluster-ip-range</code>
-- Service port is defined in the Service Manifest
-- <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#nodeport">NodePort</a>
-- Provides access at the node level
-- The NodePort range is defined in API server startup option <code>--service-node-port-range</code>
-- <a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#loadbalancer">LoadBalancer</a>
-- ExternalName
-- <a href="https://kubernetes.io/zh/docs/concepts/services-networking/service/#headless-services">Headless</a>
-- Define a Headless service: specify &ldquo;None&rdquo; in for the cluster IP(.spec.clusterIP)
-- No cluster IP allocated to Headless services
-- No load balancing and proxying for Headless service
-- Kube dns returns the IP of the pods backing the service
 <ul>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#cluster-ip">Cluster IP</a>
+<ul>
+<li>Provides access in the cluster internally</li>
+<li>The ClusterIP range is defined in API server startup option <code>-service-cluster-ip-range</code></li>
+<li>Service port is defined in the Service Manifest</li>
+</ul>
+</li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#nodeport">NodePort</a>
+<ul>
+<li>Provides access at the node level</li>
+<li>The NodePort range is defined in API server startup option <code>--service-node-port-range</code></li>
+</ul>
+</li>
+<li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#loadbalancer">LoadBalancer</a>
+<ul>
+<li>Provides an external IP to allow access from outside of the cluster</li>
+</ul>
+</li>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/service/#externalname">ExternalName</a>
+<ul>
+<li>An alias to an external service</li>
+<li>DNS redirection</li>
+</ul>
+</li>
+<li><a href="https://zhaohuabing.com/post/2020-09-11-headless-mtls/#%E4%BB%80%E4%B9%88%E6%98%AF%E6%97%A0%E5%A4%B4%E6%9C%8D%E5%8A%A1">Headless</a>
+<ul>
+<li>Define a Headless service: specify &ldquo;None&rdquo; in for the cluster IP(.spec.clusterIP)</li>
+<li>No cluster IP allocated to Headless services</li>
+<li>No load balancing and proxying for Headless service</li>
+<li>Kube dns returns the IP of the pods backing the service</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#proxy">Kube Proxy</a>
+<ul>
+<li>Provides a proxy server or appliction-level gateway between localhost and the K8s API server</li>
+<li>Handles locating the apiserver and authenticating (uses cluster configuration and user credential in .kube/config)</li>
+<li>Can send requests to API server (for example: get the list of services in default namespace <code>localhost:proxy-port/api/v1/namespaces/default/services</code>)</li>
+<li>Can send requests to services via url <code>localhost:proxy-port/api/v1/namespaces/namespace_name/services/service_name[:port_name]/proxy/[application url] </code></li>
+</ul>
+</li>
 <li>Ingress
 <ul>
 <li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#k8s-ingress">K8s Ingress</a></li>
 <li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#istio-gateway">Istio Ingress Gateway</a></li>
 </ul>
 </li>
+<li>DNS
+<ul>
+<li><a href="https://github.com/kubernetes/dns/blob/master/docs/specification.md">Specification</a>
+<ul>
+<li>Service with ClusterIP
+<ul>
+<li>A record with ClusterIP</li>
+<li>Each named service port: SRV record with port number</li>
+<li>A PTR record to resolve ClusterIP to domain name</li>
+</ul>
+</li>
+<li>Headless Service
+<ul>
+<li>A record for each ready endpoint</li>
+<li>N*M SRV record (N ready point, M named ports in service)</li>
+<li>A PTR record to resolve endpoint IP to domain name of each ready endpoint</li>
+</ul>
+</li>
+<li>ExternalName
+<ul>
+<li>A CNAME pointing to the domain name of the external service</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>CoreDNS</li>
 </ul>
 </li>
 <li>腾讯云
