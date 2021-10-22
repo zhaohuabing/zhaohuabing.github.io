@@ -264,15 +264,6 @@
     </item>
     
     <item>
-      <title>NFV迈向云原生时代：Network Service Mesh项目介绍</title>
-      <link>https://zhaohuabing.com/post/2020-02-15-network-service-mesh/</link>
-      <pubDate>Sat, 15 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/post/2020-02-15-network-service-mesh/</guid>
-      <description>前言 当第一次看到Network Service Mesh这一名词时，你很可能和我一样好奇它到底是什么？是否和Service Mesh有什么关系？Network</description>
-    </item>
-    
-    <item>
       <title>Istio流量管理实现机制深度解析</title>
       <link>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</link>
       <pubDate>Thu, 12 Dec 2019 00:00:00 +0000</pubDate>

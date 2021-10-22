@@ -532,20 +532,34 @@
 </li>
 <li>DNS
 <ul>
-<li><a href="https://github.com/kubernetes/dns/blob/master/docs/specification.md">Specification</a>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#services">Service</a>
 <ul>
-<li>Service with ClusterIP
+<li>Normal Service
 <ul>
-<li>A record with ClusterIP</li>
-<li>Each named service port: SRV record with port number</li>
-<li>A PTR record to resolve ClusterIP to domain name</li>
+<li>A/AAA record which resolves name to the Cluster IP
+<ul>
+<li>Name: <code>my-svc.my-namespace.svc.cluster-domain.example</code></li>
+<li>Example: <code>kubernetes.default.svc.cluster.local. 30 IN A	172.20.252.11</code></li>
+</ul>
+</li>
+<li>SRV record for each named service port
+<ul>
+<li>Name: <code>_my-port-name._my-port-protocol.my-svc.my-namespace.svc.cluster-domain.</code>example</li>
+<li>Example: <code>_https._tcp.kubernetes.default.svc.cluster.local. 5 IN SRV 0 100 443 kubernetes.default.svc.cluster.local.</code></li>
+</ul>
+</li>
+<li>A PTR record which resolves Cluster IP to domain name
+<ul>
+<li>Example <code>1.252.20.172.in-addr.arpa. 5	IN	PTR	kubernetes.default.svc.cluster.local.</code></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Headless Service
 <ul>
-<li>A record for each ready endpoint</li>
-<li>N*M SRV record (N ready point, M named ports in service)</li>
-<li>A PTR record to resolve endpoint IP to domain name of each ready endpoint</li>
+<li>A/AAA record which resolves to the set of IPs of the pods selected by the service</li>
+<li>N*M SRV records (N pods, M named ports in service)</li>
+<li>A PTR record which resolves pod IP to domain name of each pod</li>
 </ul>
 </li>
 <li>ExternalName
@@ -555,7 +569,34 @@
 </li>
 </ul>
 </li>
-<li>CoreDNS</li>
+<li>Pod
+<ul>
+<li>A/AAA record which resolves name to the pod IP</li>
+<li>General name
+<ul>
+<li>Name: <code>pod-ip-address.my-namespace.pod.cluster-domain.example</code></li>
+<li>Example: <code>172-20-0-57.default.pod.cluster.local. 3 IN A	172.20.0.57</code></li>
+</ul>
+</li>
+<li>Pod created by Deployment or DaemonSet exposed by a Service
+<ul>
+<li><code>pod-ip-address.deployment-name.my-namespace.svc.cluster-domain.example</code></li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/#coredns">CoreDNS</a>
+<ul>
+<li>Plugins
+<ul>
+<li>errors: Erros are logged to stdout</li>
+<li>prometheus: Metrics of CoreDNS are available at <code>http://localhost:9153/metrics</code> in Prometheus format</li>
+<li><a href="https://coredns.io/plugins/kubernetes/">kubernetes</a>: CoreDNS will reply to DNS queries based on IP of the services and pods of Kubernetes.</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>腾讯云
@@ -630,6 +671,30 @@
 </li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Helm: package management tool for K8s applications
+<ul>
+<li>Chart: package all k8s manifests as a single tarball
+<ul>
+<li>Chart.yaml: this files contains metadata about this Chart: name, version, keywords</li>
+<li>templeates: this directorey contains the resource manifests that makes up this application
+<ul>
+<li>deployment</li>
+<li>services</li>
+<li>secretes</li>
+<li>&hellip;</li>
+</ul>
+</li>
+<li>values.yaml: this files contains keys and values that are used to generate the release. These values are replaced in the resource manifests using the Go template syntax</li>
+</ul>
+</li>
+<li>Repository: HTTP servers that contains charts</li>
+<li>Helm commands
+<ul>
+<li>helm search hub redis: find redis chart and its repository in helm hub</li>
 </ul>
 </li>
 </ul>

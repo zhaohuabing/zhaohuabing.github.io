@@ -323,11 +323,6 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/post/2020-02-15-network-service-mesh/</loc>
-    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://zhaohuabing.com/post/2018-09-25-istio-traffic-management-impl-intro/</loc>
     <lastmod>2019-12-12T00:00:00+00:00</lastmod>
   </url>
