@@ -524,6 +524,14 @@
 <li>Can send requests to services via url <code>localhost:proxy-port/api/v1/namespaces/namespace_name/services/service_name[:port_name]/proxy/[application url] </code></li>
 </ul>
 </li>
+<li>Kubectl port-forward
+<ul>
+<li>Forward local ports to a pod</li>
+<li>kebectl port-forward deployment/mydeployment localport:port</li>
+<li>kebectl port-forward service/myservice localport:port</li>
+<li>kebectl port-forward pod/mypod localport:port</li>
+</ul>
+</li>
 <li>Ingress
 <ul>
 <li><a href="https://zhaohuabing.com/post/2019-03-29-how-to-choose-ingress-for-service-mesh/#k8s-ingress">K8s Ingress</a></li>
@@ -615,6 +623,52 @@
 </li>
 </ul>
 </li>
+<li>Scheduling
+<ul>
+<li>Algorithm: Predicate find a set of available nodes -&gt; Priority select the best suitable node
+<ul>
+<li>Predicates: find available nodes through some conditions: check memory, cpu, disk, etc.</li>
+<li>Priorities: select a node to run the scheduled pod: select the node with the least amount of pods by default</li>
+<li>Policy: specify a number of predicates and priorities</li>
+</ul>
+</li>
+<li>Run a customscheduler
+<ul>
+<li>Policy: <code>--policy-config-file</code></li>
+<li>Name: <code>--scheduler-name</code></li>
+</ul>
+</li>
+<li>Pod Specification: hits for pod scheduling
+<ul>
+<li>NodeName: assign pods to the named node</li>
+<li>NodeSelector: assign pods to a group of nodes with particular labels</li>
+<li>Affinity and anti-affinity:
+<ul>
+<li>Node
+<ul>
+<li>Node affinity: has the same ability to constrain pods to particular nodes, but is more expressive and powerful</li>
+<li>Node anti-affinity: use <code>NotIn</code> and <code>DoesNotExist</code> to achieve node anti-affinity</li>
+</ul>
+</li>
+<li>Inter-Pod
+<ul>
+<li>Inter-Pod affinity: co-locate some pods in the same nodes</li>
+<li>Inter-Pod anti-affinity: distribute some pods in different nodes</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>taints and tolerations
+<ul>
+<li>allow a node to repel a set of pods</li>
+<li>allow pods to be scheduled onto nodes with matching taints</li>
+</ul>
+</li>
+<li>SchedulerName: choose a specific scheduler to schedule a pod</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>Security
 <ul>
 <li>Background Knowledge
@@ -695,6 +749,8 @@
 <li>Helm commands
 <ul>
 <li>helm search hub redis: find redis chart and its repository in helm hub</li>
+<li>helm sarch repo redis: find redis chart in repositories</li>
+<li>helm install redis bitnami/redis: install redis chart</li>
 </ul>
 </li>
 </ul>
