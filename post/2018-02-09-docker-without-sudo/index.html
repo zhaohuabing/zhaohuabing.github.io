@@ -15,15 +15,15 @@
     
 
     
-    <meta name="title" content="Vim Tips" />
-    <meta property="og:title" content="Vim Tips" />
-    <meta property="twitter:title" content="Vim Tips" />
+    <meta name="title" content="Docker Tips" />
+    <meta property="og:title" content="Docker Tips" />
+    <meta property="twitter:title" content="Docker Tips" />
     
 
     
-    <meta name="description" content="Vim Tips and tricks">
-    <meta property="og:description" content="Vim Tips and tricks" />
-    <meta property="twitter:description" content="Vim Tips and tricks" />
+    <meta name="description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。">
+    <meta property="og:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
+    <meta property="twitter:description" content="赵化冰，程序员, 开源爱好者，生活探险家 | 这里是 赵化冰 的博客，与你一起发现更大的世界。" />
     
 
     
@@ -34,9 +34,9 @@
     <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
-    <title>Vim Tips-赵化冰的博客 | Zhaohuabing Blog</title>
+    <title>Docker Tips-赵化冰的博客 | Zhaohuabing Blog</title>
 
-    <link rel="canonical" href="/2018/02/09/vim-tips/">
+    <link rel="canonical" href="/post/2018-02-09-docker-without-sudo/">
 
     <link rel="stylesheet" href="/css/iDisqus.min.css"/>
 
@@ -171,7 +171,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://img.zhaohuabing.com/in-post/2018-02-09-vim-tips/matrix.jpg')
+        background-image: url('https://img.zhaohuabing.com/in-post/docker.jpg')
     }
 </style>
 
@@ -183,12 +183,12 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/vim" title="Vim">
-                            Vim
+                        <a class="tag" href="/tags/docker" title="Docker">
+                            Docker
                         </a>
                         
                     </div>
-                    <h1>Vim Tips</h1>
+                    <h1>Docker Tips</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         
@@ -223,47 +223,22 @@
                 post-container">
 
                 
-                <h2 id="vim-graphical-cheat-sheet">vim graphical cheat sheet</h2>
-<p>
-  <img src="/img/2018-02-09-vim-tips/vi-vim-cheat-sheet.svg" alt="">
+                <h1 id="allow-none-root-users">Allow none-root users</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo groupadd docker
+sudo gpasswd -a <span style="color:#8be9fd;font-style:italic">$USER</span> docker
+newgrp docker
+</code></pre></div><h1 id="solve-no-space-left-on-device">Solve &ldquo;no space left on device&rdquo;</h1>
+<h2 id="ubuntu">ubuntu</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo vi /etc/docker/daemon.json
+</code></pre></div><pre><code class="language-josn" data-lang="josn">{
+        &quot;storage-driver&quot;: &quot;devicemapper&quot;,
+        &quot;storage-opts&quot;: [
+                &quot;dm.basesize=40G&quot;
+        ]
+}
+</code></pre><h2 id="mac">Mac</h2>
+<p>Docker -&gt; settings -&gt; Resources -&gt; Disk Image Size</p>
 
-</p>
-<h2 id="vim-jumps">Vim Jumps</h2>
-<ul>
-<li>^ — Move to start of line</li>
-<li>$ — Move to end of line</li>
-<li>b — Move back a word</li>
-<li>w — Move forward a word</li>
-<li>e — Move to the end of the next word</li>
-<li>Ctrl-o and Ctrl-i to go to the previous/next location you jumped to</li>
-<li>``(two backticks) jump back to where you were</li>
-<li>gi go back to the last place you inserted a text and enter insert mode</li>
-</ul>
-<h2 id="vim-navigations">Vim Navigations</h2>
-<ul>
-<li>{ and } jump paragraph back and forth</li>
-<li>Ctrl-F/B move one screen back and forth</li>
-<li>Search the word under cursor, then n/p to jump to next/previous</li>
-</ul>
-<h2 id="enable-vim-mode-in-bash">Enable Vim mode in bash</h2>
-<p>vi ~/.inputrc
-set editing-mode vi</p>
-<h2 id="enable-system-clipboard-upport">Enable system clipboard upport</h2>
-<p>See if system clipboard is supported:</p>
-<pre><code>$ vim --version | grep clipboard
--clipboard       +iconv           +path_extra      -toolbar
-+eval            +mouse_dec       +startuptime     -xterm_clipboard
-</code></pre><p>Rinstall vim as vim-gnome:</p>
-<pre><code>sudo apt-get install vim-gnome
-</code></pre><p>Select what you want using the mouse - then type to copy to clipboard:</p>
-<pre><code>&quot;+y
-</code></pre><p>To paste to vim from clipboard type:</p>
-<pre><code>&quot;+p
-</code></pre><h2 id="others">Others</h2>
-<ul>
-<li>Ex: open the current directory</li>
-<li>set number: show line number</li>
-</ul>
 
                 
 
@@ -271,13 +246,13 @@ set editing-mode vi</p>
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/post/2018-02-09-docker-without-sudo/" data-toggle="tooltip" data-placement="top" title="Docker Tips">&larr;
+                        <a href="/2018/02/03/authentication-and-authorization-of-microservice/" data-toggle="tooltip" data-placement="top" title="如何构建安全的微服务应用？">&larr;
                             Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/2018/03/13/use-docker-behind-http-proxy/" data-toggle="tooltip" data-placement="top" title="如何配置docker使用HTTP代理">Next
+                        <a href="/2018/02/09/vim-tips/" data-toggle="tooltip" data-placement="top" title="Vim Tips">Next
                             Post &rarr;</a>
                     </li>
                     
@@ -301,20 +276,6 @@ var disq = new iDisqus('disqus-comment', {
             </div>
 
             
-            
-            <div class="
-                col-lg-2 col-lg-offset-0
-                visible-lg-block
-                sidebar-container
-                catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
-                </div>
-            </div>
             
 
             
@@ -735,63 +696,6 @@ if (!doNotTrack) {
 
 
 
-
-<script type="text/javascript">
-    function generateCatalog(selector) {
-
-        
-        
-        
-        
-            _containerSelector = 'div.post-container'
-        
-
-        
-        var P = $(_containerSelector), a, n, t, l, i, c;
-        a = P.find('h1,h2,h3,h4,h5,h6');
-
-        
-        $(selector).html('')
-
-        
-        a.each(function () {
-            n = $(this).prop('tagName').toLowerCase();
-            i = "#" + $(this).prop('id');
-            t = $(this).text();
-            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
-            l = $('<li class="' + n + '_nav"></li>').append(c);
-            $(selector).append(l);
-        });
-        return true;
-    }
-
-    generateCatalog(".catalog-body");
-
-    
-    $(".catalog-toggle").click((function (e) {
-        e.preventDefault();
-        $('.side-catalog').toggleClass("fold")
-    }))
-
-    
-
-
-    loadAsync("\/js\/jquery.nav.js", function () {
-        $('.catalog-body').onePageNav({
-            currentClass: "active",
-            changeHash: !1,
-            easing: "swing",
-            filter: "",
-            scrollSpeed: 700,
-            scrollOffset: 0,
-            scrollThreshold: .2,
-            begin: null,
-            end: null,
-            scrollChange: null,
-            padding: 80
-        });
-    });
-</script>
 
 
 </body>

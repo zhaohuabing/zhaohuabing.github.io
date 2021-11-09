@@ -29,12 +29,12 @@ export HTTPS_PROXY=&amp;quot;http://127.0.0.1:3128/&amp;quot;
     </item>
     
     <item>
-      <title>如何使用非root用户执行docker命令</title>
-      <link>https://zhaohuabing.com/2018/02/09/docker-without-sudo/</link>
+      <title>Docker Tips</title>
+      <link>https://zhaohuabing.com/post/2018-02-09-docker-without-sudo/</link>
       <pubDate>Fri, 09 Feb 2018 10:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/2018/02/09/docker-without-sudo/</guid>
-      <description>Add the docker group if it doesn&amp;rsquo;t already exist: sudo groupadd docker Add the connected user &amp;ldquo;$USER&amp;rdquo; to the docker group. Change the user name to match your preferred user if you do not want to use your current user: sudo gpasswd -a $USER docker Either do a newgrp docker or log out/in to activate the changes to groups.</description>
+      <guid>https://zhaohuabing.com/post/2018-02-09-docker-without-sudo/</guid>
+      <description>Allow none-root users sudo groupadd docker sudo gpasswd -a $USER docker newgrp docker Solve &amp;ldquo;no space left on device&amp;rdquo; ubuntu sudo vi /etc/docker/daemon.json { &amp;quot;storage-driver&amp;quot;: &amp;quot;devicemapper&amp;quot;, &amp;quot;storage-opts&amp;quot;: [ &amp;quot;dm.basesize=40G&amp;quot; ] } Mac Docker -&amp;gt; settings -&amp;gt; Resources -&amp;gt; Disk Image Size</description>
     </item>
     
   </channel>

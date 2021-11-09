@@ -222,15 +222,15 @@
 <hr>
 
 <div class="post-preview">
-    <a href="https://zhaohuabing.com/2018/02/09/docker-without-sudo/">
+    <a href="https://zhaohuabing.com/post/2018-02-09-docker-without-sudo/">
         <h2 class="post-title">
-            如何使用非root用户执行docker命令
+            Docker Tips
         </h2>
 	
         <div class="post-content-preview">
 	
-            如何使用非root用户执行docker命令
-        
+            Allow none-root users sudo groupadd docker sudo gpasswd -a $USER docker newgrp docker Solve &ldquo;no space left on device&rdquo; ubuntu sudo vi /etc/docker/daemon.json { &quot;storage-driver&quot;: &quot;devicemapper&quot;, &quot;storage-opts&quot;: [ &quot;dm.basesize=40G&quot; ] } Mac Docker -&gt; settings -&gt; Resources -&gt; Disk Image Size
+       
         </div>
     </a>
     <p class="post-meta">
