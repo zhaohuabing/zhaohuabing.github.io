@@ -753,6 +753,29 @@
 <li>helm install redis bitnami/redis: install redis chart</li>
 </ul>
 </li>
+<li>Extending the Kubernetes API
+<ul>
+<li>Custom Resource
+<ul>
+<li>CRD: Define custom resources</li>
+<li>Custom Resources/Ojbects: Declare the desired spec of a custom resource</li>
+<li>Custom Controllers: watch-loop to make sure the actual state meet the declared spec</li>
+</ul>
+</li>
+<li><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/">Aggregated API Server</a>
+<ul>
+<li>Deploy an extension API server</li>
+<li><a href="https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/">Register APIService objects</a>
+<ul>
+<li>Group: API groups this extension API server hosts</li>
+<li>Version: API version this extension API server hosts</li>
+</ul>
+</li>
+<li>kube-apiserver proxies client requests to the extension API server</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
