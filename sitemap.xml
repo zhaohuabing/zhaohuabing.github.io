@@ -3,6 +3,56 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://zhaohuabing.com/categories/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/ebpf/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/envoy/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/istio/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/tags/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/categories/tech/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2021-12-19-ebpf-for-service-mesh/</loc>
+    <lastmod>2021-12-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://zhaohuabing.com/tags/aeraki/</loc>
     <lastmod>2021-10-11T00:00:00+00:00</lastmod>
   </url>
@@ -13,42 +63,7 @@
   </url>
   
   <url>
-    <loc>https://zhaohuabing.com/categories/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/envoy/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/istio/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://zhaohuabing.com/categories/open-source/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/post/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/service-mesh/</loc>
-    <lastmod>2021-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/tags/</loc>
     <lastmod>2021-10-11T00:00:00+00:00</lastmod>
   </url>
   
@@ -109,11 +124,6 @@
   
   <url>
     <loc>https://zhaohuabing.com/post/2021-08-11-envoy-code/</loc>
-    <lastmod>2021-08-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://zhaohuabing.com/categories/tech/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url>
   
@@ -320,6 +330,11 @@
   <url>
     <loc>https://zhaohuabing.com/tags/sdn/</loc>
     <lastmod>2020-02-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://zhaohuabing.com/post/2020-02-15-network-service-mesh/</loc>
+    <lastmod>2020-02-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>

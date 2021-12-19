@@ -6,10 +6,19 @@
     <description>Recent content in Envoy on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 11 Oct 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 18 Dec 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/envoy/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>译文：服务网格将使用 eBPF ？是的，但 Envoy 代理将继续存在</title>
+      <link>https://zhaohuabing.com/post/2021-12-19-ebpf-for-service-mesh/</link>
+      <pubDate>Sat, 18 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/post/2021-12-19-ebpf-for-service-mesh/</guid>
+      <description>译者按：这篇博客非常清晰地阐述了目前很热的 eBPF 和 Service Mesh 的关系，并分别介绍 Envoy 在几种不同的数据平面架构模型中的位置，以及这几种架构模型各自的优势和权</description>
+    </item>
     
     <item>
       <title>Aeraki</title>

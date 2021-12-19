@@ -6,24 +6,24 @@
     <description>Recent content in Tags on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 11 Oct 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 18 Dec 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Aeraki</title>
-      <link>https://zhaohuabing.com/tags/aeraki/</link>
-      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      <title>eBPF</title>
+      <link>https://zhaohuabing.com/tags/ebpf/</link>
+      <pubDate>Sat, 18 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>https://zhaohuabing.com/tags/aeraki/</guid>
+      <guid>https://zhaohuabing.com/tags/ebpf/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Envoy</title>
       <link>https://zhaohuabing.com/tags/envoy/</link>
-      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 18 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/envoy/</guid>
       <description></description>
@@ -32,7 +32,7 @@
     <item>
       <title>Istio</title>
       <link>https://zhaohuabing.com/tags/istio/</link>
-      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 18 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/istio/</guid>
       <description></description>
@@ -41,9 +41,18 @@
     <item>
       <title>service Mesh</title>
       <link>https://zhaohuabing.com/tags/service-mesh/</link>
-      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 18 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://zhaohuabing.com/tags/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Aeraki</title>
+      <link>https://zhaohuabing.com/tags/aeraki/</link>
+      <pubDate>Mon, 11 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://zhaohuabing.com/tags/aeraki/</guid>
       <description></description>
     </item>
     
