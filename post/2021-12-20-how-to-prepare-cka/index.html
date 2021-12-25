@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <meta property="og:site_name" content="Huabing Blog">
+    <meta property="og:type" content="article">
+
+    
+    <meta property="og:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg">
+    <meta property="twitter:image" content="https://zhaohuabing.com/img/home-bg-jeep.jpg" />
+    
+
+    
+    <meta name="title" content="如何成功通过 CKA 考试？" />
+    <meta property="og:title" content="如何成功通过 CKA 考试？" />
+    <meta property="twitter:title" content="如何成功通过 CKA 考试？" />
+    
+
+    
+    <meta name="description" content="帮助你顺利通过 CKA 考试的一些技巧。">
+    <meta property="og:description" content="帮助你顺利通过 CKA 考试的一些技巧。" />
+    <meta property="twitter:description" content="帮助你顺利通过 CKA 考试的一些技巧。" />
+    
+
+    
+    <meta property="twitter:card" content="summary" />
+    
+    
+
+    <meta name="keyword"  content="赵化冰, zhaohuabing, Zhaohuabing, , 赵化冰的网络日志, 赵化冰的博客, Zhaohuabing Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>如何成功通过 CKA 考试？-赵化冰的博客 | Zhaohuabing Blog</title>
+
+    <link rel="canonical" href="/post/2021-12-20-how-to-prepare-cka/">
+
+    <link rel="stylesheet" href="/css/iDisqus.min.css"/>
+
+    
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
+
+    
+    <link rel="stylesheet" href="/css/zanshang.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" type="text/css">
+
+    
+    
+
+    
+    
+    <script src="/js/jquery.min.js"></script>
+
+    
+    <script src="/js/bootstrap.min.js"></script>
+
+    
+    <script src="/js/hux-blog.min.js"></script>
+
+    
+    
+
+</head>
+
+
+
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Huabing Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                        
+                        <li>
+                            <a href="/categories/knowledge-graph">knowledge-graph</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/open-source">open-source</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/publication">publication</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/talk">talk</a>
+                        </li>
+                        
+                        <li>
+                            <a href="/categories/tech">tech</a>
+                        </li>
+                        
+                    
+                    
+		    
+                        <li><a href="/top/archive/">ARCHIVE</a></li>
+                    
+                        <li><a href="/top/about/">ABOUT</a></li>
+                    
+
+                    
+		    <li>
+                        <a href="/search"><i class="fa fa-search"></i></a>
+		    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header {
+        background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')
+    }
+</style>
+
+<header class="intro-header" >
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/cka" title="CKA">
+                            CKA
+                        </a>
+                        
+                        <a class="tag" href="/tags/cncf" title="CNCF">
+                            CNCF
+                        </a>
+                        
+                        <a class="tag" href="/tags/kubernetes" title="Kubernetes">
+                            Kubernetes
+                        </a>
+                        
+                    </div>
+                    <h1>如何成功通过 CKA 考试？</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        
+                            Posted by 
+                            
+                                赵化冰
+                             
+                            on 
+                            Monday, December 20, 2021
+                            
+                            
+                            
+                            
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                
+                <h1 id="了解-cka-考察的内容">了解 CKA 考察的内容</h1>
+<p>在开始准备考试前一定要阅读<a href="https://github.com/cncf/curriculum">CNCF 官方考试大纲</a>，了解 CKA 考察考生的主要内容，以在备考时做到知己知彼，有的放矢，根据该考试大纲进行针对性的准备和练习。该大纲会根据 K8s 的版本进行更新，但每个版本中涉及的考试内容变化不大，下面是我准备考试时的版本（v1.22）要求的主要内容：</p>
+<ul>
+<li>25% - Cluster Architecture, Installation &amp; Configuration</li>
+<li>15% - Workloads &amp; Scheduling</li>
+<li>20% - Services &amp; Networking</li>
+<li>10% - Storage</li>
+<li>30% - Troubleshooting</li>
+</ul>
+<h1 id="熟悉考试的软件环境">熟悉考试的软件环境</h1>
+<p>CKA 考试的软件环境如下，确保在考试前的练习中采用相同的软件环境，以提前熟悉考试环境：</p>
+<ul>
+<li>操作系统：Ubuntu 18.04</li>
+<li>Shell：bash</li>
+<li>编辑器：vi</li>
+<li>命令行工具：kubectl jq tmux curl wget</li>
+<li>浏览器 chrome</li>
+</ul>
+<p>YouTube 上有一个 Linux 基金会录制的 CKA 考试环境的视频，大家可以看一下，对考试环境有一个基本的了解：https://www.youtube.com/watch?v=9UqkWcdy140</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube.com/embed/9UqkWcdy140" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div>
+
+<p>建议在准备考试时充分练习并熟悉下面的工具：</p>
+<h2 id="编辑器-vi">编辑器 vi</h2>
+<p>vi 是一个非常强大的编辑软件，命令也非常多，但我们不需要掌握所有的命令。了解如何在 vi 的编辑和命令模式之间切换，并熟悉在考试中会使用到的几个 vi 编辑器的常用命令即可，包括删除、剪切、拷贝、粘贴、上下翻页等。注意 vi 在粘贴 yaml 时的自动格式化处理可能会不正确。可以通过 <code>:set paste</code> 取消 vi 的自动格式化。常用的 vi 命令：</p>
+<ul>
+<li>进入编辑模式 i</li>
+<li>进入命令模式 Esc</li>
+<li>储存后离开 vi :wq</li>
+<li>光标移动最后一行 G</li>
+<li>光标移动到第一行 gg</li>
+<li>光标移动到指定 nG （n为行数）</li>
+</ul>
+<p>vi 的使用方法和命令介绍参见这篇文章：https://www.runoob.com/linux/linux-vim.html</p>
+<h2 id="josnyaml-处理-jq">Josn/yaml 处理 jq</h2>
+<p>在对 K8s crd 和 kubectl 命令行输出进行操作时需要对 Json/Yaml 代码片段进行操作，例如截取或者修改输出中某个特定的字段。考试环境中预装了 Json/Yaml 的命令行工具 jq。在练习时要熟悉该命令的使用方法，例如下面的命令可以获取 pod 中的镜像名称：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ k get pod busybox -ojson|jq <span style="color:#f1fa8c">&#39;.spec.containers[0].image&#39;</span>
+<span style="color:#f1fa8c">&#34;busybox&#34;</span>
+</code></pre></div><p>阅读这篇文章《My jq Cheatsheet》(<a href="https://medium.com/geekculture/my-jq-cheatsheet-34054df5b650">https://medium.com/geekculture/my-jq-cheatsheet-34054df5b650</a>)，了解更多 jq 的使用方法。</p>
+<h2 id="终端复用器-tmux">终端复用器 tmux</h2>
+<p>考试时只能打开一个终端，但在考试时我们可能需要同时执行多个任务，或者在多个终端之间进行对比查看、复制粘贴。可以使用考试环境中预装的终端复用工具 tmux 来打开多个终端。在考试中会可能使用到的常用 tmux 命令：</p>
+<ul>
+<li>Ctrl+b %：划分左右两个窗格。</li>
+<li>Ctrl+b &ldquo;：划分上下两个窗格。</li>
+<li>Ctrl+b <arrow key>：光标切换到其他窗格。<arrow key>是指向要切换到的窗格的方向键，比如切换到下方窗格，就按方向键↓。</li>
+</ul>
+<p>关于 tmux 的更多使用方法，可以参考 阮一峰 老师的 <a href="https://www.ruanyifeng.com/blog/2019/10/tmux.html">《Tmux 使用教程》</a>。</p>
+<h1 id="考试的一些技巧">考试的一些技巧</h1>
+<p>CKA 考试一共两个小时，时间是比较紧张的，可能会出现时间不够用的情况。可以采用下面的技巧来加快做题的速度，在考试时间内完成尽量多的试题。</p>
+<h2 id="为常用的-kubectl-命令定义-alias">为常用的 kubectl 命令定义 alias</h2>
+<p>你可以根据自己的习惯来设置 alias，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">k</span><span style="color:#ff79c6">=</span>”kubectl”
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgd</span><span style="color:#ff79c6">=</span>”k get deploy”
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgp</span><span style="color:#ff79c6">=</span>”k get pods”
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgn</span><span style="color:#ff79c6">=</span>”k get nodes”
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgs</span><span style="color:#ff79c6">=</span>”k get svc”
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kge</span><span style="color:#ff79c6">=</span>”k get events — sort-by<span style="color:#ff79c6">=</span>’.metadata.creationTimestamp’ |tail -8<span style="color:#f1fa8c">&#34;
+</span></code></pre></div><h2 id="使用-kubectl-的自动补全功能">使用 kubectl 的自动补全功能</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">source</span> &lt;<span style="color:#ff79c6">(</span>kubectl completion bash<span style="color:#ff79c6">)</span>
+<span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;source &lt;(kubectl completion bash)&#34;</span> &gt;&gt; ~/.bashrc
+</code></pre></div><h2 id="使用-k8s-resource-的缩写名而不是全称">使用 K8s Resource 的缩写名而不是全称</h2>
+<p>熟练使用常见 K8s Resource 名称的缩写：</p>
+<table>
+<thead>
+<tr>
+<th>Short name</th>
+<th>Full name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cm</td>
+<td>configmaps</td>
+</tr>
+<tr>
+<td>ds</td>
+<td>daemonsets</td>
+</tr>
+<tr>
+<td>deploy</td>
+<td>deployments</td>
+</tr>
+<tr>
+<td>ep</td>
+<td>endpoints</td>
+</tr>
+<tr>
+<td>ev</td>
+<td>events</td>
+</tr>
+<tr>
+<td>hpa</td>
+<td>horizontalpodautoscalers</td>
+</tr>
+<tr>
+<td>ing</td>
+<td>ingresses</td>
+</tr>
+<tr>
+<td>limits</td>
+<td>limitranges</td>
+</tr>
+<tr>
+<td>ns</td>
+<td>namespaces</td>
+</tr>
+<tr>
+<td>no</td>
+<td>nodes</td>
+</tr>
+<tr>
+<td>pvc</td>
+<td>persistentvolumeclaims</td>
+</tr>
+<tr>
+<td>pv</td>
+<td>persistentvolumes</td>
+</tr>
+<tr>
+<td>po</td>
+<td>pods</td>
+</tr>
+<tr>
+<td>rs</td>
+<td>replicasets</td>
+</tr>
+<tr>
+<td>rc</td>
+<td>replicationcontrollers</td>
+</tr>
+<tr>
+<td>quota</td>
+<td>resourcequotas</td>
+</tr>
+<tr>
+<td>sa</td>
+<td>serviceaccounts</td>
+</tr>
+<tr>
+<td>svc</td>
+<td>services</td>
+</tr>
+</tbody>
+</table>
+<h2 id="采用-dry-run-来生成-yaml">采用 dry run 来生成 yaml</h2>
+<p>考生会被要求创建一些 K8s 资源，例如 pod，deployment，service 等等。从头编写这些资源的 yaml 文件不仅耗时，而且我们也很难记住某个资源的整个结构。可以使用 dry run 来生成一个基础的 yaml 文件，然后基于该文件进行修改，最后再采用修改后的文件来创建资源。</p>
+<p>例如这道题：创建一个 nginx pod，将 request 的 memory 设置为 1M, CPU 设置为 500m</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">k run nginx --image<span style="color:#ff79c6">=</span>nginx --dry-run<span style="color:#ff79c6">=</span>client -oyaml &gt; pod.yaml
+vi pod.yaml //添加 resource limit 设置
+k create -f pod.yaml
+</code></pre></div><h2 id="采用-kubectl-explain-来查看-resource-的定义">采用 kubectl explain 来查看 resource 的定义</h2>
+<p>如果在考试中我们需要查看某个 k8s 资源的定义，我们可以在 k8s 在线文档中去搜索该资源的 API，但在 K8s 文档的搜索功能并不是很方便使用，你可能需要点击多次才能找到正确的链接。通过 kubectl explain 命令可以更方便地查看资源定义，kubectl explain 的一个好处是可以层层递进查看，例如需要查看 pod 中容器的 limit 如何定义，但记不清楚 pod yaml 的结构层次，则可以这样查询：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">k explain pod.spec //查看 pod 的 spec
+k explain pod.spec.containers //进一步查看 pod spec 中 containers 部分的定义
+k explain pod.spec.containers.resources //进一步查看 resources 部分的定义
+k explain pod.spec.containers.resources.limits //进一步查看 limits 部分的定义
+</code></pre></div><h1 id="安装-k8s-集群的一些注意事项">安装 k8s 集群的一些注意事项</h1>
+<p>安装前首先采用 <code>sudo -i</code> 命令切换到 root 用户。</p>
+<p>我们只需要了解安装需要的相关工具和大致步骤，并不需要记住安装的相关命令。考试时打开 K8s 官网中的 <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/">Bootstrapping clusters with kubeadm</a> 文档，跟随文档中的步骤进行安装即可。</p>
+<h2 id="安装-docker">安装 Docker</h2>
+<p>Docker 官网的安装手册中有较多步骤，而在考试中不允许访问 Docker 官网。建议使用一键安装脚本来安装 Docker。Docker 一键安装脚本的地址 <code>get.docker.com</code> 很容易记住。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash &lt;<span style="color:#ff79c6">(</span>wget -O- get.docker.com<span style="color:#ff79c6">)</span>
+</code></pre></div><p>注意需要设置 systemd 为 docker 的 cgroup driver，参见 <a href="https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker">https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker</a></p>
+<h2 id="初始化-master-节点">初始化 master 节点</h2>
+<p>如果节点上有多个网卡，注意通过 <code>--apiserver-advertise-address</code> 参数设置 apiserver 的监听地址，该地址应为和 worker 节点同一个局域网上的地址。</p>
+<p>如果使用了 flannel 插件，需要在 kubeadm 命令中加入 pod cidr 参数， <code>kubeadm init --pod-network-cidr=10.244.0.0/16</code>，cidr 和 <a href="https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml">https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</a> 中配置的 CIDR 一致。</p>
+<h2 id="安装-cni-插件">安装 CNI 插件</h2>
+<p>需要通过 <code>kubectl apply -f &lt;add-on.yaml&gt;</code> 安装  CNI addon，平时安装时我们会通过 k8s 在线文档导航到一个外部的 CNI 网站上，找到该 addon 的 yaml 文件.在考试时不允许访问 CNI 的网站，在下面的 K8s 文档中有安装 CNI 插件的例子，可以将网页地址加入浏览器收藏夹中。
+<a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#steps-for-the-first-control-plane-node">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#steps-for-the-first-control-plane-node</a></p>
+<h1 id="收藏常用-k8s-文档">收藏常用 k8s 文档</h1>
+<p>提前将考试中可能会用到的 k8s 文档加入 chrome 收藏夹，避免考试时临时搜索浪费时间。下面是我收藏的相关在线文档：</p>
+<ul>
+<li>kubectl 命令参考：https://kubernetes.io/docs/reference/kubectl/cheatsheet/</li>
+<li>使用 kubeadm 安装 K8s 集群 Kubernetes API：https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/</li>
+<li>设置 Docker：https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker</li>
+<li>安装 K8s CNI addon：https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#steps-for-the-first-control-plane-node</li>
+<li>备份 etcd ：https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster</li>
+<li>K8s Cluster 排错：https://kubernetes.io/docs/tasks/debug-application-cluster/debug-cluster/</li>
+</ul>
+<p>注意：考试中不允许访问 <a href="https://helm.sh/docs/,">https://helm.sh/docs/,</a> <a href="https://kubernetes.io/docs/,">https://kubernetes.io/docs/,</a> <a href="https://github.com/kubernetes/,">https://github.com/kubernetes/,</a>  <a href="https://kubernetes.io/blog/">https://kubernetes.io/blog/</a> 之外的其他文档，因此注意不要点击 k8s 文档中的外链，例如 cni addon 和 docker 网站的外链。</p>
+
+
+                
+
+                <hr>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/post/2021-12-19-ebpf-for-service-mesh/" data-toggle="tooltip" data-placement="top" title="译文：服务网格将使用 eBPF ？是的，但 Envoy 代理将继续存在">&larr;
+                            Previous Post</a>
+                    </li>
+                    
+                    
+                </ul>
+                
+<script src="https://giscus.app/client.js"
+        data-repo="zhaohuabing/zhaohuabing.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkxMzc3MjcyMjM="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOCDWM984CAWAt"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+            </div>
+
+            
+            
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+            
+
+            
+            <div class="
+                col-lg-11 col-lg-offset-1
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        
+                        
+                        <a href="/tags/aeraki" title="aeraki">
+                            aeraki
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/api-gateway" title="api-gateway">
+                            api-gateway
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/bitcoin" title="bitcoin">
+                            bitcoin
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/blockchain" title="blockchain">
+                            blockchain
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/cryptocurrency" title="cryptocurrency">
+                            cryptocurrency
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/digital-signature" title="digital-signature">
+                            digital-signature
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/envoy" title="envoy">
+                            envoy
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/istio" title="istio">
+                            istio
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/jaeger" title="jaeger">
+                            jaeger
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/kubernetes" title="kubernetes">
+                            kubernetes
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/microservice" title="microservice">
+                            microservice
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/network" title="network">
+                            network
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/nfv" title="nfv">
+                            nfv
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/onap" title="onap">
+                            onap
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/opentracing" title="opentracing">
+                            opentracing
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <a href="/tags/sdn" title="sdn">
+                            sdn
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/security" title="security">
+                            security
+                        </a>
+                        
+                        
+                        
+                        <a href="/tags/service-mesh" title="service-mesh">
+                            service-mesh
+                        </a>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    </div>
+                </section>
+                
+
+                
+                
+                <section>
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
+                        
+                        <li><a target="_blank" href="https://zhaozhihan.com">Linda的博客</a></li>
+                        
+                    </ul>
+                </section>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href='' rel="alternate" type="application/rss+xml" title="Huabing Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fas fa-circle fa-stack-2x"></i>
+                               <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:zhaohuabing@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+
+                    
+                    <li>
+                        <a href="https://twitter.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="/img/wechat_qrcode.jpg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-weixin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://www.linkedin.com/in/zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://medium.com/@zhaohuabing">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-medium fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+            
+                    
+                    
+                    
+                    
+            
+            
+            
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Huabing Blog 2021
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function loadAsync(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        loadAsync("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    loadAsync("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+<script>
+    
+    var _baId = 'a1d96090e4189c0376251fb043da7be5';
+
+    
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-109223766-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        
+        
+        
+        
+            _containerSelector = 'div.post-container'
+        
+
+        
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        
+        $(selector).html('')
+
+        
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    
+
+
+    loadAsync("\/js\/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+</body>
+</html>
