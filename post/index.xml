@@ -6,19 +6,10 @@
     <description>Recent content in Posts on Huabing Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Dec 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 18 Dec 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://zhaohuabing.com/post/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>如何成功通过 CKA 考试？</title>
-      <link>https://zhaohuabing.com/post/2021-12-20-how-to-prepare-cka/</link>
-      <pubDate>Mon, 20 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://zhaohuabing.com/post/2021-12-20-how-to-prepare-cka/</guid>
-      <description>了解 CKA 考察的内容 在开始准备考试前一定要阅读CNCF 官方考试大纲，了解 CKA 考察考生的主要内容，以在备考时做到知己知彼，有的放矢，根据该考试大纲进</description>
-    </item>
     
     <item>
       <title>译文：服务网格将使用 eBPF ？是的，但 Envoy 代理将继续存在</title>
