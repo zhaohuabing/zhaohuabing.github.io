@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
 
     
-    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.css">
+    <link rel="stylesheet" href="/css/hugo-theme-cleanwhite.min.css">
 
     
     <link rel="stylesheet" href="/css/zanshang.css">
@@ -284,13 +284,15 @@
 <p>CKA 考试一共两个小时，时间是比较紧张的，可能会出现时间不够用的情况。可以采用下面的技巧来加快做题的速度，在考试时间内完成尽量多的试题。</p>
 <h2 id="为常用的-kubectl-命令定义-alias">为常用的 kubectl 命令定义 alias</h2>
 <p>你可以根据自己的习惯来设置 alias，如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">k</span><span style="color:#ff79c6">=</span>”kubectl”
-<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgd</span><span style="color:#ff79c6">=</span>”k get deploy”
-<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgp</span><span style="color:#ff79c6">=</span>”k get pods”
-<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgn</span><span style="color:#ff79c6">=</span>”k get nodes”
-<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgs</span><span style="color:#ff79c6">=</span>”k get svc”
-<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kge</span><span style="color:#ff79c6">=</span>”k get events — sort-by<span style="color:#ff79c6">=</span>’.metadata.creationTimestamp’ |tail -8<span style="color:#f1fa8c">&#34;
-</span></code></pre></div><h2 id="使用-kubectl-的自动补全功能">使用 kubectl 的自动补全功能</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">k</span><span style="color:#ff79c6">=</span>kubectl
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgp</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;k get pod&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgd</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;k get deploy&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgs</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;k get svc&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kgn</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;k get nodes&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kd</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;k describe&#34;</span>
+<span style="color:#8be9fd;font-style:italic">alias</span> <span style="color:#8be9fd;font-style:italic">kge</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;k get events --sort-by=&#39;.metadata.creationTimestamp&#39; |tail -8&#34;</span>
+<span style="color:#8be9fd;font-style:italic">export</span> <span style="color:#8be9fd;font-style:italic">dr</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34; --dry-run=client -o yaml&#34;</span>
+</code></pre></div><h2 id="使用-kubectl-的自动补全功能">使用 kubectl 的自动补全功能</h2>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#8be9fd;font-style:italic">source</span> &lt;<span style="color:#ff79c6">(</span>kubectl completion bash<span style="color:#ff79c6">)</span>
 <span style="color:#8be9fd;font-style:italic">echo</span> <span style="color:#f1fa8c">&#34;source &lt;(kubectl completion bash)&#34;</span> &gt;&gt; ~/.bashrc
 </code></pre></div><h2 id="使用-k8s-resource-的缩写名而不是全称">使用 K8s Resource 的缩写名而不是全称</h2>
@@ -383,8 +385,42 @@
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">k run nginx --image<span style="color:#ff79c6">=</span>nginx --dry-run<span style="color:#ff79c6">=</span>client -oyaml &gt; pod.yaml
 vi pod.yaml //添加 resource limit 设置
 k create -f pod.yaml
+</code></pre></div><h2 id="利用-kubectl-command-help-查看创建资源示例">利用 kubectl command help 查看创建资源示例</h2>
+<p><code>kubectl command --help</code> 命令的输出中提供了很多常用例子，将这些例子拷贝出来稍加修改就可以在考试中使用。采用该命令可以节约在 k8s 在线文档中查找搜寻相关示例的时间。</p>
+<p>例如 <code>kubectl run --help</code> 的输出中有大量创建 pod 的示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl run --help
+Create and run a particular image in a pod.
+
+Examples:
+  <span style="color:#6272a4"># Start a nginx pod.</span>
+  kubectl run nginx --image<span style="color:#ff79c6">=</span>nginx
+
+  <span style="color:#6272a4"># Start a hazelcast pod and let the container expose port 5701.</span>
+  kubectl run hazelcast --image<span style="color:#ff79c6">=</span>hazelcast/hazelcast --port<span style="color:#ff79c6">=</span><span style="color:#bd93f9">5701</span>
+
+  <span style="color:#6272a4"># Start a hazelcast pod and set environment variables &#34;DNS_DOMAIN=cluster&#34; and &#34;POD_NAMESPACE=default&#34; in the</span>
+container.
+  kubectl run hazelcast --image<span style="color:#ff79c6">=</span>hazelcast/hazelcast --env<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;DNS_DOMAIN=cluster&#34;</span> --env<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;POD_NAMESPACE=default&#34;</span>
+
+  <span style="color:#6272a4"># Start a hazelcast pod and set labels &#34;app=hazelcast&#34; and &#34;env=prod&#34; in the container.</span>
+  kubectl run hazelcast --image<span style="color:#ff79c6">=</span>hazelcast/hazelcast --labels<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#34;app=hazelcast,env=prod&#34;</span>
+
+  <span style="color:#6272a4"># Dry run. Print the corresponding API objects without creating them.</span>
+  kubectl run nginx --image<span style="color:#ff79c6">=</span>nginx --dry-run<span style="color:#ff79c6">=</span>client
+
+  <span style="color:#6272a4"># Start a nginx pod, but overload the spec with a partial set of values parsed from JSON.</span>
+  kubectl run nginx --image<span style="color:#ff79c6">=</span>nginx --overrides<span style="color:#ff79c6">=</span><span style="color:#f1fa8c">&#39;{ &#34;apiVersion&#34;: &#34;v1&#34;, &#34;spec&#34;: { ... } }&#39;</span>
+
+  <span style="color:#6272a4"># Start a busybox pod and keep it in the foreground, don&#39;t restart it if it exits.</span>
+  kubectl run -i -t busybox --image<span style="color:#ff79c6">=</span>busybox --restart<span style="color:#ff79c6">=</span>Never
+
+  <span style="color:#6272a4"># Start the nginx pod using the default command, but use custom arguments (arg1 .. argN) for that command.</span>
+  kubectl run nginx --image<span style="color:#ff79c6">=</span>nginx -- &lt;arg1&gt; &lt;arg2&gt; ... &lt;argN&gt;
+
+  <span style="color:#6272a4"># Start the nginx pod using a different command and custom arguments.</span>
+  kubectl run nginx --image<span style="color:#ff79c6">=</span>nginx --command -- &lt;cmd&gt; &lt;arg1&gt; ... &lt;argN&gt;
 </code></pre></div><h2 id="采用-kubectl-explain-来查看-resource-的定义">采用 kubectl explain 来查看 resource 的定义</h2>
-<p>如果在考试中我们需要查看某个 k8s 资源的定义，我们可以在 k8s 在线文档中去搜索该资源的 API，但在 K8s 文档的搜索功能并不是很方便使用，你可能需要点击多次才能找到正确的链接。通过 kubectl explain 命令可以更方便地查看资源定义，kubectl explain 的一个好处是可以层层递进查看，例如需要查看 pod 中容器的 limit 如何定义，但记不清楚 pod yaml 的结构层次，则可以这样查询：</p>
+<p>通过 <code>kubectl command --help</code> 命令可以查看创建资源的示例，但 help 命令中只显示了常用的选项，并不会提供完整的资源定义。如果在考试中我们需要查看某个 k8s 资源的定义，一个方法到在 k8s 在线文档中去搜索该资源的 API，但在 K8s 文档的搜索功能并不是很方便使用，你可能需要点击多次才能找到正确的链接。另一个更方便的方法是采用 kubectl explain 命令来查看资源定义。kubectl explain 的好处是可以层层递进查看，例如需要查看 pod 中容器的 limit 如何定义，但记不清楚 pod yaml 的结构层次，则可以这样查询：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">k explain pod.spec //查看 pod 的 spec
 k explain pod.spec.containers //进一步查看 pod spec 中 containers 部分的定义
 k explain pod.spec.containers.resources //进一步查看 resources 部分的定义
@@ -400,7 +436,7 @@ k explain pod.spec.containers.resources.limits //进一步查看 limits 部分�
 <p>如果节点上有多个网卡，注意通过 <code>--apiserver-advertise-address</code> 参数设置 apiserver 的监听地址，该地址应为和 worker 节点同一个局域网上的地址。</p>
 <p>如果使用了 flannel 插件，需要在 kubeadm 命令中加入 pod cidr 参数， <code>kubeadm init --pod-network-cidr=10.244.0.0/16</code>，cidr 和 <a href="https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml">https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</a> 中配置的 CIDR 一致。</p>
 <h2 id="安装-cni-插件">安装 CNI 插件</h2>
-<p>需要通过 <code>kubectl apply -f &lt;add-on.yaml&gt;</code> 安装  CNI addon，平时安装时我们会通过 k8s 在线文档导航到一个外部的 CNI 网站上，找到该 addon 的 yaml 文件.在考试时不允许访问 CNI 的网站，在下面的 K8s 文档中有安装 CNI 插件的例子，可以将网页地址加入浏览器收藏夹中。
+<p>采用 kubeadm 初始化集群后，需要通过 <code>kubectl apply -f &lt;add-on.yaml&gt;</code> 安装  CNI addon，否则加入集群的节点会一直处于 NotReady 状态。平时安装时我们会通过 k8s 在线文档导航到一个外部的 CNI 网站上，找到该 addon 的 yaml 文件。在考试时不允许访问 CNI 的网站，在下面的 K8s 文档中有安装 CNI 插件的例子，可以将网页地址加入浏览器收藏夹中。
 <a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#steps-for-the-first-control-plane-node">https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#steps-for-the-first-control-plane-node</a></p>
 <h1 id="收藏常用-k8s-文档">收藏常用 k8s 文档</h1>
 <p>提前将考试中可能会用到的 k8s 文档加入 chrome 收藏夹，避免考试时临时搜索浪费时间。下面是我收藏的相关在线文档：</p>
@@ -409,10 +445,21 @@ k explain pod.spec.containers.resources.limits //进一步查看 limits 部分�
 <li>使用 kubeadm 安装 K8s 集群 Kubernetes API：https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/</li>
 <li>设置 Docker：https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker</li>
 <li>安装 K8s CNI addon：https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/#steps-for-the-first-control-plane-node</li>
-<li>备份 etcd ：https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#backing-up-an-etcd-cluster</li>
+<li>升级 K8s Cluster: <a href="https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/">https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/</a></li>
+<li>备份 etcd ：https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#snapshot-using-etcdctl-options</li>
 <li>K8s Cluster 排错：https://kubernetes.io/docs/tasks/debug-application-cluster/debug-cluster/</li>
 </ul>
 <p>注意：考试中不允许访问 <a href="https://helm.sh/docs/,">https://helm.sh/docs/,</a> <a href="https://kubernetes.io/docs/,">https://kubernetes.io/docs/,</a> <a href="https://github.com/kubernetes/,">https://github.com/kubernetes/,</a>  <a href="https://kubernetes.io/blog/">https://kubernetes.io/blog/</a> 之外的其他文档，因此注意不要点击 k8s 文档中的外链，例如 cni addon 和 docker 网站的外链。</p>
+<h1 id="练习练习练习">练习，练习，练习</h1>
+<p>CKA 要求考生在规定时间内完成对 K8s 的指定管理任务，这要求考生理解 K8s 的相关概念，并非常熟悉 kubectl 命令行的相关操作。而熟悉 kubectl 命令行的方法就是不断的重复练习。Github 上有一些很好的资源，可以在准备考试时参照进行练习：</p>
+<ul>
+<li><a href="https://github.com/alijahnas/CKA-practice-exercises">CKA Practice Exercises</a></li>
+<li><a href="https://github.com/walidshaari/Kubernetes-Certified-Administrator">Kubernetes Certified Administration</a></li>
+<li><a href="https://github.com/StenlyTU/K8s-training-official">K8s Practice Training</a></li>
+<li><a href="https://github.com/ramitsurana/awesome-kubernetes">Awesome Kubernetes</a></li>
+</ul>
+<p>建议在考试前制定一个练习计划，并坚持按照该计划进行练习。我遵循的计划是考试前三个月开始练习，周一到周五每天早上上班前抽半小时时间。周末的时间比较灵活，周六和周日会花2小时左右练习。你练习的时间越长，对 kubectl 命令行的操作越熟悉，对即将到来的考试越有信心，顺利通过考试的几率则越大。</p>
+<p>最后祝大家顺利通过考试！</p>
 
 
                 
@@ -464,7 +511,7 @@ k explain pod.spec.containers.resources.limits //进一步查看 limits 部分�
 
             
             <div class="
-                col-lg-11 col-lg-offset-1
+                col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
                 sidebar-container">
 
