@@ -171,7 +171,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://img.zhaohuabing.com/in-post/2018-05-06-cryptocurrency_week1/blockchain.png')
+        background-image: url('/img/2018-05-06-cryptocurrency_week1/blockchain.png')
     }
 </style>
 
@@ -241,7 +241,7 @@
 <li>Cryptographic hash of that information <br>
 The pointer can be used to get the information, the hash can be used to verify that information hasn&rsquo;t been changed <br>
 
-  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png" alt="hashpointer">
+  <img src="/img//2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png" alt="hashpointer">
 
 </li>
 </ul>
@@ -249,7 +249,7 @@ The pointer can be used to get the information, the hash can be used to verify t
 <h3 id="blockchain">Blockchain</h3>
 <p>Hash pointers can be used to build a linked list, which is also called a blockchain. <br>
 
-  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/blockchian.png" alt="blockchain">
+  <img src="/img//2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/blockchian.png" alt="blockchain">
 
 </p>
 <p>We should Note that the hash stored in the hash pointer is the hash of the whole data of the previous block, which also includes the hash pointer to the block before that one. This makes it&rsquo;s impossible to tamper a block in the blockchain without letting others know.</p>
@@ -264,13 +264,13 @@ We only need to keep the hash pointer to the last block of the blockchain. Then 
 <li>Finally, the attacker goes to the hash pointer to the last block of the blockchain, which is a roadblock for him, because we keep and remember that hash pointer.</li>
 </ul>
 <p>
-  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/tamper_evident.png" alt="tamper evident">
+  <img src="/img//2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/tamper_evident.png" alt="tamper evident">
 
 </p>
 <h3 id="merkle-tree">Merkle Tree</h3>
 <p>Merkle tree is a binary tree building with hash pointers. The leaves are data blocks, nodes further up in the tree are the hashes of their respective children.</p>
 <p>
-  <img src="http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/merkel_tree.png" alt="merkel tree">
+  <img src="/img//2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/merkel_tree.png" alt="merkel tree">
 
 </p>
 <p><strong>Features</strong></p>
@@ -380,10 +380,6 @@ If Merkel tree is sorted, we can prove a given data is not in the tree: if the d
                         <a href="/tags/blockchain" title="blockchain">
                             blockchain
                         </a>
-                        
-                        
-                        
-                        
                         
                         
                         

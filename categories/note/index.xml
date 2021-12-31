@@ -97,7 +97,7 @@
 &lt;li&gt;Cryptographic hash of that information &lt;br&gt;
 The pointer can be used to get the information, the hash can be used to verify that information hasn&amp;rsquo;t been changed &lt;br&gt;
 
-  &lt;img src=&#34;http://img.zhaohuabing.com/in-post/2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png&#34; alt=&#34;hashpointer&#34;&gt;
+  &lt;img src=&#34;/img//2018-05-12-cryptocurrency_week1_hash_pointer_and_data_structures/hashpointet.png&#34; alt=&#34;hashpointer&#34;&gt;
 
 &lt;/li&gt;
 &lt;/ul&gt;</description>

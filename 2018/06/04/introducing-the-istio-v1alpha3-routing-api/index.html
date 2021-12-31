@@ -171,7 +171,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/background.jpg')
+        background-image: url('/img/2018-06-04-introducing-the-istio-v1alpha3-routing-api/background.jpg')
     }
 </style>
 
@@ -237,7 +237,7 @@
 <h2 id="v1alpha3中的配置资源">v1alpha3中的配置资源</h2>
 <p>在一个典型的网格中，通常有一个或多个用于终结外部TLS链接，将流量引入网格的负载均衡器（我们称之为gateway）。 然后流量通过边车网关（sidecar gateway）流经内部服务。 应用程序使用外部服务的情况也很常见（例如访问Google Maps API），一些情况下，这些外部服务可能被直接调用；但在某些部署中，网格中所有访问外部服务的流量可能被要求强制通过专用的出口网关（Egress gateway）。 下图描绘了网关在网格中的使用情况。</p>
 <p>
-  <img src="http://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/gateways.svg" alt="Gateway">
+  <img src="/img//2018-06-04-introducing-the-istio-v1alpha3-routing-api/gateways.svg" alt="Gateway">
 
 </p>
 <p>考虑到上述因素，<code>v1alpha3</code>引入了以下这些新的配置资源来控制进入网格，网格内部和离开网格的流量路由。</p>
@@ -250,7 +250,7 @@
 <p><code>VirtualService</code>，<code>DestinationRule</code>和<code>ServiceEntry</code>分别替换了原API中的<code>RouteRule</code>，<code>DestinationPolicy</code>和<code>EgressRule</code>。 <code>Gateway</code>是一个独立于平台的抽象，用于对流入专用中间设备的流量进行建模。</p>
 <p>下图描述了跨多个配置资源的控制流程。
 
-  <img src="http://img.zhaohuabing.com/in-post/2018-06-04-introducing-the-istio-v1alpha3-routing-api/virtualservices-destrules.svg" alt="不同配置资源之间的关系">
+  <img src="/img//2018-06-04-introducing-the-istio-v1alpha3-routing-api/virtualservices-destrules.svg" alt="不同配置资源之间的关系">
 
 </p>
 <h3 id="gateway">Gateway</h3>
@@ -569,10 +569,6 @@
                         <a href="/tags/blockchain" title="blockchain">
                             blockchain
                         </a>
-                        
-                        
-                        
-                        
                         
                         
                         

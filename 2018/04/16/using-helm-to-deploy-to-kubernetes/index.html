@@ -171,7 +171,7 @@
 
 <style type="text/css">
     header.intro-header {
-        background-image: url('https://img.zhaohuabing.com/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/buffalo.jpg')
+        background-image: url('/img/2018-04-16-using-helm-to-deploy-to-kubernetes/buffalo.jpg')
     }
 </style>
 
@@ -238,7 +238,7 @@
 <p>以下面的wordpress应用程序为例，涉及到多个kubernetes API对象，这些kubernetes API对象分散在多个yaml文件中。</p>
 <p>图1： Wordpress应用程序中涉及到的kubernetes API对象
 
-  <img src="http://img.zhaohuabing.com/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/wordpress.png" alt="">
+  <img src="/img//2018-04-16-using-helm-to-deploy-to-kubernetes/wordpress.png" alt="">
 
 </p>
 <p>可以看到，在进行kubernetes软件部署时，我们面临下述问题：</p>
@@ -273,7 +273,7 @@
 <p>下面这张图描述了Helm的几个关键组件Helm（客户端），Tiller（服务器），Repository（Chart软件仓库），Chart（软件包）之前的关系。</p>
 <p>图2： Helm软件架构
 
-  <img src="http://img.zhaohuabing.com/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/helm-architecture.png" alt="">
+  <img src="/img//2018-04-16-using-helm-to-deploy-to-kubernetes/helm-architecture.png" alt="">
 
 </p>
 <h2 id="安装helm">安装Helm</h2>
@@ -436,7 +436,7 @@ testapi <span style="color:#bd93f9">3</span>               Mon Apr <span style="
 <strong>A</strong>: 采用Helm可以把零散的Kubernetes应用配置文件作为一个chart管理，chart源码可以和源代码一起放到git库中管理。Helm还简了在CI/CD pipeline的软件部署流程。通过把chart参数化，可以在测试环境和生产环境可以采用不同的chart参数配置。</p>
 <p>下图是采用了Helm的一个CI/CD流程
 
-  <img src="http://img.zhaohuabing.com/in-post/2018-04-16-using-helm-to-deploy-to-kubernetes/ci-cd-jenkins-helm-k8s.png" alt="">
+  <img src="/img//2018-04-16-using-helm-to-deploy-to-kubernetes/ci-cd-jenkins-helm-k8s.png" alt="">
 
 </p>
 <p><strong>Q</strong>: 感谢分享，请问下多环境(test,staging，production)的业务配置如何管理呢？通过heml打包configmap吗，比如配置文件更新，也要重新打chats包吗？谢谢，这块我比较乱<BR>
@@ -559,10 +559,6 @@ testapi <span style="color:#bd93f9">3</span>               Mon Apr <span style="
                         <a href="/tags/blockchain" title="blockchain">
                             blockchain
                         </a>
-                        
-                        
-                        
-                        
                         
                         
                         
